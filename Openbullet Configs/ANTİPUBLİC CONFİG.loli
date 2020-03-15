@@ -1,0 +1,39 @@
+[SETTINGS]
+{
+  "Name": "AntiPublic",
+  "SuggestedBots": 50,
+  "LastModified": "2019-05-01T01:56:47.404767+03:00",
+  "AdditionalInfo": "Hits= Private Invalid= Public/Breached",
+  "Author": "BY WHİTENEONE",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET " https://haveibeenpwned.com/api/breachedaccount/<USER>" 
+  
+  HEADER "User-Agent: application/vnd.haveibeenpwned.v2+json" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "<RESPONSECODE>" Contains "404" 
+  KEYCHAIN Failure OR 
+    KEY "<RESPONSECODE>" Contains "200" 
+

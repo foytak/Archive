@@ -1,0 +1,43 @@
+[SETTINGS]
+{
+  "Name": "WeLeakInfo USER Search",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-01T18:56:08.4609762+00:00",
+  "AdditionalInfo": "",
+  "Author": "DADEX55",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_REQUEST REQUEST GET "https://api.weleakinfo.com/v2/public/username/<USER>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Ban OR 
+    KEY "The owner of this website (api.weleakinfo.com) has banned you temporarily from accessing this website." 
+    KEY "You are being rate limited" 
+    KEY "This IP address has been banned" 
+  KEYCHAIN Success OR 
+    KEY "Data" 
+  KEYCHAIN Failure OR 
+    KEY "\"Hits\": 0" 
+    KEY "\"Unique\": 0" 
+#PARSE_HITS PARSE "<SOURCE>" JSON "Hits" Recursive=FALSE -> CAP "Hits" "" "" 
+#PARSE_DATA PARSE "<SOURCE>" JSON "Data" Recursive=FALSE -> CAP "Data" "" "" 

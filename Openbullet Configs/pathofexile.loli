@@ -1,0 +1,63 @@
+[SETTINGS]
+{
+  "Name": "Path of Exile",
+  "SuggestedBots": 100,
+  "LastModified": "2018-05-06T10:09:37.5837696+00:00",
+  "AdditionalInfo": "Captures coins, characters and transactions",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST GET "https://www.pathofexile.com/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_HASH PARSE "<SOURCE>" LR "<input type=\"hidden\" name=\"hash\" value=\"" "\"" Recursive=FALSE -> VAR "HASH" "" "" 
+#LOGIN REQUEST POST "https://www.pathofexile.com/login" AutoRedirect=TRUE 
+  CONTENT "login_email=<USER>&login_password=<PASS>&remember_me=0&hash=<HASH>&login=Login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY ">Logged in as <" 
+  KEYCHAIN Failure OR 
+    KEY "href=\"/login\">LOG IN</a>" 
+  KEYCHAIN Ban OR 
+    KEY "You must type these letters to prove that you are a human" 
+    KEY "Empty captcha value" 
+    KEY "Login protection enabled" 
+#PARSE_PLAYER_NAME PARSE "<SOURCE>" LR "<a href=\"/account/view-profile/" "\"" Recursive=FALSE -> VAR "PLAYERNAME" "" "" 
+#CAPTURE_COINS PARSE "<SOURCE>" LR "<span class=\"amount shopCurrentCoinValue account\">" "<" Recursive=FALSE -> CAP "Coins" "" "" 
+#GET_PLAYER_CHARACTERS REQUEST POST "https://www.pathofexile.com/character-window/get-characters" AutoRedirect=TRUE 
+  CONTENT "accountName=<PLAYERNAME>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#CAPTURE_CHARACTERS PARSE "<SOURCE>" LR "{\"name" "}" Recursive=TRUE -> CAP "Character" "" "" 
+#GET_PLAYER_TRANSACTIONS REQUEST GET "https://www.pathofexile.com/account/view-profile/<PLAYERNAME>/transactions" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#CAPTURE_TRANSACTIONS PARSE "<SOURCE>" LR "<div class=\"transaction" "<div class=\"clear\"></div>" Recursive=TRUE -> CAP "Transaction" "" "" 

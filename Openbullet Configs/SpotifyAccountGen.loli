@@ -1,0 +1,44 @@
+[SETTINGS]
+{
+  "Name": "SpotifyAccountGen",
+  "SuggestedBots": 50,
+  "LastModified": "2018-08-05T15:42:44.9506687+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#EMAIL_CHECK REQUEST GET "https://www.spotify.com/int/xhr/json/sign-up/?email=<USER>&validate=1&suggest=1&anonymize=1" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Spotify/8.4.64 Android/19 (SM-G955N)" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "display_name_suggestion\":\"\"" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "display_name_suggestion\":\"\"" 
+PARSE "<SOURCE>" LR "suggestions\":[\"" "\"" Recursive=FALSE -> VAR "SUGGESTIONS" "" "" 
+#POST_REGISTRATION REQUEST POST "https://www.spotify.com/int/xhr/json/sign-up/" AutoRedirect=TRUE 
+  CONTENT "gender=neutral&password_repeat=<PASS>&password=<PASS>&birth_day=5&birth_month=8&username=<SUGGESTIONS>&email=<USER>&birth_year=2004&creation_point=client_mobile&platform=Android-ARM&app_version=846400555&iagree=1&key=142b583129b2df829de3656f9eb484e6" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Spotify/8.4.64 Android/19 (SM-G955N)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Bearer BQCW6dO8z6AGYuuOXxKmPi_Tr_zMwEbx64XlphSZ_2wgJrR-BRzV8IRjrv8j16IWoWgcASXyFt37fK718E4fbVnMXJ_HboMW1PypdqU5_eTGVNyISU-_Cd86l_K7cQeCbEhkczhZly-ZmcEs5cTw76lVElM4s08y2g2xjgH8mg" 

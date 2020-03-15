@@ -1,0 +1,80 @@
+// Captcha($ImageBytes#, $Phrase# = 0, $RegSense# = 0, $Numeric# = 0, $Calc# = 0, $MinLen# = 0, $MaxLen# = 0, $Language# = 0)
+// $Phrase# = 0 - captcha contains one word | 1 - captcha contains two or more words
+// $RegSense# = 0 - captcha in not case sensitive | 1 - captcha is case sensitive
+// $Numeric# = 0 - not specified | 1 - captcha contains only numbers | 2 - captcha contains only letters | 3 - captcha contains only numbers OR only letters | 4 - captcha contains both numbers AND letters
+// $Calc# = 0 - not specified | 1 - captcha requires calculation (e.g. type the result 4 + 8 = )
+// $MinLen# = 0 - not specified | 1..20 - minimal number of symbols in captcha
+// $MaxLen# = 0 - not specified | 1..20 - maximal number of symbols in captcha
+// $Language# = 0 - not specified | 1 - Cyrillic captcha | 2 - Latin captcha
+
+// MAKE SURE TO	DETERMINE THE STAGES THAT ARE FOR GETTING THE CAPTCHA IMAGE AND IT'S VALUE IN YOUR CONFIG LIKE: GetCaptchaStageIds = 1|2
+
+
+[General]
+Name = CapMonster - Image Captchas
+UseProxy = False
+Debug = True
+DefaultTimeout = 10
+UnbanAllProxiesWhenAllBannedAfter = 10
+UnlimitedAccountUsability = True
+
+[Stage-1]
+Variable-* = $Key = Random("String", 16)
+Variable-* = $Extras = GetPropertyValue($Input#, "Extras")
+Variable-* = $ExtrasCount = GetPropertyValue($Extras#, "Length")
+Variable-* = $ImageBytes = GetPropertyValue($Input#, "ImageBytes")
+Variable-* = $Base64EncodedImage = Base64Encode($ImageBytes#)
+Variable-* = $Phrase = If($ExtrasCount# > 0, GetItemAt($Extras#, "0"), "0")
+Variable-* = $RegSense = If($ExtrasCount# > 1, GetItemAt($Extras#, "1"), "0")
+Variable-* = $Numeric = If($ExtrasCount# > 2, GetItemAt($Extras#, "2"), "0")
+Variable-* = $Calc = If($ExtrasCount# > 3, GetItemAt($Extras#, "3"), "0")
+Variable-* = $MinLen = If($ExtrasCount# > 4, GetItemAt($Extras#, "4"), "0")
+Variable-* = $MaxLen = If($ExtrasCount# > 5, GetItemAt($Extras#, "5"), "0")
+Variable-* = $Language = If($ExtrasCount# > 6, GetItemAt($Extras#, "6"), "0")
+
+
+Variable-* = $Link1 = "http://127.0.0.3/in.php"
+Variable-* = $Heads = "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36"
+Variable-* = $PostData = CombineText("key=", $Key#, "&body=", URLEncode($Base64EncodedImage#), "&method=base64&phrase=", $Phrase#, "&regsense=", $RegSense#, "&numeric=", $Numeric#, "&calc=", $Calc#, "&min_len=", $MinLen#, "&max_len=", $MaxLen#, "&language=", $Language#)
+Variable-* = $TaskId = FindTagVal($Stage1ResponseSource#, "|", "")
+
+// Request
+Condition = Any
+Link = $Link1#
+isFTP = False
+HTTPVersion = 1.1
+FollowRedirect = False
+HTTPRequestMethod = POST
+Timeout = 30
+Headers = $Heads#
+PostContent = $PostData#
+
+
+// Conditions
+
+Failure-Condition = GetPropertyValue($Input#, "HasImage") == "false" || Len($TaskId#) == 0
+
+[Stage-2]
+Variable-* = $Link2 = CombineText("http://127.0.0.3/res.php?key=", $Key#, "&action=get&id=", $TaskId#)
+
+// Request
+Condition = Len($TaskId#) > 0
+Link = $Link2#
+isFTP = False
+HTTPVersion = 1.1
+FollowRedirect = False
+HTTPRequestMethod = GET
+Timeout = 60
+Headers = $Heads#
+
+// Condition Variables
+Variable-* = $SuccessKey1 = "OK|"
+Variable-* = $LoopKey1 = "CAPCHA_NOT_READY"
+
+// Captcha Result
+Variable-* = $CaptchaValue = FindTagVal($Stage2ResponseSource#, "|", "")
+Variable-* = $CaptchaValueLength = Len($CaptchaValue#)
+
+// Conditions
+Loop-Condition = IndexOf($Stage2ResponseSource#, $LoopKey1#) >= 0
+Success-Condition = IndexOf($Stage2ResponseSource#, $SuccessKey1#) >= 0

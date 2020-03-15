@@ -1,0 +1,25 @@
+[SETTINGS]
+{
+  "Name": "me",
+  "SuggestedBots": 1,
+  "LastModified": "2019-02-03T03:20:22.7758913+01:00",
+  "AdditionalInfo": "",
+  "Author": "me",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]

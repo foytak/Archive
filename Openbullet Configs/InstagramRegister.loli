@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "InstagramRegister",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-30T19:23:53.0115497+00:00",
+  "AdditionalInfo": "",
+  "Author": "Train",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "6",
+      "Id": 1282687435
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.instagram.com/?hl=en" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "\":{\"csrf_token\":\"" "\"" Recursive=FALSE -> VAR "csrf" "" "" 
+PARSE "<SOURCE>" LR "rollout_hash\":\"" "\"" Recursive=FALSE -> VAR "ajax" "" "" 
+FUNCTION RandomNum 12 32 "" -> VAR "rand" 
+REQUEST POST "https://www.instagram.com/accounts/web_create_ajax/?hl=en" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>&username=<rand>DdDdDdDdDdDdDdDd&first_name=MyName&seamless_login_enabled=1&tos_version=row" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-CSRFToken: <csrf>" 
+  HEADER "X-Instagram-AJAX: <ajax>" 
+  HEADER "Referer: https://www.instagram.com/?hl=en" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "form_validation_error" 
+    KEY "Another account is using " 
+  KEYCHAIN Success OR 
+    KEY "SUCCESS" 

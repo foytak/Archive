@@ -1,0 +1,40 @@
+[SETTINGS]
+{
+  "Name": "eztv",
+  "SuggestedBots": 1,
+  "LastModified": "2018-11-03T05:32:23.5691806+00:00",
+  "AdditionalInfo": "",
+  "Author": "maxokream",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#LOGIN REQUEST POST "https://eztv.re/login/" AutoRedirect=TRUE 
+  CONTENT "loginname=<USER>&password=<PASS>&submit=Login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "__cfduid=df19c88d8f5b51344c4797e373950f3a01541066889; _ga=GA1.2.1349754686.1541066891; PHPSESSID=8in72kjesif1t18r6hds5rtn60; _gid=GA1.2.1901707302.1541208272; noprpkedvhozafiwrexp=Sat, 03 Nov 2018 09: 28:28 GMT; _gat=1; __atuvc=8%7C44; __atuvs=5bdd31efb28c2bb0004; noprpkedvhozafiwrcnt=3" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://eztv.re" 
+  HEADER "referer: https://eztv.re/" 
+  HEADER "upgrade-insecure-requests: 1" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Wrong username or password" 
+  KEYCHAIN Success OR 
+    KEY "Logging in" 

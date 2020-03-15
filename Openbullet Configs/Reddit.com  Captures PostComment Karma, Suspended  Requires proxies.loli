@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "Reddit",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-12T12:32:46.2654644+02:00",
+  "AdditionalInfo": "",
+  "Author": "AlexTheDane#6884",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://old.reddit.com/api/login/<USER>" 
+  CONTENT "op=login-main&user=<USER>&passwd=<PASS>&api_type=json" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://old.reddit.com" 
+  HEADER "referer: https://old.reddit.com/" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"json\": {\"errors\": [], \"data\": {\"modhash\": \"" 
+  KEYCHAIN Failure OR 
+    KEY "{\"json\": {\"errors\": [[\"WRONG_PASSWORD\", \"wrong password\", \"passwd\"]]}}" 
+
+REQUEST GET "https://old.reddit.com/user/<USER>/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "<span class=\"userkarma\" title=\"post karma\">" "</span>)</span><span class=\"separator\">|</" -> CAP "Post Karma" 
+
+PARSE "<SOURCE>" LR "/><span class=\"karma comment-karma\">" "</span>&#32; comment karma<table id=\"per-sr" -> CAP "Comment Karma" 
+

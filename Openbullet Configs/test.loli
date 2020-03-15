@@ -1,0 +1,30 @@
+[SETTINGS]
+{
+  "Name": "Test",
+  "SuggestedBots": 1,
+  "LastModified": "2018-10-03T20:13:17.8754561+00:00",
+  "AdditionalInfo": "",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "<USER>" EqualTo "HIT" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "<USER>" EqualTo "FREE" 

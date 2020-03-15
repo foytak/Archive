@@ -1,0 +1,58 @@
+[SETTINGS]
+{
+  "Name": "btcclicks.com",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-23T21:07:05.7660811+05:30",
+  "AdditionalInfo": "",
+  "Author": "Anon024",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST GET "https://btcclicks.com/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://btcclicks.com" 
+  HEADER "referer: https://btcclicks.com/login" 
+
+#Token PARSE "<SOURCE>" CSS "[name=csrf]" "value" -> VAR "Token" 
+
+#Post REQUEST POST "https://btcclicks.com/login" 
+  CONTENT "csrf=<Token>&email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://btcclicks.com" 
+  HEADER "referer: https://btcclicks.com/login" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Earner Dashboard" 
+    KEY "Logout" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid login details" 
+
+PARSE "<SOURCE>" LR "<span data-satoshi=\"" "\">" -> CAP "Balance" 
+

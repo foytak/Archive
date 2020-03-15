@@ -1,0 +1,22 @@
+http://www.google.com.tr/search?q={Ux0r_Arama_Key}&num=100&start=0
+http://www.google.com.tr/search?q={Ux0r_Arama_Key}&num=100&start=100
+http://www.google.com.tr/search?q={Ux0r_Arama_Key}&num=100&start=200
+http://yandex.com.tr/yandsearch?p=0&text={Ux0r_Arama_Key}&numdoc=50
+http://yandex.com.tr/yandsearch?p=1&text={Ux0r_Arama_Key}&numdoc=50
+http://yandex.com.tr/yandsearch?p=2&text={Ux0r_Arama_Key}&numdoc=50
+http://startgoogle.startpagina.nl/?q={Ux0r_Arama_Key}
+http://www.baidu.com/s?wd={Ux0r_Arama_Key}&pn=0&rn=100&usm=1
+http://www.baidu.com/s?wd={Ux0r_Arama_Key}&pn=100&rn=100&usm=1
+http://www.baidu.com/s?wd={Ux0r_Arama_Key}&pn=200&rn=100&usm=1
+http://www.bing.com/search?q={Ux0r_Arama_Key}&count=50&first=1
+http://www.bing.com/search?q={Ux0r_Arama_Key}&count=50&first=51
+http://www.bing.com/search?q={Ux0r_Arama_Key}&count=50&first=101
+http://www.bing.com/search?q={Ux0r_Arama_Key}&count=50&first=151
+http://www.bing.com/search?q={Ux0r_Arama_Key}&count=50&first=201
+http://search.yahoo.com/search?x=op&va={Ux0r_Arama_Key}&va_vt=any&vst=0&vd =all&fl=0&vf=all&ei=UTF-8&vm=p&n=100
+http://search.yahoo.com/search?va={Ux0r_Arama_Key}&va_vt=any&vst=0&fl=0&vf =all&ei=UTF-8&vm=p&n=100&b=101
+http://search.yahoo.com/search?va={Ux0r_Arama_Key}&va_vt=any&vst=0&fl=0&vf =all&ei=UTF-8&vm=p&n=100&b=201
+http://altavista.com/web/results?pg=aq&avkw=xytx&aqmode=s&aqa={Ux0r_Arama_K ey}&kgs=0&kls=0&dt=tmperiod&d2=0&rc=dmn&sc=on&nbq= 50
+http://altavista.com/web/results?pg=aq&avkw=xytx&aqmode=s&aqa={Ux0r_Arama_K ey}&kgs=0&kls=0&dt=tmperiod&d2=0&rc=dmn&sc=on&nbq= 50&stq=50
+http://altavista.com/web/results?pg=aq&avkw=xytx&aqmode=s&aqa={Ux0r_Arama_K ey}&kgs=0&kls=0&dt=tmperiod&d2=0&rc=dmn&sc=on&nbq= 50&stq=100
+http://altavista.com/web/results?pg=aq&avkw=xytx&aqmode=s&aqa={Ux0r_Arama_K ey}&kgs=0&kls=0&dt=tmperiod&d2=0&rc=dmn&sc=on&nbq= 50&stq=150

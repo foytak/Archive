@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "Nitro",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-28T19:00:07.888575-05:00",
+  "AdditionalInfo": "",
+  "Author": "Tricksyz#6969",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "BanProxyAfterGoodStatus": false,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://discordapp.com/api/v6/entitlements/gift-codes/<DATA>?with_application=true&with_subscription_plan=true" AutoRedirect=FALSE 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Check_code KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "subscription_plan" 
+  KEYCHAIN Failure OR 
+    KEY "Unknown Gift Code" 
+    KEY "\"uses\": 1" 
+  KEYCHAIN Retry OR 
+    KEY "You are being ratelimited." 
+
+#Nitro_Capture PARSE "<SOURCE>" JSON "name" -> CAP "Type" 
+

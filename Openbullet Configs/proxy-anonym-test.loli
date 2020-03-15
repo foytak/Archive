@@ -1,0 +1,38 @@
+[SETTINGS]
+{
+  "Name": "Proxy Anonym Test",
+  "SuggestedBots": 2,
+  "LastModified": "2018-11-16T19:57:58.0547882+00:00",
+  "AdditionalInfo": "",
+  "Author": "Pin2",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 1,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+BROWSERACTION Open "" 
+NAVIGATE "https://2ip.io/privacy/" 60 
+ELEMENTACTION XPath "//input[@value='Check']" 
+  Click "" -> VAR "" 
+FUNCTION Delay "20000" -> VAR "" 
+ELEMENTACTION XPath "//p[@id='spyDescription']" 
+  GetText "" -> CAP "Answer" 
+#your_address PARSE "<SOURCE>" LR "<strong>your address:</strong> <a href=\"/geoip/?ip=" "</a>" Recursive=FALSE -> CAP "your address" "" "" 
+ELEMENTACTION XPath "//big[@id='privacyProbability']" 
+  GetText "" -> CAP "SECURE" 
+#DNS_leak PARSE "<SOURCE>" LR "<td><span id=\"dns_ip\">" "</span" Recursive=FALSE -> CAP "DNS leak" "" "" 
+BROWSERACTION ClearCookies "" 
+BROWSERACTION Quit "" 

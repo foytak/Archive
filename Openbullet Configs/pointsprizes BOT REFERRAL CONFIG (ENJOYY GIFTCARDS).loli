@@ -1,0 +1,56 @@
+[SETTINGS]
+{
+  "Name": "pointprizes",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-06T13:44:25.1400032+01:00",
+  "AdditionalInfo": "",
+  "Author": "WEBKILLER",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#YOUR_REFERAL_LINK REQUEST GET "https://www.pointsprizes.com/ref/13494133" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+REQUEST POST "https://www.pointsprizes.com/account" 
+  CONTENT "email=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER ": scheme: https" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "origin: https://www.pointsprizes.com" 
+  HEADER "referer: https://www.pointsprizes.com/" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "class=\"account-points-total\">0</strong>" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "class=\"account-points-total\">0</strong>" 
+  KEYCHAIN Ban OR 
+    KEY "IP Address Already Used" 
+
+#points PARSE "<SOURCE>" LR ";\"><strong class=\"account-points-total\">" "</strong> Points" -> CAP "points" 
+

